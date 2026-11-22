@@ -1,0 +1,16 @@
+allocatemem(128000000);
+p=2^31-1;
+expand(x,bits)=sum(i=1,#bits,bittest(x,i-1)*2^bits[i]);
+{
+  orders=[vector(31,i,i-1),vector(31,i,31-i),
+          concat(vector(16,i,2*(i-1)),vector(15,i,2*i-1))];
+  for(t=1,#orders,
+    order=orders[t];
+    left=vector(9,i,order[1+(i-1)*14\8]);
+    right=vector(10,i,order[16+(i-1)*15\9]);
+    rows=vector(512,i,expand(i-1,left));
+    cols=vector(544,j,expand(j-1,right));
+    A=matrix(512,544,i,j,
+      x=rows[i]+cols[j];kronecker(x^3+2*x+14,p)>=0);
+    print(matrank(Mod(1,2)*A)));
+}

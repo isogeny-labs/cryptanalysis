@@ -1,0 +1,2268 @@
+⚠ [9039/9053] Replayed AffineReductionBridge
+warning: AffineReductionBridge.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: AffineReductionBridge.lean:70:0: 'XedniAffineReductionBridge.map_regularSlope' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AffineReductionBridge.lean:71:0: 'XedniAffineReductionBridge.map_addX' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AffineReductionBridge.lean:72:0: 'XedniAffineReductionBridge.map_addY' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AffineReductionBridge.lean:73:0: 'XedniAffineReductionBridge.regular_chord_reduction' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AffineReductionBridge.lean:74:0: 'XedniAffineReductionBridge.regular_tangent_reduction' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [9040/9053] Replayed RegularChainReduction
+info: RegularChainReduction.lean:104:0: 'XedniRegularChainReduction.mapPoint' depends on axioms: [propext, Quot.sound]
+info: RegularChainReduction.lean:105:0: 'XedniRegularChainReduction.map_regularStep' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RegularChainReduction.lean:106:0: 'XedniRegularChainReduction.map_regularChain' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9041/9053] Replayed RegularGroupLaw
+warning: RegularGroupLaw.lean:16:0: automatically included section variable(s) unused in theorem `XedniRegularGroupLaw.short_equation`:
+  [DecidableEq F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: RegularGroupLaw.lean:25:8: automatically included section variable(s) unused in theorem `_private.RegularGroupLaw.0.XedniRegularGroupLaw.short_addX`:
+  [DecidableEq F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: RegularGroupLaw.lean:29:8: automatically included section variable(s) unused in theorem `_private.RegularGroupLaw.0.XedniRegularGroupLaw.short_addY`:
+  [DecidableEq F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+info: RegularGroupLaw.lean:98:0: 'XedniRegularGroupLaw.short_equation' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RegularGroupLaw.lean:99:0: 'XedniRegularGroupLaw.fieldStep_group_add' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RegularGroupLaw.lean:100:0: 'XedniRegularGroupLaw.fieldChain_group_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RegularGroupLaw.lean:101:0: 'XedniRegularGroupLaw.reduced_regularChain_group_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9042/9053] Replayed PrimeLocalReduction
+warning: PrimeLocalReduction.lean: imports `Mathlib.RingTheory.Localization.AtPrime.Basic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: PrimeLocalReduction.lean: imports `Mathlib.RingTheory.LocalRing.ResidueField.Defs` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: PrimeLocalReduction.lean:57:0: 'XedniPrimeLocalReduction.denominator_is_unit' depends on axioms: [propext, Quot.sound]
+info: PrimeLocalReduction.lean:58:0: 'XedniPrimeLocalReduction.integer_reduction' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PrimeLocalReduction.lean:59:0: 'XedniPrimeLocalReduction.fraction_reduction' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: PrimeLocalReduction.lean:60:0: 'XedniPrimeLocalReduction.local_chain_group_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9043/9053] Replayed LocalZModReduction
+warning: LocalZModReduction.lean: imports `Mathlib.RingTheory.Ideal.Int` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: LocalZModReduction.lean: imports `Mathlib.Data.ZMod.QuotientRing` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: LocalZModReduction.lean:50:4: `simp` already closes the goal
+
+Hint: Use `simp` instead of `simpa`:
+  [apply] simp [primeIdeal]
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: LocalZModReduction.lean:55:4: `simp` already closes the goal
+
+Hint: Use `simp` instead of `simpa`:
+  [apply] simp [primeIdeal]
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+info: LocalZModReduction.lean:60:0: 'XedniLocalZModReduction.reduce_integer' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: LocalZModReduction.lean:61:0: 'XedniLocalZModReduction.reduce_fraction' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9044/9053] Replayed RationalLocalWitness
+warning: RationalLocalWitness.lean: imports `Mathlib.Data.Rat.Lemmas` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: RationalLocalWitness.lean:21:0: automatically included section variable(s) unused in theorem `XedniRationalLocalWitness.admissible_iff_not_dvd`:
+  [Fact (Nat.Prime p)]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fact (Nat.Prime p)] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+info: RationalLocalWitness.lean:45:0: 'XedniRationalLocalWitness.admissible_iff_not_dvd' depends on axioms: [propext, Quot.sound]
+info: RationalLocalWitness.lean:46:0: 'XedniRationalLocalWitness.rational_reconstruction' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RationalLocalWitness.lean:47:0: 'XedniRationalLocalWitness.reduce_rational' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9045/9053] Replayed RationalCurveBridge
+warning: RationalCurveBridge.lean: imports `Mathlib.RingTheory.Localization.FractionRing` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: RationalCurveBridge.lean:25:25: `simp` already closes the goal
+
+Hint: Use `simp` instead of `simpa`:
+  [apply] simp [hz]
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+warning: RationalCurveBridge.lean:46:2: `simp` already closes the goal
+
+Hint: Use `simp` instead of `simpa`:
+  [apply] simp [s, Int.cast_natCast, mul_comm]
+
+Note: This linter can be disabled with `set_option linter.unnecessarySimpa false`
+info: RationalCurveBridge.lean:70:0: 'XedniRationalCurveBridge.localToRat_integer' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RationalCurveBridge.lean:71:0: 'XedniRationalCurveBridge.localToRat_fraction' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RationalCurveBridge.lean:72:0: 'XedniRationalCurveBridge.localToRat_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RationalCurveBridge.lean:73:0: 'XedniRationalCurveBridge.localCurvePoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9046/9053] Replayed RationalRegularStep
+warning: RationalRegularStep.lean: imports `Mathlib.RingTheory.LocalRing.ResidueField.Basic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: RationalRegularStep.lean:80:0: 'XedniRationalRegularStep.unit_of_reduction_ne_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RationalRegularStep.lean:81:0: 'XedniRationalRegularStep.chord_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RationalRegularStep.lean:82:0: 'XedniRationalRegularStep.tangent_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9047/9053] Replayed CoordinateCertificates
+warning: CoordinateCertificates.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: CoordinateCertificates.lean:19:0: 'XedniCoordinateCertificates.row0_m1_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:25:0: 'XedniCoordinateCertificates.row0_m1_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:31:0: 'XedniCoordinateCertificates.row0_m2_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:37:0: 'XedniCoordinateCertificates.row0_m2_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:43:0: 'XedniCoordinateCertificates.row0_m3_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:49:0: 'XedniCoordinateCertificates.row0_m3_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:55:0: 'XedniCoordinateCertificates.row0_m4_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:61:0: 'XedniCoordinateCertificates.row0_m4_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:67:0: 'XedniCoordinateCertificates.row1_m1_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:73:0: 'XedniCoordinateCertificates.row1_m1_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:79:0: 'XedniCoordinateCertificates.row1_m2_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:85:0: 'XedniCoordinateCertificates.row1_m2_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:91:0: 'XedniCoordinateCertificates.row1_m3_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:97:0: 'XedniCoordinateCertificates.row1_m3_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:103:0: 'XedniCoordinateCertificates.row1_m4_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:109:0: 'XedniCoordinateCertificates.row1_m4_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:115:0: 'XedniCoordinateCertificates.row1_m5_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:121:0: 'XedniCoordinateCertificates.row1_m5_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:127:0: 'XedniCoordinateCertificates.row2_m1_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:133:0: 'XedniCoordinateCertificates.row2_m1_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:139:0: 'XedniCoordinateCertificates.row2_m2_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:145:0: 'XedniCoordinateCertificates.row2_m2_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:151:0: 'XedniCoordinateCertificates.row2_m3_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:157:0: 'XedniCoordinateCertificates.row2_m3_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:163:0: 'XedniCoordinateCertificates.row2_m4_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:169:0: 'XedniCoordinateCertificates.row2_m4_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:175:0: 'XedniCoordinateCertificates.row2_m5_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:181:0: 'XedniCoordinateCertificates.row2_m5_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:187:0: 'XedniCoordinateCertificates.row3_m1_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:193:0: 'XedniCoordinateCertificates.row3_m1_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:199:0: 'XedniCoordinateCertificates.row3_m2_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:205:0: 'XedniCoordinateCertificates.row3_m2_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:211:0: 'XedniCoordinateCertificates.row3_m3_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:217:0: 'XedniCoordinateCertificates.row3_m3_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:223:0: 'XedniCoordinateCertificates.row3_m4_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:229:0: 'XedniCoordinateCertificates.row3_m4_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:235:0: 'XedniCoordinateCertificates.row3_m5_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:241:0: 'XedniCoordinateCertificates.row3_m5_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:247:0: 'XedniCoordinateCertificates.row4_m1_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:253:0: 'XedniCoordinateCertificates.row4_m1_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:259:0: 'XedniCoordinateCertificates.row4_m2_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:265:0: 'XedniCoordinateCertificates.row4_m2_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:271:0: 'XedniCoordinateCertificates.row4_m3_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:277:0: 'XedniCoordinateCertificates.row4_m3_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:283:0: 'XedniCoordinateCertificates.row4_m4_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:289:0: 'XedniCoordinateCertificates.row4_m4_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:295:0: 'XedniCoordinateCertificates.row4_m5_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:301:0: 'XedniCoordinateCertificates.row4_m5_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:307:0: 'XedniCoordinateCertificates.row4_m6_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:313:0: 'XedniCoordinateCertificates.row4_m6_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:319:0: 'XedniCoordinateCertificates.row5_m1_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:325:0: 'XedniCoordinateCertificates.row5_m1_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:331:0: 'XedniCoordinateCertificates.row5_m2_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:337:0: 'XedniCoordinateCertificates.row5_m2_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:343:0: 'XedniCoordinateCertificates.row5_m3_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:349:0: 'XedniCoordinateCertificates.row5_m3_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:355:0: 'XedniCoordinateCertificates.row5_m4_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:361:0: 'XedniCoordinateCertificates.row5_m4_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:367:0: 'XedniCoordinateCertificates.row5_m5_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:373:0: 'XedniCoordinateCertificates.row5_m5_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:379:0: 'XedniCoordinateCertificates.row6_m1_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:385:0: 'XedniCoordinateCertificates.row6_m1_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:391:0: 'XedniCoordinateCertificates.row6_m2_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:397:0: 'XedniCoordinateCertificates.row6_m2_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:403:0: 'XedniCoordinateCertificates.row6_m3_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:409:0: 'XedniCoordinateCertificates.row6_m3_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:415:0: 'XedniCoordinateCertificates.row6_m4_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:421:0: 'XedniCoordinateCertificates.row6_m4_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:427:0: 'XedniCoordinateCertificates.row7_m1_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:433:0: 'XedniCoordinateCertificates.row7_m1_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:439:0: 'XedniCoordinateCertificates.row7_m2_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:445:0: 'XedniCoordinateCertificates.row7_m2_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:451:0: 'XedniCoordinateCertificates.row7_m3_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:457:0: 'XedniCoordinateCertificates.row7_m3_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:463:0: 'XedniCoordinateCertificates.row7_m4_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:469:0: 'XedniCoordinateCertificates.row7_m4_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:475:0: 'XedniCoordinateCertificates.row7_m5_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:481:0: 'XedniCoordinateCertificates.row7_m5_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:487:0: 'XedniCoordinateCertificates.row8_m1_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:493:0: 'XedniCoordinateCertificates.row8_m1_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:499:0: 'XedniCoordinateCertificates.row8_m2_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:505:0: 'XedniCoordinateCertificates.row8_m2_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:511:0: 'XedniCoordinateCertificates.row8_m3_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:517:0: 'XedniCoordinateCertificates.row8_m3_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:523:0: 'XedniCoordinateCertificates.row8_m4_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:529:0: 'XedniCoordinateCertificates.row8_m4_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:535:0: 'XedniCoordinateCertificates.row8_m5_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:541:0: 'XedniCoordinateCertificates.row8_m5_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:547:0: 'XedniCoordinateCertificates.row8_m6_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:553:0: 'XedniCoordinateCertificates.row8_m6_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:559:0: 'XedniCoordinateCertificates.row9_m1_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:565:0: 'XedniCoordinateCertificates.row9_m1_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:571:0: 'XedniCoordinateCertificates.row9_m2_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:577:0: 'XedniCoordinateCertificates.row9_m2_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:583:0: 'XedniCoordinateCertificates.row9_m3_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:589:0: 'XedniCoordinateCertificates.row9_m3_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:595:0: 'XedniCoordinateCertificates.row9_m4_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:601:0: 'XedniCoordinateCertificates.row9_m4_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:607:0: 'XedniCoordinateCertificates.row9_m5_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:613:0: 'XedniCoordinateCertificates.row9_m5_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:619:0: 'XedniCoordinateCertificates.row10_m1_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:625:0: 'XedniCoordinateCertificates.row10_m1_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:631:0: 'XedniCoordinateCertificates.row10_m2_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:637:0: 'XedniCoordinateCertificates.row10_m2_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:643:0: 'XedniCoordinateCertificates.row10_m3_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:649:0: 'XedniCoordinateCertificates.row10_m3_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:655:0: 'XedniCoordinateCertificates.row10_m4_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:661:0: 'XedniCoordinateCertificates.row10_m4_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:667:0: 'XedniCoordinateCertificates.row10_m5_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:673:0: 'XedniCoordinateCertificates.row10_m5_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:679:0: 'XedniCoordinateCertificates.row11_m1_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:685:0: 'XedniCoordinateCertificates.row11_m1_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:691:0: 'XedniCoordinateCertificates.row11_m2_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:697:0: 'XedniCoordinateCertificates.row11_m2_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:703:0: 'XedniCoordinateCertificates.row11_m3_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:709:0: 'XedniCoordinateCertificates.row11_m3_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:715:0: 'XedniCoordinateCertificates.row11_m4_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:721:0: 'XedniCoordinateCertificates.row11_m4_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:727:0: 'XedniCoordinateCertificates.row11_m5_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:733:0: 'XedniCoordinateCertificates.row11_m5_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:739:0: 'XedniCoordinateCertificates.row11_m6_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:745:0: 'XedniCoordinateCertificates.row11_m6_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:751:0: 'XedniCoordinateCertificates.row12_m1_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:757:0: 'XedniCoordinateCertificates.row12_m1_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:763:0: 'XedniCoordinateCertificates.row12_m2_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:769:0: 'XedniCoordinateCertificates.row12_m2_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:775:0: 'XedniCoordinateCertificates.row12_m3_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:781:0: 'XedniCoordinateCertificates.row12_m3_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:787:0: 'XedniCoordinateCertificates.row12_m4_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:793:0: 'XedniCoordinateCertificates.row12_m4_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:799:0: 'XedniCoordinateCertificates.row12_m5_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:805:0: 'XedniCoordinateCertificates.row12_m5_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:811:0: 'XedniCoordinateCertificates.row12_m6_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoordinateCertificates.lean:817:0: 'XedniCoordinateCertificates.row12_m6_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9048/9053] Replayed CurveEquationCertificates
+warning: CurveEquationCertificates.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: CurveEquationCertificates.lean:39:0: 'XedniCurveEquationCertificates.row0_m1_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:40:0: 'XedniCurveEquationCertificates.row0_m1_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:57:0: 'XedniCurveEquationCertificates.row0_m2_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:58:0: 'XedniCurveEquationCertificates.row0_m2_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:75:0: 'XedniCurveEquationCertificates.row0_m3_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:76:0: 'XedniCurveEquationCertificates.row0_m3_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:93:0: 'XedniCurveEquationCertificates.row0_m4_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:94:0: 'XedniCurveEquationCertificates.row0_m4_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:111:0: 'XedniCurveEquationCertificates.row1_m1_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:112:0: 'XedniCurveEquationCertificates.row1_m1_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:129:0: 'XedniCurveEquationCertificates.row1_m2_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:130:0: 'XedniCurveEquationCertificates.row1_m2_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:147:0: 'XedniCurveEquationCertificates.row1_m3_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:148:0: 'XedniCurveEquationCertificates.row1_m3_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:165:0: 'XedniCurveEquationCertificates.row1_m4_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:166:0: 'XedniCurveEquationCertificates.row1_m4_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:183:0: 'XedniCurveEquationCertificates.row1_m5_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:184:0: 'XedniCurveEquationCertificates.row1_m5_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:201:0: 'XedniCurveEquationCertificates.row2_m1_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:202:0: 'XedniCurveEquationCertificates.row2_m1_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:219:0: 'XedniCurveEquationCertificates.row2_m2_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:220:0: 'XedniCurveEquationCertificates.row2_m2_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:237:0: 'XedniCurveEquationCertificates.row2_m3_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:238:0: 'XedniCurveEquationCertificates.row2_m3_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:255:0: 'XedniCurveEquationCertificates.row2_m4_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:256:0: 'XedniCurveEquationCertificates.row2_m4_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:273:0: 'XedniCurveEquationCertificates.row2_m5_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:274:0: 'XedniCurveEquationCertificates.row2_m5_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:291:0: 'XedniCurveEquationCertificates.row3_m1_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:292:0: 'XedniCurveEquationCertificates.row3_m1_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:309:0: 'XedniCurveEquationCertificates.row3_m2_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:310:0: 'XedniCurveEquationCertificates.row3_m2_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:327:0: 'XedniCurveEquationCertificates.row3_m3_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:328:0: 'XedniCurveEquationCertificates.row3_m3_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:345:0: 'XedniCurveEquationCertificates.row3_m4_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:346:0: 'XedniCurveEquationCertificates.row3_m4_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:363:0: 'XedniCurveEquationCertificates.row3_m5_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:364:0: 'XedniCurveEquationCertificates.row3_m5_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:381:0: 'XedniCurveEquationCertificates.row4_m1_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:382:0: 'XedniCurveEquationCertificates.row4_m1_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:399:0: 'XedniCurveEquationCertificates.row4_m2_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:400:0: 'XedniCurveEquationCertificates.row4_m2_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:417:0: 'XedniCurveEquationCertificates.row4_m3_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:418:0: 'XedniCurveEquationCertificates.row4_m3_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:435:0: 'XedniCurveEquationCertificates.row4_m4_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:436:0: 'XedniCurveEquationCertificates.row4_m4_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:453:0: 'XedniCurveEquationCertificates.row4_m5_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:454:0: 'XedniCurveEquationCertificates.row4_m5_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:471:0: 'XedniCurveEquationCertificates.row4_m6_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:472:0: 'XedniCurveEquationCertificates.row4_m6_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:489:0: 'XedniCurveEquationCertificates.row5_m1_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:490:0: 'XedniCurveEquationCertificates.row5_m1_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:507:0: 'XedniCurveEquationCertificates.row5_m2_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:508:0: 'XedniCurveEquationCertificates.row5_m2_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:525:0: 'XedniCurveEquationCertificates.row5_m3_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:526:0: 'XedniCurveEquationCertificates.row5_m3_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:543:0: 'XedniCurveEquationCertificates.row5_m4_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:544:0: 'XedniCurveEquationCertificates.row5_m4_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:561:0: 'XedniCurveEquationCertificates.row5_m5_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:562:0: 'XedniCurveEquationCertificates.row5_m5_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:579:0: 'XedniCurveEquationCertificates.row6_m1_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:580:0: 'XedniCurveEquationCertificates.row6_m1_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:597:0: 'XedniCurveEquationCertificates.row6_m2_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:598:0: 'XedniCurveEquationCertificates.row6_m2_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:615:0: 'XedniCurveEquationCertificates.row6_m3_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:616:0: 'XedniCurveEquationCertificates.row6_m3_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:633:0: 'XedniCurveEquationCertificates.row6_m4_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:634:0: 'XedniCurveEquationCertificates.row6_m4_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:651:0: 'XedniCurveEquationCertificates.row7_m1_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:652:0: 'XedniCurveEquationCertificates.row7_m1_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:669:0: 'XedniCurveEquationCertificates.row7_m2_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:670:0: 'XedniCurveEquationCertificates.row7_m2_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:687:0: 'XedniCurveEquationCertificates.row7_m3_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:688:0: 'XedniCurveEquationCertificates.row7_m3_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:705:0: 'XedniCurveEquationCertificates.row7_m4_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:706:0: 'XedniCurveEquationCertificates.row7_m4_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:723:0: 'XedniCurveEquationCertificates.row7_m5_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:724:0: 'XedniCurveEquationCertificates.row7_m5_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:741:0: 'XedniCurveEquationCertificates.row8_m1_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:742:0: 'XedniCurveEquationCertificates.row8_m1_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:759:0: 'XedniCurveEquationCertificates.row8_m2_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:760:0: 'XedniCurveEquationCertificates.row8_m2_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:777:0: 'XedniCurveEquationCertificates.row8_m3_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:778:0: 'XedniCurveEquationCertificates.row8_m3_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:795:0: 'XedniCurveEquationCertificates.row8_m4_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:796:0: 'XedniCurveEquationCertificates.row8_m4_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:813:0: 'XedniCurveEquationCertificates.row8_m5_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:814:0: 'XedniCurveEquationCertificates.row8_m5_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:831:0: 'XedniCurveEquationCertificates.row8_m6_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:832:0: 'XedniCurveEquationCertificates.row8_m6_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:849:0: 'XedniCurveEquationCertificates.row9_m1_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:850:0: 'XedniCurveEquationCertificates.row9_m1_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:867:0: 'XedniCurveEquationCertificates.row9_m2_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:868:0: 'XedniCurveEquationCertificates.row9_m2_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:885:0: 'XedniCurveEquationCertificates.row9_m3_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:886:0: 'XedniCurveEquationCertificates.row9_m3_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:903:0: 'XedniCurveEquationCertificates.row9_m4_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:904:0: 'XedniCurveEquationCertificates.row9_m4_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:921:0: 'XedniCurveEquationCertificates.row9_m5_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:922:0: 'XedniCurveEquationCertificates.row9_m5_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:939:0: 'XedniCurveEquationCertificates.row10_m1_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:940:0: 'XedniCurveEquationCertificates.row10_m1_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:957:0: 'XedniCurveEquationCertificates.row10_m2_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:958:0: 'XedniCurveEquationCertificates.row10_m2_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:975:0: 'XedniCurveEquationCertificates.row10_m3_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:976:0: 'XedniCurveEquationCertificates.row10_m3_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:993:0: 'XedniCurveEquationCertificates.row10_m4_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:994:0: 'XedniCurveEquationCertificates.row10_m4_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1011:0: 'XedniCurveEquationCertificates.row10_m5_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1012:0: 'XedniCurveEquationCertificates.row10_m5_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1029:0: 'XedniCurveEquationCertificates.row11_m1_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1030:0: 'XedniCurveEquationCertificates.row11_m1_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1047:0: 'XedniCurveEquationCertificates.row11_m2_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1048:0: 'XedniCurveEquationCertificates.row11_m2_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1065:0: 'XedniCurveEquationCertificates.row11_m3_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1066:0: 'XedniCurveEquationCertificates.row11_m3_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1083:0: 'XedniCurveEquationCertificates.row11_m4_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1084:0: 'XedniCurveEquationCertificates.row11_m4_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1101:0: 'XedniCurveEquationCertificates.row11_m5_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1102:0: 'XedniCurveEquationCertificates.row11_m5_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1119:0: 'XedniCurveEquationCertificates.row11_m6_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1120:0: 'XedniCurveEquationCertificates.row11_m6_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1137:0: 'XedniCurveEquationCertificates.row12_m1_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1138:0: 'XedniCurveEquationCertificates.row12_m1_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1155:0: 'XedniCurveEquationCertificates.row12_m2_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1156:0: 'XedniCurveEquationCertificates.row12_m2_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1173:0: 'XedniCurveEquationCertificates.row12_m3_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1174:0: 'XedniCurveEquationCertificates.row12_m3_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1191:0: 'XedniCurveEquationCertificates.row12_m4_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1192:0: 'XedniCurveEquationCertificates.row12_m4_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1209:0: 'XedniCurveEquationCertificates.row12_m5_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1210:0: 'XedniCurveEquationCertificates.row12_m5_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1227:0: 'XedniCurveEquationCertificates.row12_m6_curve' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CurveEquationCertificates.lean:1228:0: 'XedniCurveEquationCertificates.row12_m6_localPoint' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9049/9053] Replayed RecordedRegularSteps
+warning: RecordedRegularSteps.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: RecordedRegularSteps.lean:40:0: '_private.RecordedRegularSteps.0.XedniRecordedRegularSteps.int_sub_div_ne_zero' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+warning: RecordedRegularSteps.lean:56:13: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:56:13: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:60:0: 'XedniRecordedRegularSteps.row0_step1' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:83:27: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:84:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:83:27: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:84:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:88:0: 'XedniRecordedRegularSteps.row0_step2' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:111:33: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:112:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:111:33: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:112:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:116:0: 'XedniRecordedRegularSteps.row0_step3' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RecordedRegularSteps.lean:124:0: 'XedniRecordedRegularSteps.row0_chain' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:140:13: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:140:13: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:144:0: 'XedniRecordedRegularSteps.row1_step1' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:167:27: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:168:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:167:27: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:168:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:172:0: 'XedniRecordedRegularSteps.row1_step2' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:195:43: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:196:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:195:43: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:196:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:200:0: 'XedniRecordedRegularSteps.row1_step3' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:223:59: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:224:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:223:59: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:224:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:228:0: 'XedniRecordedRegularSteps.row1_step4' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RecordedRegularSteps.lean:236:0: 'XedniRecordedRegularSteps.row1_chain' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:252:13: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:252:13: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:256:0: 'XedniRecordedRegularSteps.row2_step1' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:279:27: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:280:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:279:27: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:280:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:284:0: 'XedniRecordedRegularSteps.row2_step2' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:307:35: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:308:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:307:35: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:308:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:312:0: 'XedniRecordedRegularSteps.row2_step3' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:335:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:336:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:335:46: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:336:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:340:0: 'XedniRecordedRegularSteps.row2_step4' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RecordedRegularSteps.lean:348:0: 'XedniRecordedRegularSteps.row2_chain' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:364:13: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:364:13: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:368:0: 'XedniRecordedRegularSteps.row3_step1' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:391:27: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:392:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:391:27: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:392:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:396:0: 'XedniRecordedRegularSteps.row3_step2' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:419:35: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:420:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:419:35: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:420:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:424:0: 'XedniRecordedRegularSteps.row3_step3' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:447:46: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:448:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:447:46: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:448:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:452:0: 'XedniRecordedRegularSteps.row3_step4' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RecordedRegularSteps.lean:460:0: 'XedniRecordedRegularSteps.row3_chain' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:476:13: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:476:13: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:480:0: 'XedniRecordedRegularSteps.row4_step1' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:503:27: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:504:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:503:27: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:504:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:508:0: 'XedniRecordedRegularSteps.row4_step2' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:531:39: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:532:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:531:39: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:532:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:536:0: 'XedniRecordedRegularSteps.row4_step3' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:559:52: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:560:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:559:52: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:560:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:564:0: 'XedniRecordedRegularSteps.row4_step4' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:587:73: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:588:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:587:73: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:588:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:592:0: 'XedniRecordedRegularSteps.row4_step5' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RecordedRegularSteps.lean:600:0: 'XedniRecordedRegularSteps.row4_chain' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:616:13: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:616:13: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:620:0: 'XedniRecordedRegularSteps.row5_step1' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:643:26: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:644:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:643:26: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:644:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:648:0: 'XedniRecordedRegularSteps.row5_step2' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:671:37: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:672:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:671:37: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:672:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:676:0: 'XedniRecordedRegularSteps.row5_step3' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:699:50: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:700:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:699:50: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:700:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:704:0: 'XedniRecordedRegularSteps.row5_step4' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RecordedRegularSteps.lean:712:0: 'XedniRecordedRegularSteps.row5_chain' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:728:13: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:728:13: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:732:0: 'XedniRecordedRegularSteps.row6_step1' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:755:27: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:756:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:755:27: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:756:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:760:0: 'XedniRecordedRegularSteps.row6_step2' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:783:44: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:784:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:783:44: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:784:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:788:0: 'XedniRecordedRegularSteps.row6_step3' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RecordedRegularSteps.lean:796:0: 'XedniRecordedRegularSteps.row6_chain' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:812:13: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:812:13: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:816:0: 'XedniRecordedRegularSteps.row7_step1' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:839:26: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:840:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:839:26: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:840:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:844:0: 'XedniRecordedRegularSteps.row7_step2' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:867:33: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:868:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:867:33: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:868:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:872:0: 'XedniRecordedRegularSteps.row7_step3' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:895:43: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:896:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:895:43: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:896:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:900:0: 'XedniRecordedRegularSteps.row7_step4' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RecordedRegularSteps.lean:908:0: 'XedniRecordedRegularSteps.row7_chain' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:924:13: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:924:13: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:928:0: 'XedniRecordedRegularSteps.row8_step1' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:951:27: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:952:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:951:27: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:952:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:956:0: 'XedniRecordedRegularSteps.row8_step2' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:979:37: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:980:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:979:37: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:980:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:984:0: 'XedniRecordedRegularSteps.row8_step3' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:1007:49: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1008:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1007:49: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:1008:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:1012:0: 'XedniRecordedRegularSteps.row8_step4' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:1035:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1036:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1035:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:1036:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:1040:0: 'XedniRecordedRegularSteps.row8_step5' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RecordedRegularSteps.lean:1048:0: 'XedniRecordedRegularSteps.row8_chain' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:1064:13: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1064:13: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:1068:0: 'XedniRecordedRegularSteps.row9_step1' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:1091:27: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1092:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1091:27: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:1092:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:1096:0: 'XedniRecordedRegularSteps.row9_step2' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:1119:43: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1120:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1119:43: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:1120:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:1124:0: 'XedniRecordedRegularSteps.row9_step3' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:1147:58: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1148:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1147:58: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:1148:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:1152:0: 'XedniRecordedRegularSteps.row9_step4' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RecordedRegularSteps.lean:1160:0: 'XedniRecordedRegularSteps.row9_chain' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:1176:13: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1176:13: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:1180:0: 'XedniRecordedRegularSteps.row10_step1' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:1203:27: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1204:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1203:27: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:1204:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:1208:0: 'XedniRecordedRegularSteps.row10_step2' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:1231:39: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1232:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1231:39: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:1232:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:1236:0: 'XedniRecordedRegularSteps.row10_step3' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:1259:52: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1260:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1259:52: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:1260:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:1264:0: 'XedniRecordedRegularSteps.row10_step4' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RecordedRegularSteps.lean:1272:0: 'XedniRecordedRegularSteps.row10_chain' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:1288:13: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1288:13: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:1292:0: 'XedniRecordedRegularSteps.row11_step1' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:1315:28: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1316:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1315:28: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:1316:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:1320:0: 'XedniRecordedRegularSteps.row11_step2' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:1343:42: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1344:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1343:42: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:1344:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:1348:0: 'XedniRecordedRegularSteps.row11_step3' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:1371:57: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1372:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1371:57: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:1372:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:1376:0: 'XedniRecordedRegularSteps.row11_step4' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:1399:80: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1400:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1399:80: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:1400:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:1404:0: 'XedniRecordedRegularSteps.row11_step5' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RecordedRegularSteps.lean:1412:0: 'XedniRecordedRegularSteps.row11_chain' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:1428:13: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1428:13: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:1432:0: 'XedniRecordedRegularSteps.row12_step1' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:1455:28: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1456:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1455:28: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:1456:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:1460:0: 'XedniRecordedRegularSteps.row12_step2' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:1483:42: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1484:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1483:42: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:1484:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:1488:0: 'XedniRecordedRegularSteps.row12_step3' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:1511:57: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1512:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1511:57: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:1512:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:1516:0: 'XedniRecordedRegularSteps.row12_step4' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: RecordedRegularSteps.lean:1539:80: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1540:19: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: RecordedRegularSteps.lean:1539:80: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: RecordedRegularSteps.lean:1540:19: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: RecordedRegularSteps.lean:1544:0: 'XedniRecordedRegularSteps.row12_step5' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RecordedRegularSteps.lean:1552:0: 'XedniRecordedRegularSteps.row12_chain' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9050/9053] Replayed FiniteGroupChains
+warning: FiniteGroupChains.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: FiniteGroupChains.lean:30:67: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: FiniteGroupChains.lean:30:67: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: FiniteGroupChains.lean:43:0: 'XedniFiniteGroupChains.row0_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:44:0: 'XedniFiniteGroupChains.row0_reduced_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:45:0: 'XedniFiniteGroupChains.row0_group_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: FiniteGroupChains.lean:53:67: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: FiniteGroupChains.lean:53:67: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: FiniteGroupChains.lean:66:0: 'XedniFiniteGroupChains.row1_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:67:0: 'XedniFiniteGroupChains.row1_reduced_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:68:0: 'XedniFiniteGroupChains.row1_group_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: FiniteGroupChains.lean:76:67: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: FiniteGroupChains.lean:76:67: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: FiniteGroupChains.lean:89:0: 'XedniFiniteGroupChains.row2_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:90:0: 'XedniFiniteGroupChains.row2_reduced_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:91:0: 'XedniFiniteGroupChains.row2_group_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: FiniteGroupChains.lean:99:67: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: FiniteGroupChains.lean:99:67: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: FiniteGroupChains.lean:112:0: 'XedniFiniteGroupChains.row3_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:113:0: 'XedniFiniteGroupChains.row3_reduced_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:114:0: 'XedniFiniteGroupChains.row3_group_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: FiniteGroupChains.lean:122:67: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: FiniteGroupChains.lean:122:67: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: FiniteGroupChains.lean:135:0: 'XedniFiniteGroupChains.row4_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:136:0: 'XedniFiniteGroupChains.row4_reduced_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:137:0: 'XedniFiniteGroupChains.row4_group_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: FiniteGroupChains.lean:145:67: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: FiniteGroupChains.lean:145:67: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: FiniteGroupChains.lean:158:0: 'XedniFiniteGroupChains.row5_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:159:0: 'XedniFiniteGroupChains.row5_reduced_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:160:0: 'XedniFiniteGroupChains.row5_group_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: FiniteGroupChains.lean:168:67: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: FiniteGroupChains.lean:168:67: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: FiniteGroupChains.lean:181:0: 'XedniFiniteGroupChains.row6_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:182:0: 'XedniFiniteGroupChains.row6_reduced_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:183:0: 'XedniFiniteGroupChains.row6_group_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: FiniteGroupChains.lean:191:67: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: FiniteGroupChains.lean:191:67: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: FiniteGroupChains.lean:204:0: 'XedniFiniteGroupChains.row7_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:205:0: 'XedniFiniteGroupChains.row7_reduced_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:206:0: 'XedniFiniteGroupChains.row7_group_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: FiniteGroupChains.lean:214:67: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: FiniteGroupChains.lean:214:67: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: FiniteGroupChains.lean:227:0: 'XedniFiniteGroupChains.row8_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:228:0: 'XedniFiniteGroupChains.row8_reduced_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:229:0: 'XedniFiniteGroupChains.row8_group_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: FiniteGroupChains.lean:237:67: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: FiniteGroupChains.lean:237:67: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: FiniteGroupChains.lean:250:0: 'XedniFiniteGroupChains.row9_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:251:0: 'XedniFiniteGroupChains.row9_reduced_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:252:0: 'XedniFiniteGroupChains.row9_group_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: FiniteGroupChains.lean:260:67: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: FiniteGroupChains.lean:260:67: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: FiniteGroupChains.lean:273:0: 'XedniFiniteGroupChains.row10_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:274:0: 'XedniFiniteGroupChains.row10_reduced_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:275:0: 'XedniFiniteGroupChains.row10_group_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: FiniteGroupChains.lean:283:67: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: FiniteGroupChains.lean:283:67: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: FiniteGroupChains.lean:296:0: 'XedniFiniteGroupChains.row11_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:297:0: 'XedniFiniteGroupChains.row11_reduced_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:298:0: 'XedniFiniteGroupChains.row11_group_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: FiniteGroupChains.lean:306:67: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: FiniteGroupChains.lean:306:67: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: FiniteGroupChains.lean:319:0: 'XedniFiniteGroupChains.row12_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:320:0: 'XedniFiniteGroupChains.row12_reduced_elliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FiniteGroupChains.lean:321:0: 'XedniFiniteGroupChains.row12_group_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [9051/9053] Replayed ExactChainMultipliers
+info: ExactChainMultipliers.lean:41:0: 'XedniExactChainMultipliers.reduced_regularChainN_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:52:0: 'XedniExactChainMultipliers.reduced_regularChainN_from_self' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:132:0: 'XedniExactChainMultipliers.row0_chainN' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:133:0: 'XedniExactChainMultipliers.row0_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:145:0: 'XedniExactChainMultipliers.row1_chainN' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:146:0: 'XedniExactChainMultipliers.row1_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:158:0: 'XedniExactChainMultipliers.row2_chainN' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:159:0: 'XedniExactChainMultipliers.row2_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:171:0: 'XedniExactChainMultipliers.row3_chainN' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:172:0: 'XedniExactChainMultipliers.row3_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:184:0: 'XedniExactChainMultipliers.row4_chainN' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:185:0: 'XedniExactChainMultipliers.row4_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:197:0: 'XedniExactChainMultipliers.row5_chainN' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:198:0: 'XedniExactChainMultipliers.row5_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:210:0: 'XedniExactChainMultipliers.row6_chainN' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:211:0: 'XedniExactChainMultipliers.row6_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:223:0: 'XedniExactChainMultipliers.row7_chainN' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:224:0: 'XedniExactChainMultipliers.row7_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:236:0: 'XedniExactChainMultipliers.row8_chainN' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:237:0: 'XedniExactChainMultipliers.row8_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:249:0: 'XedniExactChainMultipliers.row9_chainN' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:250:0: 'XedniExactChainMultipliers.row9_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:262:0: 'XedniExactChainMultipliers.row10_chainN' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:263:0: 'XedniExactChainMultipliers.row10_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:275:0: 'XedniExactChainMultipliers.row11_chainN' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:276:0: 'XedniExactChainMultipliers.row11_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:288:0: 'XedniExactChainMultipliers.row12_chainN' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExactChainMultipliers.lean:289:0: 'XedniExactChainMultipliers.row12_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9052/9053] Built PublicPointReduction (34s)
+warning: PublicPointReduction.lean:26:33: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:26:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:26:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:26:33: Unused tactic linter: `(apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide)` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:28:0: 'XedniPublicPointReduction.row0_m1_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:35:15: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:35:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:35:15: Unused tactic linter: `(first
+  | decide
+  | (apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide))` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:37:0: 'XedniPublicPointReduction.row0_m1_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:44:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:44:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:44:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:44:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:44:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:44:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:44:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:46:0: 'XedniPublicPointReduction.row0_m4_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:53:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:53:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:53:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:53:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:53:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:53:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:53:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:55:0: 'XedniPublicPointReduction.row0_m4_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:62:33: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:62:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:62:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:62:33: Unused tactic linter: `(apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide)` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:64:0: 'XedniPublicPointReduction.row1_m1_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:71:15: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:71:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:71:15: Unused tactic linter: `(first
+  | decide
+  | (apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide))` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:73:0: 'XedniPublicPointReduction.row1_m1_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:80:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:80:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:80:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:80:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:80:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:80:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:80:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:82:0: 'XedniPublicPointReduction.row1_m4_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:89:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:89:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:89:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:89:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:89:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:89:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:89:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:91:0: 'XedniPublicPointReduction.row1_m4_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:98:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:98:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:98:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:98:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:98:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:98:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:98:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:100:0: 'XedniPublicPointReduction.row1_m5_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:107:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:107:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:107:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:107:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:107:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:107:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:107:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:109:0: 'XedniPublicPointReduction.row1_m5_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:116:33: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:116:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:116:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:116:33: Unused tactic linter: `(apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide)` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:118:0: 'XedniPublicPointReduction.row2_m1_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:125:15: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:125:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:125:15: Unused tactic linter: `(first
+  | decide
+  | (apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide))` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:127:0: 'XedniPublicPointReduction.row2_m1_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:134:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:134:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:134:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:134:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:134:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:134:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:134:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:136:0: 'XedniPublicPointReduction.row2_m5_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:143:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:143:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:143:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:143:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:143:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:143:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:143:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:145:0: 'XedniPublicPointReduction.row2_m5_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:152:33: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:152:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:152:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:152:33: Unused tactic linter: `(apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide)` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:154:0: 'XedniPublicPointReduction.row3_m1_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:161:15: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:161:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:161:15: Unused tactic linter: `(first
+  | decide
+  | (apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide))` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:163:0: 'XedniPublicPointReduction.row3_m1_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:170:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:170:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:170:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:170:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:170:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:170:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:170:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:172:0: 'XedniPublicPointReduction.row3_m3_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:179:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:179:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:179:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:179:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:179:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:179:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:179:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:181:0: 'XedniPublicPointReduction.row3_m3_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:188:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:188:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:188:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:188:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:188:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:188:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:188:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:190:0: 'XedniPublicPointReduction.row3_m5_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:197:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:197:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:197:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:197:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:197:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:197:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:197:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:199:0: 'XedniPublicPointReduction.row3_m5_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:206:15: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:206:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:206:15: Unused tactic linter: `(first
+  | decide
+  | (apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide))` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:208:0: 'XedniPublicPointReduction.row4_m1_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:215:15: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:215:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:215:15: Unused tactic linter: `(first
+  | decide
+  | (apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide))` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:217:0: 'XedniPublicPointReduction.row4_m1_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:224:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:224:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:224:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:224:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:224:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:224:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:224:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:226:0: 'XedniPublicPointReduction.row4_m5_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:233:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:233:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:233:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:233:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:233:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:233:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:233:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:235:0: 'XedniPublicPointReduction.row4_m5_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:242:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:242:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:242:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:242:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:242:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:242:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:242:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:244:0: 'XedniPublicPointReduction.row4_m6_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:251:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:251:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:251:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:251:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:251:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:251:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:251:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:253:0: 'XedniPublicPointReduction.row4_m6_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:260:33: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:260:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:260:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:260:33: Unused tactic linter: `(apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide)` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:262:0: 'XedniPublicPointReduction.row5_m1_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:269:33: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:269:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:269:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:269:33: Unused tactic linter: `(apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide)` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:271:0: 'XedniPublicPointReduction.row5_m1_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:278:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:278:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:278:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:278:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:278:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:278:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:278:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:280:0: 'XedniPublicPointReduction.row5_m5_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:287:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:287:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:287:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:287:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:287:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:287:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:287:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:289:0: 'XedniPublicPointReduction.row5_m5_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:296:15: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:296:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:296:15: Unused tactic linter: `(first
+  | decide
+  | (apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide))` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:298:0: 'XedniPublicPointReduction.row6_m1_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:305:15: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:305:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:305:15: Unused tactic linter: `(first
+  | decide
+  | (apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide))` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:307:0: 'XedniPublicPointReduction.row6_m1_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:314:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:314:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:314:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:314:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:314:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:314:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:314:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:316:0: 'XedniPublicPointReduction.row6_m4_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:323:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:323:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:323:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:323:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:323:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:323:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:323:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:325:0: 'XedniPublicPointReduction.row6_m4_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:332:33: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:332:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:332:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:332:33: Unused tactic linter: `(apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide)` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:334:0: 'XedniPublicPointReduction.row7_m1_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:341:15: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:341:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:341:15: Unused tactic linter: `(first
+  | decide
+  | (apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide))` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:343:0: 'XedniPublicPointReduction.row7_m1_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:350:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:350:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:350:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:350:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:350:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:350:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:350:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:352:0: 'XedniPublicPointReduction.row7_m5_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:359:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:359:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:359:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:359:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:359:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:359:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:359:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:361:0: 'XedniPublicPointReduction.row7_m5_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:368:15: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:368:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:368:15: Unused tactic linter: `(first
+  | decide
+  | (apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide))` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:370:0: 'XedniPublicPointReduction.row8_m1_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:377:33: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:377:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:377:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:377:33: Unused tactic linter: `(apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide)` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:379:0: 'XedniPublicPointReduction.row8_m1_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:386:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:386:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:386:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:386:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:386:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:386:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:386:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:388:0: 'XedniPublicPointReduction.row8_m6_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:395:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:395:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:395:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:395:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:395:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:395:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:395:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:397:0: 'XedniPublicPointReduction.row8_m6_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:404:15: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:404:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:404:15: Unused tactic linter: `(first
+  | decide
+  | (apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide))` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:406:0: 'XedniPublicPointReduction.row9_m1_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:413:15: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:413:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:413:15: Unused tactic linter: `(first
+  | decide
+  | (apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide))` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:415:0: 'XedniPublicPointReduction.row9_m1_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:422:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:422:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:422:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:422:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:422:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:422:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:422:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:424:0: 'XedniPublicPointReduction.row9_m3_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:431:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:431:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:431:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:431:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:431:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:431:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:431:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:433:0: 'XedniPublicPointReduction.row9_m3_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:440:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:440:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:440:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:440:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:440:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:440:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:440:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:442:0: 'XedniPublicPointReduction.row9_m5_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:449:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:449:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:449:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:449:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:449:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:449:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:449:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:451:0: 'XedniPublicPointReduction.row9_m5_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:458:15: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:458:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:458:15: Unused tactic linter: `(first
+  | decide
+  | (apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide))` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:460:0: 'XedniPublicPointReduction.row10_m1_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:467:15: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:467:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:467:15: Unused tactic linter: `(first
+  | decide
+  | (apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide))` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:469:0: 'XedniPublicPointReduction.row10_m1_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:476:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:476:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:476:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:476:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:476:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:476:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:476:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:478:0: 'XedniPublicPointReduction.row10_m4_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:485:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:485:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:485:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:485:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:485:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:485:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:485:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:487:0: 'XedniPublicPointReduction.row10_m4_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:494:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:494:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:494:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:494:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:494:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:494:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:494:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:496:0: 'XedniPublicPointReduction.row10_m5_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:503:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:503:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:503:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:503:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:503:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:503:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:503:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:505:0: 'XedniPublicPointReduction.row10_m5_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:512:15: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:512:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:512:15: Unused tactic linter: `(first
+  | decide
+  | (apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide))` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:514:0: 'XedniPublicPointReduction.row11_m1_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:521:15: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:521:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:521:15: Unused tactic linter: `(first
+  | decide
+  | (apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide))` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:523:0: 'XedniPublicPointReduction.row11_m1_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:530:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:530:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:530:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:530:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:530:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:530:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:530:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:532:0: 'XedniPublicPointReduction.row11_m6_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:539:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:539:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:539:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:539:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:539:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:539:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:539:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:541:0: 'XedniPublicPointReduction.row11_m6_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:548:15: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:548:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:548:15: Unused tactic linter: `(first
+  | decide
+  | (apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide))` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:550:0: 'XedniPublicPointReduction.row12_m1_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:557:15: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+warning: PublicPointReduction.lean:557:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:557:15: Unused tactic linter: `(first
+  | decide
+  | (apply (div_eq_iff (by norm_num <;> decide)).2; norm_num <;> decide))` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:559:0: 'XedniPublicPointReduction.row12_m1_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:566:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:566:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:566:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:566:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:566:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:566:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:566:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:568:0: 'XedniPublicPointReduction.row12_m6_x_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+warning: PublicPointReduction.lean:575:11: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:575:65: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:575:90: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PublicPointReduction.lean:575:11: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:575:24: Unused tactic linter: `decide` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:575:65: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PublicPointReduction.lean:575:90: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PublicPointReduction.lean:577:0: 'XedniPublicPointReduction.row12_m6_y_public' depends on axioms: [propext, Classical.choice, Quot.sound]
+Build completed successfully (9053 jobs).

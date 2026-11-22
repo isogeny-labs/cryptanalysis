@@ -1,0 +1,20 @@
+{
+  "schema": "x011-p1009-relation-lattice-protocol-v1",
+  "question": "Do the 568 frozen direct rows and 28 degree-three Hecke rows generate the full integer relation lattice among the 84 ordered p1009 trace-20 points?",
+  "origin": "Post-run integer Smith diagnostic on the completed degree-three rank experiment; this is a confirmation on frozen inputs, not a new holdout.",
+  "p": 1009,
+  "curve": "11a1: y^2+y=x^3-x^2-10x-20",
+  "curve_order": 1020,
+  "fiber_abs_trace": 20,
+  "expected_fiber_size": 84,
+  "corrected_ledger": "../hecke-x011-trace-fiber-census-20261119/points_v2.jsonl.gz",
+  "corrected_ledger_sha256": "0fea606b245a4889df66d551a41d8b7dc403438a9a95fdd940ff15f5082b3087",
+  "direct_rows_gzip_sha256": "56a70b5d4c954980beb9d4df3953e080b72d4c97a56365fc1b163a6abb9ad41a",
+  "degree3_result_sha256": "d1f60898991a72eee7732727ca46a440d69abd8c6ab0622100733b0c3193b6ff",
+  "degree3_rows_gzip_sha256": "11d2d74ed467403826da6b555f67beae2598b503f40b5dcff2a0052db421422a",
+  "row_order": "degree-three rows in source order, then direct signed rows in archived order",
+  "planned_checks": ["verify every row against the Sage group law", "compute exact integer Smith invariants", "compute row Hermite basis and its determinant", "verify an order-1020 point occurs in the 84-point fiber", "compare lattice index with group order"],
+  "resource_cap_seconds": 120,
+  "candidate_id": null,
+  "target_online_ms": null
+}
