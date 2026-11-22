@@ -253,6 +253,7 @@ pub mod solinas_correlations;
 pub mod sparse_macaulay;
 pub use crypto_analysis_core::statistical;
 pub mod sym_ir;
+pub mod sym_techniques;
 pub mod symmetrized_semaev;
 pub mod tls12_kdf;
 pub mod tls13_kdf;
