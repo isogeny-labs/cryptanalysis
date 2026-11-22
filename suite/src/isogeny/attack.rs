@@ -613,10 +613,50 @@ pub fn multi_target_dp_rho(
     max_iters: u64,
     seed: u64,
 ) -> (Option<Vec<BigUint>>, u64) {
-    use num_bigint::RandBigInt;
+    use crate::cryptanalysis::bsgs_fast::{FastCurve, FastPoint};
 
+    let m = targets.len();
+    if m == 0 {
+        return (None, 0);
+    }
+    let p_digits: Vec<u64> = a_fe.modulus.iter_u64_digits().collect();
+    let n_digits: Vec<u64> = n.iter_u64_digits().collect();
+    let (p, n_u) = match (p_digits.as_slice(), n_digits.as_slice()) {
+        (&[p], &[n_u]) if n_u >= 4 => (p, n_u),
+        _ => return (None, max_iters),
+    };
+    let a = a_fe.value.iter_u64_digits().next().unwrap_or(0);
+    let Some(fc) = FastCurve::from_u64(p, a, 0, n_u) else {
+        return (None, max_iters);
+    };
+    let to_fast = |pt: &Point| -> FastPoint {
+        match pt {
+            Point::Infinity => FastPoint::INFINITY,
+            Point::Affine { x, y } => FastPoint {
+                x: fc.f.to_mont(x.value.iter_u64_digits().next().unwrap_or(0)),
+                y: fc.f.to_mont(y.value.iter_u64_digits().next().unwrap_or(0)),
+                infinity: false,
+            },
+        }
+    };
+    let g_f = to_fast(g);
+    let targets_f: Vec<FastPoint> = targets.iter().map(to_fast).collect();
+    multi_target_dp_rho_fast(&fc, g_f, &targets_f, n_u, max_iters, seed)
+}
+
+/// Multi-target GLS rho on single-word Montgomery arithmetic.  RREF
+/// still uses [`RrefState`] (BigUint) — the walk/adders dominate cost.
+fn multi_target_dp_rho_fast(
+    fc: &crate::cryptanalysis::bsgs_fast::FastCurve,
+    g: crate::cryptanalysis::bsgs_fast::FastPoint,
+    targets: &[crate::cryptanalysis::bsgs_fast::FastPoint],
+    n: u64,
+    max_iters: u64,
+    seed: u64,
+) -> (Option<Vec<BigUint>>, u64) {
+    use crate::cryptanalysis::bsgs_fast::{FastCurve, FastPoint};
     use rand::rngs::StdRng;
-    use rand::SeedableRng;
+    use rand::{Rng, SeedableRng};
     use std::collections::HashMap;
     use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
     use std::sync::{Arc, Mutex};
@@ -628,40 +668,33 @@ pub fn multi_target_dp_rho(
     const K: usize = 4;
     const R: usize = 20;
 
-    // Precompute R adders: each is m_j = a_j·g + Σ b_{j,i}·h_i
+    let fc = *fc;
+    let targets: Vec<FastPoint> = targets.to_vec();
     let mut prng = StdRng::seed_from_u64(seed ^ 0xCAFEFACE_FEEDF00D);
-    let mut adders: Vec<(Point, BigUint, Vec<BigUint>)> = Vec::with_capacity(R);
+    let mut adders: Vec<(FastPoint, u64, Vec<u64>)> = Vec::with_capacity(R);
     for _ in 0..R {
-        let aj = prng.gen_biguint_below(n);
-        let bj: Vec<BigUint> = (0..m).map(|_| prng.gen_biguint_below(n)).collect();
-        let mut pt = g.scalar_mul(&aj, a_fe);
+        let aj = prng.gen_range(0..n);
+        let bj: Vec<u64> = (0..m).map(|_| prng.gen_range(0..n)).collect();
+        let mut pt = fc.scalar_mul(g, aj);
         for i in 0..m {
-            pt = pt.add(&targets[i].scalar_mul(&bj[i], a_fe), a_fe);
+            pt = fc.add(pt, fc.scalar_mul(targets[i], bj[i]));
         }
         adders.push((pt, aj, bj));
     }
     let adders = Arc::new(adders);
 
-    // DP density: roughly bits(n)/4 for medium scales, but with a
-    // small minimum so 16-bit toy tests actually emit a few DPs.
-    let dp_bits = ((n.bits() as u32) / 4).clamp(4, 28) as u64;
+    let bits = 64 - n.leading_zeros();
+    let dp_bits = (bits / 4).clamp(4, 28);
     let dp_mask = (1u64 << dp_bits) - 1;
 
-    // Shared state.  DP table maps point-key → (a, b_0, …, b_{m-1}).
-    let dp_table: Arc<Mutex<HashMap<u64, Vec<BigUint>>>> = Arc::new(Mutex::new(HashMap::new()));
-    // Incremental Gaussian elimination state.  `pivots[col] =
-    // Some(row)` if we have a pivot for column `col`.  Rows are
-    // stored in `rows`, each as (coeffs[0..m], rhs).
+    let dp_table: Arc<Mutex<HashMap<u64, Vec<u64>>>> = Arc::new(Mutex::new(HashMap::new()));
     let rref: Arc<Mutex<RrefState>> = Arc::new(Mutex::new(RrefState::new(m)));
     let result: Arc<Mutex<Option<Vec<BigUint>>>> = Arc::new(Mutex::new(None));
     let total_iters = Arc::new(AtomicU64::new(0));
     let done = Arc::new(AtomicBool::new(false));
-
     let per_walker_cap = max_iters / K as u64;
-    let n_arc = Arc::new(n.clone());
-    let g_arc = Arc::new(g.clone());
-    let targets_arc: Arc<Vec<Point>> = Arc::new(targets.to_vec());
-    let a_fe_arc = Arc::new(a_fe.clone());
+    let n_big = BigUint::from(n);
+    let targets = Arc::new(targets);
 
     let mut handles = Vec::with_capacity(K);
     for wid in 0..K {
@@ -671,54 +704,40 @@ pub fn multi_target_dp_rho(
         let result = Arc::clone(&result);
         let total_iters = Arc::clone(&total_iters);
         let done = Arc::clone(&done);
-        let n_arc = Arc::clone(&n_arc);
-        let g_arc = Arc::clone(&g_arc);
-        let targets_arc = Arc::clone(&targets_arc);
-        let a_fe_arc = Arc::clone(&a_fe_arc);
+        let targets = Arc::clone(&targets);
+        let n_big = n_big.clone();
 
         handles.push(std::thread::spawn(move || {
-            let n = &*n_arc;
-            let g_pt = &*g_arc;
-            let targets = &*targets_arc;
-            let a_fe = &*a_fe_arc;
+            let sub_mod_u = |a: u64, b: u64| -> u64 {
+                if a >= b {
+                    a - b
+                } else {
+                    n - (b - a)
+                }
+            };
             let mut wrng = StdRng::seed_from_u64(
                 seed.wrapping_add((wid as u64).wrapping_mul(0xC6BC279692B5C323)),
             );
-            let bucket = |pt: &Point| -> usize {
-                match pt {
-                    Point::Infinity => 0,
-                    Point::Affine { x, y } => {
-                        let xv = x.value.iter_u64_digits().next().unwrap_or(0);
-                        let yv = y.value.iter_u64_digits().next().unwrap_or(0);
-                        let mut z = xv.wrapping_add(yv.wrapping_mul(0x9E3779B97F4A7C15));
-                        z ^= z >> 30;
-                        z = z.wrapping_mul(0xBF58476D1CE4E5B9);
-                        z ^= z >> 27;
-                        z = z.wrapping_mul(0x94D049BB133111EB);
-                        z ^= z >> 31;
-                        (z as usize) % R
-                    }
+            let bucket = |fc: &FastCurve, pt: FastPoint| -> usize {
+                if pt.infinity {
+                    return 0;
                 }
-            };
-            let sub_mod = |a: &BigUint, b: &BigUint, m: &BigUint| -> BigUint {
-                if a >= b {
-                    (a - b) % m
-                } else {
-                    let diff = (b - a) % m;
-                    if diff.is_zero() {
-                        BigUint::zero()
-                    } else {
-                        m - diff
-                    }
-                }
+                let xv = fc.f.from_mont(pt.x);
+                let yv = fc.f.from_mont(pt.y);
+                let mut z = xv.wrapping_add(yv.wrapping_mul(0x9E3779B97F4A7C15));
+                z ^= z >> 30;
+                z = z.wrapping_mul(0xBF58476D1CE4E5B9);
+                z ^= z >> 27;
+                z = z.wrapping_mul(0x94D049BB133111EB);
+                z ^= z >> 31;
+                (z as usize) % R
             };
 
-            // Random initial state.
-            let a0 = wrng.gen_biguint_below(n);
-            let bs0: Vec<BigUint> = (0..m).map(|_| wrng.gen_biguint_below(n)).collect();
-            let mut pt = g_pt.scalar_mul(&a0, a_fe);
+            let a0 = wrng.gen_range(0..n);
+            let bs0: Vec<u64> = (0..m).map(|_| wrng.gen_range(0..n)).collect();
+            let mut pt = fc.scalar_mul(g, a0);
             for i in 0..m {
-                pt = pt.add(&targets[i].scalar_mul(&bs0[i], a_fe), a_fe);
+                pt = fc.add(pt, fc.scalar_mul(targets[i], bs0[i]));
             }
             let mut a_acc = a0;
             let mut bs_acc = bs0;
@@ -728,50 +747,41 @@ pub fn multi_target_dp_rho(
                 if local & 0x3FF == 0 && done.load(Ordering::Relaxed) {
                     break;
                 }
-                let bk = bucket(&pt);
+                let bk = bucket(&fc, pt);
                 let (add_pt, add_a, add_bs) = &adders[bk];
-                pt = pt.add(add_pt, a_fe);
-                a_acc = (&a_acc + add_a) % n;
+                pt = fc.add(pt, *add_pt);
+                a_acc = (a_acc + *add_a) % n;
                 for i in 0..m {
-                    bs_acc[i] = (&bs_acc[i] + &add_bs[i]) % n;
+                    bs_acc[i] = (bs_acc[i] + add_bs[i]) % n;
                 }
                 local += 1;
 
-                let (x_low, key) = match &pt {
-                    Point::Affine { x, y } => {
-                        let xv = x.value.iter_u64_digits().next().unwrap_or(0);
-                        let yv = y.value.iter_u64_digits().next().unwrap_or(0);
-                        // Distinguishedness uses x; the table key
-                        // mixes x and y so P and −P don't collide.
-                        let key = xv.wrapping_mul(0x9E3779B97F4A7C15).wrapping_add(yv);
-                        (xv, key)
-                    }
-                    Point::Infinity => continue,
-                };
-                if (x_low & dp_mask) == 0 {
+                if pt.infinity {
+                    continue;
+                }
+                let xv = fc.f.from_mont(pt.x);
+                let yv = fc.f.from_mont(pt.y);
+                let key = xv.wrapping_mul(0x9E3779B97F4A7C15).wrapping_add(yv);
+                if (xv & dp_mask) == 0 {
                     let mut tbl = dp_table.lock().unwrap();
-                    let mut entry: Vec<BigUint> = Vec::with_capacity(m + 1);
-                    entry.push(a_acc.clone());
-                    for i in 0..m {
-                        entry.push(bs_acc[i].clone());
-                    }
+                    let mut entry: Vec<u64> = Vec::with_capacity(m + 1);
+                    entry.push(a_acc);
+                    entry.extend_from_slice(&bs_acc);
                     if let Some(prev) = tbl.get(&key).cloned() {
                         drop(tbl);
-                        // Equation: Σ (b_i − b'_i) d_i ≡ (a' − a) (mod n)
                         let coeffs: Vec<BigUint> = (0..m)
-                            .map(|i| sub_mod(&bs_acc[i], &prev[i + 1], n))
+                            .map(|i| BigUint::from(sub_mod_u(bs_acc[i], prev[i + 1])))
                             .collect();
-                        let rhs = sub_mod(&prev[0], &a_acc, n);
+                        let rhs = BigUint::from(sub_mod_u(prev[0], a_acc));
                         let mut g_state = rref.lock().unwrap();
-                        let now_solved = g_state.add_equation(&coeffs, &rhs, n);
+                        let now_solved = g_state.add_equation(&coeffs, &rhs, &n_big);
                         if now_solved {
                             let sol = g_state.read_solution();
                             drop(g_state);
-                            // Verify.
                             let mut ok = true;
                             for (i, dval) in sol.iter().enumerate() {
-                                let test = g_pt.scalar_mul(dval, a_fe);
-                                if test != targets[i] {
+                                let d_u = dval.iter_u64_digits().next().unwrap_or(0);
+                                if dval.bits() > 64 || fc.scalar_mul(g, d_u) != targets[i] {
                                     ok = false;
                                     break;
                                 }
@@ -784,12 +794,6 @@ pub fn multi_target_dp_rho(
                                 }
                                 break;
                             }
-                            // Verification failed: the recovered tuple
-                            // is wrong (probably hit a non-invertible
-                            // pivot on a row that GE accepted but is
-                            // mod a divisor of n).  Reset the RREF
-                            // state so further collisions can build a
-                            // fresh system.
                             let mut g_state = rref.lock().unwrap();
                             *g_state = RrefState::new(m);
                         }
@@ -802,8 +806,8 @@ pub fn multi_target_dp_rho(
         }));
     }
 
-    for h in handles {
-        let _ = h.join();
+    for handle in handles {
+        let _ = handle.join();
     }
 
     let total = total_iters.load(Ordering::Relaxed);
@@ -1444,15 +1448,16 @@ mod tests {
         }
         let g = g_pt.expect("generator");
 
-        // m=4, seed 7 reaches rank 4 in <1k iters (verified locally).
+        // m=4, seed 3 reaches rank 4 in <1k iters on the FastCurve walk
+        // (seed 7 was lucky for the prior BigUint RNG partition).
         let secrets: Vec<u64> = vec![1234, 5678, 12345, 54321];
         let targets: Vec<Point> = secrets
             .iter()
             .map(|d| g.scalar_mul(&BigUint::from(*d), &a_fe))
             .collect();
         let cap = 1u64 << 18;
-        let (sol, _iters) = multi_target_dp_rho(&g, &targets, &n_big, &a_fe, cap, 7);
-        let sol = sol.expect("multi-target rho should solve at seed 7");
+        let (sol, _iters) = multi_target_dp_rho(&g, &targets, &n_big, &a_fe, cap, 3);
+        let sol = sol.expect("multi-target rho should solve at seed 3");
         for (i, want) in secrets.iter().enumerate() {
             let want_mod = BigUint::from(*want) % &n_big;
             assert_eq!(sol[i], want_mod, "secret {} mismatch", i);
