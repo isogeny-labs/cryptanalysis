@@ -258,6 +258,7 @@ jobs:
           assert v['synthetic_other_rows']==694 and v['synthetic_scoped_clocks']==144
           assert v['producer_auditor_mock_acceptances']==1
           assert v['mutated_full_log_mock_rejections']==1
+          assert v['ct311_full_pair_zero_clock_rejections']==1
           assert v['benign_python_child_processes']==4
           assert v['original_native_model_executions']==0 and v['ecdlp_complete_solve'] is False
           assert v['pcc']=='unverified'
