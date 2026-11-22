@@ -21,7 +21,7 @@ NEW_NORM = "norm_point_doubling"
 
 
 def git_blob_sha(data):
-    return hashlib.sha1(b"blob " + str(len(data)).encode("ascii") + b"\\0" + data).hexdigest()
+    return hashlib.sha1(b"blob " + str(len(data)).encode("ascii") + bytes((0,)) + data).hexdigest()
 
 
 def load_frozen(data):
