@@ -22,6 +22,7 @@ The generic mathematical statement is: for a commutative ring `R`, field `S`, an
 | Finite sums with certified exceptional steps | `XedniExceptionalSumReduction.reduce_certifiedSum`, `equal_certifiedSums` | Nonempty finite lists of local affine points or infinity; every addition carries an identity, exact inverse, or regular affine certificate; checked |
 | Residue-vertical chord and projective limit | `XedniResidueVerticalObstruction.no_integral_chord_x`, `chord_numerators_correct`, `homogeneous_chord_at_infinity`, `residue_inverse_affine_obstruction` | A reduced x-difference of zero and reduced y-difference nonzero exclude an integral affine chord endpoint; the homogeneous chord triple reduces to infinity, and inverse reduced points have zero group sum; checked |
 | Residue chord is the projective zero point | `XedniResidueProjectiveZero.chordResidueTriple_projective_zero` | The reduced homogeneous chord triple is a nonsingular projective point equal to the point at infinity; field-valued residue map, reduced x-difference zero, reduced y-difference nonzero; checked |
+| Source homogeneous chord lies on its projective curve | `XedniSourceChordEquation.sourceChordTriple_on_curve` | Any two source-ring affine points on the same short-Weierstrass curve; no denominator invertibility; checked |
 | Field step is elliptic-curve addition | `XedniRegularGroupLaw.fieldStep_group_add` | Over a field, with the reduced short curve elliptic, a `FieldStep` is equality to mathlib's point-group addition; covers distinct-x chords and nonvertical doubling |
 | Field chain gives a group relation | `XedniRegularGroupLaw.fieldChain_group_relation` | The field endpoint equals its start plus a natural-number multiple of the fixed addend |
 | Reduced regular chain gives a group relation | `XedniRegularGroupLaw.reduced_regularChain_group_relation` | Combines the source-chain reduction theorem and field group law; requires ellipticity of the coefficient-reduced short curve |
@@ -150,9 +151,25 @@ The homogeneous result above identifies the three reduced coordinates. The next 
 | Triple equals a scaled zero representative | `XedniResidueProjectiveZero.chordResidueTriple_eq_smul_zero` | Commutative source ring, field target, ring homomorphism, reduced chord x-difference zero and y-difference nonzero; checked |
 | Nonsingular projective zero point | `XedniResidueProjectiveZero.chordResidueTriple_projective_zero` | Same hypotheses; constructs a nonsingularity proof for the reduced triple and proves its `Projective.Point` equals zero; checked |
 
-The exact remaining source obligation is the polynomial identity `Y² = X³ + A X d⁴ + B d⁶`, where `d=x₂−x₁` and `X,Y` are the chord numerators above, for two source-ring points satisfying the curve equation. That identity would certify the source triple `(Xd,Y,d³)` lies on the source projective curve. A direct Lean `linear_combination` attempt on the expanded identity did not complete in the interactive run and was interrupted; the source equation formalization remains open. The subsequent group-law reduction across all projective addition cases also remains open.
+The source-ring polynomial identity `Y² = X³ + A X d⁴ + B d⁶`, where `d=x₂−x₁` and `X,Y` are the chord numerators above, is now checked in `SourceChordEquation.lean`. It certifies that the source triple `(Xd,Y,d³)` lies on its projective curve. The subsequent source nonsingularity and group-law reduction across all projective addition cases remain open.
 
 Run `lake build ResidueProjectiveZero` in this directory. `build-residue-projective-output.txt` records the fresh build and `#print axioms` output for both checked declarations; each lists only `propext`, `Classical.choice`, and `Quot.sound`.
+
+## Source chord projective equation
+
+The source homogeneous chord triple lies on the short-Weierstrass projective curve over any commutative ring. Write `d=x₂−x₁`, `n=y₂−y₁`, `X=n²−(x₁+x₂)d²`, and `Y=n(x₁d²−X)−y₁d³`. The checked theorem proves `Y²=X³+A X d⁴+B d⁶`, then multiplies by `d³` to obtain the standard projective equation for `(Xd,Y,d³)`. This holds when `d` is a nonunit or zero; no division is used.
+
+The proof subtracts the two input curve equations to get `n(y₁+y₂)=d(x₁²+x₁x₂+x₂²+A)`. A compact four-variable factorization then expresses the weighted equation residual as a multiple of that secant relation plus a multiple of the first point's curve equation. This replaced the earlier expanded normalization attempt and is checked by Lean.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Compact factorization | `XedniSourceChordEquation.chord_key_factor` | Four free ring variables and curve coefficient; checked |
+| Full polynomial certificate | `XedniSourceChordEquation.chord_polynomial_identity` | Commutative ring, `X=n²−(2x+d)d²`; checked |
+| Secant relation | `XedniSourceChordEquation.secant_relation` | Two source-ring points on the same short-Weierstrass curve; checked |
+| Weighted chord equation | `XedniSourceChordEquation.source_chord_weighted_equation` | Same points; no unit-denominator assumption; checked |
+| Source projective curve membership | `XedniSourceChordEquation.sourceChordTriple_on_curve` | Same points, with standard homogeneous triple `(Xd,Y,d³)`; checked |
+
+Run `lake build SourceChordEquation` in this directory. `build-source-chord-output.txt` records the build and `#print axioms` for all five declarations. The algebraic lemmas use `propext` and `Quot.sound`; the projective curve membership theorem also uses `Classical.choice` from mathlib's curve definitions. No research claim is encoded as an axiom.
 
 ## Reproduction
 
