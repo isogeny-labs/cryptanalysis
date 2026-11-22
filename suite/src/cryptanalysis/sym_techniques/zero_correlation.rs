@@ -163,7 +163,7 @@ pub fn table_correlation(p: &Primitive, table: &[u32], alpha: &[u8], beta: &[u8]
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::cryptanalysis::sym_ir::primitives::{aes128, present80};
+    use crate::cryptanalysis::sym_ir::primitives::{aes128, present80, sbox_from_u8, toyspn};
 
     fn cell(c: usize) -> Vec<CellValue> {
         vec![CellValue {
@@ -252,6 +252,8 @@ mod tests {
         assert!(max > 0.1);
     }
 
+    /// PRESENT-80 zero-correlation search: the longest hull found within the
+    /// default budget (reported, not compared with the literature).
     #[test]
     fn present_report() {
         let b = SearchBudget {
@@ -259,11 +261,40 @@ mod tests {
             ..SearchBudget::default()
         };
         let r = longest_zero_correlation(&present80::present80(), &b).unwrap();
-        println!(
-            "PRESENT zero-correlation best: {:?}",
-            r.best.as_ref().map(|d| d.rounds)
-        );
-        assert!(r.best.is_some());
+        let best = r.best.as_ref().expect("found");
+        println!("PRESENT zero-correlation best: {} rounds", best.rounds);
+        assert_eq!(best.rounds, 6);
+    }
+
+    /// Correlation sanity check on a reduced instance (ToySpn, 16-bit state):
+    /// the longest reported hull has correlation exactly zero for every
+    /// non-zero mask pair on its cells, under two keys (all 2^16 plaintexts).
+    #[test]
+    fn toyspn_hull_is_exactly_zero() {
+        let sb = sbox_from_u8(4, &crate::symmetric::present::SBOX);
+        let p = toyspn::toyspn(&sb, 5);
+        let r = longest_zero_correlation(&p, &SearchBudget::default()).unwrap();
+        let d = r.best.expect("found");
+        assert_eq!((d.input.len(), d.output.len()), (1, 1));
+        let (ci, co) = (d.input[0].cell, d.output[0].cell);
+        // Word model: every non-zero cell mask; bit model: the exact mask.
+        let masks = |c: &CellValue| -> Vec<u32> {
+            c.value.map_or((1u32..16).collect(), |v| vec![v as u32])
+        };
+        let (ma, mb) = (masks(&d.input[0]), masks(&d.output[0]));
+        for key in [
+            [1u8, 2, 3, 4, 5, 6, 7, 8],
+            [0xff, 0, 0xaa, 0x55, 9, 8, 7, 6],
+        ] {
+            let t = encryption_table(&p, &key, d.rounds);
+            for &a in &ma {
+                for &b in &mb {
+                    let al = (a << (4 * ci)).to_le_bytes()[..2].to_vec();
+                    let be = (b << (4 * co)).to_le_bytes()[..2].to_vec();
+                    assert_eq!(table_correlation(&p, &t, &al, &be), 0.0);
+                }
+            }
+        }
     }
 
     #[test]

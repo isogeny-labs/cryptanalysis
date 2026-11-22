@@ -206,6 +206,10 @@ pub struct ImpossibilityReport {
 /// `n_pairs` plaintext pairs `(P, P ⊕ (α, 0, …, 0))` under the given
 /// 4-round AES and counts how many produce an output difference with
 /// exactly 1 active byte.
+///
+/// Encryption goes through the `sym_ir` interpreter, so this empirical check
+/// depends on the bit-exact regression gate of WP0 (IR interpreter against
+/// the reference AES); it is not independent of that gate.
 pub fn verify_4_round_impossibility(
     cipher: &ReducedAes128,
     alpha: u8,
@@ -279,6 +283,10 @@ pub fn state_contradicts_impossibility(diff_state_r4: &[u8; 16]) -> bool {
 /// that a contradiction shows up with enough pairs.
 ///
 /// Returns `(contradictions_with_true_key, contradictions_with_random_key)`.
+///
+/// Like [`verify_4_round_impossibility`], encryption goes through the
+/// `sym_ir` interpreter, so the empirical result depends on WP0's bit-exact
+/// regression gate.
 ///
 /// With the true key, the first must be **zero** for any number of
 /// pairs (it's structurally impossible). With a random wrong key the

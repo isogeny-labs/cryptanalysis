@@ -29,13 +29,17 @@
 //!
 //! * **Word model.** The cell is one S-box field (`width_bits` of the
 //!   S-box layer). Each cell is `Zero`, `NonZero` or `Any`. S-box layers
-//!   preserve activity for bijective S-boxes, so an 8-bit S-box is never
-//!   enumerated. A linear layer is split into the connected components of
-//!   its cell-dependency graph; for each component the exact set of
-//!   reachable output activities is computed by inclusion-exclusion over
-//!   the GF(2) sub-blocks (so an AES MixColumns column gives the branch
-//!   number 5 behaviour without being hard-coded). Backward propagation
-//!   uses [`Gf2Matrix::inverse`].
+//!   preserve activity for bijective S-boxes (and give `Any` otherwise), so
+//!   an 8-bit S-box is never enumerated. A linear layer is split into the
+//!   connected components of its cell-dependency graph; for each output cell
+//!   of a component the exact zero / non-zero status is computed by
+//!   inclusion-exclusion over the supports of its GF(2) sub-blocks. The
+//!   joint pattern of output cells is over-approximated (cells are treated
+//!   independently), so every reported contradiction is sound but the
+//!   search may miss some. The branch-number effect of a layer such as AES
+//!   MixColumns therefore shows fully only for single-active-cell inputs;
+//!   components of more than 8 cells fall back to dependency-only
+//!   propagation. Backward propagation uses [`Gf2Matrix::inverse`].
 //! * **Bit model.** Each state bit is `0`, `1` or `?`. S-box layers are
 //!   propagated through the exact difference (or, for masks,
 //!   linear-approximation) relation of the S-box by set union, and
@@ -553,8 +557,8 @@ struct SboxStep {
     off: usize,
     width: usize,
     count: usize,
+    /// Bijective (all components balanced); gates the word-model rules.
     injective: bool,
-    balanced: bool,
     rel: Option<Rc<Rel>>,
 }
 
@@ -697,7 +701,6 @@ pub(crate) fn build_pipeline(
                     width: *width_bits,
                     count: *count,
                     injective: s.is_bijective(),
-                    balanced: s.is_balanced(),
                     rel,
                 }));
             }
@@ -796,9 +799,16 @@ impl Pipeline {
                                 ANY
                             }
                         }
-                        (Propagation::LinearMask, Dir::Bwd, N) => {
-                            if s.balanced {
-                                N
+                        // Masks: a (0 -> b) approximation with b != 0 exists
+                        // iff the component b.S is unbalanced (LAT(0,b) != 0).
+                        // Zero -> Zero forward and
+                        // NonZero -> NonZero backward therefore need every
+                        // component balanced, i.e. a bijective S-box; a
+                        // coordinate-wise balance check is not enough.
+                        (Propagation::LinearMask, Dir::Fwd, Z)
+                        | (Propagation::LinearMask, Dir::Bwd, N) => {
+                            if s.injective {
+                                v
                             } else {
                                 ANY
                             }
@@ -1569,9 +1579,8 @@ mod tests {
 
     /// PRESENT-80: the bit-model search reaches a 6-round impossible
     /// differential (single-cell input to single-cell output) and nothing
-    /// longer within the default budget. The published impossible
-    /// differential for PRESENT is also 6 rounds, so the search matches,
-    /// not exceeds, it.
+    /// longer within the default budget. This is the longest found within
+    /// this search budget; no literature comparison is made here.
     #[test]
     fn present_reaches_six_rounds() {
         let b = SearchBudget {
@@ -1582,6 +1591,193 @@ mod tests {
         let best = r.best.expect("found");
         assert_eq!(best.rounds, 6);
         assert_eq!(best.model, Model::Bit);
+    }
+
+    /// Independent splitmix64 for the sampling tests.
+    fn sm(state: &mut u64) -> u64 {
+        *state = state.wrapping_add(0x9e37_79b9_7f4a_7c15);
+        let mut z = *state;
+        z = (z ^ (z >> 30)).wrapping_mul(0xbf58_476d_1ce4_e5b9);
+        z = (z ^ (z >> 27)).wrapping_mul(0x94d0_49bb_1331_11eb);
+        z ^ (z >> 31)
+    }
+
+    /// Definite bits of the pipeline for the reported 6-round PRESENT
+    /// distinguisher against sampled pairs: forward through the real
+    /// `eval_rounds` under random keys (rounds 1..6), backward through an
+    /// independently written inverse pLayer and inverse S-box. Zero
+    /// violations expected; this is a sampling check, not a proof.
+    #[test]
+    fn present_six_round_definite_bits_sampled() {
+        let p = present80::present80();
+        let b = SearchBudget {
+            max_rounds: 9,
+            ..SearchBudget::default()
+        };
+        let r = longest_impossible_differential(&p, &b).unwrap();
+        let d = r.best.expect("found");
+        assert_eq!((d.rounds, d.model), (6, Model::Bit));
+        assert!(!d.final_linear_dropped);
+        let (ci, vi) = (d.input[0].cell, d.input[0].value.unwrap());
+        let (co, vo) = (d.output[0].cell, d.output[0].value.unwrap());
+        let (pipe, _) = build_pipeline(
+            &p,
+            6,
+            FinalRound::AsGiven,
+            Propagation::Differential,
+            Model::Bit,
+        )
+        .unwrap();
+        // steps per round: [S-box layer, pLayer]
+        assert_eq!(pipe.steps.len(), 12);
+        let fwd = pipe.forward(&pipe.state_of(&d.input).unwrap(), Propagation::Differential);
+        let bwd = pipe.backward(
+            &pipe.state_of(&d.output).unwrap(),
+            Propagation::Differential,
+        );
+
+        // independent PRESENT pieces
+        let sbox = crate::symmetric::present::SBOX;
+        let mut inv_s = [0u8; 16];
+        for (x, &y) in sbox.iter().enumerate() {
+            inv_s[y as usize] = x as u8;
+        }
+        let pos = |i: usize| if i == 63 { 63 } else { i * 16 % 63 };
+        let inv_p = |y: u64| -> u64 {
+            let mut x = 0u64;
+            for i in 0..64 {
+                x |= (y >> pos(i) & 1) << i;
+            }
+            x
+        };
+        let inv_sl = |y: u64| -> u64 {
+            (0..16).fold(0u64, |a, c| {
+                a | (inv_s[(y >> (4 * c) & 15) as usize] as u64) << (4 * c)
+            })
+        };
+        let check = |diff: u64, claim: &[u8], what: &str| -> (usize, usize) {
+            let (mut def, mut bad) = (0, 0);
+            for (i, &c) in claim.iter().enumerate() {
+                if c != ANY {
+                    def += 1;
+                    if (diff >> i & 1) as u8 != c {
+                        bad += 1;
+                        eprintln!("violation {what} bit {i}");
+                    }
+                }
+            }
+            (def, bad)
+        };
+
+        let mut rng = 0x5eed_0001u64;
+        let (mut def_total, mut viol) = (0usize, 0usize);
+        // forward: 4000 pairs, real eval_rounds, random keys
+        for _ in 0..4000 {
+            let key: Vec<u8> = (0..10).map(|_| sm(&mut rng) as u8).collect();
+            let x = sm(&mut rng);
+            let x2 = x ^ (vi << (4 * ci));
+            for rd in 1..=6usize {
+                let e = |v: u64| {
+                    let out =
+                        crate::cryptanalysis::sym_ir::eval_rounds(&p, &key, &v.to_be_bytes(), rd);
+                    u64::from_be_bytes(out.try_into().unwrap())
+                };
+                let (dd, vv) = check(e(x) ^ e(x2), &fwd[2 * rd], "fwd");
+                def_total += dd;
+                viol += vv;
+            }
+        }
+        // backward: 20000 random pairs with the claimed output difference
+        for _ in 0..20000 {
+            let y = sm(&mut rng);
+            let y2 = y ^ (vo << (4 * co));
+            let (mut a, mut a2) = (y, y2);
+            for rd in (1..=6usize).rev() {
+                let (dd, vv) = check(a ^ a2, &bwd[2 * rd], "bwd");
+                def_total += dd;
+                viol += vv;
+                a = inv_p(a);
+                a2 = inv_p(a2);
+                let (dd, vv) = check(a ^ a2, &bwd[2 * rd - 1], "bwd");
+                def_total += dd;
+                viol += vv;
+                a = inv_sl(a);
+                a2 = inv_sl(a2);
+            }
+            let (dd, vv) = check(a ^ a2, &bwd[0], "bwd");
+            def_total += dd;
+            viol += vv;
+        }
+        assert!(def_total > 0, "no definite bits were exercised");
+        assert_eq!(viol, 0, "violations of claimed definite bits");
+    }
+
+    /// A 4-bit S-box with balanced coordinate bits that is neither
+    /// bijective nor has all components balanced: the component
+    /// `x0^x1^x2^y3...` below makes `0xf . S(x)` constant.
+    fn leaky_sbox() -> Sbox {
+        let t: Vec<u32> = (0..16u32)
+            .map(|x| {
+                let (a, b, c) = (x & 1, x >> 1 & 1, x >> 2 & 1);
+                a | b << 1 | c << 2 | (a ^ b ^ c) << 3
+            })
+            .collect();
+        Sbox::new(4, 4, t).unwrap()
+    }
+
+    fn sbox_pipeline(s: &Sbox) -> Pipeline {
+        Pipeline {
+            model: Model::Word,
+            w: 4,
+            ncell: 1,
+            nbits: 4,
+            steps: vec![Step::Sbox(SboxStep {
+                off: 0,
+                width: 4,
+                count: 1,
+                injective: s.is_bijective(),
+                rel: None,
+            })],
+        }
+    }
+
+    /// Word-model mask rules for a non-bijective S-box. The old rules
+    /// (forward Z -> Z by fall-through, backward N -> N gated on coordinate
+    /// balance) claimed a contradiction that exhaustive enumeration of the
+    /// LAT refutes; the fixed rules answer `Any`.
+    #[test]
+    fn word_mask_rules_need_bijective_sbox() {
+        let s = leaky_sbox();
+        assert!(!s.is_bijective());
+        assert!(s.is_balanced(), "coordinate balance must not suffice");
+        // exhaustive: the input mask 0 reaches a non-zero output mask b
+        let corr = |a: u32, b: u32| -> i32 {
+            (0..16u32)
+                .map(|x| {
+                    1 - 2 * (((a & x).count_ones() + (b & s.lookup(x)).count_ones()) & 1) as i32
+                })
+                .sum()
+        };
+        assert!(
+            (1..16u32).any(|b| corr(0, b) != 0),
+            "LAT(0,b) != 0 for some b"
+        );
+        // old rules, as they were
+        let old_fwd_z = Z;
+        let old_bwd_n = if s.is_balanced() { N } else { ANY };
+        // claimed: (input mask 0) -> output mask 0, and output mask != 0 ->
+        // input mask != 0; both are refuted by (a=0, b!=0).
+        assert_eq!((old_fwd_z, old_bwd_n), (Z, N));
+        // fixed rules
+        let pipe = sbox_pipeline(&s);
+        let m = Propagation::LinearMask;
+        assert_eq!(pipe.apply(0, Dir::Fwd, &[Z], m), vec![ANY]);
+        assert_eq!(pipe.apply(0, Dir::Bwd, &[N], m), vec![ANY]);
+        // a bijective S-box keeps the sharp rules
+        let pr = sbox_from_u8(4, &crate::symmetric::present::SBOX);
+        let pipe = sbox_pipeline(&pr);
+        assert_eq!(pipe.apply(0, Dir::Fwd, &[Z], m), vec![Z]);
+        assert_eq!(pipe.apply(0, Dir::Bwd, &[N], m), vec![N]);
     }
 
     #[test]

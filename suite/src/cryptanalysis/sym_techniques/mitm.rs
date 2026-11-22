@@ -976,11 +976,14 @@ mod tests {
         0x98,
     ];
 
-    /// Positive control: the four-round window of AES depends on 25 byte
-    /// parameters for the ordered sequence (Demirci-Selcuk, FSE 2008) and
-    /// on 24 for the multiset (Dunkelman-Keller-Shamir, ASIACRYPT 2010).
-    /// Both counts come out of the same dependency analysis; the ordered
-    /// count matches Demirci-Selcuk and the multiset count matches DKS.
+    /// Positive control: the four-round window of AES against the 25 byte
+    /// parameters of the ordered sequence (Demirci-Selcuk, FSE 2008) and the
+    /// 24 of the multiset (Dunkelman-Keller-Shamir, ASIACRYPT 2010). Both
+    /// counts come out of the same dependency analysis and are equal to the
+    /// published figures under a counting convention (one offset per
+    /// varying keyed cell, final offset excluded) chosen to mirror
+    /// Demirci-Selcuk; they are a structural upper bound, not a dimension
+    /// computation.
     #[test]
     fn aes_parameter_counts() {
         assert_eq!(DEMIRCI_SELCUK_PARAMS, 25);

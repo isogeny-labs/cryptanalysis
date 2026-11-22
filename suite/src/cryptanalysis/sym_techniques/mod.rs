@@ -8,9 +8,6 @@
 //! the cipher's security; every number they produce is `[pcc:unverified]`
 //! until the repository's PCC gate signs it.
 
-/// Miss-in-the-middle impossible differentials and wrong-key filtering.
 pub mod impossible;
-/// Demirci-Selcuk delta-set structure, cost table and Lambda-set recovery.
 pub mod mitm;
-/// Zero-correlation linear hulls (dual of the impossible-differential search).
 pub mod zero_correlation;
