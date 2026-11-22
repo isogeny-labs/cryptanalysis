@@ -2,6 +2,8 @@
 
 ## Active items
 
+- [ ] hashed-tensor lead sweep (workspace PROTOCOL.md, m = 2..9, prime regime): plug-in spec, phase 1 vs prime-abscissa+mitm; calibrate contraction steps and fix the `root_u` floor if the oracle cannot run (Claude Code, started 2026-11-22, branch claude/hashed-tensor-lead-sweep-20261122, PR #TBD) [pcc:unverified]
+
 - [ ] CT301 bind native CT248 transcript to immutable authentic 48-vector fixture (ChatGPT, started 2026-11-21, branch research/ct301-native-transcript-fixture-binding-20261121, PR #1905): reject same-shape class-key/counter substitutions in actual --log admission; synthetic source guards only, retain draft until native/PCC gates. 
 
 - [ ] CT300 authentic 48-vector norm-pricing admission fix (ChatGPT, started 2026-11-21, branch research/ct300-authentic-scalar-fixture-20261121, PR #1904): correct the real fixed-chain scalar and literal C13 counts; freeze genuine fixture source gates; retain draft until inherited CI/review/PCC gates are satisfied.
