@@ -98,21 +98,21 @@ pub fn glv_endomorphism_available(curve: &SmallCurve) -> bool {
 /// - `max_iters` — bound on rho steps before giving up.
 /// - `seed`     — deterministic seed for reproducibility.
 pub fn rho_on_curve(curve: &SmallCurve, max_iters: u64, seed: u64) -> (Option<RhoSolution>, u64) {
+    use crate::cryptanalysis::bsgs_fast::{FastCurve, FastPoint};
+
     let cm = cm_discriminant(curve);
     let n = cm.order as u64;
     if n < 4 {
         return (None, 0);
     }
-    let cp = curve.to_curve_params();
-    let a_fe = cp.a_fe();
+    let Some(fc) = FastCurve::from_u64(curve.p, curve.a, curve.b, n) else {
+        return (None, 0);
+    };
 
     // Find a generator via Tonelli-Shanks: for each scanned x take
     // the explicit square root of rhs(x) rather than enumerating y.
-    // Reduces the per-x cost from O(p) to O(log² p), so this loop
-    // now finishes in O(p · log² p) worst case — but in practice
-    // the first QR x usually wins after O(1) attempts.
     let p = curve.p;
-    let mut generator: Option<Point> = None;
+    let mut generator: Option<FastPoint> = None;
     let mut x = 1u64;
     while x < p {
         let rhs = curve.rhs(x);
@@ -125,37 +125,42 @@ pub fn rho_on_curve(curve: &SmallCurve, max_iters: u64, seed: u64) -> (Option<Rh
             }
         };
         if let Some(y) = y_opt {
-            let candidate = Point::Affine {
-                x: cp.fe(BigUint::from(x)),
-                y: cp.fe(BigUint::from(y)),
-            };
-            generator = Some(candidate);
+            generator = Some(FastPoint {
+                x: fc.f.to_mont(x),
+                y: fc.f.to_mont(y),
+                infinity: false,
+            });
             break;
         }
         x += 1;
     }
     let g = match generator {
-        Some(p) => p,
+        Some(pt) => pt,
         None => return (None, 0),
     };
 
     // Pick a private scalar d in [1, n−1].
     let d = (seed.wrapping_mul(0x9E3779B97F4A7C15) % (n - 1)) + 1;
-    let h = g.scalar_mul(&BigUint::from(d), &a_fe);
-    let _ = d;
+    let h = fc.scalar_mul(g, d);
 
-    let n_big = BigUint::from(n);
     // Dispatch by scale.  The round-8 Pohlig+GLS m=4 path is opt-in
     // via CRYPTO_ISOGENY_PH_GLS=1 — it solves *m* logs per call so
     // the reported iter count is `total / m`, the per-target cost.
     // Default dispatch is round-6 single-target DP rho.
     if std::env::var("CRYPTO_ISOGENY_PH_GLS").is_ok() {
-        return rho_via_pohlig_gls(&g, &n_big, &a_fe, max_iters, seed);
+        // Fall back to BigUint Point path for the opt-in Pohlig+GLS harness.
+        let cp = curve.to_curve_params();
+        let a_fe = cp.a_fe();
+        let g_big = Point::Affine {
+            x: cp.fe(BigUint::from(fc.f.from_mont(g.x))),
+            y: cp.fe(BigUint::from(fc.f.from_mont(g.y))),
+        };
+        return rho_via_pohlig_gls(&g_big, &BigUint::from(n), &a_fe, max_iters, seed);
     }
     if n.leading_zeros() >= 34 {
-        r_adding_rho_on_curve(&g, &h, &n_big, &a_fe, max_iters, seed)
+        r_adding_rho_fast(&fc, g, h, n, max_iters, seed)
     } else {
-        dp_parallel_rho_on_curve(&g, &h, &n_big, &a_fe, max_iters, seed)
+        dp_parallel_rho_fast(&fc, g, h, n, max_iters, seed)
     }
 }
 
@@ -216,159 +221,132 @@ fn rho_via_pohlig_gls(
 ///   the partition no longer aligns with 2- or 3-torsion structure.
 /// * **Per-step cost** is one point addition vs. the 3-partition's
 ///   amortised 1.0 — identical.
-fn r_adding_rho_on_curve(
-    g: &Point,
-    h: &Point,
-    n: &BigUint,
-    a_fe: &crate::ecc::field::FieldElement,
+fn r_adding_rho_fast(
+    fc: &crate::cryptanalysis::bsgs_fast::FastCurve,
+    g: crate::cryptanalysis::bsgs_fast::FastPoint,
+    h: crate::cryptanalysis::bsgs_fast::FastPoint,
+    n: u64,
     max_iters: u64,
     seed: u64,
 ) -> (Option<RhoSolution>, u64) {
-    use crate::utils::mod_inverse;
-    use num_bigint::RandBigInt;
-    use num_integer::Integer;
-    use num_traits::One;
+    use crate::cryptanalysis::bsgs_fast::FastPoint;
+    use crate::utils::mod_inverse_u64;
     use rand::rngs::StdRng;
-    use rand::SeedableRng;
-    let _ = One::one as fn() -> BigUint;
+    use rand::{Rng, SeedableRng};
 
     const R: usize = 20;
 
     let mut rng: StdRng = StdRng::seed_from_u64(seed);
-
-    // Precompute the r = 20 "adders" m[i] = a[i]·g + b[i]·h, with
-    // random a[i], b[i] ∈ [1, n).  Storing both the point and its
-    // exponent vector lets us update the running coefficients in
-    // O(1) per step.
-    let mut m_pts: Vec<Point> = Vec::with_capacity(R);
-    let mut m_a: Vec<BigUint> = Vec::with_capacity(R);
-    let mut m_b: Vec<BigUint> = Vec::with_capacity(R);
-    for _ in 0..R {
-        let a_i = rng.gen_biguint_below(n);
-        let b_i = rng.gen_biguint_below(n);
-        let pt = g
-            .scalar_mul(&a_i, a_fe)
-            .add(&h.scalar_mul(&b_i, a_fe), a_fe);
-        m_pts.push(pt);
-        m_a.push(a_i);
-        m_b.push(b_i);
+    let mut m_pts: [FastPoint; R] = [FastPoint::INFINITY; R];
+    let mut m_a = [0u64; R];
+    let mut m_b = [0u64; R];
+    for i in 0..R {
+        let a_i = rng.gen_range(0..n);
+        let b_i = rng.gen_range(0..n);
+        m_pts[i] = fc.add(fc.scalar_mul(g, a_i), fc.scalar_mul(h, b_i));
+        m_a[i] = a_i;
+        m_b[i] = b_i;
     }
 
-    // Hash a point into [0, R).  Splitmix64 mixer on (x, y) so close
-    // points land in different buckets — important for short cycles
-    // near the identity.
-    let bucket = |pt: &Point| -> usize {
-        match pt {
-            Point::Infinity => 0,
-            Point::Affine { x, y } => {
-                let xv = x.value.iter_u64_digits().next().unwrap_or(0);
-                let yv = y.value.iter_u64_digits().next().unwrap_or(0);
-                let mut z = xv.wrapping_add(yv.wrapping_mul(0x9E3779B97F4A7C15));
-                z ^= z >> 30;
-                z = z.wrapping_mul(0xBF58476D1CE4E5B9);
-                z ^= z >> 27;
-                z = z.wrapping_mul(0x94D049BB133111EB);
-                z ^= z >> 31;
-                (z as usize) % R
-            }
+    // Hash affine (from_mont) coordinates so the partition matches the
+    // previous BigUint walk quality.
+    let bucket = |fc: &crate::cryptanalysis::bsgs_fast::FastCurve, pt: FastPoint| -> usize {
+        if pt.infinity {
+            return 0;
         }
+        let xv = fc.f.from_mont(pt.x);
+        let yv = fc.f.from_mont(pt.y);
+        let mut z = xv.wrapping_add(yv.wrapping_mul(0x9E3779B97F4A7C15));
+        z ^= z >> 30;
+        z = z.wrapping_mul(0xBF58476D1CE4E5B9);
+        z ^= z >> 27;
+        z = z.wrapping_mul(0x94D049BB133111EB);
+        z ^= z >> 31;
+        (z as usize) % R
     };
 
-    let sub_mod = |a: &BigUint, b: &BigUint, m: &BigUint| -> BigUint {
+    let sub_mod = |a: u64, b: u64| -> u64 {
         if a >= b {
-            (a - b) % m
+            a - b
         } else {
-            let diff = (b - a) % m;
-            if diff.is_zero() {
-                BigUint::zero()
-            } else {
-                m - diff
-            }
+            n - (b - a)
         }
     };
+    let gcd_u64 = |mut a: u64, mut b: u64| -> u64 {
+        while b != 0 {
+            let t = a % b;
+            a = b;
+            b = t;
+        }
+        a
+    };
 
-    let zero = BigUint::zero();
-
-    // Outer loop: restart on sterile / cycle-without-collision.
     for restart in 0..=8u32 {
-        // Initialize walker at random point in the lattice.
         let (a0, b0) = if restart == 0 {
-            (BigUint::from(1u32), BigUint::zero())
+            (1u64, 0u64)
         } else {
-            (rng.gen_biguint_below(n), rng.gen_biguint_below(n))
+            (rng.gen_range(0..n), rng.gen_range(0..n))
         };
-        let start = g.scalar_mul(&a0, a_fe).add(&h.scalar_mul(&b0, a_fe), a_fe);
-
-        let mut t = start.clone();
-        let mut t_a = a0.clone();
-        let mut t_b = b0.clone();
+        let start = fc.add(fc.scalar_mul(g, a0), fc.scalar_mul(h, b0));
+        let mut t = start;
+        let mut t_a = a0;
+        let mut t_b = b0;
         let mut hh = start;
         let mut h_a = a0;
         let mut h_b = b0;
-
         let mut iters = 0u64;
         let mut sterile = false;
 
         while iters < max_iters {
-            // Tortoise: one r-adding step.
-            let bt = bucket(&t);
-            t = t.add(&m_pts[bt], a_fe);
-            t_a = (&t_a + &m_a[bt]) % n;
-            t_b = (&t_b + &m_b[bt]) % n;
-
-            // Hare: two r-adding steps.
+            let bt = bucket(fc, t);
+            t = fc.add(t, m_pts[bt]);
+            t_a = (t_a + m_a[bt]) % n;
+            t_b = (t_b + m_b[bt]) % n;
             for _ in 0..2 {
-                let bh = bucket(&hh);
-                hh = hh.add(&m_pts[bh], a_fe);
-                h_a = (&h_a + &m_a[bh]) % n;
-                h_b = (&h_b + &m_b[bh]) % n;
+                let bh = bucket(fc, hh);
+                hh = fc.add(hh, m_pts[bh]);
+                h_a = (h_a + m_a[bh]) % n;
+                h_b = (h_b + m_b[bh]) % n;
             }
-
             iters += 1;
 
             if t == hh {
-                let lhs = sub_mod(&t_a, &h_a, n);
-                let rhs = sub_mod(&h_b, &t_b, n);
-                if rhs.is_zero() {
+                let lhs = sub_mod(t_a, h_a);
+                let rhs = sub_mod(h_b, t_b);
+                if rhs == 0 {
                     sterile = true;
                     break;
                 }
-                let g_gcd = rhs.gcd(n);
-                if g_gcd.is_one() {
-                    let inv = mod_inverse(&rhs, n)
-                        .ok_or("rho: rhs has no inverse mod n")
-                        .unwrap();
-                    let x = (&lhs * &inv) % n;
+                let g_gcd = gcd_u64(rhs, n);
+                if g_gcd == 1 {
+                    let inv = mod_inverse_u64(rhs, n).expect("rho: rhs has no inverse mod n");
+                    let x = ((lhs as u128 * inv as u128) % n as u128) as u64;
                     return (
                         Some(RhoSolution {
-                            x,
+                            x: BigUint::from(x),
                             iterations: iters,
                         }),
                         iters,
                     );
                 }
-                // gcd-recovery branch (round-2 fix): solve mod n/g and
-                // brute-force the remaining g candidates.
-                if &lhs % &g_gcd == zero && g_gcd.bits() <= 16 {
-                    let m_red = n / &g_gcd;
-                    let lhs_red = &lhs / &g_gcd;
-                    let rhs_red = &rhs / &g_gcd;
-                    if let Some(inv) = mod_inverse(&rhs_red, &m_red) {
-                        let x_base = (&lhs_red * &inv) % &m_red;
-                        let g_u: u64 = g_gcd.iter_u64_digits().next().unwrap_or(0);
+                if lhs % g_gcd == 0 && g_gcd <= (1u64 << 16) {
+                    let m_red = n / g_gcd;
+                    let lhs_red = lhs / g_gcd;
+                    let rhs_red = rhs / g_gcd;
+                    if let Some(inv) = mod_inverse_u64(rhs_red, m_red) {
+                        let x_base = ((lhs_red as u128 * inv as u128) % m_red as u128) as u64;
                         let mut x_cand = x_base;
-                        for _ in 0..g_u {
-                            let test = g.scalar_mul(&x_cand, a_fe);
-                            if test == *h {
+                        for _ in 0..g_gcd {
+                            if fc.scalar_mul(g, x_cand) == h {
                                 return (
                                     Some(RhoSolution {
-                                        x: x_cand,
+                                        x: BigUint::from(x_cand),
                                         iterations: iters,
                                     }),
                                     iters,
                                 );
                             }
-                            x_cand = (&x_cand + &m_red) % n;
+                            x_cand = (x_cand + m_red) % n;
                         }
                     }
                 }
@@ -377,13 +355,8 @@ fn r_adding_rho_on_curve(
             }
         }
         if !sterile {
-            // Hit max_iters without collision.  Give up rather than
-            // restart — the partition is already strong enough that
-            // a second walker is unlikely to do better on the same
-            // group.
             return (None, max_iters);
         }
-        // sterile collision: re-randomise (a₀, b₀) and try again.
     }
     (None, max_iters)
 }
@@ -404,6 +377,8 @@ fn r_adding_rho_on_curve(
 ///   other K-1 walkers continue from independent positions and one
 ///   of them is overwhelmingly likely to hit a DP already in the
 ///   table.
+/// BigUint `Point` bridge used by Pohlig–Hellman fallbacks; routes through
+/// the FastCurve kernel when `p`, `a`, and `n` fit in one word.
 fn dp_parallel_rho_on_curve(
     g: &Point,
     h: &Point,
@@ -412,51 +387,69 @@ fn dp_parallel_rho_on_curve(
     max_iters: u64,
     seed: u64,
 ) -> (Option<RhoSolution>, u64) {
-    use crate::utils::mod_inverse;
-    use num_bigint::RandBigInt;
-    use num_integer::Integer;
-    use num_traits::One;
+    use crate::cryptanalysis::bsgs_fast::{FastCurve, FastPoint};
+    let p_digits: Vec<u64> = a_fe.modulus.iter_u64_digits().collect();
+    let n_digits: Vec<u64> = n.iter_u64_digits().collect();
+    let (p, n_u) = match (p_digits.as_slice(), n_digits.as_slice()) {
+        (&[p], &[n_u]) if n_u >= 4 => (p, n_u),
+        _ => return (None, max_iters),
+    };
+    let a = a_fe.value.iter_u64_digits().next().unwrap_or(0);
+    let Some(fc) = FastCurve::from_u64(p, a, 0, n_u) else {
+        return (None, max_iters);
+    };
+    let to_fast = |pt: &Point| -> FastPoint {
+        match pt {
+            Point::Infinity => FastPoint::INFINITY,
+            Point::Affine { x, y } => FastPoint {
+                x: fc.f.to_mont(x.value.iter_u64_digits().next().unwrap_or(0)),
+                y: fc.f.to_mont(y.value.iter_u64_digits().next().unwrap_or(0)),
+                infinity: false,
+            },
+        }
+    };
+    dp_parallel_rho_fast(&fc, to_fast(g), to_fast(h), n_u, max_iters, seed)
+}
+
+fn dp_parallel_rho_fast(
+    fc: &crate::cryptanalysis::bsgs_fast::FastCurve,
+    g: crate::cryptanalysis::bsgs_fast::FastPoint,
+    h: crate::cryptanalysis::bsgs_fast::FastPoint,
+    n: u64,
+    max_iters: u64,
+    seed: u64,
+) -> (Option<RhoSolution>, u64) {
+    use crate::cryptanalysis::bsgs_fast::{FastCurve, FastPoint};
+    use crate::utils::mod_inverse_u64;
     use rand::rngs::StdRng;
-    use rand::SeedableRng;
+    use rand::{Rng, SeedableRng};
     use std::collections::HashMap;
     use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
     use std::sync::{Arc, Mutex};
-    let _ = One::one as fn() -> BigUint;
 
     const K: usize = 4;
     const R: usize = 20;
 
-    // Precompute r=20 adders.  Shared (immutable) across walkers.
     let mut prng = StdRng::seed_from_u64(seed ^ 0xA5A5A5A5_5A5A5A5A);
-    let mut adders: Vec<(Point, BigUint, BigUint)> = Vec::with_capacity(R);
+    let mut adders: Vec<(FastPoint, u64, u64)> = Vec::with_capacity(R);
     for _ in 0..R {
-        let ai = prng.gen_biguint_below(n);
-        let bi = prng.gen_biguint_below(n);
-        let pt = g.scalar_mul(&ai, a_fe).add(&h.scalar_mul(&bi, a_fe), a_fe);
+        let ai = prng.gen_range(0..n);
+        let bi = prng.gen_range(0..n);
+        let pt = fc.add(fc.scalar_mul(g, ai), fc.scalar_mul(h, bi));
         adders.push((pt, ai, bi));
     }
     let adders = Arc::new(adders);
 
-    // DP threshold.  Heuristic: dp_bits ≈ bits(n)/4 — DP density
-    // ≈ 2^{-bits/4}, so each walker emits ~2^{bits/4} DPs in its
-    // √n budget.  At 50-bit that's ~32k DPs; table fits in memory.
-    let dp_bits = ((n.bits() as u32) / 4).clamp(4, 28) as u64;
+    let bits = 64 - n.leading_zeros();
+    let dp_bits = (bits / 4).clamp(4, 28);
     let dp_mask = (1u64 << dp_bits) - 1;
 
-    let dp_table: Arc<Mutex<HashMap<u64, (BigUint, BigUint)>>> =
-        Arc::new(Mutex::new(HashMap::new()));
-    let result: Arc<Mutex<Option<BigUint>>> = Arc::new(Mutex::new(None));
+    let dp_table: Arc<Mutex<HashMap<u64, (u64, u64)>>> = Arc::new(Mutex::new(HashMap::new()));
+    let result: Arc<Mutex<Option<u64>>> = Arc::new(Mutex::new(None));
     let total_iters = Arc::new(AtomicU64::new(0));
     let done = Arc::new(AtomicBool::new(false));
-
     let per_walker_cap = max_iters / K as u64;
-    let n_arc = Arc::new(n.clone());
-    let g_arc = Arc::new(g.clone());
-    let h_arc = Arc::new(h.clone());
-    let a_fe_arc = Arc::new(a_fe.clone());
-
-    let zero = BigUint::zero();
-    let _ = &zero;
+    let fc = *fc;
 
     let mut handles = Vec::with_capacity(K);
     for wid in 0..K {
@@ -465,56 +458,44 @@ fn dp_parallel_rho_on_curve(
         let result = Arc::clone(&result);
         let total_iters = Arc::clone(&total_iters);
         let done = Arc::clone(&done);
-        let n_arc = Arc::clone(&n_arc);
-        let g_arc = Arc::clone(&g_arc);
-        let h_arc = Arc::clone(&h_arc);
-        let a_fe_arc = Arc::clone(&a_fe_arc);
 
         handles.push(std::thread::spawn(move || {
-            let n = &*n_arc;
-            let g_pt = &*g_arc;
-            let h_pt = &*h_arc;
-            let a_fe = &*a_fe_arc;
+            let sub_mod = |a: u64, b: u64| -> u64 {
+                if a >= b {
+                    a - b
+                } else {
+                    n - (b - a)
+                }
+            };
+            let gcd_u64 = |mut a: u64, mut b: u64| -> u64 {
+                while b != 0 {
+                    let t = a % b;
+                    a = b;
+                    b = t;
+                }
+                a
+            };
             let mut wrng = StdRng::seed_from_u64(
                 seed.wrapping_add((wid as u64).wrapping_mul(0xC6BC279692B5C323)),
             );
-
-            // Hash a point into [0, R) — splitmix64 mixer on (x, y).
-            let bucket = |pt: &Point| -> usize {
-                match pt {
-                    Point::Infinity => 0,
-                    Point::Affine { x, y } => {
-                        let xv = x.value.iter_u64_digits().next().unwrap_or(0);
-                        let yv = y.value.iter_u64_digits().next().unwrap_or(0);
-                        let mut z = xv.wrapping_add(yv.wrapping_mul(0x9E3779B97F4A7C15));
-                        z ^= z >> 30;
-                        z = z.wrapping_mul(0xBF58476D1CE4E5B9);
-                        z ^= z >> 27;
-                        z = z.wrapping_mul(0x94D049BB133111EB);
-                        z ^= z >> 31;
-                        (z as usize) % R
-                    }
+            let bucket = |fc: &FastCurve, pt: FastPoint| -> usize {
+                if pt.infinity {
+                    return 0;
                 }
-            };
-            let sub_mod = |a: &BigUint, b: &BigUint, m: &BigUint| -> BigUint {
-                if a >= b {
-                    (a - b) % m
-                } else {
-                    let diff = (b - a) % m;
-                    if diff.is_zero() {
-                        BigUint::zero()
-                    } else {
-                        m - diff
-                    }
-                }
+                let xv = fc.f.from_mont(pt.x);
+                let yv = fc.f.from_mont(pt.y);
+                let mut z = xv.wrapping_add(yv.wrapping_mul(0x9E3779B97F4A7C15));
+                z ^= z >> 30;
+                z = z.wrapping_mul(0xBF58476D1CE4E5B9);
+                z ^= z >> 27;
+                z = z.wrapping_mul(0x94D049BB133111EB);
+                z ^= z >> 31;
+                (z as usize) % R
             };
 
-            // Random initial (a, b).
-            let a0 = wrng.gen_biguint_below(n);
-            let b0 = wrng.gen_biguint_below(n);
-            let mut pt = g_pt
-                .scalar_mul(&a0, a_fe)
-                .add(&h_pt.scalar_mul(&b0, a_fe), a_fe);
+            let a0 = wrng.gen_range(0..n);
+            let b0 = wrng.gen_range(0..n);
+            let mut pt = fc.add(fc.scalar_mul(g, a0), fc.scalar_mul(h, b0));
             let mut a_acc = a0;
             let mut b_acc = b0;
             let mut local: u64 = 0;
@@ -523,32 +504,31 @@ fn dp_parallel_rho_on_curve(
                 if local & 0x3FF == 0 && done.load(Ordering::Relaxed) {
                     break;
                 }
-                let bk = bucket(&pt);
-                let (add_pt, add_a, add_b) = &adders[bk];
-                pt = pt.add(add_pt, a_fe);
-                a_acc = (&a_acc + add_a) % n;
-                b_acc = (&b_acc + add_b) % n;
+                let bk = bucket(&fc, pt);
+                let (add_pt, add_a, add_b) = adders[bk];
+                pt = fc.add(pt, add_pt);
+                a_acc = (a_acc + add_a) % n;
+                b_acc = (b_acc + add_b) % n;
                 local += 1;
 
-                let x_low = match &pt {
-                    Point::Affine { x, .. } => x.value.iter_u64_digits().next().unwrap_or(0),
-                    Point::Infinity => continue,
-                };
+                if pt.infinity {
+                    continue;
+                }
+                let x_low = fc.f.from_mont(pt.x);
                 if (x_low & dp_mask) == 0 {
                     let mut tbl = dp_table.lock().unwrap();
-                    if let Some((prev_a, prev_b)) = tbl.get(&x_low).cloned() {
+                    if let Some(&(prev_a, prev_b)) = tbl.get(&x_low) {
                         drop(tbl);
-                        let lhs = sub_mod(&a_acc, &prev_a, n);
-                        let rhs = sub_mod(&prev_b, &b_acc, n);
-                        if rhs.is_zero() {
+                        let lhs = sub_mod(a_acc, prev_a);
+                        let rhs = sub_mod(prev_b, b_acc);
+                        if rhs == 0 {
                             continue;
                         }
-                        let g_gcd = rhs.gcd(n);
-                        if g_gcd.is_one() {
-                            if let Some(inv) = mod_inverse(&rhs, n) {
-                                let x_val = (&lhs * &inv) % n;
-                                let test = g_pt.scalar_mul(&x_val, a_fe);
-                                if test == *h_pt {
+                        let g_gcd = gcd_u64(rhs, n);
+                        if g_gcd == 1 {
+                            if let Some(inv) = mod_inverse_u64(rhs, n) {
+                                let x_val = ((lhs as u128 * inv as u128) % n as u128) as u64;
+                                if fc.scalar_mul(g, x_val) == h {
                                     let mut rg = result.lock().unwrap();
                                     if rg.is_none() {
                                         *rg = Some(x_val);
@@ -557,18 +537,17 @@ fn dp_parallel_rho_on_curve(
                                     break;
                                 }
                             }
-                        } else if &lhs % &g_gcd == BigUint::zero() && g_gcd.bits() <= 16 {
-                            let m_red = n / &g_gcd;
-                            let lhs_red = &lhs / &g_gcd;
-                            let rhs_red = &rhs / &g_gcd;
-                            if let Some(inv) = mod_inverse(&rhs_red, &m_red) {
-                                let x_base = (&lhs_red * &inv) % &m_red;
-                                let g_u: u64 = g_gcd.iter_u64_digits().next().unwrap_or(0);
+                        } else if lhs % g_gcd == 0 && g_gcd <= (1u64 << 16) {
+                            let m_red = n / g_gcd;
+                            let lhs_red = lhs / g_gcd;
+                            let rhs_red = rhs / g_gcd;
+                            if let Some(inv) = mod_inverse_u64(rhs_red, m_red) {
+                                let x_base =
+                                    ((lhs_red as u128 * inv as u128) % m_red as u128) as u64;
                                 let mut x_cand = x_base;
                                 let mut found = false;
-                                for _ in 0..g_u {
-                                    let test = g_pt.scalar_mul(&x_cand, a_fe);
-                                    if test == *h_pt {
+                                for _ in 0..g_gcd {
+                                    if fc.scalar_mul(g, x_cand) == h {
                                         let mut rg = result.lock().unwrap();
                                         if rg.is_none() {
                                             *rg = Some(x_cand);
@@ -577,7 +556,7 @@ fn dp_parallel_rho_on_curve(
                                         found = true;
                                         break;
                                     }
-                                    x_cand = (&x_cand + &m_red) % n;
+                                    x_cand = (x_cand + m_red) % n;
                                 }
                                 if found {
                                     break;
@@ -585,7 +564,7 @@ fn dp_parallel_rho_on_curve(
                             }
                         }
                     } else {
-                        tbl.insert(x_low, (a_acc.clone(), b_acc.clone()));
+                        tbl.insert(x_low, (a_acc, b_acc));
                     }
                 }
             }
@@ -593,22 +572,23 @@ fn dp_parallel_rho_on_curve(
         }));
     }
 
-    for h in handles {
-        let _ = h.join();
+    for handle in handles {
+        let _ = handle.join();
     }
 
     let total = total_iters.load(Ordering::Relaxed);
     let final_x = result.lock().unwrap().take();
-    match final_x {
+    let out = match final_x {
         Some(x) => (
             Some(RhoSolution {
-                x,
+                x: BigUint::from(x),
                 iterations: total,
             }),
             total,
         ),
         None => (None, max_iters),
-    }
+    };
+    out
 }
 
 /// **Multi-target GLS rho** (round-7 upgrade).  Solves `m` discrete
