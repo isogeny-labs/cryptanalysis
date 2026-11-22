@@ -65,7 +65,14 @@
 // which covers a product's latency on the cores measured so far; one is the
 // shorter prefix at small batches.
 #ifndef ECC_F131_CHAIN_VECTORS
-#    define ECC_F131_CHAIN_VECTORS 2
+// AArch64 4-lane already doubles the live accumulators vs 2-lane; keep K=4
+// chains (CHAIN_VECTORS=1) so the product window matches the measured 2-lane
+// sweet spot instead of spilling at K=8.
+#    if defined(__aarch64__) && ECC_F131_LANES >= 4
+#        define ECC_F131_CHAIN_VECTORS 1
+#    else
+#        define ECC_F131_CHAIN_VECTORS 2
+#    endif
 #endif
 // The chains' forward pass inside the selection's loop (1) or as its own
 // pass over the batch (0); see selectBatch.

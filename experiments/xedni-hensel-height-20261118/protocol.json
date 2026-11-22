@@ -1,0 +1,24 @@
+{
+  "schema": "xedni-hensel-height-protocol-v1",
+  "question": "Can precommitted coordinate Hensel steps raise the p-adic depth of one fresh public relation residual, and how does the exact rational height grow?",
+  "source_protocol": "experiments/xedni-height-selected-two-image-20261116/protocol.json",
+  "source_protocol_sha256": "ce9232b0b6ee3f4e0af268974cc5ea891d9dae588e1ae79fdee67a6f9008611e",
+  "target_law": "w=1+int(SHA256(xedni-hensel-height-v1|p|j),16) mod (q-1), j=0..3",
+  "generator_law": "first finite point by ascending x then y whose cofactor multiple has exact prime order q",
+  "query_law": "first 16 lexicographic ordered distinct offsets with both U=Q-t1G and V=Q-t2G nonidentity",
+  "hit_selection": "first public relation hit in field, target, query, vector order with distinct x coordinates; enumerate all 512 queries and 6656 vector tests to certify order",
+  "initial_shift": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "maximum_target_depth": 8,
+  "step_rule": "for k=1..7, with current depth at least k, compute t(R) mod p^(k+1); if already zero mod p^(k+1) make no shift; else test coordinate axes x1,y1,x2,y2 in order by adding p^k once, choose first nonzero derivative d=(t1-t0)/p^k mod p, set delta=-((t0/p^k) mod p)/d mod p, and add p^(k-1)*delta to that shift coordinate",
+  "candidate_law": "center U,V coordinates; add p times each integer shift; interpolate A=(f1-f2)/(x1-x2), B=f1-A*x1; require integral coefficient reduction and nonsingular curve",
+  "modular_residual": "compute R=aP1+bP2 with Jacobian arithmetic modulo p^(k+1), t=-X*Z/Y in the reduction kernel; record failure if normal form or unit check fails",
+  "exact_controls": "after each accepted step, construct rational curve and both points, compute exact R, record full rational coordinates, formal parameter numerator/denominator, p-adic depth and bit heights; independently replay every probe and step using Fraction group arithmetic",
+  "stop_rule": "stop at exact rational relation, derivative exhaustion, invalid model, modular normal-form failure, exact mismatch, cap, or depth 8; retain all attempted axes and statuses",
+  "claim_boundary": "one preselected fresh public hit is an existence/control experiment, not a relation-yield estimate; finite p-adic depth is not exact rational equality; compare rational height with depth; no same-target IC/rho speedup claim",
+  "run_cap_seconds": 1200
+}

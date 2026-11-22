@@ -1,0 +1,20 @@
+{
+  "schema": "xedni-hensel-fresh-transfer-protocol-v1",
+  "question": "Does the previously frozen width-eight beam model-height gain recur on independent public targets?",
+  "source_protocol_sha256": "ce9232b0b6ee3f4e0af268974cc5ea891d9dae588e1ae79fdee67a6f9008611e",
+  "beam_result_normalized_sha256": "2e80f0c75e043db49ff8097186d4132ae23d775f35397e12d0b500d66bdce52f",
+  "transfer_protocol_sha256": "dc2b8827b8cd0085f9c671b263bac6f1fa453659ec618808ec281989e5dcfbe5",
+  "target_seed_label": "xedni-hensel-independent-transfer-v1",
+  "public_panel": "same eight frozen fields, four fresh SHA256(label|p|j) targets per field, first 16 valid ordered queries per target, 13 fixed vectors: 512 queries and 6656 vector tests",
+  "admission": "every public relation hit with distinct x coordinates, in field/target/query/vector order; retain equal-x public hits as excluded rows",
+  "initial_shift": [0, 0, 0, 0],
+  "maximum_target_depth": 8,
+  "first_axis_control": "frozen first-axis rule in xedni-hensel-transfer-20261118/protocol.json",
+  "beam_width": 8,
+  "minimum_radius_search_limit": 8,
+  "radius_slack": 2,
+  "beam_rule": "frozen candidate enumeration, ranking, deduplication and exact checks in xedni-hensel-transfer-20261118/protocol.json",
+  "ledger": "canonical sorted-key JSONL gzip per hit per depth, retaining parents, candidates, statuses, and digests",
+  "comparison": "paired final model heights at achieved depth eight on identical fresh public hit; all incomplete arms remain in result",
+  "run_cap_seconds": 1200
+}

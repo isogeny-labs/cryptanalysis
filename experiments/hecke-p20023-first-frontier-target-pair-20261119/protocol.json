@@ -1,0 +1,20 @@
+{
+  "schema": "hecke-p20023-first-frontier-target-pair-protocol-v1",
+  "question": "Can the frozen p20023 first-frontier 1760-log table recover a fresh nonmember public target by additive shifts, and how does a same-point rho run behave under the same local resource envelope?",
+  "curve": "X0(11): y^2+y=x^3-x^2-10x-20 over F_20023",
+  "target_subgroup_order": 4021,
+  "target_generator": "5*(1,8630)",
+  "fresh_source": "../hecke-natural-prefix-20261024/fresh_result.json",
+  "fresh_source_sha256": "299191c8bafd538ad61231597314bd3bc58cf01b19e3ebc2cac853c96ce572dd",
+  "solved_table": "../hecke-natural-prefix-20261024/solve_result.json",
+  "solved_table_sha256": "cbd5ff499b88cb1be01a3fb9d675f4e0be1bd5074f836819f24e78432be6b31b",
+  "prepared_table_rule": "Project each frozen representative by multiplication by 5, pair it with its frozen solved log, check all 1760 scalar identities, then map distinct subgroup points to logs",
+  "target_seed": "hecke-p20023-first-frontier-target-pair-2026-11-19-v1",
+  "target_law": "SHA256(seed || ':' || counter) interpreted big-endian modulo 4021; reject zero and points already in the 1760-point projected table; take first accepted; publish point only to solver",
+  "target_rule": "Scan Q+kG for k=0..4020 until first prepared-table hit; recover log(P)-k modulo 4021 and scalar-replay",
+  "rho_rule": "One-target Floyd rho, x-mod-3 deterministic partitions, SHA256-derived restarts, collision congruence with gcd and candidate replay, 200000 walk-transition cap; initialization and replay included in online wall interval",
+  "order": ["connector", "rho", "rho", "connector"],
+  "timing": "Ordinary-host diagnostic; one process and one worker in each arm; source loading and prepared-table construction outside target interval; fixture generation outside both; correctness replay inside both",
+  "candidate_id": null,
+  "benchmark_tier": "exploratory_ordinary_host"
+}
