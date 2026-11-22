@@ -67,16 +67,30 @@ inline void invert_leaves(T *nodes, size_t n) {
 }
 
 #ifdef M31_USE_NEON
-inline void four_tiles(const uint32_t *input, uint32_t *output) {
+inline void four_tiles(const uint32_t *input, uint32_t *output, size_t n = width, size_t last = 4) {
     uint32x4_t nodes[2 * width], zero_masks[width];
-    for (size_t j = 0; j < width; ++j) {
-        const uint32x4_t x = canonical_words(vld1q_u32(input + 4*j));
+    for (size_t j = 0; j < n; ++j) {
+        uint32_t padded[4] = {1, 1, 1, 1};
+        const uint32_t *src = input + 4*j;
+        if (last < 4 && j + 1 == n) {
+            for (size_t k = 0; k < last; ++k) padded[k] = src[k];
+            src = padded;
+        }
+        const uint32x4_t x = canonical_words(vld1q_u32(src));
         zero_masks[j] = vceqq_u32(x, vdupq_n_u32(0));
-        nodes[width+j] = vbslq_u32(zero_masks[j], vdupq_n_u32(1), x);
+        nodes[n+j] = vbslq_u32(zero_masks[j], vdupq_n_u32(1), x);
     }
-    invert_leaves(nodes, width);
-    for (size_t j = 0; j < width; ++j)
-        vst1q_u32(output + 4*j, vbicq_u32(nodes[width+j], zero_masks[j]));
+    invert_leaves(nodes, n);
+    for (size_t j = 0; j < n; ++j) {
+        const uint32x4_t y = vbicq_u32(nodes[n+j], zero_masks[j]);
+        if (last < 4 && j + 1 == n) {
+            uint32_t tmp[4];
+            vst1q_u32(tmp, y);
+            for (size_t k = 0; k < last; ++k) output[4*j+k] = tmp[k];
+        } else {
+            vst1q_u32(output + 4*j, y);
+        }
+    }
 }
 #endif
 
@@ -99,6 +113,12 @@ void m31_batch_inverse(const uint32_t *input, uint32_t *output, size_t count) {
         input += 4 * width;
         output += 4 * width;
         count -= 4 * width;
+    }
+    if (count >= 65 || (count >= 4 && count % 4 == 0)) {
+        const size_t vectors = count / 4, extra = count % 4;
+        if (extra) four_tiles(input, output, vectors+1, extra);
+        else four_tiles(input, output, vectors);
+        return;
     }
 #endif
     while (count >= width) {
