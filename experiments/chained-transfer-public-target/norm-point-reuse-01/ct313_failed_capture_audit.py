@@ -47,6 +47,32 @@ def gitblob(raw):
     return hashlib.sha1(b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw).hexdigest()
 
 
+def derived_failure_status(d):
+    """CT314: rederive CT310's exact failure precedence from serialized fields.
+
+    This checks producer/internal consistency, NOT external execution proof.
+    The original producer serializes a non-integer exit as JSON null.
+    """
+    if d["executable_sha256_before"] != d["executable_sha256_after"]:
+        return "binary_changed"
+    if d["host_before"] != d["host_after"]:
+        return "host_changed"
+    error = d["collector_error"]
+    if error == "timeout":
+        return "timeout"
+    if error == "capture limit exceeded":
+        return "overflow"
+    if error == "spawn failed":
+        return "spawn"
+    if error is not None:
+        return "collector_error"
+    if d["exit_code"] is None:
+        return "invalid_exit"
+    if d["exit_code"] != 0:
+        return "nonzero_exit"
+    return None
+
+
 def check(d, root, role, fixture):
     if type(d) is not dict or set(d) != FIELDS or d["schema"] != SCHEMA:
         refuse("failure receipt schema differs")
@@ -82,6 +108,8 @@ def check(d, root, role, fixture):
         refuse("missing claimed host drift")
     if d["status"] not in ("host_changed", "binary_changed") and d["host_before"] != d["host_after"]:
         refuse("unclassified host drift")
+    if d["status"] != derived_failure_status(d):
+        refuse("inconsistent failure classification: status/exit/error/host/binary")
     raw_fixture = Path(fixture).read_bytes()
     if d["fixture_sha256"] != hexdigest(raw_fixture) or d["fixture_git_blob"] != gitblob(raw_fixture):
         refuse("wrong fixture binding")
