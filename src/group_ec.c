@@ -782,13 +782,14 @@ static size_t ec_interval_all(const ca_group *g, const ca_elem *P, const ca_elem
                               uint64_t width, uint64_t *out, size_t cap, ca_stats *st,
                               ca_htab1 *tab)
 {
-    uint64_t m = ca_isqrt(width) + 1;
+    const uint64_t root = ca_isqrt(width);
+    uint64_t m = root + 1;
     ca_htab1_clear(tab);
     /* Baby and giant steps go EC_LANES at a time through a shared-addend
      * Montgomery trick (one inversion per block).  Hashing, insertion,
      * lookup and every count follow the one-step loops; elements a block
      * computes past the last one used are not charged. */
-    ca_elem lane[EC_LANES];
+    ca_elem lane[EC_LANES] = {{{0}}};
     uint64_t scratch[2 * EC_LANES];
     ca_elem cur;
     uint64_t small_order = 0;
@@ -848,9 +849,9 @@ static size_t ec_interval_all(const ca_group *g, const ca_elem *P, const ca_elem
     ca_group_mul(g, &base, P, lo, NULL);
     ec_inv(g, &base, &base);
     ec_op(g, &R, T, &base); /* T - lo P */
-    uint64_t steps = m ? width / m + 1 : 1;
+    uint64_t steps = root != UINT64_MAX ? width / m + 1 : 1; /* m == 0 only if root + 1 wraps */
     /* giant[k] = k (-m P); a block is R + giant[k] for k < EC_LANES */
-    ca_elem giant[EC_LANES], block_step;
+    ca_elem giant[EC_LANES] = {{{0}}}, block_step;
     uint64_t hs[EC_LANES];
     ec_multiples(g, giant, &negmP, (size_t)(steps < EC_LANES ? steps : EC_LANES), scratch);
     if (steps > EC_LANES) ec_dbl(g, &block_step, &giant[EC_LANES / 2]);
