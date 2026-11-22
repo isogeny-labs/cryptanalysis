@@ -1,0 +1,120 @@
+{
+  "binary_blake3": "1e52662e681ba7aeacc4c3339fe3764f3f8e5b2b038f0dd720f9b6620305df06",
+  "curves": {
+    "E1_primary_31bit": {
+      "P": [
+        1,
+        814455902
+      ],
+      "a": 2,
+      "b": 14,
+      "cofactor": 1,
+      "n": 2147505293,
+      "p": 2147483647,
+      "targets": [
+        {
+          "Q": [
+            182009950,
+            915165506
+          ],
+          "hash_draws": 2,
+          "id": "E1_T0"
+        },
+        {
+          "Q": [
+            769631297,
+            926203049
+          ],
+          "hash_draws": 1,
+          "id": "E1_T1"
+        },
+        {
+          "Q": [
+            40032865,
+            146124178
+          ],
+          "hash_draws": 1,
+          "id": "E1_T2"
+        },
+        {
+          "Q": [
+            906269628,
+            512128678
+          ],
+          "hash_draws": 2,
+          "id": "E1_T3"
+        },
+        {
+          "Q": [
+            792897421,
+            139066788
+          ],
+          "hash_draws": 1,
+          "id": "E1_T4"
+        }
+      ]
+    },
+    "E2_secondary_31bit": {
+      "P": [
+        5,
+        981327015
+      ],
+      "a": 2,
+      "b": 36,
+      "cofactor": 1,
+      "n": 2147506201,
+      "p": 2147483647,
+      "targets": [
+        {
+          "Q": [
+            2141204504,
+            948917377
+          ],
+          "hash_draws": 3,
+          "id": "E2_T0"
+        },
+        {
+          "Q": [
+            96005614,
+            998730309
+          ],
+          "hash_draws": 2,
+          "id": "E2_T1"
+        }
+      ]
+    },
+    "E61_cofactor_subgroup": {
+      "P": [
+        78862349111012854,
+        1899276942447683421
+      ],
+      "a": 0,
+      "b": 3,
+      "cofactor": 14627932,
+      "n": 157632877033,
+      "p": 2305843009213693951,
+      "targets": [
+        {
+          "Q": [
+            2302447294111890504,
+            1672426170730944676
+          ],
+          "hash_draws": 2,
+          "id": "E61_T0"
+        }
+      ]
+    }
+  },
+  "frozen_before_solving": true,
+  "random_base_seeds": [
+    701,
+    702,
+    703
+  ],
+  "schema": "auxiliary-ic-m34-3arm-preregistered-protocol/v1",
+  "search_seed": 20261119,
+  "source_commit": "6805d56f490423cc7cb7c17b9ddb3fb95f16674c",
+  "target_derivation": "SHA256('auxiliary-ic-m34-3arm-20261119\\0' + curve_id + ':' + idx + ':' + ctr) rejection-sampled < 2^64 - (2^64 mod p), canonical y <= p - y, cofactor-cleared, != O, +-P; no planted scalar",
+  "walk_lanes": 64,
+  "yield_prefix_queries_31bit": 524288
+}

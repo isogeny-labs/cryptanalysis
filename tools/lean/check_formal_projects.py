@@ -74,6 +74,59 @@ def code_without_comments(source):
     return "".join(result)
 
 
+def module_imports(source):
+    """Read the pinned Lean header, rather than treating lines as directives.
+
+    Lean 4.35 Module.header accepts module/prelude, then imports with optional
+    public/meta/all modifiers. Whitespace and nested comments may span lines.
+    Components stay separate so a quoted dot cannot alias an internal module.
+    The native compiler still checks the actual header and proof syntax.
+    """
+    text = code_without_comments(source)
+    position = 0
+
+    def whitespace(offset):
+        while offset < len(text) and (text[offset].isspace() or text[offset] == "\ufeff"):
+            offset += 1
+        return offset
+
+    position = whitespace(position)
+    for keyword in ("module", "prelude"):
+        match = re.match(keyword + r"\b", text[position:])
+        if match:
+            position = whitespace(position + match.end())
+    imports = []
+    while True:
+        match = re.match(r"(?:public\s+)?(?:meta\s+)?import\s+", text[position:])
+        if not match:
+            return imports
+        position = whitespace(position + match.end())
+        modifier = re.match(r"all\s+", text[position:])
+        if modifier:
+            position = whitespace(position + modifier.end())
+        parts = []
+        while True:
+            if text.startswith("«", position):
+                end = text.find("»", position + 1)
+                require(end >= 0, "unterminated quoted import component")
+                component = text[position + 1:end]
+                require(component, "empty import component")
+                position = end + 1
+                require(position == len(text) or text[position].isspace()
+                        or text[position] == ".", "unsupported composite import identifier")
+            else:
+                component_match = re.match(r'[^\s.(){}\[\],;:"`«»]+', text[position:])
+                require(component_match is not None, "formal import lacks a module identifier")
+                component = component_match[0]
+                position += component_match.end()
+            parts.append(component)
+            position = whitespace(position)
+            if position == len(text) or text[position] != ".":
+                break
+            position = whitespace(position + 1)
+        imports.append(tuple(parts))
+
+
 KNOWN_PROBES = {
     "experiments/xedni-public-first-large-holdout-20261115/formal/probes/OrderProbe.lean":
         ("probe-status.json", "xedni-lean-order-probe-v1", "lean_order_proved", 60),
@@ -175,19 +228,17 @@ def validate(root, record):
                 "formal manifest Mathlib revision changed")
         modules = graphs[project]
         require(modules, "formal build project has no bound source")
+        internal_names = {tuple(name.split(".")): name for name in modules}
         for module, row in modules.items():
             imports = []
-            for line in code_without_comments(row["source"].decode()).splitlines():
-                match = re.match(r"^import\s+(.+)", line)
-                if not match:
-                    continue
-                for name in match[1].split("--", 1)[0].split():
-                    if name in modules:
-                        require(not modules[name]["probe"], "proof imports a censored probe")
-                        imports.append(name)
-                    else:
-                        require(name.split(".")[0] in {"Mathlib", "Lean", "Std", "Init", "Batteries", "Aesop", "Qq"},
-                                "unbound formal module import: " + name)
+            for parts in module_imports(row["source"].decode()):
+                name = internal_names.get(parts)
+                if name is not None:
+                    require(not modules[name]["probe"], "proof imports a censored probe")
+                    imports.append(name)
+                else:
+                    require(parts[0] in {"Mathlib", "Lean", "Std", "Init", "Batteries", "Aesop", "Qq"},
+                            "unbound formal module import: " + ".".join(parts))
             row["imports"] = imports
         order, visiting, done = [], set(), set()
         def visit(name):

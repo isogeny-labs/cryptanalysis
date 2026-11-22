@@ -1,0 +1,34 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-18T19:15:33Z",
+ "id": "PCC-20261118-09febf",
+ "kind": "theorem",
+ "producer": {
+  "commit": "da8636826178615baac874fbbb584432360298f8",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "36de370f9d5fbab32e9eb89f33bb9197db814181d9437d8a6d15925d1976b6fb",
+   "kind": "lean",
+   "project": "research/xedni_origin_pencil_20261118/formal",
+   "theorem": "XedniOriginPencil.chord_relation_transport"
+  },
+  {
+   "decl_sha256": "d0d2137335e1dec385b31eb6ce97a6607db7a37354c696f39f95e5b073c0df2b",
+   "kind": "lean",
+   "project": "research/xedni_origin_pencil_20261118/formal",
+   "theorem": "XedniOriginPencil.zero_fixed_target_preserved"
+  },
+  {
+   "decl_sha256": "fa8d1ed25179caa372683ab09ea08dc1dfacb95cfc9822d1e0c940b24dab3487",
+   "kind": "lean",
+   "project": "research/xedni_origin_pencil_20261118/formal",
+   "theorem": "XedniOriginPencil.transported_endpoint_bound"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Algebraic coordinate identities only. This does not prove the geometric good-reduction bridge, a natural-frequency gain, or an end-to-end ECDLP improvement. The pinned kernel build passes; the repository axiom auditor is currently incompatible with Lean 4.35, so this claim remains unverified.",
+ "statement": "Chord-origin coefficient transport adds the local coefficient sum at both chord endpoints, preserves a fixed-origin zero target coefficient, and bounds an endpoint coefficient by (d+1)B when the local coordinate is bounded by B and the local sum by dB."
+}

@@ -1,0 +1,35 @@
+{
+  "baseline_large_matrix_admitted": false,
+  "baseline_last_restart_line": "c rst  geom  stb  vmt  1276  693K  229226   93K  119K    6.13    3.81  2525   555 15989     7  130.76  130.71",
+  "baseline_status": "timeout",
+  "identical_formula_sha256": "2c6d209f56e44314d5b90d3c55d7070813e8b49301da93a83d3845b1c7467f0b",
+  "kind": "n131_d13_m12_same_formula_large_matrix_trace_comparison_v1",
+  "preflight_large_matrix_admitted": true,
+  "preflight_last_restart_line": "c rst  luby  stb  vmt    99   24K  230802  108K  125K    7.50    4.55    17    23 16323     0  152.96  152.96",
+  "preflight_solver_self_diagnosis": "TODO disable matrix, performing badly",
+  "preflight_status": "CENSORED_TIME",
+  "solver_flag_changes": [
+    [
+      "--maxtime=598.000",
+      "--maxtime=118.000"
+    ],
+    [
+      "--maxmatrixrows=10000",
+      "--maxmatrixrows=40000"
+    ],
+    [
+      "--maxmatrixcols=15000",
+      "--maxmatrixcols=85000"
+    ]
+  ],
+  "source_sha256": {
+    "attempt": "a4522537eb73d849f423603b96321817c4c35ea9aadf877a6c822316b498416e",
+    "audit": "85674c3b83a6bc7c05b54b110c38db4921639e2f6118e207ccbcfcacd4ac93ff",
+    "baseline_stdout_gzip": "f26dfbf43d3d2c8077fee4fa54ac8dce0a27f9d9af8c7e1da5bae334f12497a9",
+    "baseline_stdout_uncompressed": "bcbd9db3c864fb8a5d6821db7de9da82369dd13f039953c62265c737b7f2b2d2",
+    "large_stdout": "04c07b41ab5a794b3d07dc70ef07f02deaa8f1959b45da2e1a9e889eb99771d9",
+    "protocol": "f8b3f4a6585a5ef8b80b81f114a4152b18acb5007cff4b9d3352b9f3fab91c11",
+    "script": "29a37c67d14c3a955a016698ecd0aae608b8905e0214fa7a4421bc9ec7722bfc"
+  },
+  "status": "PASS_SAME_FORMULA_SEED_AND_TRACE_COMPARISON"
+}
