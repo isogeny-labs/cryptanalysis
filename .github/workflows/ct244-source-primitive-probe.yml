@@ -195,7 +195,9 @@ jobs:
           plan=json.loads(Path('/tmp/ct310-plan.json').read_text())
           test=json.loads(Path('/tmp/ct310-normal.json').read_text())
           assert plan['native_models_executed']==0
-          assert (test['mock_positive'],test['mock_mutations_rejected'])==(1,7)
+          assert (test['mock_positive'],test['mock_mutations_rejected'])==(1,8)
+          assert test['failed_partial_capture_receipts']==4
+          assert test['synthetic_digest_mutations_detected']==4
           assert test['native_models_executed']==0 and test['authenticated_s3_artifacts']==0
           source=Path('_ct310_pinned/experiments/chained-transfer-public-target/primitive-pricing-01/ct176_cold_process_collector.py')
           child=ct310.locked_collector(source)
@@ -233,7 +235,7 @@ jobs:
               try: ct310.custody_lock(custody,bound)
               except ValueError: pass
               else: raise AssertionError('changed custody receipt SHA accepted')
-          print('CT310_SOURCE_ONLY_PASS: plan-only; 7 base synthetic mutations; bounded benign process; mock retention/custody refusals; 0 native models')
+          print('CT313_SOURCE_ONLY_PASS: 4 SHA-bound negative child capture receipts, 4 tampered digest controls, plan-only; bounded benign subprocess; 0 native models')
           PY
           if python3 -S "$script" --execute --timeout-seconds 1 --panel-wall-seconds 1 > /tmp/ct310-unadmitted.out 2> /tmp/ct310-unadmitted.err; then
             echo "CT310 improperly accepted execution without owner/provider admission" >&2
