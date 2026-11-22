@@ -22,7 +22,7 @@ ROUTES = ("direct_composite", "literal_sequential_Jacobian_maps",
 # not a trust assertion about an unauthenticated native transcript.
 SOURCE_SCOPE = ("actual selected source entries only; all setup/primitive work "
                 "unpriced and complete primitive census still open; no measured speed advantage")
-SCALARS = (0, 1, 2, 17, 12345, 2773072)  # ELL=2773073 in pinned original source
+SCALARS = (0, 1, 2, 17, 12345, 2771710)  # ELL=2771711, pinned fixed-chain source and actual 48-vector fixture
 PIC_KEY_WORDS = 19  # PicClass.key().0: [u32;19]
 CALL_FIELDS = (
     "external_packet_parse", "external_norm_and_geometry", "external_full_order",
