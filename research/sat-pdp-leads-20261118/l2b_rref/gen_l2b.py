@@ -65,6 +65,10 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--l", type=int, nargs="+", default=[3, 4])
     ap.add_argument("--enc", nargs="+", default=["plain", "dual"])
+    ap.add_argument("--seed-base", type=int, default=2026111500,
+                    help="cell seed = seed_base + l (L2/L2b used 2026111500)")
+    ap.add_argument("--n-non", type=int, default=8)
+    ap.add_argument("--n-dec", type=int, default=4)
     a = ap.parse_args()
     sys.path.insert(0, os.path.join(os.path.abspath(a.crypto),
                                     "research/sat_smt_leads_20261115/A-dualrail-m4"))
@@ -72,11 +76,11 @@ def main():
     commit = subprocess.run(["git", "-C", a.crypto, "rev-parse", "HEAD"],
                             capture_output=True, text=True).stdout.strip()
     os.makedirs(a.out, exist_ok=True)
-    man = {"crypto_commit": commit, "instances": []}
+    man = {"crypto_commit": commit, "seed_base": a.seed_base, "instances": []}
     for l in a.l:
-        cell = dr4.Cell4(l, 2026111500 + l)
-        non, dec = cell.targets(8, 4)
-        tg = [(i, R, False) for i, R in enumerate(non)] + [(8 + i, R, True) for i, R in enumerate(dec)]
+        cell = dr4.Cell4(l, a.seed_base + l)
+        non, dec = cell.targets(a.n_non, a.n_dec)
+        tg = [(i, R, False) for i, R in enumerate(non)] + [(a.n_non + i, R, True) for i, R in enumerate(dec)]
         for idx, R, isdec in tg:
             S = dr4.System4(cell, R)
             for enc in a.enc:

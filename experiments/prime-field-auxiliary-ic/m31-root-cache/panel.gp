@@ -1,0 +1,30 @@
+p=2^31-1; aux=ellinit([1,0],p); target=ellinit([2,14],p);
+G=[Mod(3,p),Mod(615668188,p)]; K=ellmul(aux,G,2^26);
+coords(index)={
+  my(pt=ellmul(aux,G,2*index+1),xs=vector(32));
+  for(j=1,32,xs[j]=lift(pt[1]);if(j<32,pt=elladd(aux,pt,K)));
+  xs
+};
+score(xs)=sum(j=1,32,kronecker(xs[j]^3+2*xs[j]+14,p)>=0);
+ordinary(xs)={
+  my(ys=if(score(-xs)>score(xs),-xs,xs),points=List(),roots,y);
+  for(j=1,32,roots=ellordinate(target,ys[j]);if(#roots,y=lift(roots[1]);listput(points,[ys[j]%p,min(y,p-y)])));
+  Vec(points)
+};
+rootpoint(x,v)={
+  my(y=v^(2^29));if(y^2==v,y=lift(y);[x%p,min(y,p-y)],[])
+};
+cached(xs,shared)={
+  my(a=List(),b=List(),v,x,pt);
+  for(j=1,32,x=xs[j];v=Mod(x^3+2*x+14,p);pt=rootpoint(x,v);if(#pt,listput(a,pt));
+    pt=rootpoint(-x,if(shared,28-v,Mod((-x)^3-2*x+14,p)));if(#pt,listput(b,pt)));
+  Vec(if(#b>#a,b,a))
+};
+selectpoints(xs,arm)=if(arm==0,ordinary(xs),cached(xs,arm==2));
+setrand(44904);seen=Map();
+nextindex()={my(i);until(!mapisdefined(seen,i),i=random(2^24));mapput(seen,i,1);i};
+inputs=vector(1536,i,coords(nextindex()));
+for(i=1,#inputs,my(ref=ordinary(inputs[i]));if(ref!=cached(inputs[i],0)||ref!=cached(inputs[i],1),quit(1)));
+orders=[[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
+runblock(b,arm)={my(t=getwalltime());for(r=1,12,for(i=1,64,selectpoints(inputs[b*64+i],arm)));getwalltime()-t};
+for(b=0,23,my(order=orders[b%6+1]);for(j=1,3,print(b,",",j,",",order[j],",",runblock(b,order[j]))));
