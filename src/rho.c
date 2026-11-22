@@ -454,9 +454,8 @@ static int rho_batch_lincomb(const ca_group *g, const ca_elem *base, const ca_el
     T[4] = *target;
     ca_group_dbl(g, &T[8], &T[4]);
     ca_group_op(g, &T[12], &T[8], &T[4]);
-    for (int v = 1; v < 4; v++)
-        for (int u = 1; u < 4; u++)
-            ca_group_op(g, &T[4 * v + u], &T[u], &T[4 * v]);
+    for (ptrdiff_t v = 1; v < 4; v++)
+        for (ptrdiff_t u = 1; u < 4; u++) ca_group_op(g, &T[4 * v + u], &T[u], &T[4 * v]);
 
     uint64_t or_all = 0;
     for (uint32_t i = 0; i < count; i++) {

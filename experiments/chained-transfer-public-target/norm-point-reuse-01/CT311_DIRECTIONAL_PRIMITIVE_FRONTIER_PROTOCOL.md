@@ -1,0 +1,20 @@
+# CT311 — preregistered directional norm-reuse physical-cost frontier
+
+Date: 2026-11-22. Owner: existing Chained ECDLP Transfers lane, cryptanalysis draft #1912. **[pcc:unverified]**.
+
+## Gap and scientific question
+
+CT248 currently returns one pooled median of 48 direct-minus-retained *primitive-only* intervals. This hides a possible reversal between 0→2 and 2→0, or across the four cofactor sectors. The 48 real selected-source inputs comprise 24 per direction, six scalar labels per sector; the experimental clocks are 144 scope-local single-process epochs. Before seeing real native values, register the exact directional, sector-wise and component-wise cost decomposition and mandatory admissions.
+
+**Question:** With the genuine frozen input and complete paired native capture, does replacing the direct degree-169 map by the two directed degree-13 maps save physical primitive time for each direction and sector, after the actual norm-point doubling (D) is charged? The corresponding baseline is the **strongest retained-lift** arm, not the intentionally slower literal two-hop arm. This question concerns a *component*, not a complete ECDLP solve.
+
+## Exact input and admission contract
+
+1. Production CLI accepts only a CT310 capture directory containing original and reuse stdout/stderr, the two retained executables and receipts. Invoke unchanged CT304 `verify_pair` with the genuine pinned fixture (Git blob `9ac741668dd1ffa9632ff0d58e6f4dd9f2dd18c3`), which checks CT302's complete ordered 695-record population, 672 exceptional records, frozen 48 source rows, all 144 clock records and receipt/host/wall bindings. **Producer-source consistency is not signed execution custody.**
+2. Parse the optimized trace using the existing CT248 decoder/auditor, never invent primitive times from source counters. For each row `i`, compare the direct composite sample (sequence `3*i`) against the strongest-retained sample (sequence `3*i+2`). Discard neither sign. Report the third literal arm only as a context control, not as the comparator that determines the result.
+3. Compute per-row `direct_map_ns=C169`, `retained_map_ns=C13a+C13b`, `direct_D_ns`, `retained_D_ns`, and `total_delta_ns=(direct_map_ns+direct_D_ns)-(retained_map_ns+retained_D_ns)`. Report the map and D differences separately so noise/non-common work cannot be mislabeled algebraic savings. The retained sequence has exactly two direction-matched C13 evaluations and one D, as validated by CT248; no conjectural C169 price substitution.
+4. Present **all 48** paired deltas, sign counts and medians separately for each direction (24 records) and each direction-sector (6 records). Use integer or half-integer arithmetic for medians, retaining exact ns. No bootstrapped interval from these six scalar labels: these are not guaranteed independent runtime replicates. Include original and optimized full-log SHA-256 and admission scope in output.
+5. Never promote source-only CI tests to performance evidence. A `--self-test --fixture` path may use all 48 genuine frozen **source** rows with fabricated timer samples and must label them synthetic. Register one positive case for uniform direct-map > retained maps, one negative for the opposite sign, plus a sector-local sign reversal. Reject insufficient/malformed populations through the inherited gates.
+6. Do not call any component win a complete cold ECDLP speedup. Full same-host ABBA/A/A baseline still requires source-target transfer, preprocessing, relation collection, LA, recovery, verification, exact memory/RSS, optimized rho, BSGS, IC frontier and independent PCC. Missing approved six S3 objects, coherent tool/config, STS/authorization and native compilation remain STOP gates.
+
+No EKS/Spot, AWS, protected-branch merge or model modification is permitted by this protocol. Negative or null measured signs must be recorded without claiming a mathematical impossibility.

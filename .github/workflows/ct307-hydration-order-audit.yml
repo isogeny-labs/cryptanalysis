@@ -1,0 +1,47 @@
+# CT307 source-only guard. No secrets, AWS, S3, Rust build, or benchmarks.
+# [pcc:unverified] Source classification, NOT model custody.
+name: CT307 historical-model hydration order audit
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct307-hydration-order-audit.yml'
+      - '.github/workflows/ct200-public48-native-typecheck.yml'
+      - '.github/workflows/ct245-primitive-native-typecheck.yml'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct307_hydration_order_audit.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT307_HYDRATION_ORDER_GUARD_PROTOCOL.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Read-only pinned CT200 and CT245 workflow inputs
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: isogeny-labs/cryptanalysis
+          ref: e89b9db54d358d3a2749acf6d5277b0300bc3ba2
+          path: _ct307_workflow_sources
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            .github/workflows/ct200-public48-native-typecheck.yml
+            .github/workflows/ct245-primitive-native-typecheck.yml
+      - name: Source-only mutation controls and actual workflow classification
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C _ct307_workflow_sources hash-object .github/workflows/ct200-public48-native-typecheck.yml)" = 6edea0f521f5ff99ed4c4d995b350dcd6b74126d
+          test "$(git -C _ct307_workflow_sources hash-object .github/workflows/ct245-primitive-native-typecheck.yml)" = 5e27d9163218788a1534ced5e05d56777861f079
+          s=experiments/chained-transfer-public-target/norm-point-reuse-01/ct307_hydration_order_audit.py
+          python3 -S "$s" --self-test
+          python3 -O -S "$s" --self-test
+          python3 -S "$s" --ct200 _ct307_workflow_sources/.github/workflows/ct200-public48-native-typecheck.yml --ct245 _ct307_workflow_sources/.github/workflows/ct245-primitive-native-typecheck.yml
+          python3 -O -S "$s" --ct200 _ct307_workflow_sources/.github/workflows/ct200-public48-native-typecheck.yml --ct245 _ct307_workflow_sources/.github/workflows/ct245-primitive-native-typecheck.yml
+          echo 'CT307 source-order classification complete; no S3 custody/native solve [pcc:unverified]'
