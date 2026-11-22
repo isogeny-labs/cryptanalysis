@@ -23,7 +23,13 @@
 //! be used in place of the built-in solver, which is a depth-first branch and
 //! bound over the LP relaxation (dense two-phase simplex, objective
 //! integrality rounding; rows are generated lazily, a row entering the LP only
-//! when an LP optimum violates it). Optionally the already-proved minima of shorter
+//! when an LP optimum violates it). The LP is solved in `f64` with tolerances
+//! (`1e-6`), so MILP optima are float-based cross-checks, not exact
+//! certificates: an integral-looking LP point is rounded and re-checked
+//! exactly against every row, and when that check fails the node is branched
+//! on rather than dropped, but a pruning decision taken on a bound within
+//! float tolerance is not independently certified. Use the value, word and SAT
+//! engines for exact statements. Optionally the already-proved minima of shorter
 //! windows are added as cuts (`window_cuts`), the MILP form of Matsui's
 //! per-round bounds; they are only added when all stages repeat.
 
@@ -365,34 +371,47 @@ impl Bb<'_> {
                 pick = Some((k, frac));
             }
         }
-        match pick {
-            None => {
-                let mut x: Vec<bool> = (0..fixed.len()).map(|i| fixed[i] == 1).collect();
-                for (k, &v) in free.iter().enumerate() {
-                    x[v] = y[k] > 0.5;
+        if pick.is_none() {
+            // Integral to tolerance: round and check exactly against the rows.
+            let mut x: Vec<bool> = (0..fixed.len()).map(|i| fixed[i] == 1).collect();
+            for (k, &v) in free.iter().enumerate() {
+                x[v] = y[k] > 0.5;
+            }
+            if self.m.feasible(&x) {
+                let obj: f64 = x
+                    .iter()
+                    .enumerate()
+                    .filter(|(_, &b)| b)
+                    .map(|(i, _)| self.m.obj[i])
+                    .sum();
+                if self.best.as_ref().is_none_or(|(b, _)| obj < b - 1e-9) {
+                    self.best = Some((obj, x));
                 }
-                if self.m.feasible(&x) {
-                    let obj: f64 = x
-                        .iter()
-                        .enumerate()
-                        .filter(|(_, &b)| b)
-                        .map(|(i, _)| self.m.obj[i])
-                        .sum();
-                    if self.best.as_ref().is_none_or(|(b, _)| obj < b - 1e-9) {
-                        self.best = Some((obj, x));
-                    }
+                return;
+            }
+            // Integral-looking LP point that fails the exact check (float
+            // tolerance artefact): do not drop the node; branch on the free
+            // variable furthest from an integer, however small.
+            let mut far: Option<(usize, f64)> = None;
+            for (k, &yv) in y.iter().enumerate() {
+                let frac = (yv - yv.round()).abs();
+                if far.is_none_or(|(_, f)| frac > f) {
+                    far = Some((k, frac));
                 }
             }
-            Some((k, _)) => {
-                let v = free[k];
-                let first = if y[k] >= 0.5 { 1 } else { 0 };
-                for val in [first, 1 - first] {
-                    fixed[v] = val;
-                    self.rec(fixed);
-                    fixed[v] = -1;
-                    if self.aborted {
-                        return;
-                    }
+            // With no free variable the assignment is fully fixed and the
+            // exact check failing means this leaf is genuinely infeasible.
+            pick = far;
+        }
+        if let Some((k, _)) = pick {
+            let v = free[k];
+            let first = if y[k] >= 0.5 { 1 } else { 0 };
+            for val in [first, 1 - first] {
+                fixed[v] = val;
+                self.rec(fixed);
+                fixed[v] = -1;
+                if self.aborted {
+                    return;
                 }
             }
         }

@@ -3,7 +3,7 @@
 use super::division_property::*;
 use crate::cryptanalysis::sym_ir::primitives::{aes128, simon, toyspn};
 use crate::cryptanalysis::sym_ir::{
-    ArxOp, Codec, FeedForward, KeySchedule, Kind, Layer, Primitive, Round,
+    ArxOp, Codec, FeedForward, KeySchedule, Kind, Layer, Primitive, Round, SboxId,
 };
 
 fn present_sbox() -> crate::cryptanalysis::sbox::Sbox {
@@ -258,10 +258,20 @@ fn aes_longest_integral_distinguisher_is_three_rounds() {
 /// SIMON32-structured primitive, bit-based division property, input "all 32
 /// bits active except bit 16". The literature value for conventional
 /// bit-based division property on SIMON32 is 14 rounds (Todo-Morii FSE 2016;
-/// Xiang et al. ASIACRYPT 2016), 15 with three-subset propagation (Todo-Morii).
-/// This code reaches 13: a shortfall of one round against the published 14,
-/// not investigated further (candidate cause: a different round-counting
-/// convention for the distinguisher).
+/// Xiang et al. ASIACRYPT 2016), 15 with three-subset propagation
+/// (Todo-Morii). This code reaches 13, one round short of the published 14.
+///
+/// What is known: an independent model (a separate pysat encoding of the same
+/// COPY / AND / XOR propagation rules, written by the reviewer, not this
+/// netlist or solver) also gets 13 on SIMON32 (and 15 against 16 on SIMON48),
+/// so the gap is not a bug of this netlist. What is not known: the cause of
+/// the difference from the published numbers (textbook modelling or
+/// convention differences against Todo-Morii FSE 2016 and Xiang et al. 2016
+/// were not identified). A different round-counting convention is an untested
+/// guess, and a half-swap cannot gain a round in a Feistel network, so it is
+/// not a candidate explanation. The exact published SIMON32 14-round
+/// input/output sets could not be looked up (research-kb was not reachable
+/// from this session) and are not cited here from memory.
 #[test]
 fn simon32_structure_bit_based_reaches_13_rounds_shortfall_vs_published_14() {
     let p = simon_structure(16, 16);
@@ -290,4 +300,135 @@ fn simon64_ir_bit_based_twelve_rounds() {
         t.elapsed()
     );
     assert_eq!(r.balanced.len(), 64);
+}
+
+/// Four 1-bit registers `a, b, e, h` (block) plus two zero-initialised scratch
+/// registers; `k` (scratch 4) is a key-dependent constant. Output 0 is
+/// `f = a b e k ^ h`.
+fn key_and_chain() -> Primitive {
+    let r = Round {
+        layers: vec![Layer::Arx {
+            word_bits: 1,
+            ops: vec![
+                ArxOp::XorKey {
+                    dst: 4,
+                    round_key: 0,
+                    word: 0,
+                },
+                ArxOp::And { dst: 5, a: 0, b: 4 },
+                ArxOp::And { dst: 5, a: 5, b: 1 },
+                ArxOp::And { dst: 5, a: 5, b: 2 },
+                ArxOp::Xor { dst: 0, a: 5, b: 3 },
+            ],
+        }],
+    };
+    Primitive {
+        name: "key-and-chain".into(),
+        block_bits: 4,
+        key_bits: 1,
+        scratch_bits: 2,
+        block_codec: Codec::little(1),
+        key_codec: Codec::little(8),
+        sboxes: vec![],
+        rounds: vec![r],
+        key_schedule: KeySchedule::Independent {
+            round_keys: 1,
+            round_key_bits: 1,
+        },
+        feed_forward: FeedForward::None,
+        kind: Kind::Feistel,
+    }
+}
+
+/// An AND with a key-dependent constant must not make its data input
+/// disappear. Over the inputs `a, b, e` active and `h` fixed, output 0 is
+/// `a b e k ^ h`, whose XOR over the 8 inputs is `k` (checked by brute force
+/// below), so it is NOT balanced for `k = 1`. The earlier model treated the
+/// key-dependent constant as a known zero: the AND output became a constant,
+/// `a`, `b`, `e` lost their only consumer and the SAT instance was
+/// unsatisfiable, so output 0 was reported balanced.
+#[test]
+fn and_with_key_dependent_constant_keeps_the_data_dependency() {
+    for k in [0u8, 1] {
+        for h in [0u8, 1] {
+            let mut sum = 0u8;
+            for x in 0u8..8 {
+                let (a, b, e) = (x & 1, x >> 1 & 1, x >> 2 & 1);
+                sum ^= (a & b & e & k) ^ h;
+            }
+            assert_eq!(sum, k, "brute-force XOR over a,b,e at k = {k}, h = {h}");
+        }
+    }
+    let p = key_and_chain();
+    let r = bit_division_property(&p, 1, &[0, 1, 2], 1_000_000).unwrap();
+    assert!(
+        !r.balanced.contains(&0),
+        "output 0 must not be reported balanced: {:?}",
+        r.balanced
+    );
+    assert!(r.unproven.contains(&0));
+}
+
+/// Same shape with the constant a known zero (no key addition): the output is
+/// `h`, independent of the active inputs, and the AND still kills its data
+/// input, so division reaches nothing and nothing depends on `a, b, e`.
+#[test]
+fn and_with_known_zero_constant_still_kills_the_wire() {
+    let mut p = key_and_chain();
+    if let Layer::Arx { ops, .. } = &mut p.rounds[0].layers[0] {
+        ops.remove(0);
+    }
+    let r = bit_division_property(&p, 1, &[0, 1, 2], 1_000_000).unwrap();
+    assert!(!r.unproven.contains(&0));
+    assert!(!r.balanced.contains(&0), "output 0 = h is independent");
+}
+
+fn one_sbox_primitive(table: Vec<u32>) -> Primitive {
+    Primitive {
+        name: "one-sbox".into(),
+        block_bits: 4,
+        key_bits: 0,
+        scratch_bits: 0,
+        block_codec: Codec::little(4),
+        key_codec: Codec::little(8),
+        sboxes: vec![crate::cryptanalysis::sbox::Sbox::new(4, 4, table).unwrap()],
+        rounds: vec![Round {
+            layers: vec![Layer::SboxParallel {
+                sbox: SboxId(0),
+                width_bits: 4,
+                count: 1,
+                bit_offset: 0,
+            }],
+        }],
+        key_schedule: KeySchedule::Independent {
+            round_keys: 0,
+            round_key_bits: 1,
+        },
+        feed_forward: FeedForward::None,
+        kind: Kind::Spn,
+    }
+}
+
+#[test]
+fn word_division_property_requires_bijective_sbox_for_all() {
+    let bij = one_sbox_primitive(vec![
+        0xC, 5, 6, 0xB, 9, 0, 0xA, 0xD, 3, 0xE, 0xF, 8, 4, 7, 1, 2,
+    ]);
+    assert!(bij.sboxes[0].is_bijective());
+    assert_eq!(
+        word_division_property(&bij, 1, &[0]).unwrap()[0],
+        vec![WordProp::All]
+    );
+    let non: Vec<u32> = (0..16).map(|x| x & 7).collect();
+    let non = one_sbox_primitive(non);
+    assert!(!non.sboxes[0].is_bijective());
+    assert_eq!(
+        word_division_property(&non, 1, &[0]).unwrap()[0],
+        vec![WordProp::Unknown]
+    );
+    // A constant word stays constant through any S-box.
+    assert_eq!(
+        word_division_property(&non, 1, &[]).unwrap()[0],
+        vec![WordProp::Const]
+    );
 }

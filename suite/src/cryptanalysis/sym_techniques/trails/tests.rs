@@ -1,6 +1,17 @@
 //! Positive controls for the trail engines (plan section 4.3): the published
 //! active-S-box bounds of AES and PRESENT, and an exhaustive cross-check on
 //! ToySpn.
+//!
+//! Scope of the AES rows: AES results come from the word-level engine only
+//! ([`ValueModel::new`] rejects S-box widths above 6, and [`Engine::Auto`]
+//! picks [`Engine::Word`] for 8-bit S-boxes); the value engine never ran on
+//! AES. The word engine, the word-level SAT encoding and the word-level MILP
+//! encoding all read one [`word_components`] table, so they are three solvers
+//! on one model, not independent derivations. That the model is exact for AES
+//! rests on MixColumns being GF(2^8)-linear and MDS: a column pattern
+//! `(P, Q)` of active input and output bytes is feasible iff
+//! `|P| + |Q| >= 5`. [`aes_mixcolumns_branch_number_independent_control`]
+//! checks that fact without `word_components`.
 
 use super::*;
 use crate::cryptanalysis::sym_ir::primitives::{aes128, present80, toyspn};
@@ -110,6 +121,118 @@ fn toyspn_two_round_matches_exhaustive_enumeration() {
     }
 }
 
+/// Multiply in GF(2^8) modulo `x^8 + x^4 + x^3 + x + 1` (local, not the IR's).
+fn gf_mul(mut a: u8, mut b: u8) -> u8 {
+    let mut p = 0;
+    while b != 0 {
+        if b & 1 != 0 {
+            p ^= a;
+        }
+        a = (a << 1) ^ if a & 0x80 != 0 { 0x1b } else { 0 };
+        b >>= 1;
+    }
+    p
+}
+
+/// Determinant over GF(2^8) (characteristic 2, so no signs) by expansion
+/// along the first row.
+fn gf_det(m: &[Vec<u8>]) -> u8 {
+    if m.len() == 1 {
+        return m[0][0];
+    }
+    let mut d = 0;
+    for c in 0..m.len() {
+        let minor: Vec<Vec<u8>> = m[1..]
+            .iter()
+            .map(|row| {
+                row.iter()
+                    .enumerate()
+                    .filter(|&(j, _)| j != c)
+                    .map(|(_, &v)| v)
+                    .collect()
+            })
+            .collect();
+        d ^= gf_mul(m[0][c], gf_det(&minor));
+    }
+    d
+}
+
+/// Independent control for the AES word model (does not call
+/// `word_components` and does not use the IR's matrix): the MixColumns
+/// branch number `min_{x != 0} wt(x) + wt(Mx)` over bytes, for the circulant
+/// `[2 3 1 1]` over GF(2^8).
+///
+/// * Exhaustively, for every input of byte weight 1 and 2 (`4 * 255 +
+///   6 * 255^2` inputs) the output weight is at least `5 - wt(x)`, and
+///   weight 1 attains 4 (so the branch number is at most 5).
+/// * For the remaining weights, every square submatrix of `M` (all 1x1,
+///   2x2, 3x3 and the 4x4) has nonzero determinant, i.e. `M` is MDS, which
+///   gives `wt(Mx) >= 5 - wt(x)` for every input.
+#[test]
+fn aes_mixcolumns_branch_number_independent_control() {
+    let row = [2u8, 3, 1, 1];
+    let m: Vec<Vec<u8>> = (0..4)
+        .map(|i| (0..4).map(|j| row[(j + 4 - i) % 4]).collect())
+        .collect();
+    let apply = |x: [u8; 4]| -> [u8; 4] {
+        let mut y = [0u8; 4];
+        for i in 0..4 {
+            for j in 0..4 {
+                y[i] ^= gf_mul(m[i][j], x[j]);
+            }
+        }
+        y
+    };
+    let wt = |v: &[u8; 4]| v.iter().filter(|&&b| b != 0).count();
+    let mut min_total = usize::MAX;
+    for support in 1u8..16 {
+        let idx: Vec<usize> = (0..4).filter(|&i| support >> i & 1 == 1).collect();
+        if idx.len() > 2 {
+            continue;
+        }
+        let ranges = 255usize.pow(idx.len() as u32);
+        for code in 0..ranges {
+            let mut x = [0u8; 4];
+            let mut c = code;
+            for &i in &idx {
+                x[i] = (c % 255) as u8 + 1;
+                c /= 255;
+            }
+            let total = idx.len() + wt(&apply(x));
+            min_total = min_total.min(total);
+            assert!(total >= 5, "input {x:?}: weights sum to {total}");
+        }
+    }
+    assert_eq!(min_total, 5, "branch number attained by weight-1 inputs");
+    // MDS: every square submatrix is nonsingular.
+    let mut checked = 0;
+    for rows in 1u8..16 {
+        for cols in 1u8..16 {
+            if rows.count_ones() != cols.count_ones() {
+                continue;
+            }
+            let sub: Vec<Vec<u8>> = (0..4)
+                .filter(|&i| rows >> i & 1 == 1)
+                .map(|i| {
+                    (0..4)
+                        .filter(|&j| cols >> j & 1 == 1)
+                        .map(|j| m[i][j])
+                        .collect()
+                })
+                .collect();
+            assert_ne!(
+                gf_det(&sub),
+                0,
+                "singular submatrix rows {rows:b} cols {cols:b}"
+            );
+            checked += 1;
+        }
+    }
+    assert_eq!(checked, 16 + 36 + 16 + 1);
+}
+
+/// The word engine (the only engine that runs on AES) reproduces the
+/// wide-trail bounds 1, 5, 9, 25 over 1..4 rounds, in both directions.
 #[test]
 fn aes_word_level_bounds_differential_and_linear() {
     let p = aes128::reduced(4, false);
@@ -168,6 +291,8 @@ fn present_five_rounds_ten_active() {
 
 use crate::cryptanalysis::sym_techniques::trails::{milp, sat};
 
+/// Word-level SAT on AES: same `word_components` model as the word engine
+/// (a second solver on one model, not an independent derivation).
 #[test]
 fn sat_aes_two_and_four_rounds() {
     for (rounds, expect) in [(2usize, 5u32), (4, 25)] {
@@ -270,6 +395,9 @@ fn milp_solver_tiny_vertex_cover_and_lp_export() {
         .is_none());
 }
 
+/// Word-level MILP on AES: same `word_components` model as the word engine
+/// and word-level SAT (a third solver on one model); float simplex, so a
+/// cross-check rather than a certificate.
 #[test]
 fn milp_aes_two_three_four_rounds() {
     for (rounds, expect) in [(2usize, 5u32), (3, 9), (4, 25)] {
@@ -297,50 +425,31 @@ fn milp_aes_two_three_four_rounds() {
 
 #[test]
 fn milp_present_bit_level_reaches_2_rounds_shortfall_vs_published_5() {
-    // Shortfall, recorded: the built-in dense-simplex branch and bound proves
-    // PRESENT bounds only up to 2 rounds at bit level (published: 10 active
-    // S-boxes over 5 rounds, which the SAT and value engines reproduce); the
-    // model exports to `.lp` for an external solver.
+    // Shortfall, recorded: the built-in dense-simplex branch and bound
+    // finishes PRESENT only up to 2 rounds at bit level within a fixed node
+    // budget (published: 10 active S-boxes over 5 rounds, which the SAT and
+    // value engines reproduce); the model exports to `.lp` for an external
+    // solver. The limit is a node budget, not a wall clock, so the outcome
+    // does not depend on machine speed. MILP values are float-based
+    // cross-checks, not exact certificates.
     let p = present80::present80();
     let published = [1u32, 2, 4, 6, 10];
-    let mut reached = 0;
-    for rounds in 2..=5usize {
-        let t = std::time::Instant::now();
-        let r = milp::min_active_sboxes(
-            &p,
-            rounds,
-            Direction::Differential,
-            &milp::MilpOptions {
-                node_budget: 50_000,
-                time_limit_ms: 15_000,
-                ..Default::default()
-            },
-        );
-        match r {
-            Ok(r) => {
-                eprintln!(
-                    "MILP PRESENT {rounds}r: minima {:?}, {} nodes, {} vars, {} rows, {:?}",
-                    r.minima_by_rounds,
-                    r.nodes,
-                    r.n_vars,
-                    r.n_rows,
-                    t.elapsed()
-                );
-                assert_eq!(r.level, sat::Level::Bit);
-                assert_eq!(r.min_active, published[rounds - 1]);
-                reached = rounds;
-            }
-            Err(e) => {
-                eprintln!("MILP PRESENT {rounds}r: {e} after {:?}", t.elapsed());
-                break;
-            }
-        }
-    }
-    assert_eq!(
-        reached, 2,
-        "2 rounds reached; 3 or more exceed the time limit"
+    let opts = milp::MilpOptions {
+        node_budget: NODE_BUDGET,
+        ..Default::default()
+    };
+    let r = milp::min_active_sboxes(&p, 2, Direction::Differential, &opts).unwrap();
+    eprintln!(
+        "MILP PRESENT 2r: minima {:?}, {} nodes, {} vars, {} rows",
+        r.minima_by_rounds, r.nodes, r.n_vars, r.n_rows
     );
+    assert_eq!(r.level, sat::Level::Bit);
+    assert_eq!(r.min_active, published[1]);
+    let r3 = milp::min_active_sboxes(&p, 3, Direction::Differential, &opts);
+    assert_eq!(r3.err(), Some(TrailError::BudgetExceeded));
 }
+
+const NODE_BUDGET: u64 = 60;
 
 #[test]
 fn present_best_concrete_trails_are_consistent_with_active_bounds() {
@@ -360,7 +469,7 @@ fn present_best_concrete_trails_are_consistent_with_active_bounds() {
                 1.0
             };
             eprintln!(
-                "PRESENT {rounds}r {dir:?}: best weight {:.3} (bias 2^-{:.3} for linear), min active {} ({:?})",
+                "PRESENT {rounds}r {dir:?}: best weight {:.3} (-log2 probability for differential, -log2 |correlation| for linear; linear bias is 2^-(weight+1) = 2^-{:.3}), min active {} ({:?})",
                 c.weight,
                 c.weight + 1.0,
                 a.min_active,

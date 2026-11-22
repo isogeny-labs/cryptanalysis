@@ -25,8 +25,9 @@
 //! * **Word-based** (conventional integral properties of J. Daemen, L.
 //!   Knudsen and V. Rijmen, "The block cipher Square", FSE 1997, as used by
 //!   Todo's word-based division property): every word of an S-box layer is
-//!   CONST, ALL, BALANCED or UNKNOWN; S-boxes keep ALL and CONST and destroy
-//!   BALANCED; a linear layer outputs ALL from one ALL word and constants,
+//!   CONST, ALL, BALANCED or UNKNOWN; bijective S-boxes keep ALL and CONST, any
+//!   other S-box keeps only CONST (ALL becomes UNKNOWN), and BALANCED is
+//!   destroyed; a linear layer outputs ALL from one ALL word and constants,
 //!   BALANCED when no input is UNKNOWN, CONST from constants.
 //!
 //! Both are sound over-approximations: a bit or word reported balanced is
@@ -189,6 +190,14 @@ fn build_netlist(p: &Primitive, rounds: usize) -> Result<Netlist, IntegralError>
     };
     let mut have_table = vec![false; p.sboxes.len()];
     let mut st: Vec<Option<usize>> = vec![None; sb];
+    // A `None` wire is a constant. `st_kd[i]` tells which constant: `false`
+    // is a known zero (zero-initialised scratch, `Shr` fill); `true` is a
+    // constant the netlist cannot evaluate, i.e. one that depends on a round
+    // key or a round constant (`XorKey`, `XorConst`, `AddRoundKey`,
+    // `AddConst` on a constant wire). ANDing a data wire with a known zero
+    // kills it; ANDing with an unknown constant may pass it unchanged, so
+    // the wire must stay a consumer.
+    let mut st_kd: Vec<bool> = vec![false; sb];
     for slot in st.iter_mut().take(p.block_bits) {
         let w = net.new_wire();
         net.inputs.push(w);
@@ -197,18 +206,39 @@ fn build_netlist(p: &Primitive, rounds: usize) -> Result<Netlist, IntegralError>
     for r in &p.rounds[..rounds] {
         for l in &r.layers {
             match l {
-                Layer::AddRoundKey { .. } | Layer::AddConst { .. } => {}
+                Layer::AddRoundKey { bit_offset, .. } => {
+                    let end = (bit_offset + p.key_schedule.round_key_bits()).min(sb);
+                    for i in *bit_offset..end {
+                        if st[i].is_none() {
+                            st_kd[i] = true;
+                        }
+                    }
+                }
+                Layer::AddConst {
+                    bit_offset, bits, ..
+                } => {
+                    let end = (bit_offset + bits).min(sb);
+                    for i in *bit_offset..end {
+                        if st[i].is_none() {
+                            st_kd[i] = true;
+                        }
+                    }
+                }
                 Layer::Permute { perm } => {
                     st = perm.iter().map(|&q| st[q]).collect();
+                    st_kd = perm.iter().map(|&q| st_kd[q]).collect();
                 }
                 Layer::LinearGf2 { matrix } => {
                     let old = st.clone();
+                    let old_kd = st_kd.clone();
                     for (i, slot) in st.iter_mut().enumerate() {
                         let ins: Vec<usize> = (0..sb)
                             .filter(|&j| matrix.get(i, j))
                             .filter_map(|j| old[j])
                             .collect();
                         *slot = net.xor(ins);
+                        st_kd[i] = slot.is_none()
+                            && (0..sb).any(|j| matrix.get(i, j) && old[j].is_none() && old_kd[j]);
                     }
                 }
                 Layer::SboxParallel {
@@ -234,6 +264,7 @@ fn build_netlist(p: &Primitive, rounds: usize) -> Result<Netlist, IntegralError>
                         let outs: Vec<usize> = (0..*width_bits).map(|_| net.new_wire()).collect();
                         for (i, &o) in outs.iter().enumerate() {
                             st[off + i] = Some(o);
+                            st_kd[off + i] = false;
                         }
                         net.gates.push(Gate::Sbox {
                             ins,
@@ -247,42 +278,80 @@ fn build_netlist(p: &Primitive, rounds: usize) -> Result<Netlist, IntegralError>
                     let regs = sb / w;
                     let mut rg: Vec<Vec<Option<usize>>> =
                         (0..regs).map(|r| st[r * w..(r + 1) * w].to_vec()).collect();
+                    let mut kd: Vec<Vec<bool>> = (0..regs)
+                        .map(|r| st_kd[r * w..(r + 1) * w].to_vec())
+                        .collect();
                     for op in ops {
-                        let (dst, val): (usize, Vec<Option<usize>>) = match *op {
-                            ArxOp::Rotl { dst, src, k } => {
-                                (dst, (0..w).map(|b| rg[src][(b + w - k % w) % w]).collect())
-                            }
+                        let (dst, val, val_kd): (usize, Vec<Option<usize>>, Vec<bool>) = match *op {
+                            ArxOp::Rotl { dst, src, k } => (
+                                dst,
+                                (0..w).map(|b| rg[src][(b + w - k % w) % w]).collect(),
+                                (0..w).map(|b| kd[src][(b + w - k % w) % w]).collect(),
+                            ),
                             ArxOp::Shr { dst, src, k } => (
                                 dst,
                                 (0..w)
                                     .map(|b| if b + k < w { rg[src][b + k] } else { None })
                                     .collect(),
+                                (0..w).map(|b| b + k < w && kd[src][b + k]).collect(),
                             ),
-                            ArxOp::Copy { dst, src } => (dst, rg[src].clone()),
+                            ArxOp::Copy { dst, src } => (dst, rg[src].clone(), kd[src].clone()),
                             ArxOp::Xor { dst, a, b } => {
-                                let v = (0..w)
+                                let v: Vec<Option<usize>> = (0..w)
                                     .map(|i| {
                                         let ins: Vec<usize> =
                                             [rg[a][i], rg[b][i]].into_iter().flatten().collect();
                                         net.xor(ins)
                                     })
                                     .collect();
-                                (dst, v)
+                                let k = (0..w)
+                                    .map(|i| {
+                                        v[i].is_none()
+                                            && ((rg[a][i].is_none() && kd[a][i])
+                                                || (rg[b][i].is_none() && kd[b][i]))
+                                    })
+                                    .collect();
+                                (dst, v, k)
                             }
                             ArxOp::And { dst, a, b } => {
-                                let v = (0..w)
-                                    .map(|i| match (rg[a][i], rg[b][i]) {
+                                let mut v = Vec::with_capacity(w);
+                                let mut k = Vec::with_capacity(w);
+                                for i in 0..w {
+                                    let (ka, kb) = (kd[a][i], kd[b][i]);
+                                    let (o, okd) = match (rg[a][i], rg[b][i]) {
                                         (Some(x), Some(y)) => {
                                             let out = net.new_wire();
                                             net.gates.push(Gate::And { a: x, b: y, out });
-                                            Some(out)
+                                            (Some(out), false)
                                         }
-                                        _ => None,
-                                    })
-                                    .collect();
-                                (dst, v)
+                                        // Data AND unknown constant: the
+                                        // constant may be 1, so the data wire
+                                        // passes through (and stays a
+                                        // consumer); it may be 0, which only
+                                        // makes the output constant, covered
+                                        // by the same over-approximation.
+                                        (Some(x), None) if kb => (Some(x), false),
+                                        (None, Some(y)) if ka => (Some(y), false),
+                                        (Some(_), None) | (None, Some(_)) => (None, false),
+                                        // Two constants: known zero wins.
+                                        (None, None) => (None, ka && kb),
+                                    };
+                                    v.push(o);
+                                    k.push(okd);
+                                }
+                                (dst, v, k)
                             }
-                            ArxOp::XorConst { .. } | ArxOp::XorKey { .. } => continue,
+                            ArxOp::XorConst { dst, .. } | ArxOp::XorKey { dst, .. } => {
+                                // The data dependency is unchanged, but a
+                                // constant wire becomes key/round-constant
+                                // dependent.
+                                for i in 0..w {
+                                    if rg[dst][i].is_none() {
+                                        kd[dst][i] = true;
+                                    }
+                                }
+                                continue;
+                            }
                             ArxOp::Add { .. } | ArxOp::AddConst { .. } | ArxOp::AddKey { .. } => {
                                 return Err(IntegralError::Unsupported(
                                     "modular addition has no bit-based rule here".into(),
@@ -290,8 +359,10 @@ fn build_netlist(p: &Primitive, rounds: usize) -> Result<Netlist, IntegralError>
                             }
                         };
                         rg[dst] = val;
+                        kd[dst] = val_kd;
                     }
                     st = rg.into_iter().flatten().collect();
+                    st_kd = kd.into_iter().flatten().collect();
                 }
             }
         }
@@ -611,10 +682,13 @@ pub fn word_division_property(
     for r in &p.rounds[..rounds] {
         for l in &r.layers {
             match l {
-                Layer::SboxParallel { .. } => {
+                Layer::SboxParallel { sbox, .. } => {
+                    // ALL -> ALL needs a bijection; any other S-box gives
+                    // UNKNOWN (CONST stays CONST).
+                    let bij = p.sboxes[sbox.0].is_bijective();
                     for s in st.iter_mut() {
                         *s = match *s {
-                            WordProp::All => WordProp::All,
+                            WordProp::All if bij => WordProp::All,
                             WordProp::Const => WordProp::Const,
                             _ => WordProp::Unknown,
                         };

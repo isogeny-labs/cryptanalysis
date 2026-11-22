@@ -34,6 +34,13 @@
 //!   The word model is a *relaxation* of the value model (every real trail
 //!   is a model trail), so its optimum is a valid lower bound that equals the
 //!   true minimum when the component relations are tight, as for AES.
+//!   AES is run by this engine only: the value engine rejects S-boxes wider
+//!   than 6 bits, and [`Engine::Auto`] picks the word engine. The word SAT
+//!   and word MILP encodings ([`sat`], [`milp`]) read the same
+//!   [`word_components`] table, so for AES the three solvers share one model
+//!   and are not independent derivations. Exactness for AES follows from
+//!   MixColumns being GF(2^8)-linear and MDS: a column pattern is feasible
+//!   iff `|P| + |Q| >= 5`.
 //!
 //! Encodings of the same model for MILP (A. Mouha, Q. Wang, D. Gu, B.
 //! Preneel, "Differential and linear cryptanalysis using mixed-integer linear
@@ -301,6 +308,12 @@ pub struct ActiveSboxResult {
     /// Best concrete trail, if requested and available (S-box width at most
     /// 4, value engine).
     pub concrete: Option<ConcreteTrail>,
+    /// True when `with_concrete` was requested, the S-boxes qualify, and the
+    /// concrete-trail search ran out of `node_budget`: `concrete` is then
+    /// `None` because the search was cut off, not because no trail exists.
+    /// The active-S-box numbers are unaffected (they come from a separate,
+    /// completed search).
+    pub concrete_budget_exceeded: bool,
 }
 
 // ── S-box transition tables ──────────────────────────────────────────────
@@ -1093,8 +1106,16 @@ pub fn min_active_sboxes(
             let vm = ValueModel::new(model)?;
             let o = value_search(&vm, false, opts.node_budget, 0)?;
             let (_, ins, _) = o.trail.expect("search found a trail");
+            let mut concrete_budget_exceeded = false;
             let concrete = if opts.with_concrete && model.max_width() <= 4 {
-                best_concrete_trail(model, opts.node_budget).ok()
+                match best_concrete_trail(model, opts.node_budget) {
+                    Ok(c) => Some(c),
+                    Err(TrailError::BudgetExceeded) => {
+                        concrete_budget_exceeded = true;
+                        None
+                    }
+                    Err(e) => return Err(e),
+                }
             } else {
                 None
             };
@@ -1107,6 +1128,7 @@ pub fn min_active_sboxes(
                 exact: true,
                 nodes: o.nodes,
                 concrete,
+                concrete_budget_exceeded,
             })
         }
         Engine::Word => {
@@ -1126,6 +1148,7 @@ pub fn min_active_sboxes(
                 exact: false,
                 nodes: o.nodes,
                 concrete: None,
+                concrete_budget_exceeded: false,
             })
         }
     }
