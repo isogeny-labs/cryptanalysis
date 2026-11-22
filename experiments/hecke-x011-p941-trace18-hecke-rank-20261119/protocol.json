@@ -1,0 +1,20 @@
+{
+  "schema": "x011-p941-trace18-hecke-rank-protocol-v1",
+  "selection_rule": "Use the largest corrected regular absolute-trace fiber in the independent p941 census field; the pre-run census identifies |t|=18 with 112 points.",
+  "p": 941,
+  "curve": "11a1: y^2+y=x^3-x^2-10x-20",
+  "curve_order": 900,
+  "fiber_abs_trace": 18,
+  "expected_fiber_size": 112,
+  "point_order": "sorted by integer affine coordinates (x,y) from the corrected ledger",
+  "corrected_ledger": "../hecke-x011-trace-fiber-census-20261119/points_v2.jsonl.gz",
+  "corrected_ledger_sha256": "0fea606b245a4889df66d551a41d8b7dc403438a9a95fdd940ff15f5082b3087",
+  "regularized_hecke_source_sha256": "d13a8663c1beb145c0b66147305831bb15678208d126df5b69ddf5e17962b32b",
+  "hecke_degrees": [2, 3],
+  "hecke_row_policy": "For each source and degree, retain polynomial coefficients, factor degrees, rational-root count and status. Accept a row only for a uniquely reconstructed complete rational neighbor multiset wholly inside the frozen fiber, after Hecke group-sum and finite-j modular-polynomial checks. Preserve all failed source statuses.",
+  "direct_control": "Exhaust all distinct support-1, support-2 and support-3 signed group-law relations with first coefficient +1 and other signs in order [-1,+1]. Verify every accepted relation on the curve.",
+  "rank_fields": ["QQ", "F2", "F3", "F5"],
+  "resource_cap_seconds": 300,
+  "candidate_id": null,
+  "target_online_ms": null
+}

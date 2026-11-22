@@ -2886,6 +2886,32 @@
     },
     {
       "better": "higher",
+      "first": 1.585,
+      "latest": 1.585,
+      "latest_derived": {},
+      "metric": "conflicts_base_over_rref_l4_sat",
+      "points": [
+        {
+          "commit": "8c3dfacbc7db",
+          "date": "2026-11-18",
+          "derived": {},
+          "n": 96,
+          "record": "20261118T1710Z-l2c-rref-sat-confirm-pdp-m4",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.236,
+            2.024
+          ],
+          "summary": "L2c CONFIRMED: RREF prefix-chain rows cut CaDiCaL conflicts on fresh l4 decomposable m=4 PDP targets to 0.631x [0.494,0.809] (wall 0.742x); solver effect on SAT instances, not an IC improvement. [pcc:unverified]",
+          "value": 1.585
+        }
+      ],
+      "problem": "pdp:m4-dualrail-l3l4",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
       "first": 0.943,
       "latest": 0.943,
       "latest_derived": {},
@@ -2931,6 +2957,32 @@
           ],
           "summary": "L2 KILL: SBVA preprocessing before CaDiCaL on m=4 dual-rail PDP CNFs (l=3,4) gives 1.061x conflicts on l4 UNSAT [0.979,1.143], inside A/A [0.793,1.108]; no gain. [pcc:unverified]",
           "value": 0.943
+        }
+      ],
+      "problem": "pdp:m4-dualrail-l3l4",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.348,
+      "latest": 1.348,
+      "latest_derived": {},
+      "metric": "wall_base_over_rref_l4_sat",
+      "points": [
+        {
+          "commit": "8c3dfacbc7db",
+          "date": "2026-11-18",
+          "derived": {},
+          "n": 96,
+          "record": "20261118T1710Z-l2c-rref-sat-confirm-pdp-m4",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.045,
+            1.736
+          ],
+          "summary": "L2c CONFIRMED: RREF prefix-chain rows cut CaDiCaL conflicts on fresh l4 decomposable m=4 PDP targets to 0.631x [0.494,0.809] (wall 0.742x); solver effect on SAT instances, not an IC improvement. [pcc:unverified]",
+          "value": 1.348
         }
       ],
       "problem": "pdp:m4-dualrail-l3l4",

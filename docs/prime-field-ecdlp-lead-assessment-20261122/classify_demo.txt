@@ -1,0 +1,17 @@
+=== S5 structural pre-screen (demonstration) ===
+[1] small embedding degree / supersingular-type (p=23, a=1,b=0):
+  p=23 a=1 b=0:  #E=24  t=0  j=3  k=2
+       - COMPOSITE order (cofactor 8) -> Pohlig-Hellman; run baseline in order-3 subgroup
+       - small embedding degree k=2 -> MOV/Frey-Ruck to F_p^2
+[2] j=1728 family (b=0) over 31-bit prime:
+  p=2147483647 a=5 b=0:  #E=2147483648  t=0  j=1728  k=1
+       - COMPOSITE order (cofactor 1073741824) -> Pohlig-Hellman; run baseline in order-2 subgroup
+       - small embedding degree k=1 -> MOV/Frey-Ruck to F_p^1
+       - j=1728 -> extra automorphisms, rho gains ~sqrt(|Aut/{+-1}|)
+[3] j=0 family (a=0) over 31-bit prime:
+  p=2147483647 a=0 b=7:  #E=2147444533  t=39115  j=0  k=11012536
+       - COMPOSITE order (cofactor 13) -> Pohlig-Hellman; run baseline in order-165188041 subgroup
+       - j=0 -> extra automorphisms, rho gains ~sqrt(|Aut/{+-1}|)
+[4] composite-order curve:
+  p=1000003 a=1 b=1:  #E=1000727  t=-723  j=806677  k=785
+       - COMPOSITE order (cofactor 637) -> Pohlig-Hellman; run baseline in order-1571 subgroup
