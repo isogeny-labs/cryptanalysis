@@ -1,0 +1,41 @@
+name = "xedniAffineReductionBridge"
+version = "0.1.0"
+defaultTargets = ["AffineReductionBridge", "RegularChainReduction", "RegularGroupLaw", "PrimeLocalReduction", "LocalZModReduction", "RationalLocalWitness", "CoordinateCertificates", "RationalCurveBridge", "CurveEquationCertificates", "RationalRegularStep", "RecordedRegularSteps"]
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4"
+rev = "021c46bdd042f67b538b9f9871d556a93713a9a9"
+
+[[lean_lib]]
+name = "AffineReductionBridge"
+
+[[lean_lib]]
+name = "RegularChainReduction"
+
+[[lean_lib]]
+name = "RegularGroupLaw"
+
+[[lean_lib]]
+name = "PrimeLocalReduction"
+
+[[lean_lib]]
+name = "LocalZModReduction"
+
+[[lean_lib]]
+name = "RationalLocalWitness"
+
+[[lean_lib]]
+name = "CoordinateCertificates"
+
+[[lean_lib]]
+name = "RationalCurveBridge"
+
+[[lean_lib]]
+name = "CurveEquationCertificates"
+
+[[lean_lib]]
+name = "RationalRegularStep"
+
+[[lean_lib]]
+name = "RecordedRegularSteps"

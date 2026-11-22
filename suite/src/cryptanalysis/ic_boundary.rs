@@ -1117,6 +1117,15 @@ pub trait CountedGroup {
     fn neg(&self, p: Self::Elt) -> Self::Elt;
     /// A key that identifies the element (both walks must agree on it).
     fn key(&self, p: &Self::Elt) -> u64;
+    /// The class of `p` in `E / 2E` when the group can read it without
+    /// a group operation (`None` otherwise).  On an ordinary binary curve
+    /// `y² + xy = x³ + ax² + b` a point lies in `2E` exactly when
+    /// `Tr(x) = Tr(a)`, so the class is `Tr(x) + Tr(a)`: a few field
+    /// squarings, no additions.  With cofactor 2 the index-`r` subgroup
+    /// is `2E`, so this is the full coset class of the point.
+    fn coset_parity(&self, _p: &Self::Elt) -> Option<u8> {
+        None
+    }
     /// `[k]P` by double-and-add, counted exactly.
     fn mul(&self, ops: &mut GroupOps, p: Self::Elt, k: u64) -> Self::Elt {
         ops.scalar_mults += 1;
@@ -2933,6 +2942,22 @@ impl CountedGroup for BinaryGroup<'_> {
     fn key(&self, p: &FastPoint) -> u64 {
         p.pack()
     }
+    fn coset_parity(&self, p: &FastPoint) -> Option<u8> {
+        if p.infinity {
+            return Some(0);
+        }
+        let f = &self.0.field;
+        let tr = |v: u64| -> u64 {
+            let (mut acc, mut t) = (v, v);
+            for _ in 1..f.n {
+                t = f.sqr(t);
+                acc ^= t;
+            }
+            debug_assert!(acc == 0 || acc == 1);
+            acc
+        };
+        Some((tr(p.x) ^ tr(self.0.a)) as u8)
+    }
 }
 
 /// Trial-division factorisation of a word.
@@ -3844,12 +3869,31 @@ impl PairTable {
     }
 
     pub fn build<G: CountedGroup>(g: &G, fb: &FactorBase<G::Elt>) -> Self {
+        Self::build_filtered(g, fb, None)
+    }
+
+    /// The full table restricted to the pairs `keep(i, j)` admits, in the
+    /// same order, so every key the filtered table holds carries the same
+    /// first witness as the full table's.  The use is the coset filter:
+    /// with cofactor `h > 1` only pairs whose classes in `E/⟨G⟩` cancel
+    /// can sum to a subgroup target, and a pair that cannot be hit is an
+    /// addition the table pays for nothing.  `None` keeps every pair.
+    pub fn build_filtered<G: CountedGroup>(
+        g: &G,
+        fb: &FactorBase<G::Elt>,
+        keep: Option<&dyn Fn(usize, usize) -> bool>,
+    ) -> Self {
         let start = Instant::now();
         let n = fb.points.len();
         let mut ops = GroupOps::default();
         let mut map: FastMap<(u32, u32)> = fast_map(n * (n + 1) / 4 + 1);
         for i in 0..n {
             for j in i..n {
+                if let Some(keep) = keep {
+                    if !keep(i, j) {
+                        continue;
+                    }
+                }
                 let s = g.add(&mut ops, fb.points[i], fb.points[j]);
                 if g.is_identity(&s) {
                     continue;
@@ -3858,7 +3902,11 @@ impl PairTable {
             }
         }
         Self {
-            kind: "full",
+            kind: if keep.is_some() {
+                "full_coset_filtered"
+            } else {
+                "full"
+            },
             entries: map.len() as u64,
             map: PairWitnessMap::Wide(map),
             build_ops: ops,
@@ -3880,6 +3928,16 @@ impl PairTable {
     /// plus its own double.  About `|F|²/4` additions instead of
     /// `|F|²/2`; the probe is unchanged.
     pub fn build_negation_folded<G: CountedGroup>(g: &G, fb: &FactorBase<G::Elt>) -> Self {
+        Self::build_negation_folded_filtered(g, fb, None)
+    }
+
+    /// The negation-folded table restricted to the pairs `keep(i, j)`
+    /// admits (see [`Self::build_filtered`]); the probe is unchanged.
+    pub fn build_negation_folded_filtered<G: CountedGroup>(
+        g: &G,
+        fb: &FactorBase<G::Elt>,
+        keep: Option<&dyn Fn(usize, usize) -> bool>,
+    ) -> Self {
         let start = Instant::now();
         let mut ops = GroupOps::default();
         let groups: Vec<&Vec<usize>> = fb
@@ -3893,6 +3951,11 @@ impl PairTable {
             let i = groups[ai][0];
             for group in groups.iter().skip(ai) {
                 for &j in group.iter() {
+                    if let Some(keep) = keep {
+                        if !keep(i, j) {
+                            continue;
+                        }
+                    }
                     let s = g.add(&mut ops, fb.points[i], fb.points[j]);
                     if g.is_identity(&s) {
                         continue;
@@ -3902,7 +3965,11 @@ impl PairTable {
             }
         }
         Self {
-            kind: "negation_folded",
+            kind: if keep.is_some() {
+                "negation_folded_coset_filtered"
+            } else {
+                "negation_folded"
+            },
             entries: map.len() as u64,
             map: PairWitnessMap::Wide(map),
             build_ops: ops,
@@ -4012,6 +4079,18 @@ impl FrobeniusPairTable {
     /// `None` when the base is not closed under the Frobenius, has more
     /// than `2^26` points, or the field yields no normal basis.
     pub fn build(inst: &BinaryInstance, fb: &FactorBase<FastPoint>) -> Option<Self> {
+        Self::build_filtered(inst, fb, None)
+    }
+
+    /// The folded table restricted to the representative–point pairs
+    /// `keep(rep, j)` admits, in the same order (the coset filter of
+    /// [`PairTable::build_filtered`]; the Frobenius preserves the class of
+    /// a point, so a representative's class is its orbit's).
+    pub fn build_filtered(
+        inst: &BinaryInstance,
+        fb: &FactorBase<FastPoint>,
+        keep: Option<&dyn Fn(usize, usize) -> bool>,
+    ) -> Option<Self> {
         let start = Instant::now();
         let g = BinaryGroup(&inst.fast);
         let n = inst.n as usize;
@@ -4053,6 +4132,11 @@ impl FrobeniusPairTable {
             for j in 0..f {
                 if fb.col_of[j] < col {
                     continue;
+                }
+                if let Some(keep) = keep {
+                    if !keep(rep, j) {
+                        continue;
+                    }
                 }
                 let u = g.add(&mut ops, fb.points[rep], fb.points[j]);
                 if g.is_identity(&u) {

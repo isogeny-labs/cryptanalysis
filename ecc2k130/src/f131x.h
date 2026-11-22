@@ -26,12 +26,11 @@
 // (VBMI) for the small products and spreads that would otherwise be masks,
 // and as few sorts as the sums allow.
 //
-// This header selects itself only on x86-64 with a hardware multiplier; the
-// scalar path of f131.h stays what AArch64 (PMULL) and the software product
-// run.  ECC_F131_LANES=1 forces the scalar engine on any host, and
-// ECC_F131_LANES=2 or 4 narrows the vectors on a host that could take 8,
-// which is how all three widths are held to f131.h (src/cputest.cpp) and
-// measured on one core.
+// This header selects itself on x86-64 (PCLMUL/VPCLMUL) and AArch64
+// (NEON+PMULL).  ECC_F131_LANES=1 forces the scalar engine on any host;
+// 2 or 4 narrows the vectors on a host that could take 8 (x86) or 4
+// (AArch64), which is how the widths are held to f131.h (src/cputest.cpp)
+// and measured on one core.
 #pragma once
 
 #include "f131.h"
@@ -44,6 +43,8 @@
 #        define ECC_F131_LANES 4
 #    elif ECC_HOST_CLMUL && defined(__x86_64__) && defined(__PCLMUL__) && defined(__SSE2__)
 #        define ECC_F131_LANES 2
+#    elif ECC_HOST_CLMUL && defined(__aarch64__) && defined(__ARM_FEATURE_CRYPTO)
+#        define ECC_F131_LANES 4
 #    else
 #        define ECC_F131_LANES 1
 #    endif
@@ -52,8 +53,11 @@
 #if ECC_F131_LANES != 1 && ECC_F131_LANES != 2 && ECC_F131_LANES != 4 && ECC_F131_LANES != 8
 #    error "ECC_F131_LANES must be 1, 2, 4 or 8"
 #endif
-#if ECC_F131_LANES > 1 && !(ECC_HOST_CLMUL && defined(__x86_64__))
-#    error "ECC_F131_LANES > 1 needs x86-64 with a hardware carry-less multiplier"
+#if ECC_F131_LANES > 1 &&                                                                          \
+    !(ECC_HOST_CLMUL &&                                                                            \
+      (defined(__x86_64__) ||                                                                      \
+       (defined(__aarch64__) && (ECC_F131_LANES == 2 || ECC_F131_LANES == 4))))
+#    error "ECC_F131_LANES > 1 needs x86-64 (2/4/8) or AArch64 NEON+PMULL (2/4)"
 #endif
 
 // The addend's table points by row loads and a transpose (1) or by gathers
@@ -64,7 +68,11 @@
 
 #if ECC_F131_LANES > 1
 
-#    include <immintrin.h>
+#    if defined(__x86_64__)
+#        include <immintrin.h>
+#    elif defined(__aarch64__)
+#        include <arm_neon.h>
+#    endif
 
 namespace f131x
 {
@@ -78,18 +86,30 @@ template <int N> struct Limbs;
 template <> struct Limbs<2> {
     typedef uint64_t V __attribute__((vector_size(16)));
     typedef int64_t S __attribute__((vector_size(16)));
+#    if defined(__aarch64__)
+    typedef uint64x2_t M;
+#    else
     typedef __m128i M;
+#    endif
 };
+#    if ECC_F131_LANES >= 4
 template <> struct Limbs<4> {
     typedef uint64_t V __attribute__((vector_size(32)));
     typedef int64_t S __attribute__((vector_size(32)));
+#        if defined(__aarch64__)
+    typedef uint64x2_t M;
+#        else
     typedef __m256i M;
+#        endif
 };
+#    endif
+#    if defined(__x86_64__) && ECC_F131_LANES >= 8
 template <> struct Limbs<8> {
     typedef uint64_t V __attribute__((vector_size(64)));
     typedef int64_t S __attribute__((vector_size(64)));
     typedef __m512i M;
 };
+#    endif
 
 #    define F131X_INLINE inline __attribute__((always_inline))
 
@@ -128,6 +148,48 @@ template <int N> F131X_INLINE Prod<N> clmul(typename Limbs<N>::V a, typename Lim
 template <int N> F131X_INLINE typename Limbs<N>::V lo(const Prod<N> &p);
 template <int N> F131X_INLINE typename Limbs<N>::V hi(const Prod<N> &p);
 
+#    if defined(__aarch64__)
+template <> F131X_INLINE Prod<2> clmul<2>(Limbs<2>::V a, Limbs<2>::V b)
+{
+    const poly64x2_t pa = vreinterpretq_p64_u64((uint64x2_t)a);
+    const poly64x2_t pb = vreinterpretq_p64_u64((uint64x2_t)b);
+    const uint64x2_t e =
+        vreinterpretq_u64_p128(vmull_p64(vgetq_lane_p64(pa, 0), vgetq_lane_p64(pb, 0)));
+    const uint64x2_t o = vreinterpretq_u64_p128(vmull_high_p64(pa, pb));
+    return Prod<2>{(Limbs<2>::V)e, (Limbs<2>::V)o};
+}
+template <> F131X_INLINE Limbs<2>::V lo<2>(const Prod<2> &p)
+{
+    return (Limbs<2>::V)vuzp1q_u64((uint64x2_t)p.e, (uint64x2_t)p.o);
+}
+template <> F131X_INLINE Limbs<2>::V hi<2>(const Prod<2> &p)
+{
+    return (Limbs<2>::V)vuzp2q_u64((uint64x2_t)p.e, (uint64x2_t)p.o);
+}
+#        if ECC_F131_LANES >= 4
+// Four lanes as two PMULL pairs on the low and high 128-bit halves, packed
+// the same way VPCLMULQDQ leaves them: e = [lo0,hi0,lo2,hi2], o = [lo1,hi1,lo3,hi3].
+template <> F131X_INLINE Prod<4> clmul<4>(Limbs<4>::V a, Limbs<4>::V b)
+{
+    const Limbs<2>::V a0 = {a[0], a[1]}, a1 = {a[2], a[3]};
+    const Limbs<2>::V b0 = {b[0], b[1]}, b1 = {b[2], b[3]};
+    const Prod<2> p0 = clmul<2>(a0, b0), p1 = clmul<2>(a1, b1);
+    const Limbs<4>::V e = {p0.e[0], p0.e[1], p1.e[0], p1.e[1]};
+    const Limbs<4>::V o = {p0.o[0], p0.o[1], p1.o[0], p1.o[1]};
+    return Prod<4>{e, o};
+}
+template <> F131X_INLINE Limbs<4>::V lo<4>(const Prod<4> &p)
+{
+    const Limbs<4>::V r = {p.e[0], p.o[0], p.e[2], p.o[2]};
+    return r;
+}
+template <> F131X_INLINE Limbs<4>::V hi<4>(const Prod<4> &p)
+{
+    const Limbs<4>::V r = {p.e[1], p.o[1], p.e[3], p.o[3]};
+    return r;
+}
+#        endif
+#    else
 template <> F131X_INLINE Prod<2> clmul<2>(Limbs<2>::V a, Limbs<2>::V b)
 {
     return Prod<2>{(Limbs<2>::V)_mm_clmulepi64_si128((__m128i)a, (__m128i)b, 0x00),
@@ -141,7 +203,8 @@ template <> F131X_INLINE Limbs<2>::V hi<2>(const Prod<2> &p)
 {
     return (Limbs<2>::V)_mm_unpackhi_epi64((__m128i)p.e, (__m128i)p.o);
 }
-#    if ECC_F131_LANES >= 4
+#    endif
+#    if defined(__x86_64__) && ECC_F131_LANES >= 4
 template <> F131X_INLINE Prod<4> clmul<4>(Limbs<4>::V a, Limbs<4>::V b)
 {
     return Prod<4>{(Limbs<4>::V)_mm256_clmulepi64_epi128((__m256i)a, (__m256i)b, 0x00),
@@ -225,28 +288,28 @@ template <int N> F131X_INLINE F131x<N> add(const F131x<N> &a, const F131x<N> &b)
 template <int N, int S>
 F131X_INLINE typename Limbs<N>::V shr(typename Limbs<N>::V lo, typename Limbs<N>::V hi)
 {
+#    if F131X_VBMI2
     typedef typename Limbs<N>::V V;
     typedef typename Limbs<N>::M M;
-#    if F131X_VBMI2
     if constexpr (N == 8) return (V)_mm512_shrdi_epi64((M)lo, (M)hi, S);
-#    endif
-#    if F131X_VBMI2 && F131X_VL
+#        if F131X_VL
     if constexpr (N == 4) return (V)_mm256_shrdi_epi64((M)lo, (M)hi, S);
     if constexpr (N == 2) return (V)_mm_shrdi_epi64((M)lo, (M)hi, S);
+#        endif
 #    endif
     return (lo >> S) | (hi << (64 - S));
 }
 template <int N, int S>
 F131X_INLINE typename Limbs<N>::V shl(typename Limbs<N>::V hi, typename Limbs<N>::V lo)
 {
+#    if F131X_VBMI2
     typedef typename Limbs<N>::V V;
     typedef typename Limbs<N>::M M;
-#    if F131X_VBMI2
     if constexpr (N == 8) return (V)_mm512_shldi_epi64((M)hi, (M)lo, S);
-#    endif
-#    if F131X_VBMI2 && F131X_VL
+#        if F131X_VL
     if constexpr (N == 4) return (V)_mm256_shldi_epi64((M)hi, (M)lo, S);
     if constexpr (N == 2) return (V)_mm_shldi_epi64((M)hi, (M)lo, S);
+#        endif
 #    endif
     return (hi << S) | (lo >> (64 - S));
 }
@@ -259,12 +322,32 @@ template <int N>
 F131X_INLINE typename Limbs<N>::V lookup8(const uint64_t t[8], typename Limbs<N>::V idx)
 {
     typedef typename Limbs<N>::V V;
+#    if defined(__aarch64__)
+    if constexpr (N == 2) {
+        static const uint8_t kRep[16] = {0, 0, 0, 0, 0, 0, 0, 0, 8, 8, 8, 8, 8, 8, 8, 8};
+        static const uint8_t kByteOff[16] = {0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7};
+        const uint8x16_t b8 =
+            vshlq_n_u8(vandq_u8(vreinterpretq_u8_u64((uint64x2_t)idx), vdupq_n_u8(7u)), 3);
+        const uint8x16_t bi = vaddq_u8(vqtbl1q_u8(b8, vld1q_u8(kRep)), vld1q_u8(kByteOff));
+        return (V)vreinterpretq_u64_u8(vqtbl4q_u8(vld1q_u8_x4((const uint8_t *)t), bi));
+    }
+#        if ECC_F131_LANES >= 4
+    if constexpr (N == 4) {
+        const Limbs<2>::V a = lookup8<2>(t, Limbs<2>::V{idx[0], idx[1]});
+        const Limbs<2>::V b = lookup8<2>(t, Limbs<2>::V{idx[2], idx[3]});
+        return V{a[0], a[1], b[0], b[1]};
+    }
+#        endif
+#    endif
+#    if defined(__AVX512F__)
     typedef typename Limbs<N>::M M;
     if constexpr (N == 8) {
         return (V)_mm512_permutexvar_epi64((M)idx, _mm512_loadu_si512((const void *)t));
     }
+#    endif
 #    if F131X_VL
     if constexpr (N == 4) {
+        typedef typename Limbs<N>::M M;
         return (V)_mm256_permutex2var_epi64(_mm256_loadu_si256((const __m256i *)t), (M)idx,
                                             _mm256_loadu_si256((const __m256i *)(t + 4)));
     }
@@ -297,19 +380,35 @@ template <int N>
 F131X_INLINE typename Limbs<N>::V tinyProduct(typename Limbs<N>::V a2, typename Limbs<N>::V b2)
 {
     typedef typename Limbs<N>::V V;
-    typedef typename Limbs<N>::M M;
+#    if defined(__aarch64__)
+    if constexpr (N == 2) {
+        const poly8x8_t pa = vreinterpret_p8_u32(vmovn_u64((uint64x2_t)a2));
+        const poly8x8_t pb = vreinterpret_p8_u32(vmovn_u64((uint64x2_t)b2));
+        return (V)vreinterpretq_u64_p16(vmull_p8(pa, pb));
+    }
+#        if ECC_F131_LANES >= 4
+    if constexpr (N == 4) {
+        const Limbs<2>::V p0 =
+            tinyProduct<2>(Limbs<2>::V{a2[0], a2[1]}, Limbs<2>::V{b2[0], b2[1]});
+        const Limbs<2>::V p1 =
+            tinyProduct<2>(Limbs<2>::V{a2[2], a2[3]}, Limbs<2>::V{b2[2], b2[3]});
+        return V{p0[0], p0[1], p1[0], p1[1]};
+    }
+#        endif
+#    endif
 #    if F131X_VBMI
+    typedef typename Limbs<N>::M M;
     if constexpr (N == 8) {
         return (V)_mm512_permutexvar_epi8((M)((a2 << 3) | b2),
                                           _mm512_load_si512((const void *)kTiny.t));
     }
-#    endif
-#    if F131X_VBMI && F131X_VL
+#        if F131X_VL
     if constexpr (N == 4) {
         return (V)_mm256_permutex2var_epi8(_mm256_load_si256((const __m256i *)kTiny.t),
                                            (M)((a2 << 3) | b2),
                                            _mm256_load_si256((const __m256i *)(kTiny.t + 32)));
     }
+#        endif
 #    endif
     return (b2 & (V{} - (a2 & F131x<N>::splat(1u)))) ^
            ((b2 << 1) & (V{} - ((a2 >> 1) & F131x<N>::splat(1u)))) ^
@@ -405,7 +504,12 @@ template <int N> F131X_INLINE F131x<N> sqr(const F131x<N> &a)
     h[1] = hi<N>(l);
     h[2] = lo<N>(u);
     h[3] = hi<N>(u);
-    h[4] = lookup8<N>(kSpread3, a.w2);
+#    if defined(__aarch64__)
+    if constexpr (N == 2)
+        h[4] = tinyProduct<2>(a.w2, a.w2);
+    else
+#    endif
+        h[4] = lookup8<N>(kSpread3, a.w2);
     return reduce<N>(h);
 }
 
@@ -461,6 +565,7 @@ template <int N> F131X_INLINE F131x<N> multiSqr(const F131x<N> &a, const uint64_
 {
     typedef typename Limbs<N>::V V;
     F131x<N> r = {V{}, V{}, V{}};
+#    if defined(__AVX512F__)
     if constexpr (N == 8) {
         typedef Limbs<8>::M M;
         const auto look = [&](int n, V idx) __attribute__((always_inline))
@@ -475,7 +580,9 @@ template <int N> F131X_INLINE F131x<N> multiSqr(const F131x<N> &a, const uint64_
         for (int s = 0; s < 64; s += 4) look(s >> 2, a.w0 >> s);
         for (int s = 0; s < 64; s += 4) look(16 + (s >> 2), a.w1 >> s);
         look(32, a.w2);
-    } else {
+    } else
+#    endif
+    {
         for (int i = 0; i < N; ++i) {
             const F131 x = a.lane(i);
             F131 y = {{0, 0, 0}};
@@ -547,15 +654,31 @@ template <int N> F131X_INLINE F131x<N> fromPolynomial(const F131x<N> &a)
 
 // The sum of the eight bytes of each element.
 template <int N> F131X_INLINE typename Limbs<N>::V byteSum(typename Limbs<N>::V v);
+#    if defined(__aarch64__)
+template <> F131X_INLINE Limbs<2>::V byteSum<2>(Limbs<2>::V v)
+{
+    return (Limbs<2>::V)vpaddlq_u32(vpaddlq_u16(vpaddlq_u8(vreinterpretq_u8_u64((uint64x2_t)v))));
+}
+#    else
 template <> F131X_INLINE Limbs<2>::V byteSum<2>(Limbs<2>::V v)
 {
     return (Limbs<2>::V)_mm_sad_epu8((__m128i)v, _mm_setzero_si128());
 }
+#    endif
 #    if ECC_F131_LANES >= 4
+#        if defined(__aarch64__)
+template <> F131X_INLINE Limbs<4>::V byteSum<4>(Limbs<4>::V v)
+{
+    const Limbs<2>::V s0 = byteSum<2>(Limbs<2>::V{v[0], v[1]});
+    const Limbs<2>::V s1 = byteSum<2>(Limbs<2>::V{v[2], v[3]});
+    return Limbs<4>::V{s0[0], s0[1], s1[0], s1[1]};
+}
+#        else
 template <> F131X_INLINE Limbs<4>::V byteSum<4>(Limbs<4>::V v)
 {
     return (Limbs<4>::V)_mm256_sad_epu8((__m256i)v, _mm256_setzero_si256());
 }
+#        endif
 #    endif
 #    if ECC_F131_LANES >= 8
 template <> F131X_INLINE Limbs<8>::V byteSum<8>(Limbs<8>::V v)
@@ -565,7 +688,7 @@ template <> F131X_INLINE Limbs<8>::V byteSum<8>(Limbs<8>::V v)
 #    endif
 
 // Population count of each 64-bit element: the instruction where there is
-// one (AVX-512 VPOPCNTDQ), else the bit-sliced count.
+// one (NEON CNT+UADDLP or AVX-512 VPOPCNTDQ), else the bit-sliced count.
 template <int N> F131X_INLINE typename Limbs<N>::V popcnt(typename Limbs<N>::V v)
 {
     v = v - ((v >> 1) & F131x<N>::splat(0x5555555555555555ull));
@@ -574,6 +697,21 @@ template <int N> F131X_INLINE typename Limbs<N>::V popcnt(typename Limbs<N>::V v
     v = (v + (v >> 4)) & F131x<N>::splat(0x0f0f0f0f0f0f0f0full);
     return byteSum<N>(v);
 }
+#    if defined(__aarch64__)
+template <> F131X_INLINE Limbs<2>::V popcnt<2>(Limbs<2>::V v)
+{
+    return (Limbs<2>::V)vpaddlq_u32(
+        vpaddlq_u16(vpaddlq_u8(vcntq_u8(vreinterpretq_u8_u64((uint64x2_t)v)))));
+}
+#        if ECC_F131_LANES >= 4
+template <> F131X_INLINE Limbs<4>::V popcnt<4>(Limbs<4>::V v)
+{
+    const Limbs<2>::V p0 = popcnt<2>(Limbs<2>::V{v[0], v[1]});
+    const Limbs<2>::V p1 = popcnt<2>(Limbs<2>::V{v[2], v[3]});
+    return Limbs<4>::V{p0[0], p0[1], p1[0], p1[1]};
+}
+#        endif
+#    endif
 #    if defined(__AVX512VPOPCNTDQ__)
 #        if ECC_F131_LANES >= 8
 template <> F131X_INLINE Limbs<8>::V popcnt<8>(Limbs<8>::V v)
@@ -585,7 +723,7 @@ template <> F131X_INLINE Limbs<8>::V popcnt<8>(Limbs<8>::V v)
 #            if ECC_F131_LANES >= 4
 template <> F131X_INLINE Limbs<4>::V popcnt<4>(Limbs<4>::V v)
 {
-    return (Limbs<4>::V)_mm256_popcnt_epi64((__m256i)v);
+    return (Limbs<4>::V)_mm256_popcnt_epi64((__m512i)v);
 }
 #            endif
 template <> F131X_INLINE Limbs<2>::V popcnt<2>(Limbs<2>::V v)
@@ -598,15 +736,31 @@ template <> F131X_INLINE Limbs<2>::V popcnt<2>(Limbs<2>::V v)
 // The low 32 bits of each element of a times those of b, as a 64-bit product.
 template <int N>
 F131X_INLINE typename Limbs<N>::V mul32(typename Limbs<N>::V a, typename Limbs<N>::V b);
+#    if defined(__aarch64__)
+template <> F131X_INLINE Limbs<2>::V mul32<2>(Limbs<2>::V a, Limbs<2>::V b)
+{
+    return (Limbs<2>::V)vmull_u32(vmovn_u64((uint64x2_t)a), vmovn_u64((uint64x2_t)b));
+}
+#    else
 template <> F131X_INLINE Limbs<2>::V mul32<2>(Limbs<2>::V a, Limbs<2>::V b)
 {
     return (Limbs<2>::V)_mm_mul_epu32((__m128i)a, (__m128i)b);
 }
+#    endif
 #    if ECC_F131_LANES >= 4
+#        if defined(__aarch64__)
+template <> F131X_INLINE Limbs<4>::V mul32<4>(Limbs<4>::V a, Limbs<4>::V b)
+{
+    const Limbs<2>::V p0 = mul32<2>(Limbs<2>::V{a[0], a[1]}, Limbs<2>::V{b[0], b[1]});
+    const Limbs<2>::V p1 = mul32<2>(Limbs<2>::V{a[2], a[3]}, Limbs<2>::V{b[2], b[3]});
+    return Limbs<4>::V{p0[0], p0[1], p1[0], p1[1]};
+}
+#        else
 template <> F131X_INLINE Limbs<4>::V mul32<4>(Limbs<4>::V a, Limbs<4>::V b)
 {
     return (Limbs<4>::V)_mm256_mul_epu32((__m256i)a, (__m256i)b);
 }
+#        endif
 #    endif
 #    if ECC_F131_LANES >= 8
 template <> F131X_INLINE Limbs<8>::V mul32<8>(Limbs<8>::V a, Limbs<8>::V b)
@@ -624,11 +778,18 @@ template <> F131X_INLINE Limbs<2>::V gather32<2>(const uint32_t *t, Limbs<2>::V 
     return r;
 }
 #    if ECC_F131_LANES >= 4
+#        if defined(__aarch64__)
+template <> F131X_INLINE Limbs<4>::V gather32<4>(const uint32_t *t, Limbs<4>::V idx)
+{
+    return Limbs<4>::V{t[idx[0]], t[idx[1]], t[idx[2]], t[idx[3]]};
+}
+#        else
 template <> F131X_INLINE Limbs<4>::V gather32<4>(const uint32_t *t, Limbs<4>::V idx)
 {
     return (Limbs<4>::V)_mm256_cvtepu32_epi64(
         _mm256_i64gather_epi32(reinterpret_cast<const int *>(t), (__m256i)idx, 4));
 }
+#        endif
 #    endif
 #    if ECC_F131_LANES >= 8
 template <> F131X_INLINE Limbs<8>::V gather32<8>(const uint32_t *t, Limbs<8>::V idx)
@@ -646,11 +807,19 @@ template <> F131X_INLINE Limbs<2>::V gather64<2>(const uint32_t *t, Limbs<2>::V 
     return r;
 }
 #    if ECC_F131_LANES >= 4
+#        if defined(__aarch64__)
+template <> F131X_INLINE Limbs<4>::V gather64<4>(const uint32_t *t, Limbs<4>::V idx)
+{
+    return Limbs<4>::V{f131::load64(t + idx[0]), f131::load64(t + idx[1]), f131::load64(t + idx[2]),
+                       f131::load64(t + idx[3])};
+}
+#        else
 template <> F131X_INLINE Limbs<4>::V gather64<4>(const uint32_t *t, Limbs<4>::V idx)
 {
     return (Limbs<4>::V)_mm256_i64gather_epi64(reinterpret_cast<const long long *>(t), (__m256i)idx,
                                                4);
 }
+#        endif
 #    endif
 #    if ECC_F131_LANES >= 8
 template <> F131X_INLINE Limbs<8>::V gather64<8>(const uint32_t *t, Limbs<8>::V idx)
@@ -796,9 +965,9 @@ struct SelectConsts {
 template <int N>
 F131X_INLINE typename Limbs<N>::V inverseWeight(const SelectConsts &c, typename Limbs<N>::V hw)
 {
+#    if F131X_VBMI
     typedef typename Limbs<N>::V V;
     typedef typename Limbs<N>::M M;
-#    if F131X_VBMI
     if constexpr (N == 8) {
         const M lo = _mm512_permutex2var_epi8(_mm512_load_si512((const void *)c.inv8), (M)hw,
                                               _mm512_load_si512((const void *)(c.inv8 + 64)));
@@ -963,12 +1132,182 @@ F131X_INLINE void selectTables(const F131x<8> *xn, const F131x<8> *yp, const Sel
 }
 #    endif
 
+#    if defined(__aarch64__) && ECC_F131_LANES >= 2
+// Two-lane NEON table selection using hardware 64-byte TBL4 (`vqtbl4q_u8`).
+// Out-of-range indices (>= 64) produce 0 in NEON `TBL`, so a 128-entry byte
+// table `t[0..127]` is `vqtbl4q_u8(lo64, idx) | vqtbl4q_u8(hi64, idx ^ 0x40)`,
+// and a 132-entry table `t[0..131]` with `t[0] == 0` is 2 TBL4s + 1 TBL1 with
+// zero GPR<->NEON transfers.
+F131X_INLINE uint8x16_t permute128Neon(const uint8x16x4_t &lo, const uint8x16x4_t &hi,
+                                       uint8x16_t idx)
+{
+    return vorrq_u8(vqtbl4q_u8(lo, idx), vqtbl4q_u8(hi, veorq_u8(idx, vdupq_n_u8(0x40))));
+}
+
+F131X_INLINE Limbs<2>::V permute132Neon(const uint8_t *t, Limbs<2>::V idx)
+{
+    const uint8x16_t ix = vreinterpretq_u8_u64((uint64x2_t)idx);
+    const uint8x16x4_t lo = vld1q_u8_x4(t);
+    const uint8x16x4_t mid = vld1q_u8_x4(t + 64);
+    const uint8x16_t hi = vld1q_u8(t + 128);
+    const uint8x16_t r = vorrq_u8(vorrq_u8(vqtbl4q_u8(lo, ix), vqtbl4q_u8(mid, veorq_u8(ix, vdupq_n_u8(0x40)))),
+                                  vqtbl1q_u8(hi, vsubq_u8(ix, vdupq_n_u8(128))));
+    return (Limbs<2>::V)vreinterpretq_u64_u8(r);
+}
+
+F131X_INLINE Limbs<2>::V gatherQ2(const uint64_t *t, Limbs<2>::V idx)
+{
+    const Limbs<2>::V r = {t[idx[0]], t[idx[1]]};
+    return r;
+}
+
+template <int G>
+F131X_INLINE void selectTablesNeon(const F131x<2> *xn, const F131x<2> *yp, const SelectConsts &c,
+                                   Limbs<2>::V *hwOut, Limbs<2>::V *kOut, Limbs<2>::V *epsOut)
+{
+    typedef Limbs<2>::V V;
+#        define F131X_C(x) F131x<2>::splat(x)
+    const V pos = F131X_C(0x7060504030201000ull), nib = F131X_C(0x0f0f0f0f0f0f0f0full);
+    V top[G], hw[G], s[G], k[G];
+    uint8x16_t i00[G], i01[G], i10[G], i11[G];
+    for (int g = 0; g < G; ++g) {
+        i00[g] = vreinterpretq_u8_u64((uint64x2_t)((xn[g].w0 & nib) | pos));
+        i01[g] = vreinterpretq_u8_u64((uint64x2_t)(((xn[g].w0 >> 4) & nib) | pos));
+        i10[g] = vreinterpretq_u8_u64((uint64x2_t)((xn[g].w1 & nib) | pos));
+        i11[g] = vreinterpretq_u8_u64((uint64x2_t)(((xn[g].w1 >> 4) & nib) | pos));
+    }
+    for (int g = 0; g < G; ++g) top[g] = lookup8<2>(c.top, xn[g].w2);
+    for (int g = 0; g < G; ++g) hw[g] = popcnt<2>(xn[g].w0) + popcnt<2>(xn[g].w1) + (top[g] >> 32);
+
+    uint16x8_t sum16[G];
+    {
+        const uint8x16x4_t lo = vld1q_u8_x4(c.phaseNib[0][0]), hi = vld1q_u8_x4(c.phaseNib[0][0] + 64);
+        for (int g = 0; g < G; ++g) sum16[g] = vpaddlq_u8(permute128Neon(lo, hi, i00[g]));
+    }
+    {
+        const uint8x16x4_t lo = vld1q_u8_x4(c.phaseNib[0][1]), hi = vld1q_u8_x4(c.phaseNib[0][1] + 64);
+        for (int g = 0; g < G; ++g) sum16[g] = vpadalq_u8(sum16[g], permute128Neon(lo, hi, i01[g]));
+    }
+    {
+        const uint8x16x4_t lo = vld1q_u8_x4(c.phaseNib[1][0]), hi = vld1q_u8_x4(c.phaseNib[1][0] + 64);
+        for (int g = 0; g < G; ++g) sum16[g] = vpadalq_u8(sum16[g], permute128Neon(lo, hi, i10[g]));
+    }
+    {
+        const uint8x16x4_t lo = vld1q_u8_x4(c.phaseNib[1][1]), hi = vld1q_u8_x4(c.phaseNib[1][1] + 64);
+        for (int g = 0; g < G; ++g) {
+            sum16[g] = vpadalq_u8(sum16[g], permute128Neon(lo, hi, i11[g]));
+            s[g] = (top[g] & F131X_C(0xffffffffu)) + (V)vpaddlq_u32(vpaddlq_u16(sum16[g]));
+        }
+    }
+    {
+        const uint8x16x4_t ilo = vld1q_u8_x4(c.inv8), imid = vld1q_u8_x4(c.inv8 + 64);
+        const uint8x16_t ihi = vld1q_u8(c.inv8 + 128);
+        for (int g = 0; g < G; ++g) {
+            const uint8x16_t ix = vreinterpretq_u8_u64((uint64x2_t)hw[g]);
+            const V invw = (V)vreinterpretq_u64_u8(
+                vorrq_u8(permute128Neon(ilo, imid, ix), vqtbl1q_u8(ihi, vsubq_u8(ix, vdupq_n_u8(128)))));
+            const V p = mul32<2>(s[g], invw);
+            const V q = mul32<2>(p, F131X_C(32786010u)) >> 32;
+            k[g] = p - mul32<2>(q, F131X_C(131u));
+        }
+    }
+    V p0[G], p1[G], p2[G];
+    for (int g = 0; g < G; ++g) {
+        const uint64_t k0 = k[g][0], k1 = k[g][1];
+        const V m0 = {c.maskLt[0][k0], c.maskLt[0][k1]};
+        const V m1 = {c.maskLt[1][k0], c.maskLt[1][k1]};
+        const V m2 = {c.maskLt2[k0], c.maskLt2[k1]};
+        p0[g] = xn[g].w0 & m0, p1[g] = xn[g].w1 & m1, p2[g] = xn[g].w2 & m2;
+        const V any = (V)((p0[g] | p1[g] | p2[g]) != V{});
+        p0[g] = (p0[g] & any) | (xn[g].w0 & ~any);
+        p1[g] = (p1[g] & any) | (xn[g].w1 & ~any);
+        p2[g] = (p2[g] & any) | (xn[g].w2 & ~any);
+    }
+    uint8x16_t mx[G];
+    {
+        const uint8x16x4_t lo = vld1q_u8_x4(c.maxNib[0][0]), hi = vld1q_u8_x4(c.maxNib[0][0] + 64);
+        for (int g = 0; g < G; ++g)
+            mx[g] = permute128Neon(lo, hi, vreinterpretq_u8_u64((uint64x2_t)((p0[g] & nib) | pos)));
+    }
+    {
+        const uint8x16x4_t lo = vld1q_u8_x4(c.maxNib[0][1]), hi = vld1q_u8_x4(c.maxNib[0][1] + 64);
+        for (int g = 0; g < G; ++g)
+            mx[g] = vmaxq_u8(mx[g], permute128Neon(lo, hi, vreinterpretq_u8_u64((uint64x2_t)(((p0[g] >> 4) & nib) | pos))));
+    }
+    {
+        const uint8x16x4_t lo = vld1q_u8_x4(c.maxNib[1][0]), hi = vld1q_u8_x4(c.maxNib[1][0] + 64);
+        for (int g = 0; g < G; ++g)
+            mx[g] = vmaxq_u8(mx[g], permute128Neon(lo, hi, vreinterpretq_u8_u64((uint64x2_t)((p1[g] & nib) | pos))));
+    }
+    V best[G];
+    {
+        const uint8x16x4_t lo = vld1q_u8_x4(c.maxNib[1][1]), hi = vld1q_u8_x4(c.maxNib[1][1] + 64);
+        for (int g = 0; g < G; ++g) {
+            uint8x16_t m = vmaxq_u8(mx[g], permute128Neon(lo, hi, vreinterpretq_u8_u64((uint64x2_t)(((p1[g] >> 4) & nib) | pos))));
+            m = vmaxq_u8(m, vreinterpretq_u8_u64(vshrq_n_u64(vreinterpretq_u64_u8(m), 32)));
+            m = vmaxq_u8(m, vreinterpretq_u8_u64(vshrq_n_u64(vreinterpretq_u64_u8(m), 16)));
+            m = vmaxq_u8(m, vreinterpretq_u8_u64(vshrq_n_u64(vreinterpretq_u64_u8(m), 8)));
+            const uint64x2_t mb = vandq_u64(vreinterpretq_u64_u8(m), vdupq_n_u64(0xff));
+            const uint64x2_t mt = (uint64x2_t)lookup8<2>(c.maxTop, p2[g]);
+            best[g] = (V)vbslq_u64(vcgtq_u64(mb, mt), mb, mt);
+        }
+    }
+    for (int g = 0; g < G; ++g) {
+        const uint64_t b0 = best[g][0], b1 = best[g][1];
+        const V r0 = {c.rowL[0][b0], c.rowL[0][b1]};
+        const V r1 = {c.rowL[1][b0], c.rowL[1][b1]};
+        const V r2 = {c.rowL2[b0], c.rowL2[b1]};
+        epsOut[g] = popcnt<2>((yp[g].w0 & r0) ^ (yp[g].w1 & r1) ^ (yp[g].w2 & r2)) & F131X_C(1u);
+        hwOut[g] = hw[g];
+        kOut[g] = k[g];
+    }
+#        undef F131X_C
+}
+#    endif
+
 template <int N, int G>
 F131X_INLINE void select(const F131x<N> *xn, const F131x<N> *yp, const SelectConsts &c,
                          typename Limbs<N>::V *hwOut, typename Limbs<N>::V *kOut,
                          typename Limbs<N>::V *epsOut)
 {
     typedef typename Limbs<N>::V V;
+#    if defined(__aarch64__) && ECC_F131_LANES >= 2
+    if constexpr (N == 2) {
+        selectTablesNeon<G>(xn, yp, c, hwOut, kOut, epsOut);
+        return;
+    }
+#        if ECC_F131_LANES >= 4
+    if constexpr (N == 4) {
+        // Two NEON TBL4 selects on the low/high lane pairs — same kernels as
+        // the 2-lane path, avoiding the generic plane-popcount fallback that
+        // dominated single-core A/B when 4-lane first landed.
+        F131x<2> xn0[G], xn1[G], yp0[G], yp1[G];
+        Limbs<2>::V hw0[G], hw1[G], k0[G], k1[G], e0[G], e1[G];
+        for (int g = 0; g < G; ++g) {
+            xn0[g] = F131x<2>{Limbs<2>::V{xn[g].w0[0], xn[g].w0[1]},
+                              Limbs<2>::V{xn[g].w1[0], xn[g].w1[1]},
+                              Limbs<2>::V{xn[g].w2[0], xn[g].w2[1]}};
+            xn1[g] = F131x<2>{Limbs<2>::V{xn[g].w0[2], xn[g].w0[3]},
+                              Limbs<2>::V{xn[g].w1[2], xn[g].w1[3]},
+                              Limbs<2>::V{xn[g].w2[2], xn[g].w2[3]}};
+            yp0[g] = F131x<2>{Limbs<2>::V{yp[g].w0[0], yp[g].w0[1]},
+                              Limbs<2>::V{yp[g].w1[0], yp[g].w1[1]},
+                              Limbs<2>::V{yp[g].w2[0], yp[g].w2[1]}};
+            yp1[g] = F131x<2>{Limbs<2>::V{yp[g].w0[2], yp[g].w0[3]},
+                              Limbs<2>::V{yp[g].w1[2], yp[g].w1[3]},
+                              Limbs<2>::V{yp[g].w2[2], yp[g].w2[3]}};
+        }
+        selectTablesNeon<G>(xn0, yp0, c, hw0, k0, e0);
+        selectTablesNeon<G>(xn1, yp1, c, hw1, k1, e1);
+        for (int g = 0; g < G; ++g) {
+            hwOut[g] = Limbs<4>::V{hw0[g][0], hw0[g][1], hw1[g][0], hw1[g][1]};
+            kOut[g] = Limbs<4>::V{k0[g][0], k0[g][1], k1[g][0], k1[g][1]};
+            epsOut[g] = Limbs<4>::V{e0[g][0], e0[g][1], e1[g][0], e1[g][1]};
+        }
+        return;
+    }
+#        endif
+#    endif
 #    if F131X_VBMI && ECC_F131_LANES >= 8
     if constexpr (N == 8) {
         selectTables<G>(xn, yp, c, hwOut, kOut, epsOut);
@@ -1049,10 +1388,22 @@ F131X_INLINE void select(const F131x<N> &xn, const F131x<N> &yp, const SelectCon
 // Whether any element of v is nonzero.
 template <int N> F131X_INLINE bool anySet(typename Limbs<N>::V v)
 {
+#    if defined(__aarch64__)
+    if constexpr (N == 2) return vmaxvq_u32(vreinterpretq_u32_u64((uint64x2_t)v)) != 0;
+    if constexpr (N == 4) {
+        const uint64x2_t lo = {v[0], v[1]}, hi = {v[2], v[3]};
+        return vmaxvq_u32(vreinterpretq_u32_u64(lo)) != 0 ||
+               vmaxvq_u32(vreinterpretq_u32_u64(hi)) != 0;
+    }
+#    else
     typedef typename Limbs<N>::M M;
     if constexpr (N == 8) return _mm512_test_epi64_mask((M)v, (M)v) != 0;
     if constexpr (N == 4) return !_mm256_testz_si256((M)v, (M)v);
     if constexpr (N == 2) return !_mm_testz_si128((M)v, (M)v);
+#    endif
+    for (int i = 0; i < N; ++i)
+        if (v[i]) return true;
+    return false;
 }
 
 // The low 32 bits of each element, to out[0..N).
@@ -1124,7 +1475,7 @@ F131X_INLINE void addend(typename Limbs<N>::V tag, const F131x<N> &xp, const F13
                   F131X_C(63u);
     const V neg = V{} - ((tag >> 12) & F131X_C(1u));
     V tx0, tx1, ty0, ty1;
-#    if ECC_F131_ADDEND_ROWS
+#    if ECC_F131_ADDEND_ROWS && defined(__AVX512F__)
     if constexpr (N == 8) {
         // Lane i's entry is the 32 bytes at word t[i]: x0 x1 y0 y1.  Two
         // entries a register, z[i] holding lanes 2i and 2i + 1; the lane

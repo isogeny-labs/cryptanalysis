@@ -1,0 +1,32 @@
+MEASURED last-fall/solving degree (LFD = Caminata-Gorla solving degree) vs tower height k
+repo k = tower height t ; m = arity ; factor base = mu_{2^k}, so N=|V|=2^k.
+Source: experiments/ic-solving-degree/rows-merged.jsonl  [pcc:unverified]
+
+ m  k-range               LFD values slope dLFD/dk      best law  verdict
+------------------------------------------------------------------------------------------------
+==== family=prime ====
+ 2    1..14 3,4,4,4,4,5,5,5,5,6,6,6,6,7          0.25         const  BOUNDED/SUBLINEAR -> oracle polylog-ish; exponent OPEN
+ 3     1..4                  4,7,7,7          0.90        P4~k/4  linear -> likely >=1/2
+ 4     1..4                5,9,13,13          2.80          mk+1  LINEAR, saturates mk+1 -> cost ~C(mk,mk)^w; B1 DEAD
+ 5     1..4               6,11,16,21          5.00          mk+1  LINEAR, saturates mk+1 -> cost ~C(mk,mk)^w; B1 DEAD
+ 6     1..4               7,13,19,25          6.00          mk+1  LINEAR, saturates mk+1 -> cost ~C(mk,mk)^w; B1 DEAD
+ 7     1..3                  8,15,22          7.00          mk+1  LINEAR, saturates mk+1 -> cost ~C(mk,mk)^w; B1 DEAD
+ 8     1..3                  9,17,25          8.00          mk+1  LINEAR, saturates mk+1 -> cost ~C(mk,mk)^w; B1 DEAD
+
+==== family=binary ====
+ 2    8..16        4,4,6,5,7,6,4,4,4         -0.05         const  BOUNDED/SUBLINEAR -> oracle polylog-ish; exponent OPEN
+ 3     2..7              6,7,7,7,7,7          0.14         const  BOUNDED/SUBLINEAR -> oracle polylog-ish; exponent OPEN
+ 4     2..5                8,12,13,9          0.40         const  BOUNDED/SUBLINEAR -> oracle polylog-ish; exponent OPEN
+ 5     2..3                    10,15          5.00          mk+1  LINEAR, saturates mk+1 -> cost ~C(mk,mk)^w; B1 DEAD
+
+EXPONENT IMPLICATION (factor base N=2^k, balanced N~p^{1/m} => k ~ (log2 p)/m, #vars ~ mk ~ log2 p):
+  * LFD bounded (O(1) in k): #monomials ~ (mk)^O(1) = polylog(p) => per-decomposition oracle is
+    poly(log p) => sub-sqrt(p) exponent possible.  SEEN ONLY at m=3 (LFD flat ~7).
+  * LFD = mk+1 (linear, slope~m): D ~ mk ~ log2 p => #monomials ~ C(2mk,mk) ~ p^2 => oracle cost
+    >> p^{1/2}.  SEEN at every arity m>=5 that B1 actually needs for a sub-sqrt exponent.
+  => The ONE arity with a bounded-degree oracle (m=3) is exactly the one that cannot beat sqrt(p)
+     (needs m>=5); the arities that could (m>=5) have solving degree pinned to the mk+1 cap.
+     On this measured evidence the PKM two-power-subgroup tower does NOT yield the p-independent
+     decomposition oracle a sub-sqrt(p) exponent requires: B1 DEAD AS POSED (M2's 70% branch).
+  CAVEAT: high-m lever is short (k<=4); rigorous step = feed LFD=mk+1 into experiments/ic-costmodel
+  and confirm the crossover p* does not exist below cryptographic sizes.
