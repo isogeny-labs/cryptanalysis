@@ -9,6 +9,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import ct316_process_rss as ct316
 import sys
 import tempfile
 from types import SimpleNamespace
@@ -60,7 +61,9 @@ def smoke(fixture, collector_source):
                   reuse_argv_json=json.dumps([str(bin_b)]),
                   output_dir=root/'accepted',model_custody_receipt=custody,
                   model_custody_sha256=sha(custody.read_bytes()),
-                  admission_approved=True,timeout_seconds=10,panel_wall_seconds=30)
+                  admission_approved=True,timeout_seconds=10,panel_wall_seconds=30,
+                  rss_time_binary=Path('/usr/bin/time'),
+                  rss_time_sha256=sha(Path('/usr/bin/time').read_bytes()))
         result = ct310.run(SimpleNamespace(**kw))
         if (result['full_695_and_144_population_consistent'] is not True or
             result['native_execution_independently_verified'] is not False or
@@ -70,9 +73,20 @@ def smoke(fixture, collector_source):
         stored = root/'accepted'
         for name in ('original.bin','reuse.bin','original.stdout','reuse.stdout',
                      'original.stderr','reuse.stderr','original.receipt.json',
-                     'reuse.receipt.json','admission.json','terminal.json'):
+                     'reuse.receipt.json','original.rss.json','reuse.rss.json',
+                'original.rss.txt','reuse.rss.txt','admission.json','terminal.json'):
             if not (stored/name).exists():
                 raise AssertionError('missing exact source custody: '+name)
+        for role in ('original', 'reuse'):
+            receipt = ct310.audit.strict_json(
+                (stored/(role+'.receipt.json')).read_bytes())
+            if (type(receipt['peak_rss_kib']) is not int
+                    or receipt['peak_rss_kib'] <= 0):
+                raise AssertionError('CT316 benign child has no actual OS RSS')
+            if ct316.verify(stored/(role+'.rss.json'),
+                    stored/(role+'.rss.txt'), kw['rss_time_binary'],
+                    kw['rss_time_sha256'], receipt['argv']) != receipt['peak_rss_kib']:
+                raise AssertionError('CT316 independent receipt binding failed')
         if (stored/'original.stdout').read_bytes() != original.encode('utf-8'):
             raise AssertionError('original producer changed bytes')
         if (stored/'reuse.stdout').read_bytes() != reuse.encode('utf-8'):
@@ -128,6 +142,7 @@ def smoke(fixture, collector_source):
                 'producer_auditor_mock_acceptances':1,
                 'mutated_full_log_mock_rejections':1,
                 'benign_python_child_processes':4,
+                'ct316_benign_os_rss_receipts_admitted':2,
                 'ct311_full_pair_zero_clock_rejections':1,
                 'ct311_corrupted_pair_mock_rejections':1,
                 'original_native_model_executions':0,
