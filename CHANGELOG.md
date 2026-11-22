@@ -1,5 +1,48 @@
 # Changelog
 
+## [0.1.15](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.14...cryptanalysis-v0.1.15) (2026-11-22)
+
+
+### Performance
+
+* document R7 measured regression and unresolved native gate ([0860c0f](https://github.com/isogeny-labs/cryptanalysis/commit/0860c0f10aa3c3a3ccc95ee3e2fe8857e3c98c0d))
+* document rejected short-row SpMV specialization (no kernel change) ([3eedc70](https://github.com/isogeny-labs/cryptanalysis/commit/3eedc70b433a1f86501a3cd7fb58e9c1018a6fe7))
+* document rejected Shoup branchless reduction R5 with frozen profile and paired null results ([fe23256](https://github.com/isogeny-labs/cryptanalysis/commit/fe23256a3fc2f5d78df1eb5d5ded7d4e78a10876))
+* preregister R7 aligned coefficient-cursor diagnostic ([a057a38](https://github.com/isogeny-labs/cryptanalysis/commit/a057a38425e59443d5838dd44d8e0069d612c738))
+* preserve all 60 paired timing records for Shoup R5 null result ([848b83c](https://github.com/isogeny-labs/cryptanalysis/commit/848b83cbac90b2002141df107719e17c3831f97c))
+* preserve all 60 R7 paired CPU and wall ratios ([3466cd8](https://github.com/isogeny-labs/cryptanalysis/commit/3466cd88b621c8b7ce2b847b26764c326f1069c0))
+* record R6 rejected two-chain light-row nonunit diagnostic ([d97ae7a](https://github.com/isogeny-labs/cryptanalysis/commit/d97ae7a0908aecc715869c59da147b01034d67c7))
+* record rejected four-chain sparse Lanczos gather (no source change) ([731fe58](https://github.com/isogeny-labs/cryptanalysis/commit/731fe58dc08e85d975f7e059ebdbf4dc83a0e8b7))
+* reject aligned light-row coefficient cursor (R7 paired diagnostic) ([ec83940](https://github.com/isogeny-labs/cryptanalysis/commit/ec83940a0163eb7f8bfa329e721a5cd960409b12))
+* reject hoisted-bound sparse Lanczos gather (120-run diagnostic) ([efb1fc7](https://github.com/isogeny-labs/cryptanalysis/commit/efb1fc795252b88536d75650a8fa3220f4c4539e))
+* reject Shoup branchless correction (R5 120-run null) ([82e6d03](https://github.com/isogeny-labs/cryptanalysis/commit/82e6d030ce946deeaec56592d14eec0fae3d138e))
+* reject two-chain light-row nonunit accumulator (R6 paired profiling) ([3e79364](https://github.com/isogeny-labs/cryptanalysis/commit/3e7936483e2956dd9902462420be182f1383676b))
+* reject two-term light-row nonunit unroll (R8 paired diagnostic) ([3779998](https://github.com/isogeny-labs/cryptanalysis/commit/37799986fe7476ec11bae5ed38d6bbbf5fdc5685))
+* retain all R6 paired CPU and whole-process timing samples ([3c997e9](https://github.com/isogeny-labs/cryptanalysis/commit/3c997e9f4d3986b31b41372a2c399455c1858791))
+* Round 1–3 ECDLP/IC/isogeny/field arithmetic speedups ([e5b41e3](https://github.com/isogeny-labs/cryptanalysis/commit/e5b41e32788097a36fca4ddaf437bdfa9e758323))
+* Round 10 FastCurve BigUint bridges for CM/graph ([1b81e3f](https://github.com/isogeny-labs/cryptanalysis/commit/1b81e3f707906a8d51075409dfb2ed1d994dddaf))
+* Round 11 FastCurve Pollard rho for isogeny attack ([992d1b4](https://github.com/isogeny-labs/cryptanalysis/commit/992d1b47349a819feca3edef67f0652358a2459b))
+* Round 12 FastCurve multi-target GLS rho ([d2c25e9](https://github.com/isogeny-labs/cryptanalysis/commit/d2c25e9d996ee3dd9f31053869fc0c2f60caed80))
+* Round 14 Jacobi Legendre, Tonelli mont, Zp op fast path ([1b8b086](https://github.com/isogeny-labs/cryptanalysis/commit/1b8b086a04b6090e028fecbcdff044faff95f4c4))
+* Round 15 lazy Montgomery REDC for Zp chains ([19d3687](https://github.com/isogeny-labs/cryptanalysis/commit/19d3687b676adde9d57e07ce47e7f9d3d3a5e69c))
+* Round 16 dual interleaved Pollard-Brent factorize ([e0440b4](https://github.com/isogeny-labs/cryptanalysis/commit/e0440b4bd2ef443322d47100677195f3d4e98541))
+* Round 17 sliding-window w=4 EC scalar mul ([ea4f4c2](https://github.com/isogeny-labs/cryptanalysis/commit/ea4f4c2efd88de1e813667094ac1fe5fcb65319f))
+* Round 18 lazy REDC Montgomery pow ladder ([0a84bfa](https://github.com/isogeny-labs/cryptanalysis/commit/0a84bfa29c5ee78078f0d9cbd1f98f68a6b603a9))
+* Round 19 lazy REDC Jacobian EC arithmetic ([a8744ac](https://github.com/isogeny-labs/cryptanalysis/commit/a8744ac75b2830a4ee2015825ac1d1d6d052f253))
+* Round 20 fused Kaliski Montgomery inverse ([8db9bc6](https://github.com/isogeny-labs/cryptanalysis/commit/8db9bc6fc13873c6321ada9adae1d6629d5d4d13))
+* Round 21 fused native-EC kangaroo hops ([1a3bc25](https://github.com/isogeny-labs/cryptanalysis/commit/1a3bc25829a46e8375c7fcaae3490bf43725e737))
+* Round 22 shared-addend Mestre BSGS ([66258de](https://github.com/isogeny-labs/cryptanalysis/commit/66258def039120cf36598b73901fc4fa67c9adcd))
+* Round 25 hashed 7-base Miller–Rabin ([6ae6a83](https://github.com/isogeny-labs/cryptanalysis/commit/6ae6a834c7243f2f8c1d70440f414f537fb6a09d))
+* Round 29 SoA affine addend tables for EC rho/kangaroo ([6d82ee5](https://github.com/isogeny-labs/cryptanalysis/commit/6d82ee5d145558d971c1ce486ffa5cdf80b9f8a2))
+* Round 36 Cheon orbit lanes 8 ([a9cd4e9](https://github.com/isogeny-labs/cryptanalysis/commit/a9cd4e91a292e0476d995389036d90849342d7de))
+* Round 4 Barrett ca_mulmod, kangaroo mod, and test gates ([14d8c2b](https://github.com/isogeny-labs/cryptanalysis/commit/14d8c2b456a2e8939e94f78e5956722fba021d81))
+* Round 5 route remaining u128 mods through Barrett ([07852ae](https://github.com/isogeny-labs/cryptanalysis/commit/07852ae4a7d9d2084f6b3e62b976afcb872d087c))
+* Round 6 Lemire residues in the linear IC sieve ([150a255](https://github.com/isogeny-labs/cryptanalysis/commit/150a255371d5416591fe3cb168e5a9a4146e1f35))
+* Round 7 AArch64 ecc2k 4-lane NEON+PMULL ([099a221](https://github.com/isogeny-labs/cryptanalysis/commit/099a22145513ef0b1da3d1df7c33f2a6cc3b84fd))
+* Round 8 IC sieve 32-bit inv and wider trial scans ([0b90fee](https://github.com/isogeny-labs/cryptanalysis/commit/0b90fee3b90358348499861ed7dbc7c2360c4f25))
+* Round 9 dual-chain Lanczos vdot and sieve lim filter ([41108c3](https://github.com/isogeny-labs/cryptanalysis/commit/41108c389c46dc9d52e2b97b39d52b3ad72e29b7))
+* Rounds 1–12 ECDLP/IC/isogeny/field arithmetic speedups ([80c9f4d](https://github.com/isogeny-labs/cryptanalysis/commit/80c9f4dd9db89fca90bead8083389660448a3a40))
+
 ## [0.1.14](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.13...cryptanalysis-v0.1.14) (2026-11-18)
 
 
