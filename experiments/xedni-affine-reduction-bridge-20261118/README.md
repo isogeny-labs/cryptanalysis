@@ -238,6 +238,17 @@ Run `lake build ProjectiveClassCoalescence`; `build-projective-class-coalescence
 
 `ProjectivePrimitiveNormalization.lean` proves the exact factorization `addXYZ W P T = (−125) • U` with `U=(−5,−1,1)`, proves `U` lies on the integral curve and has `Z=1`, and proves that the projective class of `U` after reduction equals the target `addMap` doubling class. In the last proof the target doubling vector is exactly `3 • (f ∘ U)` over `ZMod 5`. These facts identify the source factor that must be removed at coalescence; a general local normalization operation remains to be constructed.
 
+`ProjectiveCoalescenceFamily.lean` proves a family behind the concrete example. For each integer offset `d`, take `E_d : y² = x³ − d²x + 1`, `P=(0,1)`, `T_d=(d,1)`, and `U_d=(-d,-1,1)`. Lean checks that both inputs and `U_d` lie on `E_d`, and that `addXYZ E_d P T_d = (-d³) • U_d`. For `d=5^k`, the chord `Z` coordinate is exactly `-5^(3k)`. For every `k≥1`, the source inputs remain inequivalent, the mod-5 curve has discriminant `3` and is elliptic, the primitive source vector reduces to target doubling, and the raw source `addMap` class does not. The growing common factor shows why raw coordinate reduction requires normalization at arbitrarily large 5-adic depths in this family.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Parametric factorization | `XedniProjectiveCoalescenceFamily.source_chord_factorization` | Integer `d`, fixed curve and points as above; checked |
+| Exact power-family chord `Z` | `XedniProjectiveCoalescenceFamily.power_family_chord_z_exact` | Natural `k`, offset `5^k`; checked |
+| Smooth reduction and primitive compatibility | `XedniProjectiveCoalescenceFamily.power_family_reduced_curve_elliptic`, `power_family_primitive_reduction` | Natural `k`, offset `5^(k+1)`; checked |
+| Raw class-map incompatibility at every depth | `XedniProjectiveCoalescenceFamily.power_family_raw_mapClass_not_addMap` | Natural `k`, offset `5^(k+1)`; checked |
+
+Run `lake build ProjectiveCoalescenceFamily`; `build-projective-coalescence-family-output.txt` records the build and axiom audit. The audited declarations use only `propext`, `Classical.choice`, and `Quot.sound`.
+
 | Result | Lean declaration | Exact hypotheses and status |
 | --- | --- | --- |
 | Source chord factorization | `XedniProjectivePrimitiveNormalization.source_chord_factorization` | Fixed integral curve and points above; checked |
