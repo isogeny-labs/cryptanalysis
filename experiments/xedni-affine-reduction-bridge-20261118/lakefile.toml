@@ -1,6 +1,6 @@
 name = "xedniAffineReductionBridge"
 version = "0.1.0"
-defaultTargets = ["AffineReductionBridge"]
+defaultTargets = ["AffineReductionBridge", "RegularChainReduction"]
 
 [[require]]
 name = "mathlib"
@@ -9,3 +9,6 @@ rev = "021c46bdd042f67b538b9f9871d556a93713a9a9"
 
 [[lean_lib]]
 name = "AffineReductionBridge"
+
+[[lean_lib]]
+name = "RegularChainReduction"
