@@ -302,6 +302,9 @@ typedef struct ca_htab1 {
 
 ca_status ca_htab1_init(ca_htab1 *t, size_t expected);
 void ca_htab1_free(ca_htab1 *t);
+/* Drop every entry; keep the allocation.  For a second BSGS pass of the
+ * same size (Mestre retries) this is a warm memset instead of free+calloc. */
+void ca_htab1_clear(ca_htab1 *t);
 int ca_htab1_insert(ca_htab1 *t, uint64_t key, uint64_t v0, uint64_t *old0);
 int ca_htab1_find(const ca_htab1 *t, uint64_t key, uint64_t *v0);
 size_t ca_htab1_bytes(const ca_htab1 *t);

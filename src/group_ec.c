@@ -590,6 +590,153 @@ void ca_ec_random_point(const ca_group *g, ca_elem *r, uint64_t seed)
 
 /* ---- Mestre's point counting ------------------------------------------ */
 
+enum { EC_LANES = 64 };
+
+/*
+ * r[i] = a[i] + b with one shared addend b: same dens and inverses as
+ * ec_batch_op with b[i] = b, but b's coordinates stay in registers and the
+ * caller does not materialize n copies of b (baby-step stride).
+ */
+static void ec_batch_add_same_b(const ca_group *g, ca_elem *r, const ca_elem *a, const ca_elem *b,
+                                size_t n, uint64_t *scratch)
+{
+    if (n == 0) return;
+    const uint64_t P = g->p, NPI = (uint64_t)0 - g->mont.pinv, AM = g->a_mont;
+    const uint64_t one = g->mont.r1;
+    const uint64_t bx = FX(b), by = FY(b);
+    const int binf = FINF(b) != 0;
+#define BM(x, y) (CA_FC_ADD(CA_FC_MUL, 1), ca_ec_bmul((x), (y), P, NPI))
+#define BA(x, y) ca_addmod((x), (y), P)
+#define BS(x, y) ca_submod((x), (y), P)
+    enum { EC_CHAINS = 4 };
+    const size_t k = n < EC_CHAINS ? n : EC_CHAINS;
+    uint64_t *den = scratch, *suf = scratch + n;
+    for (size_t i = 0; i < n; i++) {
+        uint64_t d;
+        if (FINF(&a[i]) || binf) d = one;
+        else if (FX(&a[i]) == bx) {
+            if (FY(&a[i]) == by && FY(&a[i]) != 0) d = BA(FY(&a[i]), FY(&a[i]));
+            else d = one;
+        } else
+            d = BS(bx, FX(&a[i]));
+        den[i] = d;
+    }
+    for (size_t i = n; i-- > 0;) suf[i] = i + k < n ? BM(den[i], suf[i + k]) : den[i];
+    uint64_t before[EC_CHAINS], after[EC_CHAINS], inv[EC_CHAINS];
+    before[0] = one;
+    for (size_t j = 1; j < k; j++) before[j] = BM(before[j - 1], suf[j - 1]);
+    after[k - 1] = one;
+    for (size_t j = k - 1; j-- > 0;) after[j] = BM(after[j + 1], suf[j + 1]);
+    uint64_t all = BM(before[k - 1], suf[k - 1]);
+    all = ec_field_inv(g, all);
+    for (size_t j = 0; j < k; j++) inv[j] = BM(all, BM(before[j], after[j]));
+    for (size_t i = 0, j = 0; i < n; i++) {
+        uint64_t di = i + k < n ? BM(inv[j], suf[i + k]) : inv[j];
+        inv[j] = BM(inv[j], den[i]);
+        j = j + 1 == k ? 0 : j + 1;
+        const ca_elem *A = &a[i];
+        if (FINF(A)) { r[i] = *b; continue; }
+        if (binf) { r[i] = *A; continue; }
+        const uint64_t ax = FX(A), ay = FY(A);
+        uint64_t lam;
+        if (ax == bx) {
+            if (ay == by && ay != 0) {
+                CA_FC_ADD(CA_FC_SQR, 1);
+                uint64_t x2 = ca_ec_bmul(ax, ax, P, NPI);
+                uint64_t num = BA(BA(BA(x2, x2), x2), AM);
+                lam = BM(num, di);
+            } else {
+                ec_identity(g, &r[i]);
+                continue;
+            }
+        } else {
+            lam = BM(BS(by, ay), di);
+        }
+        CA_FC_ADD(CA_FC_SQR, 1);
+        uint64_t x3 = BS(BS(ca_ec_bmul(lam, lam, P, NPI), ax), bx);
+        uint64_t y3 = BS(BM(lam, BS(ax, x3)), ay);
+        FX(&r[i]) = x3;
+        FY(&r[i]) = y3;
+        FINF(&r[i]) = 0;
+        r[i].w[3] = 0;
+    }
+#undef BM
+#undef BA
+#undef BS
+}
+
+/*
+ * r[i] = a + b[i] with one shared augend a: same dens/inverses as
+ * ec_batch_op with a[i] = a (giant-step R + k*(-mP)).
+ */
+static void ec_batch_add_same_a(const ca_group *g, ca_elem *r, const ca_elem *a, const ca_elem *b,
+                                size_t n, uint64_t *scratch)
+{
+    if (n == 0) return;
+    const uint64_t P = g->p, NPI = (uint64_t)0 - g->mont.pinv, AM = g->a_mont;
+    const uint64_t one = g->mont.r1;
+    const uint64_t ax = FX(a), ay = FY(a);
+    const int ainf = FINF(a) != 0;
+#define BM(x, y) (CA_FC_ADD(CA_FC_MUL, 1), ca_ec_bmul((x), (y), P, NPI))
+#define BA(x, y) ca_addmod((x), (y), P)
+#define BS(x, y) ca_submod((x), (y), P)
+    enum { EC_CHAINS = 4 };
+    const size_t k = n < EC_CHAINS ? n : EC_CHAINS;
+    uint64_t *den = scratch, *suf = scratch + n;
+    for (size_t i = 0; i < n; i++) {
+        uint64_t d;
+        if (ainf || FINF(&b[i])) d = one;
+        else if (ax == FX(&b[i])) {
+            if (ay == FY(&b[i]) && ay != 0) d = BA(ay, ay);
+            else d = one;
+        } else
+            d = BS(FX(&b[i]), ax);
+        den[i] = d;
+    }
+    for (size_t i = n; i-- > 0;) suf[i] = i + k < n ? BM(den[i], suf[i + k]) : den[i];
+    uint64_t before[EC_CHAINS], after[EC_CHAINS], inv[EC_CHAINS];
+    before[0] = one;
+    for (size_t j = 1; j < k; j++) before[j] = BM(before[j - 1], suf[j - 1]);
+    after[k - 1] = one;
+    for (size_t j = k - 1; j-- > 0;) after[j] = BM(after[j + 1], suf[j + 1]);
+    uint64_t all = BM(before[k - 1], suf[k - 1]);
+    all = ec_field_inv(g, all);
+    for (size_t j = 0; j < k; j++) inv[j] = BM(all, BM(before[j], after[j]));
+    for (size_t i = 0, j = 0; i < n; i++) {
+        uint64_t di = i + k < n ? BM(inv[j], suf[i + k]) : inv[j];
+        inv[j] = BM(inv[j], den[i]);
+        j = j + 1 == k ? 0 : j + 1;
+        const ca_elem *B = &b[i];
+        if (ainf) { r[i] = *B; continue; }
+        if (FINF(B)) { r[i] = *a; continue; }
+        const uint64_t bx = FX(B), by = FY(B);
+        uint64_t lam;
+        if (ax == bx) {
+            if (ay == by && ay != 0) {
+                CA_FC_ADD(CA_FC_SQR, 1);
+                uint64_t x2 = ca_ec_bmul(ax, ax, P, NPI);
+                uint64_t num = BA(BA(BA(x2, x2), x2), AM);
+                lam = BM(num, di);
+            } else {
+                ec_identity(g, &r[i]);
+                continue;
+            }
+        } else {
+            lam = BM(BS(by, ay), di);
+        }
+        CA_FC_ADD(CA_FC_SQR, 1);
+        uint64_t x3 = BS(BS(ca_ec_bmul(lam, lam, P, NPI), ax), bx);
+        uint64_t y3 = BS(BM(lam, BS(ax, x3)), ay);
+        FX(&r[i]) = x3;
+        FY(&r[i]) = y3;
+        FINF(&r[i]) = 0;
+        r[i].w[3] = 0;
+    }
+#undef BM
+#undef BA
+#undef BS
+}
+
 /* Fill consecutive multiples with one batched inversion per prefix
  * expansion, plus its offset doubling.  Preserve affine-addition order. */
 static void ec_multiples(const ca_group *g, ca_elem *out, const ca_elem *base,
@@ -598,46 +745,42 @@ static void ec_multiples(const ca_group *g, ca_elem *out, const ca_elem *base,
     ec_identity(g, &out[0]);
     if (count == 1) return;
     out[1] = *base;
-    ca_elem addends[64];
     for (size_t span = 2; span < count; span *= 2) {
         ca_elem offset;
         ec_dbl(g, &offset, &out[span / 2]);
         size_t n = count - span < span ? count - span : span;
-        for (size_t i = 0; i < n; i++) addends[i] = offset;
-        ec_batch_op(g, out + span, out, addends, n, scratch);
+        ec_batch_add_same_b(g, out + span, out, &offset, n, scratch);
     }
 }
 
 /* All k in [lo, lo+width) with k*P == T, appended to out (up to cap).
- * Returns the number found (may exceed cap; only cap are stored). */
+ * Returns the number found (may exceed cap; only cap are stored).
+ * tab is cleared and filled; the caller owns its allocation. */
 static size_t ec_interval_all(const ca_group *g, const ca_elem *P, const ca_elem *T, uint64_t lo,
-                              uint64_t width, uint64_t *out, size_t cap, ca_stats *st)
+                              uint64_t width, uint64_t *out, size_t cap, ca_stats *st,
+                              ca_htab1 *tab)
 {
     uint64_t m = ca_isqrt(width) + 1;
-    ca_htab1 tab;
-    if (ca_htab1_init(&tab, (size_t)m) != CA_OK) return 0;
-    /* Baby and giant steps go EC_LANES at a time through ec_batch_op, one
-     * field inversion per block; hashing, insertion, lookup and every
-     * count follow the one-step loops, and elements a block computes past
-     * the last one used are not charged. */
-    enum { EC_LANES = 64 };
-    ca_elem lane[EC_LANES], stride[EC_LANES];
+    ca_htab1_clear(tab);
+    /* Baby and giant steps go EC_LANES at a time through a shared-addend
+     * Montgomery trick (one inversion per block).  Hashing, insertion,
+     * lookup and every count follow the one-step loops; elements a block
+     * computes past the last one used are not charged. */
+    ca_elem lane[EC_LANES];
     uint64_t scratch[2 * EC_LANES];
     ca_elem cur;
     uint64_t small_order = 0;
+    ca_elem stride;
     {
         const uint64_t first = m < EC_LANES ? m : EC_LANES;
         ec_multiples(g, lane, P, (size_t)first, scratch);
-        if (m > EC_LANES) {
-            ec_dbl(g, &stride[0], &lane[EC_LANES / 2]);
-            for (int c = 1; c < EC_LANES; c++) stride[c] = stride[0];
-        }
+        if (m > EC_LANES) ec_dbl(g, &stride, &lane[EC_LANES / 2]);
         uint64_t steps_done = m;
         for (uint64_t j0 = 0; j0 < m && !small_order; j0 += EC_LANES) {
             const uint64_t n = m - j0 < EC_LANES ? m - j0 : EC_LANES;
             for (uint64_t c = 0; c < n; c++) {
                 uint64_t old;
-                if (ca_htab1_insert(&tab, ec_hash(g, &lane[c]), j0 + c, &old) == 1) {
+                if (ca_htab1_insert(tab, ec_hash(g, &lane[c]), j0 + c, &old) == 1) {
                     /* (j0 + c) P == old P: P has small order j0 + c - old */
                     small_order = j0 + c - old;
                     steps_done = j0 + c;
@@ -646,7 +789,8 @@ static size_t ec_interval_all(const ca_group *g, const ca_elem *P, const ca_elem
             }
             if (!small_order && j0 + EC_LANES < m) {
                 const uint64_t next = m - j0 - EC_LANES;
-                ec_batch_op(g, lane, lane, stride, next < EC_LANES ? next : EC_LANES, scratch);
+                ec_batch_add_same_b(g, lane, lane, &stride, next < EC_LANES ? next : EC_LANES,
+                                   scratch);
             }
         }
         if (st) st->group_ops += steps_done;
@@ -672,7 +816,6 @@ static size_t ec_interval_all(const ca_group *g, const ca_elem *P, const ca_elem
                 found++;
             }
         }
-        ca_htab1_free(&tab);
         return found;
     }
     /* giant steps: R = T - (lo + i m) P; if R == jP then k = lo + i m + j */
@@ -685,17 +828,25 @@ static size_t ec_interval_all(const ca_group *g, const ca_elem *P, const ca_elem
     ec_op(g, &R, T, &base); /* T - lo P */
     uint64_t steps = m ? width / m + 1 : 1;
     /* giant[k] = k (-m P); a block is R + giant[k] for k < EC_LANES */
-    ca_elem giant[EC_LANES], block_step, Rrep[EC_LANES];
+    ca_elem giant[EC_LANES], block_step;
+    uint64_t hs[EC_LANES];
     ec_multiples(g, giant, &negmP, (size_t)(steps < EC_LANES ? steps : EC_LANES), scratch);
     if (steps > EC_LANES) ec_dbl(g, &block_step, &giant[EC_LANES / 2]);
+    const ca_htab1_entry *ep = tab->e;
+    const size_t mask = tab->cap - 1;
+    const int pf = tab->cap != 0;
     for (uint64_t i0 = 0; i0 < steps; i0 += EC_LANES) {
         const uint64_t n = steps - i0 < EC_LANES ? steps - i0 : EC_LANES;
-        for (uint64_t k = 0; k < n; k++) Rrep[k] = R;
-        ec_batch_op(g, lane, Rrep, giant, n, scratch);
+        ec_batch_add_same_a(g, lane, &R, giant, n, scratch);
+        for (uint64_t k = 0; k < n; k++) {
+            const uint64_t h = ca_ec_hash_words(lane[k].w[0], lane[k].w[1], lane[k].w[2]);
+            hs[k] = h;
+            if (pf) __builtin_prefetch(&ep[(size_t)(h ? h : 1) & mask], 0, 1);
+        }
         for (uint64_t k = 0; k < n; k++) {
             const uint64_t i = i0 + k;
             uint64_t j;
-            if (ca_htab1_find(&tab, ec_hash(g, &lane[k]), &j)) {
+            if (ca_htab1_find(tab, hs[k], &j)) {
                 /* verify */
                 ca_elem chk;
                 ca_group_mul(g, &chk, P, j, NULL);
@@ -711,7 +862,6 @@ static size_t ec_interval_all(const ca_group *g, const ca_elem *P, const ca_elem
         if (st) st->group_ops += n;
         if (n == EC_LANES) ec_op(g, &R, &R, &block_step);
     }
-    ca_htab1_free(&tab);
     return found;
 }
 
@@ -732,12 +882,18 @@ static ca_status ec_count_once(const ca_group *g, uint64_t *order, ca_stats *st,
      * return the order modulo 2^64), and report an order above 2^64 as
      * not found rather than truncated. */
     if (width - 1 > UINT64_MAX - lo) width = UINT64_MAX - lo + 1;
+    uint64_t m = ca_isqrt(width) + 1;
     ca_rng rng;
     ca_rng_seed(&rng, seed);
     enum { CAP = 4096 };
     uint64_t *cands = malloc(CAP * sizeof(uint64_t));
     uint64_t *cur = malloc(CAP * sizeof(uint64_t));
-    if (!cands || !cur) { free(cands); free(cur); return CA_ERR_NOMEM; }
+    ca_htab1 tab;
+    if (!cands || !cur || ca_htab1_init(&tab, (size_t)m) != CA_OK) {
+        free(cands);
+        free(cur);
+        return CA_ERR_NOMEM;
+    }
     size_t ncand = 0;
     int have = 0;
     *ambiguous = 0;
@@ -746,7 +902,7 @@ static ca_status ec_count_once(const ca_group *g, uint64_t *order, ca_stats *st,
         ca_elem P, T;
         ca_ec_random_point(g, &P, ca_rng_next(&rng));
         ec_identity(g, &T);
-        size_t n = ec_interval_all(g, &P, &T, lo, width, cur, CAP, st);
+        size_t n = ec_interval_all(g, &P, &T, lo, width, cur, CAP, st, &tab);
         if (n == 0 || n > CAP) continue;
         if (!have) {
             memcpy(cands, cur, n * sizeof(uint64_t));
@@ -769,6 +925,7 @@ static ca_status ec_count_once(const ca_group *g, uint64_t *order, ca_stats *st,
         if (ncand == 0) { rc = CA_ERR_INTERNAL; break; }
     }
     if (rc != CA_OK && have && ncand > 1) *ambiguous = 1;
+    ca_htab1_free(&tab);
     free(cands);
     free(cur);
     return rc;
