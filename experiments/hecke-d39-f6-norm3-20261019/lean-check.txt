@@ -1,0 +1,19 @@
+FloorSix.lean:86:4: error: Type mismatch: After simplification, term
+  h ⟨3, of_decide_eq_true (id (Eq.refl true))⟩
+ has type
+  -a1 + -b0 = 0
+but is expected to have type
+  -a1 - b0 = 0
+FloorSix.lean:89:4: error: Type mismatch: After simplification, term
+  h ⟨5, of_decide_eq_true (id (Eq.refl true))⟩
+ has type
+  a1 + -b0 = 0
+but is expected to have type
+  a1 - b0 = 0
+FloorSix.lean:98:4: error: Type mismatch: After simplification, term
+  h ⟨33, of_decide_eq_true (id (Eq.refl true))⟩
+ has type
+  a2 + -b1 = 0
+but is expected to have type
+  a2 - b1 = 0
+'D39Floor.six_floor_vectors_independent' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

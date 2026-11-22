@@ -1,0 +1,56 @@
+{
+  "batch": false,
+  "candidate_id": null,
+  "curve_id": "EC1N41Ckb1hf5a3eea408f4",
+  "factor_base": {
+    "actual_usable_points_before_folding": 98400,
+    "folded_columns": 1200
+  },
+  "kind": "n41_w4_m7_bounded_xor_public_q_sat_stage_protocol",
+  "point_decomposition": {
+    "solver": "cryptominisat5",
+    "summands": 7,
+    "xor_projection": "exact CNF-private XOR elimination with maximum new row width 64 and reverse lift"
+  },
+  "proposal_id": "Q20261012165000",
+  "resource_limit_bytes": 4294967296,
+  "run_id": null,
+  "run_policy": {
+    "acceptance": "SAT model must pass projected XCNF, reverse lift, original XCNF, exact point decoding and independent Sage group/factor-base replay before relation credit.",
+    "max_models": 1,
+    "preserve_failures_and_raw_solver_output": true,
+    "solver_flags": [
+      "--threads=1",
+      "--verb=1",
+      "--verbstat=2",
+      "--printsol=1",
+      "--restartprint=10000000",
+      "--random=2026100905",
+      "--maxtime=238.000",
+      "--maxmatrixrows=10000",
+      "--maxmatrixcols=15000",
+      "--maxnummatrices=10",
+      "--maxconfl=1000000000000"
+    ],
+    "worker_count": 1
+  },
+  "source_sha256": {
+    "auditor": "3883b3b01ff8405c7553a702296ebadd2ac913d1ca41f98d51f72d3290c187f3",
+    "control_audit": "f92abb02bd82d01028cbf8010f5ba5101f4e849c79296a8c54f629b205771cfb",
+    "original_formula": "4823c390318388f4bfdd9d8dd09b28af49b8ddb89f21afdc685496992c1279a0",
+    "prior_full_projection": "76e081777c66ee87851bb3436a7c5e9afa056886e99b462236131b550d16f201",
+    "prior_full_terminal_audit": "241995f698b32b0eed2162bbb7959e558639e205b08a45f12533cbe3c17a5398",
+    "projected_formula": "3473f63f77e00092e288081588b8e4b716f321c96481ff643452cc1a44bc857f",
+    "projection_result": "57584eeefebf3db7838a6be8b38b1f12f7e40bbd9d3e7dd6356f9cf2d254acd9",
+    "runner": "2f3c3fa16ef6715bc4bfdcf4b74c392e931598ce6ab143a523d97b8793d0fce4",
+    "runtime": "073ca37250b100a7f961de3475da8a4d489f3f2140c15f4c72457816893f3f01",
+    "solver": "a3f85c3709b5e2a040bf82a4a604d1c7b9f10219bbf180a9e0f72319a2e892ac",
+    "structure_audit": "f92abb02bd82d01028cbf8010f5ba5101f4e849c79296a8c54f629b205771cfb",
+    "transform": "849df0f72d3f1bc3ce1eb5a910989b127d4b7e860135f81820336bde801a0549"
+  },
+  "stage_solver_limit_seconds": 240,
+  "status": "FROZEN_PROPOSAL",
+  "target_count": 1,
+  "timing_boundary": "Exploratory solver-stage wall from process launch through terminal status, on the same frozen ordinary point, seed, worker and cap as the prior full projection. Formula generation and projection remain separate target-dependent costs.",
+  "workload_id": "2fa2f1e7c5fc"
+}

@@ -1,0 +1,17 @@
+{
+  "block_limit": 4096,
+  "checkpoint_every": 512,
+  "cover_policy": "lowest uncovered valid code as anchor; bounded randomized four-flat search; accept first dimension at least four; singleton fallback after retry cap",
+  "resource_envelope": {
+    "alarm_seconds": 180,
+    "rss_boundary_bytes": 4294967296,
+    "workers": 1
+  },
+  "retries_per_anchor": 8,
+  "search_seed": 884217,
+  "source_sha256": {
+    "cover.py": "35cf3785de7f9eb6685b0742b7da93ae297414f68adedbeb3e192bbd68417f98",
+    "flat_search.py": "7eae82ff64b487ed490d931b34e70bb280b5fa6524628d5fc2e4d372e247660a",
+    "valid_bitmap.bin": "f345dfe8be05efa619cd601c1278654fff76b2e08957b5f11e56fa5c7508ac9a"
+  }
+}

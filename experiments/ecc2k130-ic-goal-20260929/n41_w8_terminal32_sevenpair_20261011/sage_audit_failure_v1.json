@@ -1,0 +1,8 @@
+{
+  "status": "AUDIT_OUTPUT_FAILURE",
+  "stage": "JSON serialization after both group and rank assertions",
+  "error": "TypeError: Object of type Integer is not JSON serializable",
+  "partial_output_sha256": "e0117b561c3150cc619a4a6abce03e086d37fddcae61373c58fe97e9b569cf9c",
+  "partial_output_gzip_sha256": "f7a676cc7e5430fac871eaf14334bf8e2ff71fd0344a1addb751cf8a23391c1e",
+  "repair": "Convert the Sage matrix rank to a Python int before serializing the unchanged replay logic"
+}

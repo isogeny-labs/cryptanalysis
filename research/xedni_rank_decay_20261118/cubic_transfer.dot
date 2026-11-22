@@ -1,0 +1,30 @@
+digraph CubicTransfer {
+  graph [rankdir=TB, bgcolor="white", pad="0.2", nodesep="0.35", ranksep="0.45"];
+  node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=10,
+        color="#31465f", fillcolor="#eef4fb", margin="0.13,0.08"];
+  edge [fontname="DejaVu Sans", fontsize=9, color="#40566f", fontcolor="#26384b"];
+
+  source [label="Plane cubic C/Q\nchord origin O, selected P_i\nsource P_i=[m_i]H"];
+  constructor [label="Pinned constructor\nSage/Magma + transcript", fillcolor="#fff1d6", color="#a86f00"];
+  map [label="Supplied curve map f:C->E\nexplicit f and inverse\nexceptional branches"];
+  elliptic [label="Jacobian E/Q\nf(O), f(P_i)"];
+  translate [label="Group translation\npsi(P)=f(P)-f(O)"];
+  reduced [label="Selected-point reduction\npsi_bar(P_i)=[m_i-m_O]H_E"];
+  rank [label="PARI/Magma rank +\nrelation/recovery replay", fillcolor="#e9f6ea", color="#387542"];
+  blocked [label="Current natural-family state\nconstructor unavailable\nproduction_eligible=false", shape=octagon,
+           fillcolor="#fde8e7", color="#a33c34"];
+
+  { rank=same; source; constructor; }
+  { rank=same; map; elliptic; }
+  { rank=same; translate; reduced; }
+  { rank=same; rank; blocked; }
+  rank -> blocked [style=invis, weight=20];
+
+  source -> constructor [label="construction  UNKNOWN", color="#a86f00", style=dashed];
+  constructor -> map [label="formulas + identity"];
+  map -> elliptic [label="curve map f\nexact identities"];
+  elliptic -> translate [label="chosen origin"];
+  translate -> reduced [label="coefficient units +\nselected-point commutation"];
+  reduced -> rank [label="subgroup/relation replay"];
+  constructor -> blocked [label="no Sage/Magma", color="#a33c34", style=dashed];
+}
