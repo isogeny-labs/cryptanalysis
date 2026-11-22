@@ -244,7 +244,16 @@ Run `lake build ProjectiveClassCoalescence`; `build-projective-class-coalescence
 
 `ProjectiveAffineNormalizationUniqueness.lean` closes the choice-of-representative question for the affine integral slice. Over a nontrivial domain, equivalent projective vectors whose `Z` coordinates both equal 1 are identical. In particular, two integral `Z=1` vectors representing the same rational projective class are equal over `ℤ`, so every coefficientwise ring reduction gives the same class. This provides a canonical normalized reduction wherever the rational sum admits an integral affine `Z=1` representative; a local construction for nonintegral affine coordinates or the point at infinity remains a separate step.
 
-`ProjectivePrimitiveUniqueness.lean` extends choice independence to all primitive integral projective triples, including infinity. It records primitivity as an explicit Bézout identity among the three coordinates. If two primitive triples represent the same rational projective class, the rational scaling factor is an integer in both directions and hence an integer unit; their reductions are the same class for every ring map from `ℤ`. A primitive triple maps to a nonzero vector in every nontrivial target ring. The existence of such a primitive integral representative for every rational projective point is the next construction step; this module proves uniqueness and nonvanishing once one is supplied.
+`ProjectivePrimitiveUniqueness.lean` extends choice independence to all primitive integral projective triples, including infinity. It records primitivity as an explicit Bézout identity among the three coordinates. If two primitive triples represent the same rational projective class, the rational scaling factor is an integer in both directions and hence an integer unit; their reductions are the same class for every ring map from `ℤ`. A primitive triple maps to a nonzero vector in every nontrivial target ring. This module proves uniqueness and nonvanishing once a primitive representative is supplied.
+
+`ProjectivePrimitiveExistence.lean` supplies that construction. For a nonzero rational triple, multiply each coordinate by the other two canonical denominators to obtain an integral triple in the same rational class. The product of denominators is nonzero. Divide the integral triple by the gcd of its three coordinates; nested integer Bézout identities prove that the resulting triple is primitive, and the nonzero gcd gives the required rational unit scaling. Together with `ProjectivePrimitiveUniqueness.lean`, this establishes existence and choice independence of primitive integral projective representatives for every nonzero rational triple, including infinity.
+
+| Result | Lean declaration | Exact hypotheses and status |
+| --- | --- | --- |
+| Primitive representative of integer triple | `XedniProjectivePrimitiveExistence.exists_primitive_int_representative` | Nonzero integer triple; checked |
+| Primitive representative of rational triple | `XedniProjectivePrimitiveExistence.exists_primitive_rational_representative` | Nonzero rational triple; checked |
+
+Run `lake build ProjectivePrimitiveExistence`; `build-projective-primitive-existence-output.txt` records the registered build and axiom audit. The resulting reduction on rational projective classes can be defined by choosing the primitive representative, with choice independence supplied by the preceding uniqueness theorem.
 
 | Result | Lean declaration | Exact hypotheses and status |
 | --- | --- | --- |
