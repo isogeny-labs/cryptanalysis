@@ -1,6 +1,6 @@
 name = "xedniAffineReductionBridge"
 version = "0.1.0"
-defaultTargets = ["AffineReductionBridge", "RegularChainReduction", "RegularGroupLaw", "PrimeLocalReduction", "LocalZModReduction", "RationalLocalWitness", "CoordinateCertificates", "RationalCurveBridge", "CurveEquationCertificates", "RationalRegularStep", "RecordedRegularSteps", "FiniteGroupChains", "ExactChainMultipliers", "PublicPointReduction", "SignedPublicRelation", "AllSignedPublicRelations", "UniformRelationBound"]
+defaultTargets = ["AffineReductionBridge", "RegularChainReduction", "RegularGroupLaw", "PrimeLocalReduction", "LocalZModReduction", "RationalLocalWitness", "CoordinateCertificates", "RationalCurveBridge", "CurveEquationCertificates", "RationalRegularStep", "RecordedRegularSteps", "FiniteGroupChains", "ExactChainMultipliers", "PublicPointReduction", "SignedPublicRelation", "AllSignedPublicRelations", "UniformRelationBound", "AdaptiveCoefficientBoundary"]
 
 [[require]]
 name = "mathlib"
@@ -57,3 +57,6 @@ name = "AllSignedPublicRelations"
 
 [[lean_lib]]
 name = "UniformRelationBound"
+
+[[lean_lib]]
+name = "AdaptiveCoefficientBoundary"
