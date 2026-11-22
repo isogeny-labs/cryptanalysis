@@ -1,0 +1,56 @@
+{
+  "schema": "hecke-p20023-first-frontier-target-pair-result-v1",
+  "protocol_sha256": "434ee715a17defc24afb10b404d6ab35325cc606e295388e03ab55f64440f720",
+  "public_sha256": "9804e57d43a03e83f6ccd554c3ef7b27a3389663a65569714f883f771e4018a4",
+  "public_point": [
+    2977,
+    7768
+  ],
+  "subgroup_order": 4021,
+  "prepared_points": 1760,
+  "prepared_table_check_ns": 20128584,
+  "runs": [
+    {
+      "status": "verified",
+      "scalar": 495,
+      "shift": 2,
+      "probes": 3,
+      "group_additions": 2,
+      "online_ns": 13625,
+      "arm": "connector",
+      "order_index": 0
+    },
+    {
+      "status": "verified",
+      "scalar": 495,
+      "walk_transitions": 384,
+      "collisions": 1,
+      "restarts": 0,
+      "online_ns": 310083,
+      "arm": "rho",
+      "order_index": 1
+    },
+    {
+      "status": "verified",
+      "scalar": 495,
+      "walk_transitions": 384,
+      "collisions": 1,
+      "restarts": 0,
+      "online_ns": 271959,
+      "arm": "rho",
+      "order_index": 2
+    },
+    {
+      "status": "verified",
+      "scalar": 495,
+      "shift": 2,
+      "probes": 3,
+      "group_additions": 2,
+      "online_ns": 10625,
+      "arm": "connector",
+      "order_index": 3
+    }
+  ],
+  "candidate_id": null,
+  "benchmark_tier": "exploratory_ordinary_host"
+}

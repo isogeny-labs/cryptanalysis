@@ -1,0 +1,23 @@
+{
+  "schema": "x011-p941-relation-lattice-protocol-v1",
+  "question": "Do the 1529 signed direct rows and 56 degree-two Hecke rows generate the full integer relation lattice among the 112 ordered p941 trace-18 points?",
+  "origin": "Confirmation on fixed rows after a read-only Smith diagnostic; not a new holdout.",
+  "p": 941,
+  "curve": "11a1: y^2+y=x^3-x^2-10x-20",
+  "curve_order": 900,
+  "fiber_abs_trace": 18,
+  "expected_fiber_size": 112,
+  "corrected_ledger": "../hecke-x011-trace-fiber-census-20261119/points_v2.jsonl.gz",
+  "corrected_ledger_sha256": "0fea606b245a4889df66d551a41d8b7dc403438a9a95fdd940ff15f5082b3087",
+  "rank_experiment_result_sha256": "340952a601d3ba7489ab2fb544504010676c63c8d809f1ca5039e4a5646743cc",
+  "direct_rows_gzip_sha256": "7c075d8784b648fc7321f9ce2066a8085f76f1d3bb1468efe0c2e187cc064ca9",
+  "degree2_rows_gzip_sha256": "50f7bd5e6b6cb0c622ba3d296f5b81ade34a8e6978319a60e1f2bf7ccdc25fd4",
+  "row_order": "degree-two Hecke rows in source order, then signed direct rows in archived order",
+  "expected_smith_nonunit_factors": [5, 180],
+  "generating_pair_indices": [3, 4],
+  "generating_pair_points": [[32, 685], [43, 695]],
+  "planned_checks": ["verify all rows by the point group law", "compute exact Smith factors and row-Hermite determinant", "show the recorded pair generates all 900 curve points", "independently replay curve count, group laws and integer normal forms"],
+  "resource_cap_seconds": 180,
+  "candidate_id": null,
+  "target_online_ms": null
+}
