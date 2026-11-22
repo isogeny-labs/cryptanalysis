@@ -43,6 +43,9 @@ explain the gap and what would let the work move past it.
 ---
 
 | [Native hashed-EC Rust floor](hashed-ecdl-rust-msrv.md) | open | Rust 1.78 qualification of the current getrandom 0.4 native graph | approved compatible graph or reviewed minimum-version update, with locked checks at the stated floor |
+| [Native hashed-EC Rust floor](hashed-ecdl-rust-msrv.md) | open, narrowed | Exact-head hosted and minimum-version correctness qualification after the reviewed Rust 1.85 update | Hosted locked checks and original correctness controls at the accepted minimum; local all-target minimum compilation now passes |
+=======
+>>>>>>> origin/main
 | [Chained-transfer frozen ledger synchronization](https://github.com/isogeny-labs/crypto/blob/research/chained-jacobian-transfer-20261110/problems/chained-transfer-admission-and-ledger-sync.md) | open | Merge1484 and its CT21 continuation after main61/frozenPhi60 diverged at row56 | Accepted reconciliation retaining both histories and passing actual prefix/hash-link/current-head CI/review;native evidence in chained-transfer-reference/evidence/seven-consumer-ledger-fork-01.json |
 | [Xedni experiment checkpoint access](xedni-affine-cvp-checkpoint-access.md) | open; two exact toy panels ran under narrow waivers, [pcc:unverified] | Fresh target-bearing selector panel and other unwaived Xedni experiments | Valid checkpoint upload and passing gate, then the unchanged frozen command |
 | [Xedni rank-decay execution, evidence, point-map, and power gaps](xedni-rank-decay-tool-map-and-power.md) | open, [pcc:unverified] | Two-tool certified 16--32-bit rank/useful-recovery decay decision, including `r=7..9` | Checkpoint transport, licensed Magma, trusted verifier/keyring, integrated authorizing freeze, natural cubic constructor/global map, trusted full saturated basis, and powered discovery/fresh replication resources |
