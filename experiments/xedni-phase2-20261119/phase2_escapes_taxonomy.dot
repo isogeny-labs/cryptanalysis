@@ -1,0 +1,107 @@
+digraph Phase2EscapesTaxonomy {
+    rankdir=TB;
+    fontname="Helvetica";
+    fontsize=11;
+    labelloc="t";
+    label="Xedni Phase 2 Geometric & Arithmetic Escapes — Structural Obstructions & Verdicts";
+    nodesep=0.38;
+    ranksep=0.52;
+
+    node [
+        shape=box,
+        style="rounded,filled",
+        fontname="Helvetica",
+        fontsize=10,
+        margin="0.14,0.09",
+        color="#334155",
+        fillcolor="#f8fafc",
+        fontcolor="#0f172a"
+    ];
+    edge [
+        fontname="Helvetica",
+        fontsize=9,
+        color="#475569",
+        fontcolor="#334155"
+    ];
+
+    root [
+        label="Phase 1 Prime-Field Xedni Ceiling\n• Fixed-rank fresh-mask cubic: Pr(non-collinear) <= |M|/q\n• Smooth deg d >= 4 Bezout: g = binom(d-1, 2) >= 3",
+        fillcolor="#e2e8f0",
+        penwidth=1.4
+    ];
+
+    subgraph cluster_7a {
+        label="Escape 7A — Cayley-Bacharach 9-Point Pencils";
+        style="rounded,dashed";
+        color="#2563eb";
+        fontcolor="#1d4ed8";
+
+        cb_build [
+            label="8 Lifted Points + Exact 9th CB Point P_9^CB\nrank_Q B(P_1..P_9) = 8 (dim ker_Q B = 2)\nPencil C_lambda = C_0 + lambda C_1",
+            fillcolor="#eff6ff"
+        ];
+        cb_id [
+            label="Mod-p CB Reduction Identity (Lean-verified)\nE_src in span_{F_p}(C_0, C_1) => P_9^CB = -(P_1+..+P_8) mod p\nHyperplane sum_{i=1}^9 P_i ~ 3H => 0 = 0 scalar tautology",
+            fillcolor="#dbeafe"
+        ];
+        cb_verdict [
+            label="7A Verdict: NO ESCAPE\n• Chord-tangent lambda: congruent iff 2P_i + P_j = O_E (~1/q)\n• Strict non-collinear hit rate tracks |M|/q null (0 hits >= 12b)\n• Shared CoordinateFb requires O(p) trial work vs O(sqrt(p)) rho",
+            fillcolor="#fee2e2",
+            color="#dc2626"
+        ];
+        cb_build -> cb_id -> cb_verdict;
+    }
+
+    subgraph cluster_7b {
+        label="Escape 7B — Nodal Degree d >= 4 Bezout Curves (g <= 2)";
+        style="rounded,dashed";
+        color="#7c3aed";
+        fontcolor="#6d28d9";
+
+        nb_split [
+            label="Prescribe delta Rational Nodes (3*delta linear eqs)\nGeometric genus g = binom(d-1, 2) - delta <= 2",
+            fillcolor="#f5f3ff"
+        ];
+        nb_off [
+            label="Off-Base Nodes (E(Q_j) != 0 mod p)\nLean-verified: M_{d-3} = g_0(d) <= 3*delta\n=> 100% collapse to C = 0 (mod p)",
+            fillcolor="#ede9fe"
+        ];
+        nb_on [
+            label="On-Base [2]-Multiplicity Nodes (2*delta + s = 3d + 1)\n• (4,2,s=9=>g=1) & (5,5,s=6=>g=1): free rank 0\n• (6,8,s=3=>g=2): rank 1 = Sym^2(CB) reducible\n• (4,1,s=11=>g=2): UNIQUE irreducible Bezout cell!",
+            fillcolor="#ede9fe"
+        ];
+        nb_verdict [
+            label="7B Verdict: GENUS-2 JACOBIAN CEILING\n• (d=4, delta=1, s=11 => g=2, r=12) projects to W^2 = F_6(t)\n• Non-trivial principal divisors yield <= |M|/q (~1/q) hits\n  because generic rank(J(Q)) >= 10 leaves dim ker <= 2",
+            fillcolor="#fee2e2",
+            color="#dc2626"
+        ];
+        nb_split -> nb_off -> nb_verdict;
+        nb_split -> nb_on -> nb_verdict;
+    }
+
+    subgraph cluster_7c {
+        label="Escape 7C — Flagship CH-L4 (L4-check F1) Public Lift Selector";
+        style="rounded,dashed";
+        color="#059669";
+        fontcolor="#047857";
+
+        l4_sel [
+            label="Scalar-Blind Public Small-Height Selector\nNaiveBox vs PGL_3+3D-LLL vs MultiShiftKummerTorsion\nExact Tate-doubling h_hat_H & Neron-Tate rho_G",
+            fillcolor="#ecfdf5"
+        ];
+        l4_exp [
+            label="Two Decisive CH-L4 / F1 Experiments\n(i) 8..12b (r=6): ROC-AUC(coef_bits, rho_G) ~ 0.39..0.65 (~0.50 null)\n(ii) 24..28b (r=7,8,9): min coef_bits = (2.04..7.46)*log2(p)\n    exceeds sub-sqrt(p) JKSST ceiling (0.5*log2(p)) by 4.1x..14.9x",
+            fillcolor="#d1fae5"
+        ];
+        l4_verdict [
+            label="7C Verdict: F1 FALSIFIED FOR PUBLIC LIFTS\n• Public height does not separate kernel witnesses from random lifts\n• Growing rank r=7..9 inflates curve height faster than |M(r)| grows",
+            fillcolor="#fee2e2",
+            color="#dc2626"
+        ];
+        l4_sel -> l4_exp -> l4_verdict;
+    }
+
+    root -> cb_build;
+    root -> nb_split;
+    root -> l4_sel;
+}
