@@ -390,6 +390,20 @@ int ca_mont_init(ca_mont *m, uint64_t p)
 
 uint64_t ca_mont_pow(const ca_mont *m, uint64_t a, uint64_t e)
 {
+    /* p < 2^62: lazy REDC ladder (residues in [0, 2p)), canonicalize once
+     * at the end.  Same class as ca_mont_mul; removes the final conditional
+     * subtract from every step of the exponentiation. */
+    const uint64_t p = m->p;
+    if (p < (1ULL << 62)) {
+        const uint64_t np = m->pinv;
+        uint64_t r = m->r1;
+        while (e) {
+            if (e & 1) r = ca_mont_mul_lazy(r, a, p, np);
+            a = ca_mont_sqr_lazy(a, p, np);
+            e >>= 1;
+        }
+        return ca_fp_canon(r, p);
+    }
     uint64_t r = m->r1;
     while (e) {
         if (e & 1) r = ca_mont_mul(m, r, a);
@@ -434,7 +448,20 @@ static int mr_witness(const ca_mont *m, uint64_t a, uint64_t d, unsigned s)
  * busy.  w[l] becomes w[l]^d (the same residue ca_mont_pow returns). */
 static void mont_pow4(const ca_mont *m, uint64_t w[4], uint64_t e)
 {
+    const uint64_t p = m->p;
     uint64_t r[4] = {m->r1, m->r1, m->r1, m->r1};
+    if (p < (1ULL << 62)) {
+        const uint64_t np = m->pinv;
+        while (e) {
+            if (e & 1)
+                for (int l = 0; l < 4; l++) r[l] = ca_mont_mul_lazy(r[l], w[l], p, np);
+            e >>= 1;
+            if (e)
+                for (int l = 0; l < 4; l++) w[l] = ca_mont_sqr_lazy(w[l], p, np);
+        }
+        for (int l = 0; l < 4; l++) w[l] = ca_fp_canon(r[l], p);
+        return;
+    }
     while (e) {
         if (e & 1)
             for (int l = 0; l < 4; l++) r[l] = ca_mont_mul(m, r[l], w[l]);
