@@ -278,6 +278,9 @@ def self_test():
         binary = root/'mock-not-executable'
         binary.write_bytes(b'mock only; not a Rust executable')
         fixture = b'not the authentic fixture; no real model'
+        fixture_path = root/'synthetic-fixture'
+        fixture_path.write_bytes(fixture)
+        import ct313_failed_capture_audit as independent_negative
         machine = host()
         for case in ('ok', 'nonzero', 'timeout', 'overflow', 'spawn'):
             sub = root/case
@@ -310,13 +313,20 @@ def self_test():
                     if (record[stream + '_sha256'] != digest(raw)
                             or record[stream + '_bytes'] != len(raw)):
                         raise AssertionError('negative capture raw hash/length mismatch')
+                if independent_negative.verify(sub, 'original', fixture_path)['raw_failure_bound'] is not True:
+                    raise AssertionError('independent negative-capture source audit failed')
                 failed_receipts += 1
-                # Synthetic tamper cannot be confused with the original bytes.
+                # Mutate a separate parsed record, not the retained receipt.
                 forged = dict(record)
                 forged['stdout_sha256'] = '0' * 64
-                if forged['stdout_sha256'] == digest((sub/'original.stdout').read_bytes()):
-                    raise AssertionError('synthetic digest mutation collided')
-                forged_hash_refusals += 1
+                try:
+                    independent_negative.check(forged, sub, 'original', fixture_path)
+                except ValueError as exc:
+                    if 'mismatched failed stdout bytes' not in str(exc):
+                        raise
+                    forged_hash_refusals += 1
+                else:
+                    raise AssertionError('tampered failed-capture SHA256 was admitted')
                 refusals += 1
         for argv in ('["wrong"]','{"malformed":true}','[false]'):
             try: argv_lock(argv, binary)
