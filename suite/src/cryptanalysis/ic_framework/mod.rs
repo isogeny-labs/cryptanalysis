@@ -69,6 +69,7 @@ pub mod hashed;
 pub mod linalg;
 pub mod plugins;
 pub mod rep_join;
+pub mod s3chain_mp;
 pub mod solvers;
 pub mod stages;
 pub(crate) mod u32_reciprocal;

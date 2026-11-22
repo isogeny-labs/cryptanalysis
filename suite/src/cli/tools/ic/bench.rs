@@ -27,6 +27,7 @@ use crate::cryptanalysis::ic_boundary::{
 use crate::cryptanalysis::ic_framework::affine::AffineS3Oracle;
 use crate::cryptanalysis::ic_framework::batch_mitm::BinaryBatchMitmOracle;
 use crate::cryptanalysis::ic_framework::rep_join::RepJoinOracle;
+use crate::cryptanalysis::ic_framework::s3chain_mp::S3ChainMpOracle;
 use crate::cryptanalysis::ic_framework::hashed::{HashedAffineBase, HashedTensorOracle};
 use crate::cryptanalysis::ic_framework::linalg::MATRIX_NAMES;
 use crate::cryptanalysis::ic_framework::plugins::{
@@ -179,6 +180,13 @@ fn listing() -> Value {
                                     {"name": "filter_bits", "means": "d in 0..=32: pair sums kept only when their abscissa hash lies in a 2^-d subset (the representation filter); 0 = plain MITM at m"},
                                     {"name": "filter_seed", "means": "filter hash seed, default 1"}],
                      "needs": "generic: the (m-2)-tuple search is exhaustive, so the filter saves memory and lookups, never additions (Delaplace-May 2019 without the summation-polynomial enumeration)"},
+                    {"name": "s3chain-mp", "summands": "3..9", "regimes": ["prime"],
+                     "parameters": [{"name": "m", "means": "summands, 3..=9"},
+                                    {"name": "forward", "means": "summands in the forward message (meet bond u_{forward-1}), 2..=m-1, default m-1; 2 = rep-join"},
+                                    {"name": "filter_bits", "means": "d in 0..=32: truncate the bond at filter_depth summands to a 2^-d hashed subset; 0 = exact"},
+                                    {"name": "filter_depth", "means": "summands of the truncated bond, 2..=forward, default 2"},
+                                    {"name": "filter_seed", "means": "truncation hash seed, default 1"}],
+                     "needs": "message passing on the S3 chain of S_{m+1} restricted to the abscissa base; counted additions only"},
                     {"name": "hashed-tensor", "summands": "2..8", "regimes": ["prime"],
                      "parameters": [
                         {"name": "slots", "means": "independent affine-hashed slot bases, 2..=8; must match hashed-affine"},
@@ -471,14 +479,16 @@ fn run_prime(
         let mut mitm = MitmOracle::new(m);
         let mut hashed = HashedTensorOracle::new();
         let mut rep_join = RepJoinOracle::new(m);
+        let mut s3chain = S3ChainMpOracle::new(m);
         let oracle: &mut dyn DecompositionOracle<_> = match or_name {
             "subtract" => &mut subtract,
             "mitm" => &mut mitm,
             "rep-join" => &mut rep_join,
+            "s3chain-mp" => &mut s3chain,
             "hashed-tensor" => &mut hashed,
             other => {
                 return Err(format!(
-                    "oracle `{other}` is not available on a prime-field curve; try subtract, mitm, rep-join or hashed-tensor"
+                    "oracle `{other}` is not available on a prime-field curve; try subtract, mitm, rep-join, s3chain-mp or hashed-tensor"
                 ))
             }
         };
