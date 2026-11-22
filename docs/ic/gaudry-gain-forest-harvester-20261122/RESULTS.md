@@ -13,7 +13,7 @@ Protocol and the verdict rule were frozen in `PROTOCOL.md` before any of these r
 large-prime arm is exactly the one `--protocol-la` ran before) with `--max-lp 2` (A), `--harvester cycles --max-lp 3` (B),
 `--max-lp 2 --eliminator-d-small` (A2). 24 runs per arm, all six seeds at all four sizes (no reduction needed), every
 recovered logarithm group-checked and equal to the planted one (the summarizer asserts it). Watchdog 4 GiB, no kill.
-Wall: A 3 min-class per size up to 65 s per run at p = 2083; B about 4 min total.
+Wall: A and B ran concurrently, A finished in about 12 min and B in about 4 min; one A run at p = 2083 took 65 s.
 
 ## Verdict (pre-registered): PASS
 
