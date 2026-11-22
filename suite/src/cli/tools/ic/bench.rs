@@ -37,6 +37,7 @@ use crate::cryptanalysis::ic_framework::plugins::{
     BinarySubspaceBase, DescentAlgebraicOracle, FrobeniusMitmOracle, KoblitzOrbitBase, MitmOracle,
     PrimeAbscissaBase, SubtractOracle,
 };
+use crate::cryptanalysis::ic_framework::prime_batch_mitm::PrimeBatchMitmOracle;
 use crate::cryptanalysis::ic_framework::solvers::{
     solver_by_name, solver_registry, validate_solver_params,
 };
@@ -190,6 +191,14 @@ fn listing() -> Value {
                      "parameters": [{"name": "native_setup_pricing", "means": "0 or1, default0; whole native setup with observed arithmetic diagnostics"},{"name": "negation_folded", "means": "1 to halve the table's additions"},
                                     {"name": "coset_filter", "means": "1 to build only the pairs whose coset classes in E/<G> cancel (m = 2, cofactor > 1); cofactor 2 reads the class from Tr(x) = Tr(a) for free"},
                                     {"name": "m", "means": "summands, 2 or 3"}]},
+                    {"name": "mitm-prime-batched", "summands": "2 or 3", "regimes": ["prime"],
+                     "parameters": [{"name": "m", "means": "summands, 2 or 3"},
+                                    {"name": "negation_folded", "means": "1 (default) to charge the folded build's additions, 0 the full build's; same table either way"},
+                                    {"name": "native_setup_pricing", "means": "1 (default) charges the batched preparation as measured nanoseconds; 0 charges the scalar build's additions"},
+                                    {"name": "native_probe_pricing", "means": "1 (default) charges m = 3 candidate arithmetic as measured nanoseconds; 0 charges one addition per candidate point"},
+                                    {"name": "chunk", "means": "pairs per batched inversion while preparing, default 1024"},
+                                    {"name": "probe_chunk", "means": "abscissae per batched inversion while probing at m = 3, default 16"}],
+                     "needs": "the mitm pair table (same entries and witnesses) prepared with one inversion per abscissa pair and Montgomery batch inversion; lookups and hit verification stay counted as for mitm"},
                     {"name": "rep-join", "summands": "2..9", "regimes": ["prime", "char2", "koblitz", "fp2"],
                      "parameters": [{"name": "m", "means": "summands, 2..=9"},
                                     {"name": "filter_bits", "means": "d in 0..=32: pair sums kept only when their abscissa hash lies in a 2^-d subset (the representation filter); 0 = plain MITM at m"},
@@ -558,10 +567,12 @@ fn run_prime(
         let mut subtract = SubtractOracle;
         let mut mitm = MitmOracle::new(m);
         let mut hashed = HashedTensorOracle::new();
+        let mut prime_batched = PrimeBatchMitmOracle::new(m);
         let mut rep_join = RepJoinOracle::new(m);
         let oracle: &mut dyn DecompositionOracle<_> = match or_name {
             "subtract" => &mut subtract,
             "mitm" => &mut mitm,
+            "mitm-prime-batched" => &mut prime_batched,
             "rep-join" => &mut rep_join,
             "hashed-tensor" => &mut hashed,
             other => {
