@@ -387,3 +387,5 @@ pub mod impossible;
 pub mod zero_correlation;
 // WP3: Demirci-Selcuk delta-set meet-in-the-middle cost table.
 pub mod mitm;
+// WP4: ARX techniques (differential-linear, PNB, rotational).
+pub mod arx;
