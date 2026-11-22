@@ -87,7 +87,7 @@ def expected_slots(from_side, to_side, arm):
         counts[6] = 1
     elif arm == 1:
         for slot in direction:
-            counts[slot] = 2
+            counts[slot] = 1  # CT125 optimized literal: one gamma per hop, not two
         counts[6] = 2
     else:
         for slot in direction:
@@ -336,6 +336,16 @@ def self_test():
     mutation(lambda a,b,c: b["all48"][0][ROUTES[0]].update(quadratic_source_phi=0))
     mutation(lambda a,b,c: b["all48"][0][ROUTES[0]].update(external_full_order=False))
     mutation(lambda a,b,c: b["all48"][0][ROUTES[0]].update(unexpected_counter=1))
+    # CT300 amendment: an old pre-CT125 literal-four-C13 profile must not
+    # pass merely because the source and physical counters are forged alike.
+    def legacy_literal(a, b, c):
+        a[1]["calls"][0] = 2
+        a[1]["calls"][2] = 2
+        a[1]["source_C13"] = 4
+        b["all48"][0][ROUTES[1]]["degree13_elliptic_evaluation"] = 4
+        c["calls"][0] += 1
+        c["calls"][2] += 1
+    mutation(legacy_literal)
     for i, test in enumerate(tests):
         try:
             audit(test)
