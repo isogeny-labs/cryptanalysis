@@ -19,6 +19,8 @@ and construction gates. [pcc:unverified]
 ## Active items (top = next)
 - [ ] CT201–CT203: complete cold ECDLP source adjudication (matched five-arm rho/BSGS/IC, Williams order, distinct-Q per-block prospective gate; automation, started 2026-11-18, branch research/ct201-complete-single-target-gate-20261118, PR #1766; source CI 44/44 normal and -O at 36807d15; native/PCC blocked) [pcc:unverified]
 
+- [x] Representation technique (Delaplace–May 2019 / DFKM 2020) in `ic bench`: (a) `descent-algebraic` m = 4 balanced split with intermediates restricted to a subspace V' (sweep ℓ'), (b) generic filtered m-list join oracle `rep-join` (m = 2..9, filter density), (c) an F_{p^2} regime with the subfield abscissa base; each through the trunk lead-sweep protocol against the fixed baseline (Claude Code, completed 2026-11-20, branch claude/representation-join-ic-20261120, PR #1877; (b) both leads FAIL phase 1, (a) no cheaper relation at l'=4..13, (c) fp2-weil 7x-284x over table mitm but S/rho 13->61; results, report and bench records in crypto PR #4840, research/representation_join_ic_20261120) [pcc:unverified]
+
 - [ ] Complete or obstruct the P-256 full-bitangent Frobenius/Hilbert-90 descent, with all 28 lines, cocycle verification, and exact base-field round-trip checks (Codex, started 2026-11-20, branch codex/nist-333-transfer-evidence-20261120, PR #1876) [pcc:unverified]
 
 - [x] Integrate the NIST P-224/P-256 genus-3 (3,3,3)-isogeny reconstruction and the bounded genus-3 HECDLP cover-reduction evidence, preserving quartic/Kummer maps, empirical controls, and open transfer obligations (Codex, completed 2026-11-20, branch codex/nist-333-transfer-evidence-20261120, PR #1876) [pcc:unverified]

@@ -300,6 +300,110 @@ pub fn descend(
     })
 }
 
+/// The balanced representation split of `S_5` (four summands):
+///
+/// ```text
+/// S_3(x_1, x_2, u) = 0,   S_3(x_3, x_4, w) = 0,   S_3(u, w, x_R) = 0
+/// ```
+///
+/// with `x_1..x_4` in the span of `v_basis` (`n'` bits each) and the two
+/// intermediates `u, w` restricted to the span of `inter_basis` (`ℓ'`
+/// bits each).  Variables are numbered `x_1, …, x_4, u, w`, `n'` bits for
+/// each `x_i` then `ℓ'` for each intermediate; [`SplitDescent::lift`]
+/// returns the four summand abscissae.
+///
+/// This is the representation technique of Delaplace–May (2019) in the
+/// binary Weil-descent setting: the intermediate `P_1 + P_2` is kept only
+/// when its abscissa lies in a structured subset.  With `inter_basis`
+/// spanning all of `F_{2^n}` it is the plain chained descent of `S_5`
+/// (the control); with `ℓ' < n` it fixes `n − ℓ'` linear conditions on
+/// each intermediate, i.e. the hybrid approach on the intermediates.
+/// `3n` equations in `4n' + 2ℓ'` unknowns, at most cubic (squaring is
+/// linear, so `S_3`'s `x_1 x_2 x_3` is the only cubic term).
+pub fn descend_split4(
+    gf: &Gf2,
+    b: u64,
+    x_r: u64,
+    v_basis: &[u64],
+    inter_basis: &[u64],
+) -> Result<SplitDescent, String> {
+    let np = v_basis.len() as u32;
+    let nl = inter_basis.len() as u32;
+    let n_vars = 4 * np + 2 * nl;
+    if np == 0 || nl == 0 || n_vars > MAX_VARS {
+        return Err(format!(
+            "the split descent needs 4·{np} + 2·{nl} = {n_vars} boolean variables; \
+             the monomial mask holds {MAX_VARS}"
+        ));
+    }
+    let x: Vec<FieldBoolPoly> = (0..4)
+        .map(|i| FieldBoolPoly::linear(i * np, v_basis))
+        .collect();
+    let u = FieldBoolPoly::linear(4 * np, inter_basis);
+    let w = FieldBoolPoly::linear(4 * np + nl, inter_basis);
+    let xr = FieldBoolPoly::constant(x_r);
+    let parts = [
+        s3_poly(gf, b, &x[0], &x[1], &u),
+        s3_poly(gf, b, &x[2], &x[3], &w),
+        s3_poly(gf, b, &u, &w, &xr),
+    ];
+    let mut equations = Vec::with_capacity(3 * gf.n as usize);
+    let mut field_monomials = 0;
+    for p in &parts {
+        field_monomials += p.len();
+        equations.extend(p.split(gf.n, n_vars as usize));
+    }
+    Ok(SplitDescent {
+        n_prime: np,
+        inter_dim: nl,
+        n_vars: n_vars as usize,
+        equations,
+        v_basis: v_basis.to_vec(),
+        field_monomials,
+    })
+}
+
+/// `S_3(p, q, r) = (p + q)² r² + p q r + (p q)² + b` on boolean-ring
+/// polynomials, term for term [`semaev_s3_word`].
+fn s3_poly(
+    gf: &Gf2,
+    b: u64,
+    p: &FieldBoolPoly,
+    q: &FieldBoolPoly,
+    r: &FieldBoolPoly,
+) -> FieldBoolPoly {
+    let pq = p.mul(q, gf);
+    let t1 = p.add(q).sqr(gf).mul(&r.sqr(gf), gf);
+    let t2 = pq.mul(r, gf);
+    let t3 = pq.sqr(gf).add(&FieldBoolPoly::constant(b));
+    t1.add(&t2).add(&t3)
+}
+
+/// A descended split system ([`descend_split4`]).
+#[derive(Clone, Debug)]
+pub struct SplitDescent {
+    pub n_prime: u32,
+    pub inter_dim: u32,
+    pub n_vars: usize,
+    pub equations: Vec<F2BoolPoly>,
+    pub v_basis: Vec<u64>,
+    pub field_monomials: usize,
+}
+
+impl SplitDescent {
+    /// The four summand abscissae a solution names.
+    pub fn lift(&self, v: u64) -> Vec<u64> {
+        let np = self.n_prime as usize;
+        (0..4)
+            .map(|i| {
+                (0..np)
+                    .filter(|&k| (v >> (i * np + k)) & 1 == 1)
+                    .fold(0u64, |acc, k| acc ^ self.v_basis[k])
+            })
+            .collect()
+    }
+}
+
 /// Direct coefficients of the same quadratic S3 polynomial. All cross masks
 /// precede the linear masks; within each degree ascending masks are canonical.
 #[cfg(any(test, feature = "s3-direct-coefficients"))]
@@ -407,6 +511,49 @@ mod tests {
     use crate::cryptanalysis::pq_descent::{weil_descend_s3, weil_descend_s4};
     use rand::rngs::StdRng;
     use rand::{Rng, SeedableRng};
+
+    #[test]
+    fn split4_equations_are_the_three_s3_words_bit_for_bit() {
+        let mut rng = StdRng::seed_from_u64(0x5917_2026_1120);
+        for n in [11u32, 17, 21] {
+            let irr =
+                crate::cryptanalysis::koblitz_index_calculus::find_irreducible_sparse(n).unwrap();
+            let gf = Gf2::new(&irr);
+            for (np, nl) in [(3usize, 2usize), (4, 5), (5, 11)] {
+                let v_basis: Vec<u64> = (0..np).map(|_| rng.gen::<u64>() & gf.mask).collect();
+                let i_basis: Vec<u64> = (0..nl).map(|_| rng.gen::<u64>() & gf.mask).collect();
+                let b = rng.gen::<u64>() & gf.mask;
+                let x_r = rng.gen::<u64>() & gf.mask;
+                let sys = descend_split4(&gf, b, x_r, &v_basis, &i_basis).unwrap();
+                assert_eq!(sys.equations.len(), 3 * n as usize);
+                let span = |bits: u64, basis: &[u64]| {
+                    (0..basis.len())
+                        .filter(|&k| (bits >> k) & 1 == 1)
+                        .fold(0u64, |acc, k| acc ^ basis[k])
+                };
+                for _ in 0..200 {
+                    let v = rng.gen::<u64>() & ((1u64 << sys.n_vars) - 1);
+                    let xs = sys.lift(v);
+                    let u = span(v >> (4 * np), &i_basis);
+                    let w = span(v >> (4 * np + nl), &i_basis);
+                    let words = [
+                        semaev_s3_word(&gf, b, xs[0], xs[1], u),
+                        semaev_s3_word(&gf, b, xs[2], xs[3], w),
+                        semaev_s3_word(&gf, b, u, w, x_r),
+                    ];
+                    for (part, word) in words.iter().enumerate() {
+                        for j in 0..n as usize {
+                            assert_eq!(
+                                sys.equations[part * n as usize + j].eval(v),
+                                ((word >> j) & 1) as u32,
+                                "n={n} np={np} nl={nl} part={part} bit={j}"
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     #[test]
     fn direct_s3_matches_generic_coefficients_in_canonical_order() {
