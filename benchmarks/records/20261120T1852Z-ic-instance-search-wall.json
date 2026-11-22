@@ -1,0 +1,164 @@
+{
+  "branch": "claude/ic-parallel-relations",
+  "closed_utc": "2026-11-20T19:12:59+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "benchmarks/20261120-ic-parallel/before_after.py",
+        "/tmp/claude-0/-home-user-workspace/e560c803-a5c1-5998-a835-174af3ab8efb/scratchpad/ca-ic.base",
+        "suite/target/release/ca-ic",
+        "/tmp/claude-0/-home-user-workspace/e560c803-a5c1-5998-a835-174af3ab8efb/scratchpad/v2/before_after"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-20T18:56:18+00:00",
+      "wall_s": 442.047
+    }
+  ],
+  "commit": "94fa0d60b2997e97af5fd1211990f5d146a7cec3",
+  "commit_dirty": true,
+  "created_utc": "2026-11-20T18:52:55+00:00",
+  "curve_uid": null,
+  "entries": [
+    "benchmarks/20261120-ic-parallel"
+  ],
+  "host": {
+    "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+    "cpus_online": 4,
+    "hostname": "vm",
+    "isolation": "unstated",
+    "platform": "Linux-6.18.44-fc-v726-x86_64-with-glibc2.39"
+  },
+  "id": "20261120T1852Z-ic-instance-search-wall",
+  "metrics": [
+    {
+      "baseline": 39.911,
+      "better": "lower",
+      "n": 1,
+      "name": "cell_wall_prime_24",
+      "note": "whole ic bench process at registry phase-3 settings (8 repeats, 16 rho runs), --threads 1; baseline = previous binary (6b64ee6); same_counts=True",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.342
+    },
+    {
+      "baseline": 15.737,
+      "better": "lower",
+      "n": 1,
+      "name": "cell_wall_char2_27",
+      "note": "whole ic bench process at registry phase-3 settings (8 repeats, 16 rho runs), --threads 1; baseline = previous binary (6b64ee6); same_counts=True",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.444
+    },
+    {
+      "baseline": 355.701,
+      "better": "lower",
+      "n": 1,
+      "name": "cell_wall_char2_29",
+      "note": "whole ic bench process at registry phase-3 settings (8 repeats, 16 rho runs), --threads 1; baseline = previous binary (6b64ee6); same_counts=True",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "wall_s",
+      "value": 1.4
+    },
+    {
+      "baseline": 13.876,
+      "better": "lower",
+      "n": 1,
+      "name": "cell_wall_koblitz_43",
+      "note": "whole ic bench process at registry phase-3 settings (8 repeats, 16 rho runs), --threads 1; baseline = previous binary (6b64ee6); same_counts=True",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "wall_s",
+      "value": 14.45
+    }
+  ],
+  "problem": "ic:bench-cell-wall-phase3",
+  "raw": [
+    {
+      "bytes": 1520,
+      "path": "benchmarks/20261120-ic-parallel/data/v2-94fa0d6/before_after/before_after.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/43/43e7a38e3259d6324ca8a8ae1b06f7c6dfa14fcb9ae9408aea10f8227df05d16",
+      "sha256": "43e7a38e3259d6324ca8a8ae1b06f7c6dfa14fcb9ae9408aea10f8227df05d16",
+      "uploaded": false
+    },
+    {
+      "bytes": 43412,
+      "path": "benchmarks/20261120-ic-parallel/data/v2-94fa0d6/before_after/char2-27-previous.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/77/778fbd954c081923c8245511832c0bbdc1d8dbbde59e73a3a3bab3fca1c5c797",
+      "sha256": "778fbd954c081923c8245511832c0bbdc1d8dbbde59e73a3a3bab3fca1c5c797",
+      "uploaded": false
+    },
+    {
+      "bytes": 43409,
+      "path": "benchmarks/20261120-ic-parallel/data/v2-94fa0d6/before_after/char2-27-this.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/2a/2af3b2c045407fd1503e2d5717d1546ff4fa5f5842a498ccc7b41454b77b54b3",
+      "sha256": "2af3b2c045407fd1503e2d5717d1546ff4fa5f5842a498ccc7b41454b77b54b3",
+      "uploaded": false
+    },
+    {
+      "bytes": 43468,
+      "path": "benchmarks/20261120-ic-parallel/data/v2-94fa0d6/before_after/char2-29-previous.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/32/3264e415ea80c4cf7b7f1e3ee57a82205d8ef98617bf1217e0ca451d95789b76",
+      "sha256": "3264e415ea80c4cf7b7f1e3ee57a82205d8ef98617bf1217e0ca451d95789b76",
+      "uploaded": false
+    },
+    {
+      "bytes": 43465,
+      "path": "benchmarks/20261120-ic-parallel/data/v2-94fa0d6/before_after/char2-29-this.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/36/36fbc4b31d118377b8d635cdaf0e07d10cc2f56d2b73dd5e66d9b510b0638fc4",
+      "sha256": "36fbc4b31d118377b8d635cdaf0e07d10cc2f56d2b73dd5e66d9b510b0638fc4",
+      "uploaded": false
+    },
+    {
+      "bytes": 49104,
+      "path": "benchmarks/20261120-ic-parallel/data/v2-94fa0d6/before_after/koblitz-43-previous.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/83/834e1150183ef65bd81d5a0b7343cc9702e6d884c9a77e742a3c8d5492a0b15e",
+      "sha256": "834e1150183ef65bd81d5a0b7343cc9702e6d884c9a77e742a3c8d5492a0b15e",
+      "uploaded": false
+    },
+    {
+      "bytes": 49102,
+      "path": "benchmarks/20261120-ic-parallel/data/v2-94fa0d6/before_after/koblitz-43-this.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/7b/7b7d0fa9fddc2ab89ff8f54ffba0e3dd181f56e23257d4d5065cc5838b5e8441",
+      "sha256": "7b7d0fa9fddc2ab89ff8f54ffba0e3dd181f56e23257d4d5065cc5838b5e8441",
+      "uploaded": false
+    },
+    {
+      "bytes": 42997,
+      "path": "benchmarks/20261120-ic-parallel/data/v2-94fa0d6/before_after/prime-24-previous.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/de/de0570095ac5ab9ee643e827732e03567d117cb23538147984027f5e8373bb56",
+      "sha256": "de0570095ac5ab9ee643e827732e03567d117cb23538147984027f5e8373bb56",
+      "uploaded": false
+    },
+    {
+      "bytes": 42991,
+      "path": "benchmarks/20261120-ic-parallel/data/v2-94fa0d6/before_after/prime-24-this.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/79/797855fe8e13bd8f4205453a0c84cddae5ba9cef1618e48c40269e941069d2a0",
+      "sha256": "797855fe8e13bd8f4205453a0c84cddae5ba9cef1618e48c40269e941069d2a0",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "benchmarks/20261120-ic-parallel/data/v2-94fa0d6/report.pdf",
+    "png": [],
+    "svg": [
+      "benchmarks/20261120-ic-parallel/data/v2-94fa0d6/before_after.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-instance-search-wall",
+  "status": "measured",
+  "summary": "phase-3 ic bench cell wall, previous vs this binary, counts identical: prime-24 39.9->0.34 s, char2-27 15.7->0.44 s, char2-29 355.7->1.40 s, koblitz-43 13.9->14.5 s (no curve search there)",
+  "validation": null
+}

@@ -36,7 +36,7 @@ extraction window, and row count. Each index was extracted independently, so
 cross-view joins do not represent one database transaction. Null fields mean
 missing or unknown data.
 
-The [agent skill](../../.agents/skills/lmfdb-local-query/SKILL.md) gives
+The [agent skill](https://github.com/isogeny-labs/workspace/blob/main/.agents/skills/lmfdb-local-query/SKILL.md) gives
 query and identity guidance. The broader archive is at
 `/Volumes/data/workspaces/lmfdb-public-mirror-20261019/resumable/`; its
 `COMPLETE.json` marker is the completion gate. The LAN endpoint and NAS share

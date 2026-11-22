@@ -1,0 +1,13 @@
+{
+  "schema": "xedni-fresh-beam-independence-extension-protocol-v1",
+  "reason": "Four of 104 states lacked a quotient witness in the frozen odd-prime range 3..199; preserve the original census and extend only those four.",
+  "parent_result_sha256": "d70edea1c8e01da30cac0322fc54b2d5f4e83ac246246dd8ad6d64473b7d22cf",
+  "parent_rows_gzip_sha256": "11edbec5d9278b303110edca619da1a78283b81c485dee620c9304cd9f48d37e",
+  "states": ["hit03:D8:7", "hit05:D8:5", "hit07:D8:0", "hit10:D8:0"],
+  "auxiliary_prime_law": "all primes from 211 through 997 inclusive, ascending, tested for each of the four states even after a witness is found",
+  "good_reduction": "same denominator and discriminant checks as original protocol",
+  "quotient_witness": "first good-reduction prime in the extension with both point reductions and P1, P2, P1-P2 outside the doubled-point image",
+  "recording": "every state-prime status, finite group order, doubled-image size, first witness, and censored state; independent finite-group replay",
+  "run_cap_seconds": 1200,
+  "claim_boundary": "adaptive extension following the frozen 199 cap; retain original four uncertified statuses and report extension witnesses separately"
+}

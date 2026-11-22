@@ -1,0 +1,11 @@
+{
+  "schema": "xedni-known-relation-lifts-protocol-v1",
+  "question": "Given an already known public two-point relation, can one construct a good-reduction rational curve and lifts on which the identical coefficients give an exact relation?",
+  "fresh_result_gzip_sha256": "dc6aefbdcc34ee73d4b24b11bf638405150eacbe80334e46be8f70bf9d62f68d",
+  "source_panel": "all distinct-x public relation hits in experiments/xedni-hensel-fresh-transfer-20261118/run-result.json.gz, in original event order",
+  "input_condition": "nonzero b with gcd(b,q)=1; retain every excluded or failed row",
+  "construction": "R=[b^-1 mod q]U; check V=[-a]R; choose centered integer coordinates x,y of R; set A=-1 and B=y^2-x^3-Ax; T=(x,y); P1=[b]T, P2=[-a]T",
+  "checks": "curve nonsingular over Q and good reduction to y^2=x^3-x-2 mod p; R reduces correctly; P1 and P2 reduce to U,V; aP1+bP2=O exactly; independent replay all input rows",
+  "run_cap_seconds": 1200,
+  "claim_boundary": "constructive existence conditional on the public relation coefficients already being known; no relation-discovery or cost claim"
+}

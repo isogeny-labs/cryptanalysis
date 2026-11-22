@@ -1,0 +1,39 @@
+{
+  "compiler": "c++ -O3 -std=c++17 -Wall -Wextra",
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "decision_rule": "Census must match independent archived Sage. Compare complete target-dependent loop including every family, rejected family and final source-product check. Report all three arm timings and do not infer end-to-end speedup.",
+  "expected": {
+    "families": 248640,
+    "half_survivors": [
+      258,
+      237
+    ],
+    "hit": [
+      0,
+      24,
+      37,
+      2,
+      10
+    ],
+    "retained": 495
+  },
+  "order": [
+    "prior_affine",
+    "constmul",
+    "direct_rank",
+    "direct_rank",
+    "constmul",
+    "prior_affine"
+  ],
+  "resource_envelope": "one local native process at a time; 30 s subprocess timeout per arm; ordinary macOS arm64 host with no isolation tier",
+  "schema": "n41_fixed_basis_constmul_abba_v1",
+  "sha256": {
+    "constmul": "c624bbb75ae0f2d774e3336efd876a6ab536ff9991d50bfc8bb4e1755633cb3d",
+    "direct_rank": "85838e2a2c55655a7bb3f2325fc50da8074b1ae2367271b124fb534d5e86aebf",
+    "input": "05cdc6655cd2f06531755457f6fe16b8acbfc41999cf889f6a025fa17b00fd5d",
+    "prior_affine": "8d572d4e37f270a07ed2fd29744ebfd96c28eae44f0bfb048cb4e88ea00ef292",
+    "runner": "239210b7ea4e9aaae4a15b3566b526220749087a4fe4a22359b063dfbfae847b",
+    "sage_audit": "18279f34d4ec604d2f5a227e119ba3f26424d67ad297552f713f1222c78769fb"
+  },
+  "workload": "160 frozen public residual charts by 1554 source-admissible two-code families, eight roots each, 40 third-source products"
+}

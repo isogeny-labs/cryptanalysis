@@ -148,8 +148,10 @@ relevance, not truth. Record the `source_id` and `repo:path` under "Sources
 checked"; no result is not evidence of absence.
 
 The binding rule is `crypto-autoresearcher:docs/lab-contract.md` §11; the
-canonical procedure is `crypto:.agents/skills/research-kb/SKILL.md` (commit
-`bc10008055`); the local pointer skill is `research-kb`. The CLI fallback is
+canonical procedure is the trunk's `research-kb` skill,
+`isogeny-labs/workspace:.agents/skills/research-kb/SKILL.md` (imported from
+crypto; this repository's former copy is its `variants/cryptanalysis/VARIANT.md`).
+The CLI fallback is
 `scripts/research-kb status|search|theorems|brief`. The receipt audit is
 `scripts/kb_usage_report.py` (locked; `docs/shared-code.lock.json`) and
 `.github/workflows/kb-usage-report.yml` runs it weekly, report-only.
@@ -158,7 +160,7 @@ canonical procedure is `crypto:.agents/skills/research-kb/SKILL.md` (commit
 
 When LMFDB catalog data could answer a curve, isogeny, genus 2, or finite-field
 abelian-variety question, use the local indexes described by
-[the LMFDB query skill](.agents/skills/lmfdb-local-query/SKILL.md) before
+[the LMFDB query skill](https://github.com/isogeny-labs/workspace/blob/main/.agents/skills/lmfdb-local-query/SKILL.md) before
 fetching the same data remotely. On the Mac with the NAS mounted, start with:
 
 ```sh
@@ -180,7 +182,7 @@ waits for a valid archive `COMPLETE.json` before opening its endpoint.
 
 For every substantive search for new isogenies, curves, scalar rules,
 endomorphisms, or related ECDLP mechanisms, follow
-[the research-visuals skill](.agents/skills/research-visuals/SKILL.md).
+[the research-visuals skill](https://github.com/isogeny-labs/workspace/blob/main/.agents/skills/research-visuals/SKILL.md).
 Deliver a source-linked report, an explanatory diagram, and a PDF
 containing the report and visual. Include negative and inconclusive findings.
 Update affected canonical graph sources and rendered figures in the same
@@ -256,12 +258,12 @@ toolchain, and treat a gate change as a dependency change.
 For small-prime or pinned GF(2^83) elliptic-curve surface searches, quartic
 subgroup transfers, genus-2+ Jacobian transfers, hyperelliptic covers, Mumford
 arithmetic, gluing or polarization candidates, or Frobenius compatibility
-checks, use [ecdlp-surfaces](.agents/skills/ecdlp-surfaces/SKILL.md) for tool
+checks, use [ecdlp-surfaces](https://github.com/isogeny-labs/workspace/blob/main/.agents/skills/ecdlp-surfaces/SKILL.md) for tool
 selection, commands, and interpretation limits.
 
 ## Preserve scope and report evidence
 
-Use [report-evidence](.agents/skills/report-evidence/SKILL.md) for implementation,
+Use [report-evidence](https://github.com/isogeny-labs/workspace/blob/main/.agents/skills/report-evidence/SKILL.md) for implementation,
 experiments, benchmarks, completion reports, and research handoffs.
 
 - Preserve the user's requested deliverables, parameters, workloads, and acceptance

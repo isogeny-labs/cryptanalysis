@@ -1,0 +1,41 @@
+{
+  "anf_monomials": 220172,
+  "candidate_id": null,
+  "case": "n131_positive",
+  "command": [
+    "/opt/homebrew/bin/cryptominisat5",
+    "--threads=1",
+    "--xor=0",
+    "--printsol=1",
+    "--random=20261012",
+    "--maxconfl=20000000",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_fouratom_product_anf_sat_20261012/n131_positive.xcnf"
+  ],
+  "formula": {
+    "and_gates": 220507,
+    "bytes": 103950357,
+    "cnf_clauses": 661521,
+    "native_xor_rows": 131,
+    "primary_bits": 28,
+    "sha256": "c0c7399f183bed095a7017d0ec9e0ffc4b9f2ccad5b578fe08a7e45c76b4a8e8",
+    "variables": 220535,
+    "xor_literal_count": 14420218
+  },
+  "formula_model_check": null,
+  "peak_solver_rss_bytes_sampled": 341573632,
+  "phase_ns_exploratory": {
+    "anf_build": 18646563458,
+    "formula_emit": 6927876167,
+    "model_and_semantic_check": 791167,
+    "solver": 120031657708
+  },
+  "resource": {
+    "rss_cap_bytes": 4294967296,
+    "solver_wall_cap_s": 120,
+    "workers": 1
+  },
+  "semantic_check": null,
+  "solver_returncode": -9,
+  "solver_stdout_sha256": "8d8c481b3081e980b69ad453bf4587eb527ba42bf4bd1d1054e6b6f249bd534a",
+  "status": "TIMEOUT"
+}

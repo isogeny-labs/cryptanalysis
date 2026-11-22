@@ -1,0 +1,1504 @@
+{
+  "all_verified": true,
+  "calibration": {
+    "ns_per_add": 89.250335,
+    "ns_per_as_solve": null,
+    "ns_per_canon": null,
+    "ns_per_double": 96.52477280451001,
+    "ns_per_frobenius": null,
+    "ns_per_inversion": 67.28457805181,
+    "ns_per_legendre": 49.02467351349,
+    "ns_per_lookup": 1.1567735919350002,
+    "ns_per_row_op": 1.542870541145,
+    "ns_per_s4_pair": null,
+    "ns_per_sqrt": 71.466580998905,
+    "ns_per_word_xor": 0.20920278524000002,
+    "pinned_units": [
+      "ns_per_double",
+      "ns_per_lookup",
+      "ns_per_row_op",
+      "ns_per_sqrt",
+      "ns_per_word_xor",
+      "ns_per_legendre",
+      "ns_per_inversion"
+    ]
+  },
+  "calibration_pins": {
+    "measured": [],
+    "pinned": [
+      "ns_per_double",
+      "ns_per_lookup",
+      "ns_per_row_op",
+      "ns_per_sqrt",
+      "ns_per_word_xor",
+      "ns_per_legendre",
+      "ns_per_inversion"
+    ]
+  },
+  "configurations_run": 8,
+  "configurations_skipped": [],
+  "elapsed_seconds": 0.020866549,
+  "instance": "bench-20bit",
+  "markdown": "| instance | configuration | base | cols | pts/col | hit rate | trials | rows | rank | D_solve | D_sr | S | vs rho | correct |\n|:--|:--|--:|--:|--:|--:|--:|--:|--:|--:|:--|--:|--:|:--|\n| bench-20bit | prime-abscissa[size=100] + mitm + — + walk | 200 | 100 | 2.0 | 0.020 | 3554 | 70 | 70 | — | — | 24.432 | 22.43× | yes |\n| bench-20bit | prime-abscissa[size=100] + mitm + — + walk | 200 | 100 | 2.0 | 0.020 | 3261 | 65 | 65 | — | — | 24.213 | 22.23× | yes |\n| bench-20bit | prime-abscissa[size=100] + mitm + — + walk | 200 | 100 | 2.0 | 0.018 | 2917 | 52 | 52 | — | — | 23.875 | 21.91× | yes |\n| bench-20bit | prime-abscissa[size=100] + mitm + — + walk | 200 | 100 | 2.0 | 0.017 | 4238 | 70 | 70 | — | — | 25.786 | 23.67× | yes |\n| bench-20bit | prime-abscissa[size=100] + mitm + — + walk | 200 | 100 | 2.0 | 0.022 | 2447 | 53 | 53 | — | — | 23.399 | 21.48× | yes |\n| bench-20bit | prime-abscissa[size=100] + mitm + — + walk | 200 | 100 | 2.0 | 0.018 | 4370 | 79 | 79 | — | — | 25.519 | 23.42× | yes |\n| bench-20bit | prime-abscissa[size=100] + mitm + — + walk | 200 | 100 | 2.0 | 0.019 | 3715 | 70 | 70 | — | — | 24.753 | 22.72× | yes |\n| bench-20bit | prime-abscissa[size=100] + mitm + — + walk | 200 | 100 | 2.0 | 0.019 | 3591 | 68 | 68 | — | — | 24.703 | 22.68× | yes |\n",
+  "operation": "bench",
+  "regime": "prime",
+  "rho_reference": {
+    "all_verified": true,
+    "automorphisms": 2,
+    "max_s": 2.065029991930611,
+    "mean_s": 1.0894425856623986,
+    "mean_s_walk": 0.8988084575029266,
+    "method": "negation-map r-adding walk: look-ahead, short-cycle escape by doubling, distinguished points, stride starts",
+    "min_s": 0.39776015462175046,
+    "per_run": [
+      {
+        "planted": 368141,
+        "s": 1.014434988937044,
+        "s_walk": 0.829725727945617,
+        "seed": 1400727534,
+        "steps": 797,
+        "steps_over_expected": 0.9362452258169933,
+        "verified": true
+      },
+      {
+        "planted": 408644,
+        "s": 0.553150485297078,
+        "s_walk": 0.38212339178649735,
+        "seed": 1400727535,
+        "steps": 362,
+        "steps_over_expected": 0.43118007455176016,
+        "verified": true
+      },
+      {
+        "planted": 449147,
+        "s": 1.053526896025177,
+        "s_walk": 0.8580673605845133,
+        "seed": 1400727532,
+        "steps": 825,
+        "steps_over_expected": 0.968225333648198,
+        "verified": true
+      },
+      {
+        "planted": 489650,
+        "s": 0.39776015462175046,
+        "s_walk": 0.2218465727251532,
+        "seed": 1400727533,
+        "steps": 207,
+        "steps_over_expected": 0.25032705095460245,
+        "verified": true
+      },
+      {
+        "planted": 530153,
+        "s": 0.40851042907098695,
+        "s_walk": 0.24139252626921956,
+        "seed": 1400727530,
+        "steps": 231,
+        "steps_over_expected": 0.27238229773474365,
+        "verified": true
+      },
+      {
+        "planted": 570656,
+        "s": 2.065029991930611,
+        "s_walk": 1.850024502945881,
+        "seed": 1400727531,
+        "steps": 1792,
+        "steps_over_expected": 2.0875291077403633,
+        "verified": true
+      },
+      {
+        "planted": 611159,
+        "s": 1.4894016600578568,
+        "s_walk": 1.2861237431995665,
+        "seed": 1400727528,
+        "steps": 1221,
+        "steps_over_expected": 1.45123523813329,
+        "verified": true
+      },
+      {
+        "planted": 651662,
+        "s": 0.7290640671936752,
+        "s_walk": 0.5433775085250448,
+        "seed": 1400727529,
+        "steps": 511,
+        "steps_over_expected": 0.6131358604879249,
+        "verified": true
+      },
+      {
+        "planted": 368141,
+        "s": 1.8304785494018148,
+        "s_walk": 1.6174276557714915,
+        "seed": 1400727526,
+        "steps": 1526,
+        "steps_over_expected": 1.825071671056683,
+        "verified": true
+      },
+      {
+        "planted": 408644,
+        "s": 0.7632694858957914,
+        "s_walk": 0.5912650947080075,
+        "seed": 1400727527,
+        "steps": 558,
+        "steps_over_expected": 0.6671712150992708,
+        "verified": true
+      },
+      {
+        "planted": 449147,
+        "s": 1.162006938194745,
+        "s_walk": 0.9577517236592517,
+        "seed": 1400727524,
+        "steps": 915,
+        "steps_over_expected": 1.080707092226918,
+        "verified": true
+      },
+      {
+        "planted": 489650,
+        "s": 0.6684716112070695,
+        "s_walk": 0.5062401967913187,
+        "seed": 1400727525,
+        "steps": 482,
+        "steps_over_expected": 0.5712308916056567,
+        "verified": true
+      },
+      {
+        "planted": 530153,
+        "s": 1.4942881484438733,
+        "s_walk": 1.2851464455223633,
+        "seed": 1400727522,
+        "steps": 1228,
+        "steps_over_expected": 1.4501324757942828,
+        "verified": true
+      },
+      {
+        "planted": 570656,
+        "s": 1.471810301868197,
+        "s_walk": 1.27537346875033,
+        "seed": 1400727523,
+        "steps": 1220,
+        "steps_over_expected": 1.4391048524042123,
+        "verified": true
+      },
+      {
+        "planted": 611159,
+        "s": 0.8619765512933265,
+        "s_walk": 0.6801991833335094,
+        "seed": 1400727520,
+        "steps": 639,
+        "steps_over_expected": 0.7675225879489133,
+        "verified": true
+      },
+      {
+        "planted": 651662,
+        "s": 1.4679011111593838,
+        "s_walk": 1.2548502175290603,
+        "seed": 1400727521,
+        "steps": 1197,
+        "steps_over_expected": 1.415946843285064,
+        "verified": true
+      }
+    ],
+    "runs": 16
+  },
+  "rho_reference_candidates": [],
+  "rho_reference_plain": {
+    "all_verified": true,
+    "automorphisms": 1,
+    "max_s": 11.420700655797974,
+    "mean_s": 3.5945619378586287,
+    "mean_s_walk": 2.326212796163198,
+    "method": "r-adding walk, distinguished points, 16 jumps",
+    "min_s": 0.728086769516472,
+    "per_run": [
+      {
+        "planted": 368141,
+        "s": 11.420700655797974,
+        "s_walk": 9.96159522373342,
+        "seed": 1400727534,
+        "steps": 10193,
+        "steps_over_expected": 7.9482030299844615,
+        "verified": true
+      },
+      {
+        "planted": 408644,
+        "s": 3.0804422785448584,
+        "s_walk": 1.5109022089563298,
+        "seed": 1400727535,
+        "steps": 1546,
+        "steps_over_expected": 1.2055255454092002,
+        "verified": true
+      },
+      {
+        "planted": 449147,
+        "s": 6.5781906652555335,
+        "s_walk": 5.626302727659502,
+        "seed": 1400727532,
+        "steps": 5757,
+        "steps_over_expected": 4.489140080802565,
+        "verified": true
+      },
+      {
+        "planted": 489650,
+        "s": 2.8537092174336887,
+        "s_walk": 1.7874774516048688,
+        "seed": 1400727533,
+        "steps": 1829,
+        "steps_over_expected": 1.4262006614187757,
+        "verified": true
+      },
+      {
+        "planted": 530153,
+        "s": 3.294470469852385,
+        "s_walk": 2.0044375359440054,
+        "seed": 1400727530,
+        "steps": 2051,
+        "steps_over_expected": 1.5993097630234603,
+        "verified": true
+      },
+      {
+        "planted": 570656,
+        "s": 1.3936264876919315,
+        "s_walk": 0.7290640671936752,
+        "seed": 1400727531,
+        "steps": 746,
+        "steps_over_expected": 0.5817089630499763,
+        "verified": true
+      },
+      {
+        "planted": 611159,
+        "s": 1.8734796471987607,
+        "s_walk": 1.0251852633862806,
+        "seed": 1400727528,
+        "steps": 1049,
+        "steps_over_expected": 0.8179794936185324,
+        "verified": true
+      },
+      {
+        "planted": 651662,
+        "s": 4.220948667841131,
+        "s_walk": 2.217488429574329,
+        "seed": 1400727529,
+        "steps": 2269,
+        "steps_over_expected": 1.769299781716349,
+        "verified": true
+      },
+      {
+        "planted": 368141,
+        "s": 0.728086769516472,
+        "s_walk": 0.04984218153736922,
+        "seed": 1400727526,
+        "steps": 51,
+        "steps_over_expected": 0.039768307125400526,
+        "verified": true
+      },
+      {
+        "planted": 408644,
+        "s": 2.7950713568014898,
+        "s_walk": 1.7503401398711427,
+        "seed": 1400727527,
+        "steps": 1791,
+        "steps_over_expected": 1.3965693737567126,
+        "verified": true
+      },
+      {
+        "planted": 449147,
+        "s": 5.8520584910934685,
+        "s_walk": 3.1537396043351076,
+        "seed": 1400727524,
+        "steps": 3227,
+        "steps_over_expected": 2.5163201390915195,
+        "verified": true
+      },
+      {
+        "planted": 489650,
+        "s": 2.5302236862793905,
+        "s_walk": 1.579313046360562,
+        "seed": 1400727525,
+        "steps": 1616,
+        "steps_over_expected": 1.2601094963656323,
+        "verified": true
+      },
+      {
+        "planted": 530153,
+        "s": 3.5290219123811815,
+        "s_walk": 2.1647143550053496,
+        "seed": 1400727522,
+        "steps": 2215,
+        "steps_over_expected": 1.7271921624071012,
+        "verified": true
+      },
+      {
+        "planted": 570656,
+        "s": 2.57713397478515,
+        "s_walk": 1.3183745665472761,
+        "seed": 1400727523,
+        "steps": 1349,
+        "steps_over_expected": 1.0519107120032414,
+        "verified": true
+      },
+      {
+        "planted": 611159,
+        "s": 3.026690906298676,
+        "s_walk": 1.7122255304602132,
+        "seed": 1400727520,
+        "steps": 1752,
+        "steps_over_expected": 1.3661583153667003,
+        "verified": true
+      },
+      {
+        "planted": 651662,
+        "s": 1.7591358189659725,
+        "s_walk": 0.6284024064417335,
+        "seed": 1400727521,
+        "steps": 643,
+        "steps_over_expected": 0.5013925780712263,
+        "verified": true
+      }
+    ],
+    "runs": 16
+  },
+  "rho_reference_rule": "negation map (A = 2): the only eligible automorphism of this curve",
+  "rows": [
+    {
+      "collector_wall_seconds": 0.000688792,
+      "decomposition": {
+        "cost": {
+          "gae": 4675.113827,
+          "group_ops": {
+            "adds": 3958,
+            "doubles": 625,
+            "scalar_mults": 36
+          },
+          "native": {
+            "canonicalisations": 0,
+            "direct_relations_skipped": 0,
+            "frobfold_mismatches": 0,
+            "inversions": 0,
+            "lift_failures": 0,
+            "lookups": 3553,
+            "relations": 70,
+            "repeated_targets_skipped": 1,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "sqrt_solves": 0,
+            "target_guard_probes": 3554,
+            "trials": 3554,
+            "unliftable_systems": 0,
+            "walk_jumps": 17,
+            "walk_pool_offsets": 1,
+            "walk_pool_ops": 58,
+            "walk_pool_restarts": 1,
+            "walk_restarts": 2,
+            "walk_steps": 3552
+          },
+          "wall_ns": 548714
+        },
+        "description": "a table of pair sums probed once per target (m = 2) or once per R − P (m = 3), built in full",
+        "hit_rate": 0.019696117051209903,
+        "name": "mitm",
+        "relations_found": 70,
+        "setup": {
+          "gae": 20100.0,
+          "group_ops": {
+            "adds": 20100,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {},
+          "wall_ns": 1014102
+        },
+        "solver": null,
+        "summands": 2,
+        "system": null,
+        "targets_tried": 3554
+      },
+      "exhausted": false,
+      "factor_base": {
+        "abscissae": 100,
+        "columns": 100,
+        "cost": {
+          "gae": 183.89086599999996,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 189,
+            "legendre_symbols": 189,
+            "sqrt_solves": 100
+          },
+          "wall_ns": 110693
+        },
+        "description": "the 100 smallest abscissae carrying a point, one column each",
+        "name": "prime-abscissa",
+        "points_per_column": 2.0,
+        "signed_points": 200
+      },
+      "group_order": 1046999,
+      "instance": "bench-20bit",
+      "label": "prime-abscissa[size=100] + mitm + — + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 13.207268000000001,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 101,
+            "pinned_by_repeated_row": 0,
+            "rank": 70,
+            "repeated_column_rows": 0,
+            "row_ops": 764,
+            "rows": 70,
+            "single_column_rows": 0,
+            "two_column_rows": 70
+          },
+          "wall_ns": 86012
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 70,
+        "rows": 70,
+        "work": 764,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 19.99782863366001,
+      "r": 1046999,
+      "recovered": 368141,
+      "rho_s": 1.0894425856623986,
+      "s": 24.431671781398705,
+      "s_over_rho": 22.425846118860736,
+      "spec": {
+        "factor_base": "prime-abscissa",
+        "factor_base_params": {
+          "size": "100"
+        },
+        "linalg": "incremental-gauss",
+        "max_trials": 4000000,
+        "oracle": "mitm",
+        "oracle_params": {},
+        "seed": 20261102,
+        "solver": null,
+        "solver_budget_seconds": 300,
+        "solver_params": {},
+        "targets": "Walk"
+      },
+      "total_gae": 24999.211961,
+      "verified": true,
+      "verify": {
+        "gae": 27.0,
+        "group_ops": {
+          "adds": 9,
+          "doubles": 18,
+          "scalar_mults": 1
+        },
+        "native": {},
+        "wall_ns": 2721
+      },
+      "wall_seconds": 0.001838084
+    },
+    {
+      "collector_wall_seconds": 0.000619649,
+      "decomposition": {
+        "cost": {
+          "gae": 4454.50572,
+          "group_ops": {
+            "adds": 3690,
+            "doubles": 680,
+            "scalar_mults": 38
+          },
+          "native": {
+            "canonicalisations": 0,
+            "direct_relations_skipped": 0,
+            "frobfold_mismatches": 0,
+            "inversions": 0,
+            "lift_failures": 0,
+            "lookups": 3259,
+            "relations": 65,
+            "repeated_targets_skipped": 2,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "sqrt_solves": 0,
+            "target_guard_probes": 3261,
+            "trials": 3261,
+            "unliftable_systems": 0,
+            "walk_jumps": 18,
+            "walk_pool_offsets": 2,
+            "walk_pool_ops": 109,
+            "walk_pool_restarts": 2,
+            "walk_restarts": 3,
+            "walk_steps": 3258
+          },
+          "wall_ns": 512974
+        },
+        "description": "a table of pair sums probed once per target (m = 2) or once per R − P (m = 3), built in full",
+        "hit_rate": 0.01993253603189206,
+        "name": "mitm",
+        "relations_found": 65,
+        "setup": {
+          "gae": 20100.0,
+          "group_ops": {
+            "adds": 20100,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {},
+          "wall_ns": 967434
+        },
+        "solver": null,
+        "summands": 2,
+        "system": null,
+        "targets_tried": 3261
+      },
+      "exhausted": false,
+      "factor_base": {
+        "abscissae": 100,
+        "columns": 100,
+        "cost": {
+          "gae": 183.89086599999996,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 189,
+            "legendre_symbols": 189,
+            "sqrt_solves": 100
+          },
+          "wall_ns": 63053
+        },
+        "description": "the 100 smallest abscissae carrying a point, one column each",
+        "name": "prime-abscissa",
+        "points_per_column": 2.0,
+        "signed_points": 200
+      },
+      "group_order": 1046999,
+      "instance": "bench-20bit",
+      "label": "prime-abscissa[size=100] + mitm + — + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 11.997178,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 101,
+            "pinned_by_repeated_row": 0,
+            "rank": 65,
+            "repeated_column_rows": 0,
+            "row_ops": 694,
+            "rows": 65,
+            "single_column_rows": 3,
+            "two_column_rows": 62
+          },
+          "wall_ns": 91244
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 65,
+        "rows": 65,
+        "work": 694,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 19.99782863366001,
+      "r": 1046999,
+      "recovered": 408644,
+      "rho_s": 1.0894425856623986,
+      "s": 24.212934777354775,
+      "s_over_rho": 22.225067292217993,
+      "spec": {
+        "factor_base": "prime-abscissa",
+        "factor_base_params": {
+          "size": "100"
+        },
+        "linalg": "incremental-gauss",
+        "max_trials": 4000000,
+        "oracle": "mitm",
+        "oracle_params": {},
+        "seed": 20301605,
+        "solver": null,
+        "solver_budget_seconds": 300,
+        "solver_params": {},
+        "targets": "Walk"
+      },
+      "total_gae": 24775.393764000004,
+      "verified": true,
+      "verify": {
+        "gae": 25.0,
+        "group_ops": {
+          "adds": 7,
+          "doubles": 18,
+          "scalar_mults": 1
+        },
+        "native": {},
+        "wall_ns": 2393
+      },
+      "wall_seconds": 0.001663159
+    },
+    {
+      "collector_wall_seconds": 0.000501823,
+      "decomposition": {
+        "cost": {
+          "gae": 4104.588552,
+          "group_ops": {
+            "adds": 3337,
+            "doubles": 692,
+            "scalar_mults": 38
+          },
+          "native": {
+            "canonicalisations": 0,
+            "direct_relations_skipped": 0,
+            "frobfold_mismatches": 0,
+            "inversions": 0,
+            "lift_failures": 0,
+            "lookups": 2915,
+            "relations": 52,
+            "repeated_targets_skipped": 2,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "sqrt_solves": 0,
+            "target_guard_probes": 2917,
+            "trials": 2917,
+            "unliftable_systems": 0,
+            "walk_jumps": 18,
+            "walk_pool_offsets": 2,
+            "walk_pool_ops": 103,
+            "walk_pool_restarts": 2,
+            "walk_restarts": 3,
+            "walk_steps": 2914
+          },
+          "wall_ns": 444473
+        },
+        "description": "a table of pair sums probed once per target (m = 2) or once per R − P (m = 3), built in full",
+        "hit_rate": 0.017826534110387385,
+        "name": "mitm",
+        "relations_found": 52,
+        "setup": {
+          "gae": 20100.0,
+          "group_ops": {
+            "adds": 20100,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {},
+          "wall_ns": 864146
+        },
+        "solver": null,
+        "summands": 2,
+        "system": null,
+        "targets_tried": 2917
+      },
+      "exhausted": false,
+      "factor_base": {
+        "abscissae": 100,
+        "columns": 100,
+        "cost": {
+          "gae": 183.89086599999996,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 189,
+            "legendre_symbols": 189,
+            "sqrt_solves": 100
+          },
+          "wall_ns": 56344
+        },
+        "description": "the 100 smallest abscissae carrying a point, one column each",
+        "name": "prime-abscissa",
+        "points_per_column": 2.0,
+        "signed_points": 200
+      },
+      "group_order": 1046999,
+      "instance": "bench-20bit",
+      "label": "prime-abscissa[size=100] + mitm + — + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 11.253836999999999,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 101,
+            "pinned_by_repeated_row": 0,
+            "rank": 52,
+            "repeated_column_rows": 0,
+            "row_ops": 651,
+            "rows": 52,
+            "single_column_rows": 0,
+            "two_column_rows": 52
+          },
+          "wall_ns": 44175
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 52,
+        "rows": 52,
+        "work": 651,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 19.99782863366001,
+      "r": 1046999,
+      "recovered": 449147,
+      "rho_s": 1.0894425856623986,
+      "s": 23.875121564808158,
+      "s_over_rho": 21.914988342677738,
+      "spec": {
+        "factor_base": "prime-abscissa",
+        "factor_base_params": {
+          "size": "100"
+        },
+        "linalg": "incremental-gauss",
+        "max_trials": 4000000,
+        "oracle": "mitm",
+        "oracle_params": {},
+        "seed": 20342108,
+        "solver": null,
+        "solver_budget_seconds": 300,
+        "solver_params": {},
+        "targets": "Walk"
+      },
+      "total_gae": 24429.733255000003,
+      "verified": true,
+      "verify": {
+        "gae": 30.0,
+        "group_ops": {
+          "adds": 12,
+          "doubles": 18,
+          "scalar_mults": 1
+        },
+        "native": {},
+        "wall_ns": 2847
+      },
+      "wall_seconds": 0.001431939
+    },
+    {
+      "collector_wall_seconds": 0.000763719,
+      "decomposition": {
+        "cost": {
+          "gae": 6056.688943,
+          "group_ops": {
+            "adds": 4866,
+            "doubles": 1081,
+            "scalar_mults": 60
+          },
+          "native": {
+            "canonicalisations": 0,
+            "direct_relations_skipped": 0,
+            "frobfold_mismatches": 0,
+            "inversions": 0,
+            "lift_failures": 0,
+            "lookups": 4225,
+            "relations": 70,
+            "repeated_targets_skipped": 13,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "sqrt_solves": 0,
+            "target_guard_probes": 4238,
+            "trials": 4238,
+            "unliftable_systems": 0,
+            "walk_jumps": 29,
+            "walk_pool_offsets": 13,
+            "walk_pool_ops": 727,
+            "walk_pool_restarts": 13,
+            "walk_restarts": 14,
+            "walk_steps": 4224
+          },
+          "wall_ns": 678881
+        },
+        "description": "a table of pair sums probed once per target (m = 2) or once per R − P (m = 3), built in full",
+        "hit_rate": 0.01651722510618216,
+        "name": "mitm",
+        "relations_found": 70,
+        "setup": {
+          "gae": 20100.0,
+          "group_ops": {
+            "adds": 20100,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {},
+          "wall_ns": 861371
+        },
+        "solver": null,
+        "summands": 2,
+        "system": null,
+        "targets_tried": 4238
+      },
+      "exhausted": false,
+      "factor_base": {
+        "abscissae": 100,
+        "columns": 100,
+        "cost": {
+          "gae": 183.89086599999996,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 189,
+            "legendre_symbols": 189,
+            "sqrt_solves": 100
+          },
+          "wall_ns": 52897
+        },
+        "description": "the 100 smallest abscissae carrying a point, one column each",
+        "name": "prime-abscissa",
+        "points_per_column": 2.0,
+        "signed_points": 200
+      },
+      "group_order": 1046999,
+      "instance": "bench-20bit",
+      "label": "prime-abscissa[size=100] + mitm + — + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 16.128771,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 101,
+            "pinned_by_repeated_row": 0,
+            "rank": 70,
+            "repeated_column_rows": 0,
+            "row_ops": 933,
+            "rows": 70,
+            "single_column_rows": 0,
+            "two_column_rows": 70
+          },
+          "wall_ns": 71673
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 70,
+        "rows": 70,
+        "work": 933,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 19.99782863366001,
+      "r": 1046999,
+      "recovered": 489650,
+      "rho_s": 1.0894425856623986,
+      "s": 25.78571440892046,
+      "s_over_rho": 23.66872265530389,
+      "spec": {
+        "factor_base": "prime-abscissa",
+        "factor_base_params": {
+          "size": "100"
+        },
+        "linalg": "incremental-gauss",
+        "max_trials": 4000000,
+        "oracle": "mitm",
+        "oracle_params": {},
+        "seed": 20382611,
+        "solver": null,
+        "solver_budget_seconds": 300,
+        "solver_params": {},
+        "targets": "Walk"
+      },
+      "total_gae": 26384.708580000002,
+      "verified": true,
+      "verify": {
+        "gae": 28.0,
+        "group_ops": {
+          "adds": 10,
+          "doubles": 18,
+          "scalar_mults": 1
+        },
+        "native": {},
+        "wall_ns": 2690
+      },
+      "wall_seconds": 0.001689044
+    },
+    {
+      "collector_wall_seconds": 0.00047476,
+      "decomposition": {
+        "cost": {
+          "gae": 3620.405212,
+          "group_ops": {
+            "adds": 2866,
+            "doubles": 691,
+            "scalar_mults": 38
+          },
+          "native": {
+            "canonicalisations": 0,
+            "direct_relations_skipped": 0,
+            "frobfold_mismatches": 0,
+            "inversions": 0,
+            "lift_failures": 0,
+            "lookups": 2445,
+            "relations": 53,
+            "repeated_targets_skipped": 2,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "sqrt_solves": 0,
+            "target_guard_probes": 2447,
+            "trials": 2447,
+            "unliftable_systems": 0,
+            "walk_jumps": 18,
+            "walk_pool_offsets": 2,
+            "walk_pool_ops": 110,
+            "walk_pool_restarts": 2,
+            "walk_restarts": 3,
+            "walk_steps": 2444
+          },
+          "wall_ns": 412950
+        },
+        "description": "a table of pair sums probed once per target (m = 2) or once per R − P (m = 3), built in full",
+        "hit_rate": 0.021659174499387004,
+        "name": "mitm",
+        "relations_found": 53,
+        "setup": {
+          "gae": 20100.0,
+          "group_ops": {
+            "adds": 20100,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {},
+          "wall_ns": 949495
+        },
+        "solver": null,
+        "summands": 2,
+        "system": null,
+        "targets_tried": 2447
+      },
+      "exhausted": false,
+      "factor_base": {
+        "abscissae": 100,
+        "columns": 100,
+        "cost": {
+          "gae": 183.89086599999996,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 189,
+            "legendre_symbols": 189,
+            "sqrt_solves": 100
+          },
+          "wall_ns": 55447
+        },
+        "description": "the 100 smallest abscissae carrying a point, one column each",
+        "name": "prime-abscissa",
+        "points_per_column": 2.0,
+        "signed_points": 200
+      },
+      "group_order": 1046999,
+      "instance": "bench-20bit",
+      "label": "prime-abscissa[size=100] + mitm + — + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 10.787087999999999,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 101,
+            "pinned_by_repeated_row": 0,
+            "rank": 53,
+            "repeated_column_rows": 0,
+            "row_ops": 624,
+            "rows": 53,
+            "single_column_rows": 0,
+            "two_column_rows": 53
+          },
+          "wall_ns": 48578
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 53,
+        "rows": 53,
+        "work": 624,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 19.99782863366001,
+      "r": 1046999,
+      "recovered": 530153,
+      "rho_s": 1.0894425856623986,
+      "s": 23.398542265540467,
+      "s_over_rho": 21.477535919264415,
+      "spec": {
+        "factor_base": "prime-abscissa",
+        "factor_base_params": {
+          "size": "100"
+        },
+        "linalg": "incremental-gauss",
+        "max_trials": 4000000,
+        "oracle": "mitm",
+        "oracle_params": {},
+        "seed": 20423114,
+        "solver": null,
+        "solver_budget_seconds": 300,
+        "solver_params": {},
+        "targets": "Walk"
+      },
+      "total_gae": 23942.083166000004,
+      "verified": true,
+      "verify": {
+        "gae": 27.0,
+        "group_ops": {
+          "adds": 8,
+          "doubles": 19,
+          "scalar_mults": 1
+        },
+        "native": {},
+        "wall_ns": 2503
+      },
+      "wall_seconds": 0.001490035
+    },
+    {
+      "collector_wall_seconds": 0.000738387,
+      "decomposition": {
+        "cost": {
+          "gae": 5782.214335000001,
+          "group_ops": {
+            "adds": 4885,
+            "doubles": 784,
+            "scalar_mults": 44
+          },
+          "native": {
+            "canonicalisations": 0,
+            "direct_relations_skipped": 0,
+            "frobfold_mismatches": 0,
+            "inversions": 0,
+            "lift_failures": 0,
+            "lookups": 4365,
+            "relations": 79,
+            "repeated_targets_skipped": 5,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "sqrt_solves": 0,
+            "target_guard_probes": 4370,
+            "trials": 4370,
+            "unliftable_systems": 0,
+            "walk_jumps": 21,
+            "walk_pool_offsets": 5,
+            "walk_pool_ops": 291,
+            "walk_pool_restarts": 5,
+            "walk_restarts": 6,
+            "walk_steps": 4364
+          },
+          "wall_ns": 651590
+        },
+        "description": "a table of pair sums probed once per target (m = 2) or once per R − P (m = 3), built in full",
+        "hit_rate": 0.018077803203661327,
+        "name": "mitm",
+        "relations_found": 79,
+        "setup": {
+          "gae": 20100.0,
+          "group_ops": {
+            "adds": 20100,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {},
+          "wall_ns": 875251
+        },
+        "solver": null,
+        "summands": 2,
+        "system": null,
+        "targets_tried": 4370
+      },
+      "exhausted": false,
+      "factor_base": {
+        "abscissae": 100,
+        "columns": 100,
+        "cost": {
+          "gae": 183.89086599999996,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 189,
+            "legendre_symbols": 189,
+            "sqrt_solves": 100
+          },
+          "wall_ns": 53597
+        },
+        "description": "the 100 smallest abscissae carrying a point, one column each",
+        "name": "prime-abscissa",
+        "points_per_column": 2.0,
+        "signed_points": 200
+      },
+      "group_order": 1046999,
+      "instance": "bench-20bit",
+      "label": "prime-abscissa[size=100] + mitm + — + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 20.848122,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 101,
+            "pinned_by_repeated_row": 0,
+            "rank": 79,
+            "repeated_column_rows": 0,
+            "row_ops": 1206,
+            "rows": 79,
+            "single_column_rows": 0,
+            "two_column_rows": 79
+          },
+          "wall_ns": 73108
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 79,
+        "rows": 79,
+        "work": 1206,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 19.99782863366001,
+      "r": 1046999,
+      "recovered": 570656,
+      "rho_s": 1.0894425856623986,
+      "s": 25.519151329809365,
+      "s_over_rho": 23.424044245795027,
+      "spec": {
+        "factor_base": "prime-abscissa",
+        "factor_base_params": {
+          "size": "100"
+        },
+        "linalg": "incremental-gauss",
+        "max_trials": 4000000,
+        "oracle": "mitm",
+        "oracle_params": {},
+        "seed": 20463617,
+        "solver": null,
+        "solver_budget_seconds": 300,
+        "solver_params": {},
+        "targets": "Walk"
+      },
+      "total_gae": 26111.953323,
+      "verified": true,
+      "verify": {
+        "gae": 25.0,
+        "group_ops": {
+          "adds": 6,
+          "doubles": 19,
+          "scalar_mults": 1
+        },
+        "native": {},
+        "wall_ns": 2340
+      },
+      "wall_seconds": 0.001677597
+    },
+    {
+      "collector_wall_seconds": 0.000676345,
+      "decomposition": {
+        "cost": {
+          "gae": 4997.261347000001,
+          "group_ops": {
+            "adds": 4176,
+            "doubles": 725,
+            "scalar_mults": 40
+          },
+          "native": {
+            "canonicalisations": 0,
+            "direct_relations_skipped": 0,
+            "frobfold_mismatches": 0,
+            "inversions": 0,
+            "lift_failures": 0,
+            "lookups": 3712,
+            "relations": 70,
+            "repeated_targets_skipped": 3,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "sqrt_solves": 0,
+            "target_guard_probes": 3715,
+            "trials": 3715,
+            "unliftable_systems": 0,
+            "walk_jumps": 19,
+            "walk_pool_offsets": 3,
+            "walk_pool_ops": 166,
+            "walk_pool_restarts": 3,
+            "walk_restarts": 4,
+            "walk_steps": 3711
+          },
+          "wall_ns": 595508
+        },
+        "description": "a table of pair sums probed once per target (m = 2) or once per R − P (m = 3), built in full",
+        "hit_rate": 0.018842530282637954,
+        "name": "mitm",
+        "relations_found": 70,
+        "setup": {
+          "gae": 20100.0,
+          "group_ops": {
+            "adds": 20100,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {},
+          "wall_ns": 861418
+        },
+        "solver": null,
+        "summands": 2,
+        "system": null,
+        "targets_tried": 3715
+      },
+      "exhausted": false,
+      "factor_base": {
+        "abscissae": 100,
+        "columns": 100,
+        "cost": {
+          "gae": 183.89086599999996,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 189,
+            "legendre_symbols": 189,
+            "sqrt_solves": 100
+          },
+          "wall_ns": 54366
+        },
+        "description": "the 100 smallest abscissae carrying a point, one column each",
+        "name": "prime-abscissa",
+        "points_per_column": 2.0,
+        "signed_points": 200
+      },
+      "group_order": 1046999,
+      "instance": "bench-20bit",
+      "label": "prime-abscissa[size=100] + mitm + — + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 18.047628,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 101,
+            "pinned_by_repeated_row": 0,
+            "rank": 70,
+            "repeated_column_rows": 0,
+            "row_ops": 1044,
+            "rows": 70,
+            "single_column_rows": 0,
+            "two_column_rows": 70
+          },
+          "wall_ns": 67201
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 70,
+        "rows": 70,
+        "work": 1044,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 19.99782863366001,
+      "r": 1046999,
+      "recovered": 611159,
+      "rho_s": 1.0894425856623986,
+      "s": 24.75319087235075,
+      "s_over_rho": 22.720968684458402,
+      "spec": {
+        "factor_base": "prime-abscissa",
+        "factor_base_params": {
+          "size": "100"
+        },
+        "linalg": "incremental-gauss",
+        "max_trials": 4000000,
+        "oracle": "mitm",
+        "oracle_params": {},
+        "seed": 20504120,
+        "solver": null,
+        "solver_budget_seconds": 300,
+        "solver_params": {},
+        "targets": "Walk"
+      },
+      "total_gae": 25328.199841,
+      "verified": true,
+      "verify": {
+        "gae": 29.0,
+        "group_ops": {
+          "adds": 10,
+          "doubles": 19,
+          "scalar_mults": 1
+        },
+        "native": {},
+        "wall_ns": 2639
+      },
+      "wall_seconds": 0.001602458
+    },
+    {
+      "collector_wall_seconds": 0.000594234,
+      "decomposition": {
+        "cost": {
+          "gae": 4950.021097000001,
+          "group_ops": {
+            "adds": 4075,
+            "doubles": 782,
+            "scalar_mults": 44
+          },
+          "native": {
+            "canonicalisations": 0,
+            "direct_relations_skipped": 0,
+            "frobfold_mismatches": 0,
+            "inversions": 0,
+            "lift_failures": 0,
+            "lookups": 3586,
+            "relations": 68,
+            "repeated_targets_skipped": 5,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "sqrt_solves": 0,
+            "target_guard_probes": 3591,
+            "trials": 3591,
+            "unliftable_systems": 0,
+            "walk_jumps": 21,
+            "walk_pool_offsets": 5,
+            "walk_pool_ops": 247,
+            "walk_pool_restarts": 5,
+            "walk_restarts": 6,
+            "walk_steps": 3585
+          },
+          "wall_ns": 521760
+        },
+        "description": "a table of pair sums probed once per target (m = 2) or once per R − P (m = 3), built in full",
+        "hit_rate": 0.01893622946254525,
+        "name": "mitm",
+        "relations_found": 68,
+        "setup": {
+          "gae": 20100.0,
+          "group_ops": {
+            "adds": 20100,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {},
+          "wall_ns": 845706
+        },
+        "solver": null,
+        "summands": 2,
+        "system": null,
+        "targets_tried": 3591
+      },
+      "exhausted": false,
+      "factor_base": {
+        "abscissae": 100,
+        "columns": 100,
+        "cost": {
+          "gae": 183.89086599999996,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 189,
+            "legendre_symbols": 189,
+            "sqrt_solves": 100
+          },
+          "wall_ns": 55071
+        },
+        "description": "the 100 smallest abscissae carrying a point, one column each",
+        "name": "prime-abscissa",
+        "points_per_column": 2.0,
+        "signed_points": 200
+      },
+      "group_order": 1046999,
+      "instance": "bench-20bit",
+      "label": "prime-abscissa[size=100] + mitm + — + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 14.227200999999999,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 101,
+            "pinned_by_repeated_row": 0,
+            "rank": 68,
+            "repeated_column_rows": 0,
+            "row_ops": 823,
+            "rows": 68,
+            "single_column_rows": 0,
+            "two_column_rows": 68
+          },
+          "wall_ns": 58925
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 68,
+        "rows": 68,
+        "work": 823,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 19.99782863366001,
+      "r": 1046999,
+      "recovered": 651662,
+      "rho_s": 1.0894425856623986,
+      "s": 24.703289391322226,
+      "s_over_rho": 22.67516408522091,
+      "spec": {
+        "factor_base": "prime-abscissa",
+        "factor_base_params": {
+          "size": "100"
+        },
+        "linalg": "incremental-gauss",
+        "max_trials": 4000000,
+        "oracle": "mitm",
+        "oracle_params": {},
+        "seed": 20544623,
+        "solver": null,
+        "solver_budget_seconds": 300,
+        "solver_params": {},
+        "targets": "Walk"
+      },
+      "total_gae": 25277.139164000004,
+      "verified": true,
+      "verify": {
+        "gae": 29.0,
+        "group_ops": {
+          "adds": 10,
+          "doubles": 19,
+          "scalar_mults": 1
+        },
+        "native": {},
+        "wall_ns": 2619
+      },
+      "wall_seconds": 0.001503964
+    }
+  ],
+  "schema_version": 1,
+  "software": {
+    "arch": "x86_64",
+    "binary_blake3": "dfa23e09f6921a1aa175579f2de7d367363fea16d6c7d84ab3deed583dabe401",
+    "git_commit": "f520de9b5334854725475cd172366d460faa6b4a",
+    "os": "linux",
+    "version": "0.1.0"
+  },
+  "status": "complete",
+  "what_this_is": "Index-calculus configurations -- each a choice of factor base, target source, decomposition oracle, polynomial solver and relation matrix -- run end to end against a planted logarithm, with every stage's cost in group-addition equivalents and the total divided by sqrt(r).",
+  "what_this_is_not": [
+    "not a speed claim: a configuration on a toy instance is a measurement, and a comparison needs the matched reference rows AGENTS.md section 1 asks for",
+    "not a wall-clock benchmark: operation counts are the metric, wall time rides along",
+    "not a claim about any deployed curve"
+  ]
+}

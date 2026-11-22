@@ -1,0 +1,112 @@
+{
+  "protocol_sha256": "4a39d9b272c3f51946380b3fbbde31604d23c6aaed370c7f9511da9206f46a8c",
+  "rows": [
+    {
+      "command": [
+        "/opt/homebrew/bin/cryptominisat5",
+        "--threads=1",
+        "--maxconfl=100000",
+        "--maxtime=145",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_trace_parity_20261017/n131_trace.xcnf"
+      ],
+      "conflicts": "100001",
+      "decisions": "413447",
+      "elapsed_ns": 46581342125,
+      "exit_code": 0,
+      "formula_sha256": "fc7b60020e6c34b5e3a7eed976ddf90773e8cddd07859b335b21787c18a607fc",
+      "index": 0,
+      "propagations": "45M",
+      "sampled_peak_combined_rss_bytes": 105775104,
+      "status_lines": [
+        "s INDETERMINATE"
+      ],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "252b26d9f8e95fdfed1cb0895ebcb446cf8735cbb76bec8ea24d10c7e6db41cd",
+      "stop_reason": null,
+      "variant": "raw0"
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/cryptominisat5",
+        "--threads=1",
+        "--maxconfl=100000",
+        "--maxtime=145",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_w29_raw_lift_20261017/n131_raw1_trace.xcnf"
+      ],
+      "conflicts": "100001",
+      "decisions": "448338",
+      "elapsed_ns": 111991250708,
+      "exit_code": 0,
+      "formula_sha256": "39b43442dc524b5373384f298cfed45f59cfa51c81ee88052bdc3da6127dc9b1",
+      "index": 1,
+      "propagations": "68M",
+      "sampled_peak_combined_rss_bytes": 133464064,
+      "status_lines": [
+        "s INDETERMINATE"
+      ],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "05710e820c5bf257276b9654565a46e41fad73f9f1652787ad91f7bd7bb5752d",
+      "stop_reason": null,
+      "variant": "raw1"
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/cryptominisat5",
+        "--threads=1",
+        "--maxconfl=100000",
+        "--maxtime=145",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_w29_raw_lift_20261017/n131_raw1_trace.xcnf"
+      ],
+      "conflicts": null,
+      "decisions": null,
+      "elapsed_ns": 150106665167,
+      "exit_code": -9,
+      "formula_sha256": "39b43442dc524b5373384f298cfed45f59cfa51c81ee88052bdc3da6127dc9b1",
+      "index": 2,
+      "propagations": null,
+      "sampled_peak_combined_rss_bytes": 121094144,
+      "status_lines": [],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "1399ce0df8623c3b7424077e8c64b966ec518eda29d7b2f48e99a49eb2067e9e",
+      "stop_reason": "WALL_CAP",
+      "variant": "raw1"
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/cryptominisat5",
+        "--threads=1",
+        "--maxconfl=100000",
+        "--maxtime=145",
+        "--zero-exit-status",
+        "--verb=1",
+        "--printsol=1",
+        "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_n131_trace_parity_20261017/n131_trace.xcnf"
+      ],
+      "conflicts": "100001",
+      "decisions": "413447",
+      "elapsed_ns": 57036799000,
+      "exit_code": 0,
+      "formula_sha256": "fc7b60020e6c34b5e3a7eed976ddf90773e8cddd07859b335b21787c18a607fc",
+      "index": 3,
+      "propagations": "45M",
+      "sampled_peak_combined_rss_bytes": 117506048,
+      "status_lines": [
+        "s INDETERMINATE"
+      ],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "7bbc524e7b6a23cac77f4ff4e91581732703d52abe1026b3bb4aea8ae19dbe22",
+      "stop_reason": null,
+      "variant": "raw0"
+    }
+  ],
+  "status": "COMPLETE_N131_TWO_RAW_LIFT_CONFLICT_PROBE"
+}

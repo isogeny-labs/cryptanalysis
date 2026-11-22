@@ -1,0 +1,28 @@
+SELF-CHECK (complete intersection m=n): Hilbert-series D_reg vs sum(d_i-1)+1
+  degs=[2, 2] n=2:  HS=3  CI-formula=3  OK
+  degs=[2, 2, 2] n=3:  HS=4  CI-formula=4  OK
+  degs=[3, 3] n=2:  HS=5  CI-formula=5  OK
+  degs=[2, 3] n=2:  HS=4  CI-formula=4  OK
+  degs=[4, 4, 4] n=3:  HS=10  CI-formula=10  OK
+  degs=[2, 2, 2, 2] n=4:  HS=5  CI-formula=5  OK
+  -> instrument VALIDATED 
+
+Semi-regular D_reg for over-determined families  (#eqs = n+k redundancy):
+arity m | d=2^(m-1) | n vars | #eqs | D_reg(semi-reg)
+  ----------------------------------------------------------
+      3 |         4 |      3 |    3 |              10  (complete int.)
+      3 |         4 |      3 |    4 |               7  
+      3 |         4 |      3 |    5 |               6  
+      4 |         8 |      4 |    4 |              29  (complete int.)
+      4 |         8 |      4 |    5 |              18  
+      4 |         8 |      4 |    6 |              16  
+      5 |        16 |      5 |    5 |              76  (complete int.)
+      5 |        16 |      5 |    6 |              46  
+      5 |        16 |      5 |    7 |              41  
+      6 |        32 |      6 |    6 |             187  (complete int.)
+      6 |        32 |      6 |    7 |             109  
+      6 |        32 |      6 |    8 |              98  
+
+Reading: measured solving degree AT or ABOVE these => semi-regular => PDP exponent
+>= 1/2 by construction (B1 dead as posed). Measured degree staying BOUNDED while t
+grows, and BELOW these, is the only signal that keeps a sub-sqrt(p) claim alive.

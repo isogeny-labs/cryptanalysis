@@ -35,7 +35,7 @@ fn small_sigma1(x: u64) -> u64 {
 
 /// FIPS 180-4 §4.2.3 — first 64 bits of fractional parts of cube
 /// roots of the first 80 primes.
-const K: [u64; 80] = [
+pub(crate) const K: [u64; 80] = [
     0x428a2f98d728ae22,
     0x7137449123ef65cd,
     0xb5c0fbcfec4d3b2f,

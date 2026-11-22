@@ -1,0 +1,92 @@
+{
+  "schema": "xedni-jacobian-jet-protocol-v1",
+  "question": "Can one four-direction Jacobian jet multiplication per lift point derive the five-probe affine leading-defect coefficients on fresh public hits?",
+  "source_protocol": "experiments/xedni-height-selected-two-image-20261116/protocol.json",
+  "source_protocol_sha256": "ce9232b0b6ee3f4e0af268974cc5ea891d9dae588e1ae79fdee67a6f9008611e",
+  "prior_proxy_protocol": "experiments/xedni-qdefect-proxy-20261116/protocol.json",
+  "prior_proxy_protocol_sha256": "4616f3634097c39e61e2151f2db2074b881b91dc1b9986c93584c5ad1802b703",
+  "target_law": "w=1+int(SHA256(xedni-jacobian-jet-v1|p|j),16) mod (q-1), j=0..3",
+  "generator_law": "first finite point by ascending x then y whose cofactor multiple has exact prime order q",
+  "query_law": "first 16 lexicographic ordered distinct offsets with both U=Q-t1G and V=Q-t2G nonidentity",
+  "expected_queries": 512,
+  "expected_public_vector_tests": 6656,
+  "shift_values": [
+    -3,
+    -2,
+    -1,
+    0,
+    1,
+    2,
+    3
+  ],
+  "candidate_law": "same centered two-image interpolation and equal-x exceptional model as the pinned source protocol",
+  "proxy_precision": 8,
+  "leading_residue": "for each qP_i, t_i=-x/y in the p-adic formal kernel; c_i=(t_i/p) mod p in F_p, computed before coefficient outcomes on rational lifts",
+  "family_score": "number of the 13 predeclared vectors (a,b) with a*c1+b*c2=0 mod p",
+  "selection_rule": "use jet-derived intercept/slopes in frozen affine two-plus-two lookup; score only matching rational models; full-grid fallback if no valid match",
+  "baseline_rule": "minimum full model score then lexicographic shift",
+  "oracle_rule": "for diagnostics only, select minimum-model candidate among those with cancellation for the already-known public relation vector",
+  "prediction_gate": "for every public relation hit and candidate, test whether a*c1+b*c2=0 mod p if and only if the exact rational residual has formal-parameter depth at least 2, including exact identity as success",
+  "controls": "verify finite public relation, rational model and point reduction, P1+(-P1)=O, qP_i kernel depth, and independently replay every leading residue and rational residual",
+  "claim_boundary": "fresh finite panel; jet branch behavior and normal-form/unit preconditions checked on each hit; general elliptic and first-order formalization remains open; no same-target IC/rho comparison",
+  "run_cap_seconds": 1200,
+  "prior_leading_protocol": "experiments/xedni-leading-defect-selector-20261116/protocol.json",
+  "prior_leading_protocol_sha256": "c080f1cbb6322ed4312c332013517dc7d53a1d6082e1d512be72050c3fc36a57",
+  "family_comparator": "maximize fixed-family score, then minimum full model score and lexicographic shift",
+  "cost_boundary": "record two jet q-multiplications per hit and model construction separately from post-selection modular and Qp probe validations, lookup, fallback, selected confirmation and rational check; all target-specific setup preserved",
+  "prior_aware_protocol": "experiments/xedni-vector-aware-selector-20261116/protocol.json",
+  "prior_aware_protocol_sha256": "c8a4fbcb6e1b48efc9c88acd04316fb4ac1cd71549174769988cbc2303cfb1b2",
+  "narrow_shift_values": [
+    -2,
+    -1,
+    0,
+    1,
+    2
+  ],
+  "paired_comparator": "apply the identical cancellation and tie rule to the nested 625-model narrow grid on the same public hit; if none, narrow-grid minimum-model baseline",
+  "prior_width_protocol": "experiments/xedni-vector-aware-width-20261116/protocol.json",
+  "prior_width_protocol_sha256": "c6afcda9038c43707d89af531cf6869e96db8d59cfda0e9b7dfd76e368b816c0",
+  "probe_shifts": [
+    [
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      1
+    ]
+  ],
+  "affine_rule": "for each coordinate lead c_i, c_i(s)=c_i(0)+sum_j s_j*(c_i(e_j)-c_i(0)) mod p; evaluate only the five probe models over Qp before selection",
+  "validation_rule": "after selection, compute five ordinary modular Jacobian probe values and five Sage Qp values, compare both to jet predictions, confirm selected model and exact rational residual; independent audit enumerates full grid with separate modular Jacobian and Fraction group operations",
+  "prior_affine_protocol": "experiments/xedni-affine-leading-defect-20261116/protocol.json",
+  "prior_affine_protocol_sha256": "1d8b734352f0162834edb78c74a6235c23548a002c16c54ec7135d4bf9190400",
+  "search_rule": "after five Qp probes, let d0=a*c1(0)+b*c2(0), dj=a*(c1(ej)-c1(0))+b*(c2(ej)-c2(0)) mod p; hash all 49 values d0+s1*d1+s2*d2; for each 49 right pair (s3,s4), query key -(s3*d3+s4*d4) mod p; construct and score matching lifts only",
+  "exception_rule": "if the equal-x single-model branch occurs or jet normal-form/branch propagation fails, record the failure and compute the probe residues with the ordinary modular Jacobian method before selection; retain all fallback costs and statuses",
+  "prior_mitm_protocol": "experiments/xedni-affine-mitm-20261118/protocol.json",
+  "prior_mitm_protocol_sha256": "8f57fe0b605393dc91d3bfc4c40dafc17c2e24e3d47d9771a2e8714a15a4d07a",
+  "probe_rule": "construct center and four basis rational models only to determine A mod p^2 and four coefficient derivatives; propagate four first-order coordinate/curve directions simultaneously through one Jacobian [q] multiplication for each of P1 and P2 over jets (base mod p^2, derivatives mod p); extract c_i(0)=-X0*(Z0/p)/Y0 mod p and slopes -X0*dZ_j/Y0 mod p",
+  "prior_modp2_protocol": "experiments/xedni-modp2-affine-20261118/protocol.json",
+  "prior_modp2_protocol_sha256": "356bd70b40fd0e4c175b89899733c6726aae339165d2883bec4ceb4ca95491b7"
+}

@@ -1,0 +1,10 @@
+{
+  "status": "AUDIT_FAILED_CHART_MISMATCH",
+  "producer_status": "PASS_N41_ROOT_FREE_QUOTIENT_CUBIC",
+  "producer_result": "attempt1_result.json",
+  "audit_command": "./sage -python experiments/ecc2k130-ic-goal-20260929/n41_quotient_trace_cubic_20261023/audit.py",
+  "audit_exit_code": 1,
+  "failure_location": "audit.py:73",
+  "failure": "The archived reciprocal coordinate is 1/x; H is in u=1/(x+1). The first audit root did not satisfy H when read as 1/x.",
+  "correction": "Use z=u/(1+u) inside the quotient for feature bits and convert archived z to u=z/(1+z) in the independent replay."
+}

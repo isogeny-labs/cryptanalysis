@@ -1,0 +1,50 @@
+{
+  "candidate_id": null,
+  "curve_id": "EC1N41Ckb1h7d5e80d3c4d0",
+  "protocol_sha256": "0e30c91a62fb329eab8e4455fed01bee8403ec3689018b6a635a9f891b399e19",
+  "rows": [
+    {
+      "command": [
+        "/opt/homebrew/Cellar/cryptominisat/5.14.7/bin/cryptominisat5",
+        "--threads=1",
+        "--maxtime=55",
+        "--zero-exit-status",
+        "--verb=0",
+        "--printsol=1",
+        "/private/tmp/n41_two_pair_product_resultant_20261019/P0_resultant.xcnf"
+      ],
+      "exact_member": true,
+      "key_id": "P0",
+      "rss_samples": 28,
+      "sampled_peak_combined_rss_bytes": 34996224,
+      "solver_exit_code": 0,
+      "status": "SAT_MODEL_UNVERIFIED",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "330c15f35b35f3982496baff882f1330dc11b4560c64a0d38a0b46943453a1a3",
+      "stop_reason": null,
+      "wall_seconds": 1.5235836670035496
+    },
+    {
+      "command": [
+        "/opt/homebrew/Cellar/cryptominisat/5.14.7/bin/cryptominisat5",
+        "--threads=1",
+        "--maxtime=55",
+        "--zero-exit-status",
+        "--verb=0",
+        "--printsol=1",
+        "/private/tmp/n41_two_pair_product_resultant_20261019/N1_resultant.xcnf"
+      ],
+      "exact_member": false,
+      "key_id": "N1",
+      "rss_samples": 27,
+      "sampled_peak_combined_rss_bytes": 38928384,
+      "solver_exit_code": 0,
+      "status": "UNSAT_UNCERTIFIED",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "bde6e1eede96772c07c8ce29fd18088863815bd043aa59a06f11f5838cf8a162",
+      "stop_reason": null,
+      "wall_seconds": 1.49826025000948
+    }
+  ],
+  "status": "N41_RESULTANT_CODE_SAT_QUERY_PANEL"
+}

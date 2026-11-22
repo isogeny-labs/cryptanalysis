@@ -25,8 +25,8 @@ use std::env;
 use std::fs;
 
 use cryptanalysis_suite::cryptanalysis::gaudry_cubic::{
-    generate_instance3, run_gaudry_opts, run_rho3, GaudryOptions, GaudryReport, RhoReport3, Solver,
-    SubspaceBase,
+    generate_instance3, run_gaudry_opts, run_rho3, GaudryOptions, GaudryReport, Harvester,
+    RhoReport3, Solver, SubspaceBase,
 };
 use rand::rngs::StdRng;
 use rand::SeedableRng;
@@ -57,6 +57,8 @@ fn one(
     small_base: SmallBase,
     max_lp: u8,
     merge_cap: u8,
+    harvester: Harvester,
+    d_small: bool,
 ) -> Row {
     let inst = generate_instance3(p, seed);
     let mut rng = StdRng::seed_from_u64(seed);
@@ -74,6 +76,8 @@ fn one(
         small_base: small,
         max_large_primes: max_lp,
         max_merge_level: merge_cap,
+        harvester,
+        eliminator_d_small: d_small,
     };
     let g = run_gaudry_opts(&inst, &base, seed, &opts);
     let r = run_rho3(&inst, seed);
@@ -112,6 +116,12 @@ fn main() {
     // Merge-level cap for the large-prime eliminator; 0 is the uncapped
     // behaviour these runs had before section 11.10 registered the question.
     let mut merge_cap: u8 = 0;
+    // Large-prime structure: the eliminator (default) or the gain-forest
+    // cycle harvester; and, in `--protocol-la`, run only the large-prime arm
+    // (the one the harvester changes) and let `--max-lp` apply to it.
+    let mut harvester = Harvester::Eliminator;
+    let mut d_small = false;
+    let mut lp_arm_only = false;
     let mut sizes: Vec<u64> = vec![271, 523, 1039, 2083];
     let mut seeds = 2u64;
     let mut i = 0;
@@ -147,6 +157,16 @@ fn main() {
                 i += 1;
                 merge_cap = args[i].parse().expect("--merge-cap");
             }
+            "--harvester" => {
+                i += 1;
+                harvester = match args[i].as_str() {
+                    "eliminator" => Harvester::Eliminator,
+                    "cycles" => Harvester::Cycles,
+                    other => panic!("--harvester eliminator|cycles, got {other}"),
+                };
+            }
+            "--eliminator-d-small" => d_small = true,
+            "--lp-arm-only" => lp_arm_only = true,
             "--max-lp" => {
                 i += 1;
                 max_lp = args[i].parse().expect("--max-lp");
@@ -189,12 +209,32 @@ fn main() {
                         // Only the large-prime arm has an eliminator, so only
                         // it can carry a merge-level cap; the two control arms
                         // run uncapped whatever --merge-cap says.
-                        let cap = if matches!(sb, SmallBase::Rule) {
-                            merge_cap
+                        let is_lp = matches!(sb, SmallBase::Rule);
+                        if lp_arm_only && !is_lp {
+                            continue;
+                        }
+                        let cap = if is_lp { merge_cap } else { 0 };
+                        // Control arms keep the historical 2 (they have no
+                        // large primes); the large-prime arm takes --max-lp
+                        // (default 2, the previous hard-coded value).
+                        let (lp_k, h, ds) = if is_lp {
+                            (max_lp, harvester, d_small)
                         } else {
-                            0
+                            (2, Harvester::Eliminator, false)
                         };
-                        out.push(one(pp, s, max_residuals, solver, false, sp, sb, 2, cap));
+                        out.push(one(
+                            pp,
+                            s,
+                            max_residuals,
+                            solver,
+                            false,
+                            sp,
+                            sb,
+                            lp_k,
+                            cap,
+                            h,
+                            ds,
+                        ));
                     }
                 } else {
                     out.push(one(
@@ -207,6 +247,8 @@ fn main() {
                         small_base,
                         max_lp,
                         merge_cap,
+                        harvester,
+                        d_small,
                     ));
                 }
             }
@@ -223,6 +265,8 @@ fn main() {
             small_base,
             max_lp,
             merge_cap,
+            harvester,
+            d_small,
         )]
     };
     if let Some(path) = json {

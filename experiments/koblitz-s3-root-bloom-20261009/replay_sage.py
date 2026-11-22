@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import sys
 from pathlib import Path
 
 from sage.all import EllipticCurve, GF, PolynomialRing, matrix, vector
@@ -15,7 +14,6 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 BASE_FILE = (ROOT / "experiments/koblitz-cofactor-fiber-20260928"
              / "n53_root_multiplicity_runs/fb244_preflight.json")
-ARCHIVE_BASE_FILE = HERE / "replay_base.json"
 
 
 def sha(path: Path) -> str:
@@ -35,11 +33,8 @@ def coefficient_row(indices: list[int], labels: list[list[int]], columns: int, r
 
 
 def main() -> None:
-    archive = sys.argv[1:] == ["--archive"]
-    if sys.argv[1:] and not archive:
-        raise SystemExit("usage: replay_sage.py [--archive]")
     receipt = HERE / "independent_sage_replay.json"
-    if receipt.exists() and not archive:
+    if receipt.exists():
         raise FileExistsError(receipt)
     freeze = load(HERE / "freeze_receipt.json")
     summary = load(HERE / "panel_summary.json")
@@ -51,11 +46,8 @@ def main() -> None:
     for name, manifest in manifests.items():
         assert freeze["variants"][name]["manifest_sha256"] == sha(HERE / f"{name}_manifest.json")
         bound = manifest["candidate_freeze"]
-        source = (HERE / ("reference.rs" if name == "reference" else "candidate.rs")
-                  if archive else Path(bound["source_path"]))
-        assert sha(source) == bound["source_sha256"]
-        if not archive:
-            assert sha(Path(bound["binary_path"])) == bound["binary_sha256"]
+        assert sha(Path(bound["source_path"])) == bound["source_sha256"]
+        assert sha(Path(bound["binary_path"])) == bound["binary_sha256"]
     first_runs = {}
     for name in ("reference", "bloom"):
         row = next(row for row in rows if row["pair"] == 1 and row["variant"] == name)
@@ -94,8 +86,7 @@ def main() -> None:
     generator = point(record["curve"]["generator"])
     target = point(reference["target"])
     assert r * generator == curve(0) and r * target == curve(0)
-    base_file = ARCHIVE_BASE_FILE if archive else BASE_FILE
-    base = load(base_file)
+    base = load(BASE_FILE)
     assert base["base_hash"] == reference["factor_base_digest"]
     assert base["base_hash"] == candidate["factor_base_digest"]
     points = [point(coords) for coords in base["factor_base_point_coordinates"]]
@@ -127,13 +118,50 @@ def main() -> None:
         "candidate_ids": {name: manifests[name]["candidate_id"] for name in manifests},
         "sage_version": SAGE_VERSION,
         "sage_runtime_info_sha256": sha(HERE / "sage_runtime_info.json"),
-        "base_source_sha256": sha(base_file),
+        "base_source_sha256": sha(BASE_FILE),
         "first_run_output_sha256": {name: sha(HERE / f"runs/R1_{name}.jsonl") for name in manifests},
         "verified_relation_witnesses": len(witnesses),
         "matrix_rank": int(mat.rank()),
         "recovered_scalar": recovered,
         "point_replay": True,
     }
+    receipt.write_text(json.dumps(result, sort_keys=True, indent=2) + "\n")
+    print(json.dumps(result, sort_keys=True))
+
+
+if __name__ == "__main__":
+    main()
+
+
+import sys
+
+
+ARCHIVE_BASE_FILE = HERE / "replay_base.json"
+
+
+
+
+
+
+
+
+    archive = sys.argv[1:] == ["--archive"]
+    if sys.argv[1:] and not archive:
+        raise SystemExit("usage: replay_sage.py [--archive]")
+    if receipt.exists() and not archive:
+        source = (HERE / ("reference.rs" if name == "reference" else "candidate.rs")
+                  if archive else Path(bound["source_path"]))
+        assert sha(source) == bound["source_sha256"]
+        if not archive:
+            assert sha(Path(bound["binary_path"])) == bound["binary_sha256"]
+
+
+
+
+
+    base_file = ARCHIVE_BASE_FILE if archive else BASE_FILE
+    base = load(base_file)
+        "base_source_sha256": sha(base_file),
     if archive:
         recorded = load(receipt)
         assert {k: v for k, v in result.items() if k != "sage_version"} == {
@@ -146,5 +174,3 @@ def main() -> None:
         print(json.dumps(result, sort_keys=True))
 
 
-if __name__ == "__main__":
-    main()

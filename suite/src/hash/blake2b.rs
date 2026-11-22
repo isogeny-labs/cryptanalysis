@@ -14,7 +14,7 @@
 
 /// RFC 7693 §2.6 — same constants as SHA-512's IV (fractional bits of
 /// square roots of the first 8 primes).
-const IV: [u64; 8] = [
+pub(crate) const IV: [u64; 8] = [
     0x6a09e667f3bcc908,
     0xbb67ae8584caa73b,
     0x3c6ef372fe94f82b,
@@ -26,7 +26,7 @@ const IV: [u64; 8] = [
 ];
 
 /// RFC 7693 §2.7 — message-word permutation table for the 12 rounds.
-const SIGMA: [[usize; 16]; 12] = [
+pub(crate) const SIGMA: [[usize; 16]; 12] = [
     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
     [14, 10, 4, 8, 9, 15, 13, 6, 1, 12, 0, 2, 11, 7, 5, 3],
     [11, 8, 12, 0, 5, 2, 15, 13, 10, 14, 3, 6, 7, 1, 9, 4],
@@ -60,7 +60,7 @@ fn g(v: &mut [u64; 16], a: usize, b: usize, c: usize, d: usize, x: u64, y: u64) 
 /// Compression function F (RFC 7693 §3.2).
 /// `t` is the byte counter so far (incl. this block); `last` is true
 /// only for the final block.
-fn compress(h: &mut [u64; 8], block: &[u8; BLOCK_BYTES], t: u128, last: bool) {
+pub(crate) fn compress(h: &mut [u64; 8], block: &[u8; BLOCK_BYTES], t: u128, last: bool) {
     let mut m = [0u64; 16];
     for i in 0..16 {
         m[i] = u64::from_le_bytes(block[8 * i..8 * i + 8].try_into().unwrap());
