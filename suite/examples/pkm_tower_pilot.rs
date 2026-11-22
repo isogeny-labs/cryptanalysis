@@ -1090,6 +1090,12 @@ struct Args {
     max_nnz: Option<u64>,
     /// `f4_fp_tower` only: print one line per F4 step.
     trace: bool,
+    /// Write every input system, before it is solved, to this directory in
+    /// msolve's input format (`<id>.ms`), with the planted solution, if any,
+    /// in `<id>.sol.json`; each row then carries `export_id` and the file's
+    /// `export_sha256`, so an external solver's run on the same bytes can be
+    /// joined to the `f4_fp` row.
+    export: Option<String>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -1140,6 +1146,7 @@ fn parse_args() -> Args {
         engine: Engine::F4,
         max_nnz: None,
         trace: false,
+        export: None,
     };
     let args: Vec<String> = std::env::args().skip(1).collect();
     let list = |s: &str| -> Vec<usize> {
@@ -1204,6 +1211,7 @@ fn parse_args() -> Args {
             }
             "--max-nnz" => a.max_nnz = Some(v.parse().expect("--max-nnz")),
             "--dump" => a.dump = Some(v.parse().expect("--dump")),
+            "--export" => a.export = Some(v),
             other => panic!("unknown flag `{other}`"),
         }
         i += 2;
@@ -1282,6 +1290,20 @@ fn run_cell(cell: &Cell, a: &Args, sink: &mut Sink) -> bool {
             // The naive control has no tower to rewrite by.
             continue;
         }
+        let exported = a.export.as_ref().map(|dir| {
+            let id = format!(
+                "{}-m{}-{}-t{}-g{}-{}{}-p{}",
+                cell.kind.name(),
+                cell.m,
+                cell.control.name(),
+                cell.t,
+                cell.g,
+                if target.planted { "planted" } else { "random" },
+                k,
+                p
+            );
+            export_system(dir, &id, &eqs, n, p, sol.as_deref())
+        });
         let d_in: Vec<u32> = eqs.iter().map(Pol::degree).collect();
         let d_max = d_in.iter().copied().max().unwrap_or(1);
         let max_degree = match (a.cap, cell.control) {
@@ -1360,6 +1382,10 @@ fn run_cell(cell: &Cell, a: &Args, sink: &mut Sink) -> bool {
             "staircase_at_stop": r.staircase_at_stop,
             "planted_ok": r.planted_ok,
         });
+        if let (Some((id, sha)), Some(obj)) = (exported, row.as_object_mut()) {
+            obj.insert("export_id".into(), json!(id));
+            obj.insert("export_sha256".into(), json!(sha));
+        }
         if let (Some(obj), Some(extra)) = (row.as_object_mut(), r.extra.as_object()) {
             for (k, v) in extra {
                 obj.insert(k.clone(), v.clone());
@@ -1395,6 +1421,58 @@ fn run_cell(cell: &Cell, a: &Args, sink: &mut Sink) -> bool {
         sink.push(row);
     }
     any_finished
+}
+
+/// Writes one input system in msolve's format: the variable names on the
+/// first line, the characteristic on the second, then the polynomials
+/// separated by commas. Variables are `x0 .. x{n-1}` in the pilot's own
+/// order. Returns the id and the SHA-256 of the `.ms` bytes.
+fn export_system(
+    dir: &str,
+    id: &str,
+    eqs: &[Pol],
+    n: usize,
+    p: u64,
+    sol: Option<&[u64]>,
+) -> (String, String) {
+    use sha2::{Digest, Sha256};
+    use std::fmt::Write as _;
+    std::fs::create_dir_all(dir).expect("create --export directory");
+    let vars: Vec<String> = (0..n).map(|i| format!("x{i}")).collect();
+    let mut text = format!("{}\n{p}\n", vars.join(","));
+    let polys: Vec<String> = eqs
+        .iter()
+        .filter(|e| !e.terms.is_empty())
+        .map(|e| {
+            let mut f = String::new();
+            for (k, (exp, c)) in e.terms.iter().rev().enumerate() {
+                if k > 0 {
+                    f.push('+');
+                }
+                write!(f, "{c}").unwrap();
+                for (i, &d) in exp.iter().enumerate() {
+                    match d {
+                        0 => {}
+                        1 => write!(f, "*x{i}").unwrap(),
+                        _ => write!(f, "*x{i}^{d}").unwrap(),
+                    }
+                }
+            }
+            f
+        })
+        .collect();
+    text.push_str(&polys.join(",\n"));
+    text.push('\n');
+    let path = format!("{dir}/{id}.ms");
+    std::fs::write(&path, &text).expect("write --export system");
+    let sha = hex::encode(Sha256::digest(text.as_bytes()));
+    let side = json!({
+        "id": id, "p": p, "n_vars": n, "n_equations": polys.len(),
+        "variables": vars, "solution": sol, "ms_sha256": sha,
+    });
+    std::fs::write(format!("{dir}/{id}.sol.json"), format!("{side}\n"))
+        .expect("write --export solution");
+    (id.to_string(), sha)
 }
 
 /// A basis to print with `--dump`, from either engine.

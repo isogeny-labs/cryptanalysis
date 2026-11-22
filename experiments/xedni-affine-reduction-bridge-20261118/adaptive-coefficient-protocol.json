@@ -1,0 +1,10 @@
+{
+  "schema": "xedni-adaptive-coefficient-protocol-v1",
+  "question": "For uniform ordered field pairs, how does a coefficient pair chosen after seeing the input differ from a fixed coefficient pair?",
+  "fields": [7, 11, 31],
+  "fixed_coefficients": [1, 1],
+  "adaptive_rule": "if u != 0 choose (a,b)=(v,-u); if u=0 choose (a,b)=(0,1)",
+  "admission": "all q^2 ordered pairs for each field; no exclusions",
+  "checks": "fixed relation count; adaptive rule success; exhaustive existence of some a,b with b nonzero; exact failing set u=0 and v nonzero",
+  "status": "frozen before execution"
+}

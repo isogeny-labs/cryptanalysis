@@ -44,7 +44,7 @@ static void bsgs_hash_block(const ca_group *g, const ca_htab1 *tab, uint64_t *hs
     if (ca_ec_group_is_native(g)) {
         BSGS_HASH_LOOP(ca_ec_hash_words(e[k].w[0], e[k].w[1], e[k].w[2]))
     } else if (ca_zp_group_is_native(g)) {
-        BSGS_HASH_LOOP(ca_zp_hash_word(e[k].w[0]))
+        BSGS_HASH_LOOP(ca_zp_hash_residue(e[k].w[0], g->p))
     } else {
         BSGS_HASH_LOOP(ca_group_hash(g, &e[k]))
     }

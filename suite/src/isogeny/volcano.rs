@@ -78,16 +78,22 @@ pub fn j_invariant(curve: &SmallCurve) -> u64 {
     let a3 = (a * a % p * a) % p;
     let b2 = (b * b) % p;
     let num = (4 * a3) % p * 1728 % p;
-    let den = (4 * a3 + 27 * b2) % p;
-    // For singular curves the denominator is zero; return 0.
-    let den_inv = match crate::utils::mod_inverse(
-        &num_bigint::BigUint::from(den as u64),
-        &num_bigint::BigUint::from(p as u64),
-    ) {
-        Some(v) => v,
-        None => return 0,
-    };
-    let inv_u = den_inv.iter_u64_digits().next().unwrap_or(0) as u128;
+    let den = ((4 * a3 + 27 * b2) % p) as u64;
+    if den == 0 {
+        return 0;
+    }
+    // Extended Euclid in u64/i128: zero heap allocations.
+    let (mut old_r, mut r) = (den, curve.p);
+    let (mut old_s, mut s) = (1i128, 0i128);
+    while r != 0 {
+        let q = old_r / r;
+        (old_r, r) = (r, old_r - q * r);
+        (old_s, s) = (s, old_s - (q as i128) * s);
+    }
+    if old_r != 1 {
+        return 0;
+    }
+    let inv_u = old_s.rem_euclid(p as i128) as u128;
     ((num * inv_u) % p) as u64
 }
 

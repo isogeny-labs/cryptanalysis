@@ -1,0 +1,11 @@
+{
+  "schema": "xedni-bounded-rank-coverage-protocol-v1",
+  "question": "How many points of each fresh-panel prime-order public subgroup are reached by bounded linear combinations of its two fixed public generators?",
+  "source": "../xedni-hensel-fresh-transfer-20261118/run-result.json.gz",
+  "admission": "all 13 eligible public hits in original order",
+  "coefficients": "each coefficient independently ranges over every integer from -H through H inclusive",
+  "heights": [2, 4, 8],
+  "subgroup_coordinate": "the known relation aU+bV=O and b invertible modulo q gives R=b^-1 U, so U=bR and V=-aR; coefficient pair (u,v) reaches (bu-av)R",
+  "comparison": "exact distinct residues modulo q against min(q,(2H+1)^2); retain every hit-height row",
+  "status": "frozen before execution"
+}
