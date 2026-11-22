@@ -70,7 +70,21 @@
 //! and the structure is the same; what gets harder is bookkeeping, not
 //! technique. Cross-referenced in `docs/DEFERRED.md`.
 
-use super::reduced::{bytes_to_state, state_to_bytes, ReducedAes128, RoundOps, INV_SBOX};
+use super::reduced::{bytes_to_state, state_to_bytes, ReducedAes128, RoundOps};
+use crate::cryptanalysis::sym_ir::primitives::aes128;
+use crate::cryptanalysis::sym_ir::Primitive;
+use crate::cryptanalysis::sym_techniques::mitm as generic;
+use std::sync::OnceLock;
+
+/// The IR description of 4-round AES-128 (FIPS last round), built once.
+/// The Lambda-set construction and the last-round key recovery below are
+/// the generic routines of
+/// [`sym_techniques::mitm`](crate::cryptanalysis::sym_techniques::mitm)
+/// run on this description.
+fn ir_aes4() -> &'static Primitive {
+    static P: OnceLock<Primitive> = OnceLock::new();
+    P.get_or_init(|| aes128::reduced(4, false))
+}
 
 /// Build a Λ-set of 256 plaintexts.
 ///
@@ -79,12 +93,9 @@ use super::reduced::{bytes_to_state, state_to_bytes, ReducedAes128, RoundOps, IN
 /// position `0..16`.
 pub fn lambda_set(base: &[u8; 16], active_byte: usize) -> Vec<[u8; 16]> {
     assert!(active_byte < 16);
-    (0..256u16)
-        .map(|v| {
-            let mut p = *base;
-            p[active_byte] = v as u8;
-            p
-        })
+    generic::delta_set(ir_aes4(), base, active_byte, 8)
+        .into_iter()
+        .map(|b| b.try_into().expect("16-byte block"))
         .collect()
 }
 
@@ -139,41 +150,27 @@ pub struct SquareAttackReport {
 pub fn key_recovery_four_round_from_captured(
     sets: &[Vec<[u8; 16]>],
 ) -> Result<SquareAttackReport, String> {
-    if !(1..=6).contains(&sets.len()) || sets.iter().any(|set| set.len() != 256) {
-        return Err("Square recovery requires 1..=6 complete 256-ciphertext lambda sets".into());
-    }
-    let mut candidates: [Vec<u8>; 16] = std::array::from_fn(|_| (0..=255u8).collect());
-    let mut sbox_lookups = 0usize;
-    for set in sets {
-        for flat in 0..16 {
-            if candidates[flat].len() == 1 {
-                continue;
-            }
-            let before = candidates[flat].len();
-            candidates[flat].retain(|&key_byte| {
-                set.iter().fold(0u8, |sum, ct| {
-                    sum ^ INV_SBOX[(ct[flat] ^ key_byte) as usize]
-                }) == 0
-            });
-            sbox_lookups += before * set.len();
-            if candidates[flat].is_empty() {
-                return Err(format!(
-                    "Square corpus has no last-round key candidate at byte {flat}"
-                ));
-            }
-        }
-    }
-    if candidates.iter().any(|values| values.len() != 1) {
-        return Err("Square corpus leaves ambiguous last-round key bytes; supply another complete lambda set".into());
-    }
-    let last_round_key =
-        std::array::from_fn(|column| std::array::from_fn(|row| candidates[4 * column + row][0]));
-    Ok(SquareAttackReport {
-        lambda_sets_used: sets.len(),
-        sbox_lookups,
+    let blocks: Vec<Vec<Vec<u8>>> = sets
+        .iter()
+        .map(|s| s.iter().map(|c| c.to_vec()).collect())
+        .collect();
+    let r = generic::balanced_key_recovery_from_sets(ir_aes4(), &blocks)?;
+    Ok(report_from(r))
+}
+
+/// Convert the generic report into the AES-shaped one (cell `4c + r` is
+/// column `c`, row `r`; the master key comes from inverting the AES key
+/// schedule).
+fn report_from(r: generic::LastRoundKeyReport) -> SquareAttackReport {
+    let last_round_key = std::array::from_fn(|column| {
+        std::array::from_fn(|row| r.last_round_key_cells[4 * column + row] as u8)
+    });
+    SquareAttackReport {
+        lambda_sets_used: r.sets_used,
+        sbox_lookups: r.sbox_lookups,
         last_round_key,
         master_key: ReducedAes128::invert_schedule(4, &last_round_key),
-    })
+    }
 }
 
 /// Recover the master key from a 4-round AES-128 with `final_mix_columns
@@ -190,75 +187,16 @@ pub fn key_recovery_four_round<F>(mut oracle: F) -> SquareAttackReport
 where
     F: FnMut(&[u8; 16]) -> [u8; 16],
 {
-    let mut candidates: [Vec<u8>; 16] = Default::default();
-    for c in candidates.iter_mut() {
-        *c = (0u16..256).map(|v| v as u8).collect();
-    }
-    let mut lambda_sets_used = 0usize;
-    let mut sbox_lookups = 0usize;
-    let mut rng_state: u64 = 0xa5a5_a5a5_a5a5_a5a5;
-
-    // Cycle through fresh Λ-sets until every position has exactly one
-    // surviving candidate.
-    loop {
-        // Build a Λ-set with a random `base` and active byte = 0.
-        let mut base = [0u8; 16];
-        for byte in base.iter_mut() {
-            rng_state = rng_state
-                .wrapping_mul(6364136223846793005)
-                .wrapping_add(1442695040888963407);
-            *byte = (rng_state >> 33) as u8;
-        }
-        let pts = lambda_set(&base, 0);
-        let cts: Vec<[u8; 16]> = pts.iter().map(&mut oracle).collect();
-        lambda_sets_used += 1;
-
-        // For each ciphertext byte position (c, r), narrow the
-        // candidate set for K_nr[c][r].
-        for c in 0..4 {
-            for r in 0..4 {
-                let flat = c * 4 + r;
-                if candidates[flat].len() == 1 {
-                    continue;
-                }
-                candidates[flat].retain(|&k| {
-                    let mut acc = 0u8;
-                    for ct in &cts {
-                        acc ^= INV_SBOX[(ct[flat] ^ k) as usize];
-                    }
-                    acc == 0
-                });
-                sbox_lookups += 256 * candidates[flat].len().max(1);
-            }
-        }
-
-        if candidates.iter().all(|c| c.len() == 1) {
-            break;
-        }
-
-        // Safety valve. With 2 Λ-sets we should always converge.
-        if lambda_sets_used >= 6 {
-            panic!(
-                "Square attack failed to converge after {lambda_sets_used} Λ-sets — \
-                 this should not happen for correctly-implemented 4-round AES"
-            );
-        }
-    }
-
-    let mut last_round_key = [[0u8; 4]; 4];
-    for c in 0..4 {
-        for r in 0..4 {
-            last_round_key[c][r] = candidates[c * 4 + r][0];
-        }
-    }
-    let master_key = ReducedAes128::invert_schedule(4, &last_round_key);
-
-    SquareAttackReport {
-        lambda_sets_used,
-        sbox_lookups,
-        last_round_key,
-        master_key,
-    }
+    let r = generic::square_last_round_key_recovery(
+        ir_aes4(),
+        |pt: &[u8]| {
+            let block: [u8; 16] = pt.try_into().expect("16-byte block");
+            oracle(&block).to_vec()
+        },
+        0xa5a5_a5a5_a5a5_a5a5,
+    )
+    .unwrap_or_else(|e| panic!("{e}"));
+    report_from(r)
 }
 
 /// Inverting the *last* round of a single state. The integral attack
