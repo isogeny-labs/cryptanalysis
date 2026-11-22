@@ -2,6 +2,8 @@
 
 ## Active items
 
+- [ ] Document the matched single-large-prime control for `ca-ic prime` (Codex, started 2026-11-20, branch codex/document-prime-large-prime-control)
+
 - [ ] hashed-tensor lead sweep (workspace PROTOCOL.md, m = 2..9, prime regime): plug-in spec, phase 1 vs prime-abscissa+mitm; calibrate contraction steps and fix the `root_u` floor if the oracle cannot run (Claude Code, started 2026-11-22, branch claude/hashed-tensor-lead-sweep-20261122, PR #1915; built at 80c9f4dd9 + this PR's pricing commit because main does not build) [pcc:unverified]
 
 - [ ] CT317 independent prime-field cold-target group replay (ChatGPT, started 2026-11-22, existing draft PR #1912, branch research/ct302-full-native-log-admission-20261121): source-only bound exact raw solver stdout/receipt to verified Q=[k]P on short-Weierstrass <=31-bit prime curves; independent subgroup and curve validation, toy sabotages; native 695/701 and authenticated custody still blocked. [pcc:unverified]
