@@ -1,6 +1,7 @@
 # Active research tasks
 
 ## Active items
+- [ ] CT318 combine CT315 full cold seven-arm timing/RSS gate and CT317 independent Q=[k]P raw-output replay in a single fail-closed source-auditable admission (ChatGPT, started 2026-11-22, branch research/ct318-joint-cold-admission-20261122); native S3/STS/cold physical benchmark and signed PCC blocked. [pcc:unverified]
 
 - [ ] hashed-tensor lead sweep (workspace PROTOCOL.md, m = 2..9, prime regime): plug-in spec, phase 1 vs prime-abscissa+mitm; calibrate contraction steps and fix the `root_u` floor if the oracle cannot run (Claude Code, started 2026-11-22, branch claude/hashed-tensor-lead-sweep-20261122, PR #1915; built at 80c9f4dd9 + this PR's pricing commit because main does not build) [pcc:unverified]
 
