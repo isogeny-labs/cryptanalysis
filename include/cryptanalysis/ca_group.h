@@ -94,11 +94,18 @@ CA_API ca_status ca_group_ec_init(ca_group *g, uint64_t p, uint64_t a, uint64_t 
  * replace vt (op-counting tests) still go through their hooks. */
 CA_API extern const ca_group_vtable *const ca_zp_vt_ptr;
 
-/* (Z/pZ)^* is a single Montgomery multiply.  Same residue as zp_op / zp_dbl. */
+/* (Z/pZ)^* is a single Montgomery multiply.  For p < 2^62 the product uses
+ * lazy REDC ([0, 2p) residues); equal/hash/decode canonicalize.  Same class
+ * as zp_op / zp_dbl. */
 static inline void ca_group_op(const ca_group *g, ca_elem *r, const ca_elem *a, const ca_elem *b)
 {
     if (g->vt == ca_zp_vt_ptr) {
-        r->w[0] = ca_mont_mul(&g->mont, a->w[0], b->w[0]);
+        const uint64_t p = g->mont.p;
+        if (p < (1ULL << 62)) {
+            r->w[0] = ca_mont_mul_lazy(a->w[0], b->w[0], p, g->mont.pinv);
+        } else {
+            r->w[0] = ca_mont_mul(&g->mont, a->w[0], b->w[0]);
+        }
         return;
     }
     g->vt->op(g, r, a, b);
@@ -106,7 +113,12 @@ static inline void ca_group_op(const ca_group *g, ca_elem *r, const ca_elem *a, 
 static inline void ca_group_dbl(const ca_group *g, ca_elem *r, const ca_elem *a)
 {
     if (g->vt == ca_zp_vt_ptr) {
-        r->w[0] = ca_mont_sqr(&g->mont, a->w[0]);
+        const uint64_t p = g->mont.p;
+        if (p < (1ULL << 62)) {
+            r->w[0] = ca_mont_sqr_lazy(a->w[0], p, g->mont.pinv);
+        } else {
+            r->w[0] = ca_mont_sqr(&g->mont, a->w[0]);
+        }
         return;
     }
     g->vt->dbl(g, r, a);

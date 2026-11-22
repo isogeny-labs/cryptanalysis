@@ -457,9 +457,15 @@ static ca_status k_solve_impl(const ca_group *g, const ca_elem *base, const ca_e
                  * batch/hash calls).  Same words, same order of effects as
                  * the batch path: later lanes are untouched on a break. */
                 const uint32_t ji = (uint32_t)(((ca_u128)(nj_magic * (hs[i] >> 32)) * nj) >> 64);
-                r->Y.w[0] = ca_mont_mul(&g->mont, r->Y.w[0], J[ji].w[0]);
+                {
+                    const uint64_t p = g->mont.p;
+                    if (p < (1ULL << 62))
+                        r->Y.w[0] = ca_mont_mul_lazy(r->Y.w[0], J[ji].w[0], p, g->mont.pinv);
+                    else
+                        r->Y.w[0] = ca_mont_mul(&g->mont, r->Y.w[0], J[ji].w[0]);
+                }
                 r->dist += jsz[ji];
-                h = ca_zp_hash_word(r->Y.w[0]);
+                h = ca_zp_hash_residue(r->Y.w[0], g->p);
             } else {
                 r->Y = Yn[i];
                 r->dist += jsz[jidx[i]];

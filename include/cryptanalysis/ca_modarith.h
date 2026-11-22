@@ -180,6 +180,22 @@ static inline uint64_t ca_mont_redc(const ca_mont *m, ca_u128 t)
     return r;
 }
 
+/* Canonical representative in [0, p).  Lazy Montgomery products below may
+ * return [0, 2p); callers that hash or compare residues use this first. */
+static inline uint64_t ca_fp_canon(uint64_t x, uint64_t p)
+{
+    return x >= p ? x - p : x;
+}
+
+/* Addition-form REDC without the final conditional subtract: residue in
+ * [0, 2p) when a, b < 2p and p < 2^62 (so a*b < p*2^64).  neg_pinv is
+ * -p^{-1} mod 2^64 (ca_mont.pinv).  Same class as ca_mont_redc. */
+static inline uint64_t ca_mont_redc_lazy(uint64_t p, uint64_t neg_pinv, ca_u128 t)
+{
+    uint64_t u = (uint64_t)t * neg_pinv;
+    return (uint64_t)((t + (ca_u128)u * p) >> 64);
+}
+
 static inline uint64_t ca_mont_mul(const ca_mont *m, uint64_t a, uint64_t b)
 {
     CA_FC_ADD(CA_FC_MUL, 1);
@@ -190,6 +206,20 @@ static inline uint64_t ca_mont_sqr(const ca_mont *m, uint64_t a)
 {
     CA_FC_ADD(CA_FC_SQR, 1);
     return ca_mont_redc(m, (ca_u128)a * a);
+}
+
+/* Lazy Montgomery product for p < 2^62.  Output in [0, 2p).
+ * neg_pinv is ca_mont.pinv (-p^{-1} mod 2^64). */
+static inline uint64_t ca_mont_mul_lazy(uint64_t a, uint64_t b, uint64_t p, uint64_t neg_pinv)
+{
+    CA_FC_ADD(CA_FC_MUL, 1);
+    return ca_mont_redc_lazy(p, neg_pinv, (ca_u128)a * b);
+}
+
+static inline uint64_t ca_mont_sqr_lazy(uint64_t a, uint64_t p, uint64_t neg_pinv)
+{
+    CA_FC_ADD(CA_FC_SQR, 1);
+    return ca_mont_redc_lazy(p, neg_pinv, (ca_u128)a * a);
 }
 
 static inline uint64_t ca_mont_to(const ca_mont *m, uint64_t a)

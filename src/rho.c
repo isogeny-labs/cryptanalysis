@@ -775,8 +775,13 @@ static void rho_zp_round(rho_shared *sh, rho_walk *walks, uint32_t W, ca_rng *rn
         rho_walk *wk = &walks[w];
         uint32_t upper = (uint32_t)(wk->h >> 32);
         uint32_t i = rmask ? upper & rmask : (uint32_t)(((ca_u128)(rmagic * upper) * r) >> 64);
-        uint64_t y = ca_ec_bmul(wk->Y.w[0], M[i].w[0], P, NPI);
-        uint64_t h = ca_zp_hash_word(y);
+        /* Field-count for these W products is charged once above; use the
+         * REDC helpers that do not increment CA_FC_MUL again.  Lazy form
+         * needs -p^{-1} (mont.pinv), not NPI = p^{-1}. */
+        uint64_t y = (P < (1ULL << 62))
+                         ? ca_mont_redc_lazy(P, g->mont.pinv, (ca_u128)wk->Y.w[0] * M[i].w[0])
+                         : ca_ec_bmul(wk->Y.w[0], M[i].w[0], P, NPI);
+        uint64_t h = ca_zp_hash_residue(y, P);
         wk->Y.w[0] = y;
         wk->h = h;
         wk->idx = i;
@@ -971,7 +976,7 @@ static void *rho_thread_main(void *arg)
                 h = ca_ec_hash_words(y->w[0], y->w[1], y->w[2]);
             } else if (zp) {
                 neg = sh->negmap ? ca_group_canonicalize(g, &Yn[w]) : 0;
-                h = ca_zp_hash_word(Yn[w].w[0]);
+                h = ca_zp_hash_residue(Yn[w].w[0], g->p);
             } else {
                 neg = sh->negmap ? ca_group_canonicalize(g, &Yn[w]) : 0;
                 h = ca_group_hash(g, &Yn[w]);

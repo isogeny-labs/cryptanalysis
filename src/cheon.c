@@ -108,7 +108,7 @@ static void cheon_orbit_hashes(const ca_group *g, const ca_elem *x, uint64_t e, 
         w[l] = c.w[0];
     }
     for (int s = 0; s < CHEON_SEG; s++) {
-        for (int l = 0; l < CHEON_LANES; l++) out[l * CHEON_SEG + s] = ca_zp_hash_word(w[l]);
+        for (int l = 0; l < CHEON_LANES; l++) out[l * CHEON_SEG + s] = ca_zp_hash_residue(w[l], g->p);
         cheon_pow4(&g->mont, w, e);
     }
 }

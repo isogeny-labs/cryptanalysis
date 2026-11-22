@@ -135,8 +135,13 @@ struct ca_group;
  * table entries where they lie instead of copying them first. */
 
 /* zp_hash on the residue word: the vtable's zp_hash calls this, and the
- * rho walk inlines it for the native (Z/pZ)^* group. */
+ * rho walk inlines it for the native (Z/pZ)^* group.  Lazy Montgomery
+ * paths may leave x in [0, 2p); hash the canonical representative. */
 static inline uint64_t ca_zp_hash_word(uint64_t x) { return ca_mix64(x ^ 0x5bd1e995ULL); }
+static inline uint64_t ca_zp_hash_residue(uint64_t x, uint64_t p)
+{
+    return ca_zp_hash_word(ca_fp_canon(x, p));
+}
 
 /* ec_hash: equal points hash equal; the walk's index and distinguished-
  * point test read it. */
