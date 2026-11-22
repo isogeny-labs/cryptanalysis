@@ -52,7 +52,10 @@ fn certify_curve_identity(f: &Zp, iso: &RatIsogeny<Zp>) {
     assert_eq!(poly::gcd(f, h, &source), vec![1]);
     assert_eq!(poly::gcd(f, &iso.num, &iso.den), vec![1]);
     assert_eq!(iso.den, poly::mul(f, h, h));
-    assert_eq!(poly::rem(f, &division_poly(f, &iso.dom, 7), h), vec![]);
+    assert_eq!(
+        poly::rem(f, &division_poly(f, &iso.dom, 7), h),
+        Vec::<u64>::new()
+    );
     let s = poly::sub(
         f,
         &poly::mul(f, &poly::derivative(f, &iso.num), &iso.den),

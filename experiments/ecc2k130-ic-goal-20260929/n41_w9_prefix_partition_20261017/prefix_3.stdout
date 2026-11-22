@@ -1,0 +1,316 @@
+c CMS SHA1: GIT-notfound
+c CryptoMiniSat version 5.14.7
+c CMS compilation env CMAKE_CXX_COMPILER = clang++ | CMAKE_CXX_FLAGS =  -fno-stack-protector -msse4.2 -Wno-bitfield-constant-conversion -Wlogical-op -Wrestrict -Wnull-dereference -Wdouble-promotion -Wshadow -Wformat=2 -Wextra-semi -pedantic | COMPILE_DEFINES =  -DNDEBUG -D_FORTIFY_SOURCE=0 -DUSE_ZLIB | BUILD_SHARED_LIBS = ON | ONLY_SIMPLE =  | STATS = OFF | SQLITE3_FOUND =  | ZLIB_FOUND = TRUE | VALGRIND_FOUND =  | ENABLE_TESTING = OFF | SLOW_DEBUG = OFF | ENABLE_ASSERTIONS = OFF | PYTHON_EXECUTABLE =  | PYTHON_LIBRARY =  | PYTHON_INCLUDE_DIRS =  | MY_TARGETS =  | LARGEMEM = OFF | LIMITMEM = OFF | BREAKID_LIBRARIES =  | BREAKID-VER = . | c c Using VMTF, picosat, CaDiCaL, and CadiBack code by Armin Biere
+c CMS is MIT licensed
+c Using code from 'When Boolean Satisfiability Meets Gauss-E. in a Simplex Way'
+c       by C.-S. Han and J.-H. Roland Jiang in CAV 2012. Fixes by M. Soos
+c Using CCAnr from 'CCAnr: A Conf. Checking Based Local Search Solver [...]'
+c       by Shaowei Cai, Chuan Luo, and Kaile Su, SAT 2015
+c Using Oracle code from 'Integrating Tree Decompositions [...]'
+c       by Tuukka Korhonen and Matti Jarvisalo, CP 2021
+c Executed with command line: /opt/homebrew/bin/cryptominisat5 --threads=1 --maxtime=65 --zero-exit-status --verb=1 --printsol=1 /Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_prefix_partition_20261017/prefix_work.xcnf
+c Reading file '/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w9_prefix_partition_20261017/prefix_work.xcnf'
+c o -- header says num vars:         123218
+c o -- header says num clauses:      339487
+c -- clauses added: 323676
+c -- xor clauses added: 15811
+c -- vars added 123218
+c Parsing time: 0.07 s
+c [gauss] clauses deleted that are represented by XORs: 0 xorclauses: 15724 GJ matrices: 0 T: 0.04
+c [find&init matx] performing matrix init
+c [matrix] Too many rows in matrix: 11651 -> set usage to NO
+c [matrix] UNused matrix     11651 x75013  density:0.0008  xorlen avg: 63.66
+c [matrix] Too many columns in matrix: 9162 -> set usage to NO
+c [matrix] UNused matrix       798 x 9162  density:0.0055  xorlen avg: 50.17
+c [matrix] Too many columns in matrix: 8065 -> set usage to NO
+c [matrix] UNused matrix       685 x 8065  density:0.0040  xorlen avg: 32.07
+c [matrix] Too many columns in matrix: 8137 -> set usage to NO
+c [matrix] UNused matrix       757 x 8137  density:0.0035  xorlen avg: 28.75
+c [matrix] Too many columns in matrix: 2792 -> set usage to NO
+c [matrix] UNused matrix       407 x 2792  density:0.0164  xorlen avg: 45.81
+c [matrix] Too many columns in matrix: 4012 -> set usage to NO
+c [matrix] UNused matrix       322 x 4012  density:0.0080  xorlen avg: 32.18
+c [matrix] Too many columns in matrix: 7245 -> set usage to NO
+c [matrix] UNused matrix       521 x 7245  density:0.0027  xorlen avg: 19.62
+c [matrix] Good   matrix  0c [matrix] disabling SLS since matrix is found
+     41 x  369  density:0.4526  xorlen avg: 167.00
+c [matrix] Too many columns in matrix: 3643 -> set usage to NO
+c [matrix] UNused matrix       281 x 3643  density:0.0046  xorlen avg: 16.77
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] UNused matrix       120 x 1801  density:0.0089  xorlen avg: 16.02
+c [matrix] Too many columns in matrix: 1801 -> set usage to NO
+c [matrix] UNused matrix       120 x 1801  density:0.0089  xorlen avg: 16.02
+c [matrix] unused matrices: 31 of which too few rows: 21
+c [matrix] Using 1 matrices recovered from 15683 xors T: 0.01 T-out: N
+c [branch] adjusting to: vsids (from: vsids) var_decay:0.95 descr: VSIDS
+c rst  geom  stb   vs     1   111  122145  105K  212K    3.10    2.36     0     7   104     0  250.85  250.85
+c rst  geom  stb   vs     2   236  122145  105K  212K    3.10    2.36     2    39   195     0  195.94  195.94
+c  res  pol bran  nres  conf freevar  IrrL  IrrB l/longC  l/allC RedL0 RedL1 RedL2  RedB l/longC  l/allC
+c rst  geom  stb   vs     3   370  122145  105K  212K    3.10    2.36     2    39   329     0  138.96  138.96
+c rst  geom  stb   vs     4   517  122145  105K  212K    3.10    2.36    10    66   441     0  125.01  125.01
+c rst  geom  stb   vs     5   678  122145  105K  212K    3.10    2.36    10    66   602     0  237.18  237.18
+c rst  geom  stb   vs     6   856  122145  105K  212K    3.10    2.36    14    97   745     0  203.80  203.80
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  geom  stb   vs     7  1051  122145  105K  212K    3.10    2.36    20   118   913     0  179.76  179.76
+c rst  geom  stb   vs     8  1264  122145  105K  212K    3.10    2.36    20   129  1115     0  172.28  172.28
+c rst  geom  stb   vs     9  1499  122145  105K  212K    3.10    2.36    21   141  1337     0  153.79  153.79
+c rst  geom  stb   vs    10  1756  122145  105K  212K    3.10    2.36    28   165  1563     0  142.34  142.34
+c rst  geom  stb   vs    11  2040  122145  105K  212K    3.10    2.36    34   178  1828     0  132.73  132.73
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  geom  stb   vs    12  2350  122145  105K  212K    3.10    2.36    35   186  2129     0  122.07  122.07
+c rst  geom  stb   vs    13  2693  122145  105K  212K    3.10    2.36    37   192  2464     0  113.11  113.11
+c rst  geom  stb   vs    14  3066  122145  105K  212K    3.10    2.36    44   199  2823     0  105.92  105.92
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  geom  stb   vs    15  3477  122145  105K  212K    3.10    2.36    46   200  3231     0   99.39   99.39
+c rst  geom  stb   vs    16  3927  122145  105K  212K    3.10    2.36    52   206  3669     0   93.67   93.67
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  geom  stb   vs    17  4422  122145  105K  212K    3.10    2.36    53   212  4157     0   88.72   88.72
+c rst  geom  stb   vs    18  4966  122145  105K  212K    3.10    2.36    54   217  4695     0   84.10   84.10
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  geom  stb   vs    19  5563  122145  105K  212K    3.10    2.36    54   217  5292     0   79.98   79.98
+c [branch] adjusting to: vmtf (from: vsids) var_decay:0.95 descr: VMTF
+c [distill-long-red0] cls tried: 54/54 T: 0.00 T-out: N T-r: 100.00%
+c [distill-long-red1] cls tried: 217/217 T: 0.00 T-out: N T-r: 94.23%
+c rst  luby ibes  vmt    20  5664  122145  105K  212K    3.10    2.36    55   222  5387     0   80.34   80.34
+c rst  luby ibes  vmt    21  5766  122145  105K  212K    3.10    2.36    55   222  5489     0   79.68   79.68
+c rst  luby ibes  vmt    22  5968  122145  105K  212K    3.10    2.36    55   223  5690     0   85.52   85.52
+c rst  luby ibes  vmt    23  6069  122145  105K  212K    3.10    2.36    55   223  5791     0   84.81   84.81
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  luby ibes  vmt    24  6172  122145  105K  212K    3.10    2.36    55   224  5893     0   87.09   87.09
+c rst  luby ibes  vmt    25  6374  122145  105K  212K    3.10    2.36    55   224  6095     0   86.27   86.27
+c rst  luby ibes  vmt    26  6776  122145  105K  212K    3.10    2.36    55   224  6497     0   96.22   96.22
+c rst  luby ibes  vmt    27  6878  122145  105K  212K    3.10    2.36    55   224  6599     0   95.44   95.44
+c rst  luby ibes  vmt    28  6980  122145  105K  212K    3.10    2.36    55   224  6701     0   97.27   97.27
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  luby ibes  vmt    29  7182  122145  105K  212K    3.10    2.36    55   224  6903     0   95.73   95.73
+c rst  luby ibes  vmt    30  7283  122145  105K  212K    3.10    2.36    55   225  7003     0   97.66   97.66
+c rst  luby ibes  vmt    31  7385  122145  105K  212K    3.10    2.36    55   225  7105     0   96.90   96.90
+c rst  luby ibes  vmt    32  7587  122145  105K  212K    3.10    2.36    55   225  7307     0  101.51  101.51
+c rst  luby ibes  vmt    33  7989  122145  105K  212K    3.10    2.36    55   225  7709     0   98.55   98.55
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  luby ibes  vmt    34  8792  122145  105K  212K    3.10    2.36    55   225  8512     0  118.84  118.84
+c rst  luby ibes  vmt    35  8894  122145  105K  212K    3.10    2.36    55   225  8614     0  117.96  117.96
+c rst  luby ibes  vmt    36  8995  122145  105K  212K    3.10    2.36    55   225  8715     0  119.08  119.08
+c rst  luby ibes  vmt    37  9197  122145  105K  212K    3.10    2.36    55   225  8917     0  117.43  117.43
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  luby ibes  vmt    38  9298  122145  105K  212K    3.10    2.36    55   225  9018     0  119.10  119.10
+c rst  luby ibes  vmt    39  9399  122145  105K  212K    3.10    2.36    55   225  9119     0  118.30  118.30
+c rst  luby ibes  vmt    40  9600  122145  105K  212K    3.10    2.36    55   225  9320     0  121.57  121.57
+c rst  luby ibes  vmt    41 10001  122145  105K  212K    3.10    2.36   215    65  9721     0  118.48  118.48
+c rst  luby ibes  vmt    42 10102  122145  105K  212K    3.10    2.36   215    65  9822     0  120.07  120.07
+c rst  luby ibes  vmt    43 10203  122145  105K  212K    3.10    2.36   215    65  9923     0  119.31  119.31
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  luby ibes  vmt    44 10405  122145  105K  212K    3.10    2.36   215    67 10123     0  121.16  121.16
+c rst  luby ibes  vmt    45 10507  122145  105K  212K    3.10    2.36   215    67 10225     0  120.40  120.40
+c rst  luby ibes  vmt    46 10609  122145  105K  212K    3.10    2.36   215    67 10327     0  121.51  121.51
+c rst  luby ibes  vmt    47 10810  122145  105K  212K    3.10    2.36   215    67 10528     0  120.04  120.04
+c rst  luby  svd  vmt    48 11211  122145  105K  212K    3.10    2.36   215    68 10928     0  121.71  121.71
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  luby  svd  vmt    49 12013  122145  105K  212K    3.10    2.36   215    68 11730     0  116.03  116.03
+c [branch] adjusting to: vsids (from: vmtf) var_decay:0.95 descr: VSIDS
+c [distill-bin] useful: 0/99054/212850 lits-rem: 0 cl-rem: 0 0-depth-assigns: 0 T: 0.41 T-out: Y
+c rst  geom  svd   vs    50 12125  122145  105K  212K    3.10    2.36   215    70 11840     0  115.42  115.42
+c rst  geom  svd   vs    51 12249  122145  105K  212K    3.10    2.36   215    72 11962     0  114.73  114.73
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  geom  svd   vs    52 12383  122145  105K  212K    3.10    2.36   215    74 12094     0  113.99  113.99
+c rst  geom  svd   vs    53 12530  122145  105K  212K    3.10    2.36   216    77 12237     0  113.19  113.19
+c rst  geom  svd   vs    54 12691  122145  105K  212K    3.10    2.36   218    78 12395     0  112.33  112.33
+c rst  geom  svd   vs    55 12868  122145  105K  212K    3.10    2.36   218    79 12571     0  111.41  111.41
+c rst  geom  svd   vs    56 13064  122145  105K  212K    3.10    2.36   218    80 12766     0  110.42  110.42
+c rst  geom  svd   vs    57 13278  122145  105K  212K    3.10    2.36   220    82 12976     0  109.36  109.36
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  geom  svd   vs    58 13512  122145  105K  212K    3.10    2.36   220    83 13209     0  108.24  108.24
+c rst  geom  svd   vs    59 13770  122145  105K  212K    3.10    2.36   220    85 13465     0  107.07  107.07
+c rst  geom  svd   vs    60 14053  122145  105K  212K    3.10    2.36   220    86 13747     0  105.82  105.82
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  geom  svd   vs    61 14363  122145  105K  212K    3.10    2.36   221    90 14052     0  104.50  104.50
+c rst  geom  svd   vs    62 14703  122145  105K  212K    3.10    2.36   221    90 14392     0  103.06  103.06
+c rst  geom  svd   vs    63 15077  122145  105K  212K    3.10    2.36   236   124  7309     0   95.64   95.64
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  geom  svd   vs    64 15488  122145  105K  212K    3.10    2.36   236   126  7718     0   92.92   92.92
+c rst  geom  svd   vs    65 15938  122145  105K  212K    3.10    2.36   236   130  8164     0   90.25   90.25
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  geom  svd   vs    66 16432  122145  105K  212K    3.10    2.36   236   134  8654     0   87.57   87.57
+c rst  geom best   vs    67 16976  122145  105K  212K    3.10    2.36   236   135  9197     0   85.15   85.15
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  geom best   vs    68 17574  122145  105K  212K    3.10    2.36   237   136  9793     0   82.79   82.79
+c rst  geom best   vs    69 18230  122145  105K  212K    3.10    2.36   237   136 10449     0   80.49   80.49
+c [branch] adjusting to: vmtf (from: vsids) var_decay:0.95 descr: VMTF
+c rst  luby best  vmt    70 18332  122145  105K  212K    3.10    2.36   237   136 10551     0   81.11   81.11
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  luby best  vmt    71 18434  122145  105K  212K    3.10    2.36   237   136 10653     0   80.75   80.75
+c rst  luby best  vmt    72 18635  122145  105K  212K    3.10    2.36   238   136 10853     0   80.10   80.10
+c rst  luby best  vmt    73 18738  122145  105K  212K    3.10    2.36   238   136 10956     0   80.32   80.32
+c rst  luby best  vmt    74 18840  122145  105K  212K    3.10    2.36   238   136 11058     0   80.01   80.01
+c rst  luby best  vmt    75 19042  122145  105K  212K    3.10    2.36   238   136 11260     0   79.37   79.37
+c rst  luby best  vmt    76 19444  122145  105K  212K    3.10    2.36   238   137 11661     0   78.26   78.26
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  luby best  vmt    77 19545  122145  105K  212K    3.10    2.36   238   137 11762     0   77.97   77.97
+c rst  luby best  vmt    78 19646  122145  105K  212K    3.10    2.36   238   137 11863     0   77.68   77.68
+c rst  luby best  vmt    79 19848  122145  105K  212K    3.10    2.36   239   137 12064     0   77.13   77.13
+c rst  luby best  vmt    80 19950  122145  105K  212K    3.10    2.36   239   137 12166     0   76.86   76.86
+c rst  luby best  vmt    81   20K  122145  105K  212K    3.10    2.36   313    64 12266     0   76.58   76.58
+c [full-probe]  bin_only: 1 set: 0 repl: 0 T: 0.08 T-out: N T-r: 81.61%
+c rst  luby best  vmt    82   20K  122145  105K  216K    3.10    2.36   313    65 12467     0   76.10   76.10
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  luby best  vmt    83   20K  122145  105K  216K    3.10    2.36   314    65 12868     0   75.66   75.66
+c [distill-long-red0] cls tried: 73/73 T: 0.00 T-out: N T-r: 100.00%
+c [distill-long-red1] cls tried: 35/35 T: 0.00 T-out: N T-r: 98.03%
+c rst  luby best  vmt    84   21K  122145  105K  216K    3.10    2.36   314    67 13668     0   73.95   73.95
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  luby best  vmt    85   21K  122145  105K  216K    3.10    2.36   314    67 13769     0   73.74   73.74
+c rst  luby best  vmt    86   21K  122145  105K  216K    3.10    2.36   314    67 13871     0   73.53   73.53
+c rst  luby  stb  vmt    87   21K  122145  105K  216K    3.10    2.36   314    67 14075     0   73.12   73.12
+c rst  luby  stb  vmt    88   21K  122145  105K  216K    3.10    2.36   314    67 14177     0   72.92   72.92
+c rst  luby  stb  vmt    89   22K  122145  105K  216K    3.10    2.36   314    67 14278     0   72.75   72.75
+c rst  luby  stb  vmt    90   22K  122145  105K  216K    3.10    2.36   314    67 14481     0   73.08   73.08
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  luby  stb  vmt    91   22K  122145  105K  216K    3.10    2.36   314    67 14883     0   72.60   72.60
+c rst  luby  stb  vmt    92   22K  122145  105K  216K    3.10    2.36   314    67 14984     0   72.62   72.62
+c rst  luby  stb  vmt    93   22K  122145  105K  216K    3.10    2.36   314    67 15085     0   72.62   72.62
+c rst  luby  stb  vmt    94   23K  122145  105K  216K    3.10    2.36   314    67 15286     0   72.44   72.44
+c rst  luby  stb  vmt    95   23K  122145  105K  216K    3.10    2.36   314    67 15388     0   72.30   72.30
+c rst  luby  stb  vmt    96   23K  122145  105K  216K    3.10    2.36   314    67 15489     0   72.13   72.13
+c rst  luby  stb  vmt    97   23K  122145  105K  216K    3.10    2.36   315    67 15689     0   71.85   71.85
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  luby  stb  vmt    98   23K  122145  105K  216K    3.10    2.36   315    67 16094     0   71.18   71.18
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  luby  stb  vmt    99   24K  122145  105K  216K    3.10    2.36   316    68 16893     0   69.96   69.96
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  luby  stb  vmt   100   26K  122145  105K  216K    3.10    2.36   316    68 18495     0   67.79   67.79
+c [branch] adjusting to: vsids (from: vmtf) var_decay:0.95 descr: VSIDS
+c [distill] watch-based irred--  cl tried   137801 cl-sh     0 cl-rem    0 lit-rem      0 T: 0.12 T-out: Y
+c [distill] watch-based   red--  cl tried      632 cl-sh     0 cl-rem    0 lit-rem      0 T: 0.00 T-out: N
+c rst  geom  stb   vs   101   26K  122145  105K  216K    3.10    2.36   316    68 18606     0   67.64   67.64
+c rst  geom  stb   vs   102   26K  122145  105K  216K    3.10    2.36   316    68 18728     0   67.48   67.48
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  geom  stb   vs   103   26K  122145  105K  216K    3.10    2.36   316    68 18862     0   67.31   67.31
+c rst  geom  stb   vs   104   26K  122145  105K  216K    3.10    2.36   316    68 19010     0   67.12   67.12
+c rst  geom  stb   vs   105   26K  122145  105K  216K    3.10    2.36   316    68 19171     0   66.91   66.91
+c rst  geom ibes   vs   106   27K  122145  105K  216K    3.10    2.36   316    71 19345     0   66.70   66.70
+c rst  geom ibes   vs   107   27K  122145  105K  216K    3.10    2.36   316    71 19540     0   66.46   66.46
+c rst  geom ibes   vs   108   27K  122145  105K  216K    3.10    2.36   316    72 19752     0   66.20   66.20
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  geom ibes   vs   109   27K  122145  105K  216K    3.10    2.36   316    72 19986     0   65.93   65.93
+c rst  geom ibes   vs   110   28K  122145  105K  216K    3.10    2.36   316    72   20K     0   65.62   65.62
+c rst  geom ibes   vs   111   28K  122145  105K  216K    3.10    2.36   316    73   20K     0   65.29   65.29
+c rst  geom ibes   vs   112   28K  122145  105K  216K    3.10    2.36   316    73   20K     0   64.95   64.95
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  geom ibes   vs   113   28K  122145  105K  216K    3.10    2.36   316    73   21K     0   64.57   64.57
+c rst  geom ibes   vs   114   29K  122145  105K  216K    3.10    2.36   316    73   21K     0   64.16   64.16
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  geom ibes   vs   115   29K  122145  105K  216K    3.10    2.36   316    73   21K     0   63.75   63.75
+c rst  geom ibes   vs   116   30K  122145  105K  216K    3.10    2.36   354    48 10016     0   45.76   45.76
+c rst  geom ibes   vs   117   30K  122145  105K  216K    3.10    2.36   354    51 10507     0   45.54   45.54
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  geom ibes   vs   118   31K  122145  105K  216K    3.10    2.36   355    53 11047     0   45.32   45.32
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  geom ibes   vs   119   31K  122145  105K  216K    3.10    2.36   355    53 11644     0   45.12   45.12
+c rst  geom ibes   vs   120   32K  122145  105K  216K    3.10    2.36   355    55 12299     0   44.87   44.87
+c [distill-bin] useful: 1506/76604/216366 lits-rem: 0 cl-rem: 1506 0-depth-assigns: 0 T: 0.42 T-out: Y
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  geom  svd   vs   121   33K  122145  105K  214K    3.10    2.36   355    55 13020     0   44.84   44.84
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  geom  svd   vs   122   34K  122145  105K  214K    3.10    2.36   355    57 13812     0   44.74   44.74
+c [branch] adjusting to: vmtf (from: vsids) var_decay:0.95 descr: VMTF
+c rst  luby  svd  vmt   123   34K  122145  105K  214K    3.10    2.36   355    57 13913     0   44.73   44.73
+c rst  luby  svd  vmt   124   34K  122145  105K  214K    3.10    2.36   355    57 14014     0   44.74   44.74
+c rst  luby  svd  vmt   125   34K  122145  105K  214K    3.10    2.36   355    57 14215     0   44.73   44.73
+c rst  luby  svd  vmt   126   34K  122145  105K  214K    3.10    2.36   355    57 14316     0   44.72   44.72
+c rst  luby  svd  vmt   127   34K  122145  105K  214K    3.10    2.36   355    57 14419     0   44.71   44.71
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  luby  svd  vmt   128   34K  122145  105K  214K    3.10    2.36   355    57 14621     0   44.68   44.68
+c rst  luby  svd  vmt   129   35K  122145  105K  214K    3.10    2.36   355    57 15022     0   44.60   44.60
+c rst  luby  svd  vmt   130   35K  122145  105K  214K    3.10    2.36   355    57 15124     0   44.59   44.59
+c rst  luby  svd  vmt   131   35K  122145  105K  214K    3.10    2.36   355    57 15226     0   44.58   44.58
+c rst  luby  svd  vmt   132   35K  122145  105K  214K    3.10    2.36   355    57 15428     0   44.54   44.54
+c rst  luby  svd  vmt   133   35K  122145  105K  214K    3.10    2.36   355    57 15531     0   44.52   44.52
+c [distill-long-red0] cls tried: 22/22 T: 0.00 T-out: N T-r: 100.00%
+c [distill-long-red1] cls tried: 11/11 T: 0.00 T-out: N T-r: 99.83%
+c rst  luby  svd  vmt   134   35K  122145  105K  214K    3.10    2.36   355    57 15634     0   44.50   44.50
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  luby  svd  vmt   135   36K  122145  105K  214K    3.10    2.36   355    58 15836     0   44.46   44.46
+c rst  luby  svd  vmt   136   36K  122145  105K  214K    3.10    2.36   355    58 16239     0   44.38   44.38
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  luby  svd  vmt   137   37K  122145  105K  214K    3.10    2.36   355    59 17040     0   44.25   44.25
+c rst  luby  svd  vmt   138   37K  122145  105K  214K    3.10    2.36   355    59 17142     0   44.23   44.23
+c rst  luby  svd  vmt   139   37K  122145  105K  214K    3.10    2.36   355    59 17243     0   44.21   44.21
+c rst  luby  svd  vmt   140   37K  122145  105K  214K    3.10    2.36   355    59 17445     0   44.17   44.17
+c rst  luby  svd  vmt   141   37K  122145  105K  214K    3.10    2.36   355    59 17547     0   44.14   44.14
+c rst  luby  svd  vmt   142   37K  122145  105K  214K    3.10    2.36   355    59 17648     0   44.13   44.13
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  luby  svd  vmt   143   38K  122145  105K  214K    3.10    2.36   355    59 17850     0   44.08   44.08
+c rst  geom best  vmt   144   38K  122145  105K  214K    3.10    2.36   356    59 17960     0   44.08   44.08
+c rst  geom best  vmt   145   38K  122145  105K  214K    3.10    2.36   356    59 18082     0   46.23   46.23
+c rst  geom best  vmt   146   38K  122145  105K  214K    3.10    2.36   356    59 18216     0   46.21   46.21
+c rst  geom best  vmt   147   38K  122145  105K  214K    3.10    2.36   356    59 18364     0   46.19   46.19
+c rst  geom best  vmt   148   38K  122145  105K  214K    3.10    2.36   356    59 18526     0   46.19   46.19
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  geom best  vmt   149   38K  122145  105K  214K    3.10    2.36   356    59 18705     0   46.15   46.15
+c rst  geom best  vmt   150   39K  122145  105K  214K    3.10    2.36   356    59 18899     0   46.13   46.13
+c rst  geom best  vmt   151   39K  122145  105K  214K    3.10    2.36   356    59 19114     0   46.12   46.12
+c rst  geom best  vmt   152   39K  122145  105K  214K    3.10    2.36   356    59 19350     0   46.08   46.08
+c rst  geom best  vmt   153   39K  122145  105K  214K    3.10    2.36   356    59 19607     0   46.02   46.02
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  geom best  vmt   154   40K  122145  105K  214K    3.10    2.36   374    41 19889     0   45.97   45.97
+c [full-probe]  bin_only: 0 set: 0 repl: 0 T: 0.17 T-out: Y T-r: -0.00%
+c [impl-str] lit bin: 0 set-var: 0 T: 0.00 T-out: N T-r: 98.24% w-visit: 246436
+c [impl-sub] bin: 4222 T: 0.00 T-out: N w-visit: 246436
+c rst  geom best  vmt   155   40K  122145  105K  214K    3.10    2.36   374    41   20K     0   45.92   45.92
+c rst  geom best  vmt   156   40K  122145  105K  214K    3.10    2.36   374    41   20K     0   45.85   45.85
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  geom best  vmt   157   41K  122145  105K  214K    3.10    2.36   374    43   20K     0   45.77   45.77
+c rst  geom best  vmt   158   41K  122145  105K  214K    3.10    2.36   374    43   21K     0   45.70   45.70
+c rst  geom best  vmt   159   41K  122145  105K  214K    3.10    2.36   374    43   21K     0   45.59   45.59
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  geom best  vmt   160   42K  122145  105K  214K    3.10    2.36   374    43   22K     0   45.50   45.50
+c [branch] adjusting to: vsids (from: vmtf) var_decay:0.95 descr: VSIDS
+c rst  geom best   vs   161   42K  122145  105K  214K    3.10    2.36   374    43   22K     0   45.49   45.49
+c rst  geom best   vs   162   42K  122145  105K  214K    3.10    2.36   374    43   22K     0   45.48   45.48
+c rst  geom best   vs   163   42K  122145  105K  214K    3.10    2.36   374    43   22K     0   45.47   45.47
+c rst  geom best   vs   164   42K  122145  105K  214K    3.10    2.36   374    43   22K     0   45.45   45.45
+c [g  <0] Disabling GJ-elim in this round.  Usefulness was: 11.3990%  over 386 calls
+c TODO disable matrix, performing badly
+c rst  geom best   vs   165   43K  122145  105K  214K    3.10    2.36   374    43   22K     0   45.43   45.43
+c rst  geom best   vs   166   43K  122145  105K  214K    3.10    2.36   374    43   23K     0   45.41   45.41

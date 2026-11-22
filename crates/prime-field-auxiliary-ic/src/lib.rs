@@ -15,13 +15,14 @@ mod phases;
 mod solve;
 
 pub use circuit::{
-    AuxiliaryMap, Backend, CandidateWorkspace, FactorBase, FactorBaseEncoding, RandomBaseStats,
-    SignedRelation,
+    AuxiliaryMap, Backend, CandidateWorkspace, FactorBase, FactorBaseEncoding, MultiSignedRelation,
+    RandomBaseStats, SignedRelation, SignedTerm,
 };
 pub use field::{BatchScratch, Curve, Point};
 pub use phases::SearchPhases;
 pub use solve::{
-    solve, verify_certificate, Certificate, Config, PreparedSolver, Relation, SearchStats,
+    solve, solve_multi, verify_certificate, verify_multi_certificate, Certificate, Config,
+    MultiCertificate, MultiRelation, MultiSolveOutcome, PreparedSolver, Relation, SearchStats,
     SolveOutcome, StopReason,
 };
 

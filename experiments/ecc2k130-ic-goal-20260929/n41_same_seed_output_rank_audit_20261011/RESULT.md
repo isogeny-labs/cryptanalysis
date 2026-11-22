@@ -1,0 +1,19 @@
+# The shared-seed N41 output hull is exactly the universal trace-zero hyperplane
+
+Every one of the **63** nonzero shared-seed four-point output families spans an affine space of dimension **40** in the 41-bit x-coordinate field. The missing dimension is exactly `Tr(x)=0`, a condition satisfied by *every* point in the odd-order subgroup on `y²+xy=x³+1`. Thus fixing the source-pair XOR seed supplies **zero additional affine output equations** for a target-conditioned gate. At the finer `(seed, source-difference)` level, all **1,188** finite output families have maximum affine rank for their exact number of x coordinates.
+
+The [frozen producer](../n41_same_seed_output_rank_20261011/protocol.json) uses the N41 W6 source on curve `EC1N41Ckb1h7d5e80d3c4d0`, 32 rational masks, 26 folded columns, four distinct columns per quartet, and all point signs. For each quartet it evaluates eight sign choices with the first leaf fixed positive; global negation supplies the other eight choices without changing x. The earlier exact [quartet census](../n41_same_seed_derivative_audit_20261011/RESULT.md) independently established that no two output sets within one `(s,u)` key overlap. The output-rank computation checks all **12,960** resulting distinct x coordinates counted within their keys.
+
+| Quartets in one `(s,u)` key | Distinct x coordinates | Exact affine rank | Number of keys |
+| ---: | ---: | ---: | ---: |
+| 1 | 8 | **7** | 810 |
+| 2 | 16 | **15** | 324 |
+| 3 | 24 | **23** | 54 |
+
+The 63 seed-wide rank calculations all returned **40**. The [trace follow-up](../n41_same_seed_output_rank_20261011/trace_result.json) computes the field trace on each polynomial-basis vector and obtains trace mask `1`: in this exact representation, `Tr(x)` is the low coordinate bit. It checked trace zero for all 32 signed-source x coordinates, all 12,960 quartet-output x coordinates, and the frozen N41 public target. Since each seed output set has rank 40 and lies in the 40-dimensional trace-zero hyperplane, that hyperplane is its **entire affine hull**. The [independent checked-Sage replay](../n41_same_seed_output_rank_20261011/sage_audit.json) reconstructed the field and curve separately, used low-pivot elimination, matched every `(s,u)` and seed rank, and verified trace mask `1` on all outputs.
+
+There is also a curve-level proof that makes the trace condition universal across N41 and N131. For a nonidentity point `P=(x,y)` with `x≠0`, the characteristic-two doubling formula on this curve gives `x(2P)=λ²+λ`, where `λ=x+y/x`. Field trace is invariant under squaring, hence `Tr(x(2P))=0`. Doubling is a bijection on either odd-order prime subgroup, so every nonidentity subgroup point is a double. The same trace-zero condition therefore holds for a valid public target, not only for this factor-base construction. It cannot reject a seed family when the target is known to lie in the subgroup.
+
+The [producer result](../n41_same_seed_output_rank_20261011/result.json) completed in 10.014 seconds with 18,677,760 B peak RSS; the separate trace run took 11.031 seconds with 18,235,392 B peak RSS. The independent Sage computation took 30.501 seconds with 206,438,400 B peak RSS. Each used one worker and stayed below its frozen 120-second/4-GiB stage guard. These are local arithmetic timings on an unisolated host. The [terminal verifier](verification.json) binds every source, input, runtime, result, cap, and independent rank/trace decision.
+
+The method decision is to stop using seed-only or `(s,u)`-only **affine output** tests for these four-point blocks. Their finite coordinate sets remain exact and selective, but an affine hull discards that selectivity. The next target-conditioned candidate should preserve finite roots through the upper S3 links and demonstrate family rejection on the frozen unpinned N41 positive and negative residuals before N131 work is promoted.

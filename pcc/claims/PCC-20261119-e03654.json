@@ -1,0 +1,23 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-19T05:39:35Z",
+ "id": "PCC-20261119-e03654",
+ "kind": "statement",
+ "producer": {
+  "commit": "5948dfa27e81e10fdc58f1cde03e5b9cd7f97c97",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/xedni_rank_decay_20261118/CHECKPOINT_GATE.md",
+    "sha256": "c9ec786c52273318541d838ee958fe90024f988bd1c5e56dae13515409da6668"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "The 2026-11-19 authorized checkpoint retry only; it does not measure rank-decay, prove absence, or describe a future environment with credentials.",
+ "statement": "At pushed head bfefa7c0a2a668643e3aabef5b6796b70a743b93, after explicit user run authorization, the mandatory Xedni checkpoint push and gate both exited 1 because no checkpoint upload transport was available; zero natural rows were started."
+}

@@ -335,6 +335,25 @@ jobs:
             suite/src/prime_hyperelliptic
             .github/workflows/chained-transfer-reference.yml
             .github/workflows/pcc-gate.yml
+      - id: fp_chain_consumer_predecessor
+        name: Read the frozen consumer predecessor
+        run: |
+          pin=$(python3 -c '
+          import json,sys
+          print(json.load(open(sys.argv[1]))["predecessor"]["commit"])
+          ' cryptanalysis/experiments/chained-transfer-reference/evidence/fp-chain-successor-inputs-01/transition.json)
+          [[ $pin =~ ^[0-9a-f]{40}$ ]] || exit 2
+          echo "revision=$pin" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ steps.fp_chain_consumer_predecessor.outputs.revision }}
+          persist-credentials: false
+          path: cryptanalysis-predecessor
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experiments/chained-transfer-reference
+            suite/src/prime_hyperelliptic
+            .github/workflows/chained-transfer-reference.yml
       - id: fp_chain_pin
         name: Read the complete prime-field chain source revision
         run: |
@@ -383,7 +402,10 @@ jobs:
           RUSTUP_TOOLCHAIN: 1.99.1
         run: |
           set -euo pipefail
-          timeout 55m bash cryptanalysis/experiments/chained-transfer-reference/check-fp-chain.sh crypto "$RUNNER_TEMP/fp-chain" 2>&1 | tee "$RUNNER_TEMP/fp-chain.txt"
+          timeout 55m bash \
+            cryptanalysis/experiments/chained-transfer-reference/check-fp-chain.sh \
+            crypto "$RUNNER_TEMP/fp-chain" cryptanalysis-predecessor \
+            2>&1 | tee "$RUNNER_TEMP/fp-chain.txt"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
@@ -409,6 +431,8 @@ jobs:
           sparse-checkout: |
             experiments/chained-transfer-reference/g3-norm-checker
             experiments/chained-transfer-reference/check-g3-norm.sh
+            experiments/chained-transfer-reference/check-g3-norm-successor.sh
+            experiments/chained-transfer-reference/verify-g3-norm-input-transition.py
             experiments/chained-transfer-reference/g3-norm-upstream-commit.txt
             experiments/chained-transfer-reference/g3-norm-reference-01.sha256
             experiments/chained-transfer-reference/G3_NORM_REPLAY_PROTOCOL.md
@@ -416,6 +440,7 @@ jobs:
             experiments/chained-transfer-reference/G3_NORM_PROOF_MAP.md
             experiments/chained-transfer-reference/evidence/g3-norm-primary-01
             experiments/chained-transfer-reference/evidence/g3-norm-lean-bindings-01
+            experiments/chained-transfer-reference/evidence/g3-norm-successor-inputs-01/transition.json
             tools/lean
             tools/pcc
             pcc/keyring.json
@@ -427,6 +452,12 @@ jobs:
           pin=$(cat cryptanalysis/experiments/chained-transfer-reference/g3-norm-upstream-commit.txt)
           [[ $pin =~ ^[0-9a-f]{40}$ ]] || exit 2
           echo "revision=$pin" >> "$GITHUB_OUTPUT"
+      - id: g3_norm_predecessor
+        name: Read the exact frozen consumer predecessor revision
+        run: |
+          revision=$(jq -r '.predecessor.commit' cryptanalysis/experiments/chained-transfer-reference/evidence/g3-norm-successor-inputs-01/transition.json)
+          [[ $revision =~ ^[0-9a-f]{40}$ ]] || exit 2
+          echo "revision=$revision" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           repository: isogeny-labs/crypto
@@ -454,6 +485,22 @@ jobs:
             pcc/keyring.json
             pcc/claims
             .github/workflows/genus3-prime-descent.yml
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ steps.g3_norm_predecessor.outputs.revision }}
+          persist-credentials: false
+          path: cryptanalysis-predecessor
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experiments/chained-transfer-reference/g3-norm-reference-01.sha256
+            experiments/chained-transfer-reference/evidence/g3-norm-primary-01/six-original-jobs.yml
+            experiments/chained-transfer-reference/G3_NORM_REPLAY_PROTOCOL.md
+            .github/workflows/chained-transfer-reference.yml
+            pcc/keyring.json
+            tools/lean/current-corpus-gate.py
+            tools/lean/test_current_corpus_gate.py
+            tools/pcc/pcc.py
+            tools/pcc/test_pcc.py
       - name: Install pinned native and both original proof toolchains
         run: |
           set -euo pipefail
@@ -467,7 +514,8 @@ jobs:
           CARGO_TARGET_DIR: ${{ runner.temp }}/g3-norm-build-cache
         run: |
           set -euo pipefail
-          timeout 2100 bash cryptanalysis/experiments/chained-transfer-reference/check-g3-norm.sh crypto "$RUNNER_TEMP/g3-norm-output"
+          timeout 2100 bash cryptanalysis/experiments/chained-transfer-reference/check-g3-norm-successor.sh \
+            crypto "$RUNNER_TEMP/g3-norm-output" cryptanalysis-predecessor
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
