@@ -157,3 +157,45 @@ jobs:
             git commit -m "pcc: signed verdicts for ${GITHUB_SHA::12}"
             git push origin HEAD:main
           fi
+
+  standalone-pcc:
+    name: PCC unit controls and shared-code parity
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event_name == 'pull_request_target' && 'main' || '' }}
+          fetch-depth: 1
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /docs/shared-code.lock.json
+            /.claude/hooks/benchrec-hook.sh
+            /docs/SABOTAGE_RESISTANCE.md
+            /docs/benchmark-records.md
+            /docs/curve-identities.md
+            /docs/research-wip-policy.json
+            /docs/research-wip.md
+            /scripts/kb_usage_report.py
+            /scripts/test_kb_usage_report.py
+            /tools/artifacts/artifacts.py
+            /tools/benchrec.py
+            /tools/check_lab_parity.py
+            /tools/check_skills_parity.py
+            /tools/curve_identity.py
+            /tools/pcc/pcc.py
+            /tools/pcc/test_pcc.py
+            /tools/research_wip.py
+            /tools/test_benchrec.py
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with:
+          python-version: '3.13'
+      - name: Shared-code lock agrees with every materialized mirror
+        run: python3 tools/check_lab_parity.py --repo cryptanalysis
+      - name: PCC sabotage controls
+        run: python3 tools/pcc/pcc.py canary
+      - name: PCC unit tests
+        run: python3 tools/pcc/test_pcc.py

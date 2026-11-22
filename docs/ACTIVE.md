@@ -39,7 +39,7 @@ and construction gates. [pcc:unverified]
 
 - [ ] Run the registered PKM tower phase-1 comparison at feasible m=5,6 with the frozen baseline, planted controls and resource limits; report full cell outcomes; prepared and checkpoint upload blocked (Codex, started 2026-11-21, branch codex/pkm-high-arity-phase1-20261121, PR #1883)
 
-- [ ] Complete native import-cache verification (Codex, started 2026-11-17, branch fix/native-import-cache-followup-20261117; tracking PR #1763 merged before implementation; full CI pending).
+- [ ] Complete native import-cache verification (Codex, started 2026-11-17, branch fix/native-import-cache-followup-20261117; tracking PR #1763 merged before implementation; draft PR #1879 includes original arithmetic PDF recovery in progress; full CI pending).
 
 - [x] Massively parallel `ic` relation collection: speculative multi-core decomposition with in-order commit (bit-identical `S`, relations and logarithm to the serial run), forkable oracles, `--threads`; strong-scaling curve and exact-dlog parity checks (Claude Code, completed 2026-11-20, branch claude/ic-parallel-relations, PR #1878; O(q^1/4) instance search 35-254x per phase-3 cell, --threads 3.22x subtract / 2.75x descent+f4 at 4 threads, counts identical; records 20261120T1852Z-ic-*, 20261120T1913Z-ic-threads-gate) [pcc:unverified]
 

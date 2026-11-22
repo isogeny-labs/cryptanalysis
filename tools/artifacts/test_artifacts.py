@@ -519,6 +519,22 @@ class WorkflowPaths(unittest.TestCase):
                 {"path": "docs/one/report.pdf"}, {"path": "docs/one/tracked.json"}]}))
             self.assertEqual(claim_inputs.claim_artifact_paths(root), ["docs/one/report.pdf"])
 
+    def test_claim_inputs_include_manifest_pinned_experiment_subjects(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            claims = root / "pcc/claims"
+            claims.mkdir(parents=True)
+            experiment = root / "experiments/one"
+            experiment.mkdir(parents=True)
+            (experiment / ".artifacts.json").write_text(json.dumps({"files": {
+                "subject.json": {"sha256": "0" * 64, "bytes": 1},
+                "unused.json": {"sha256": "1" * 64, "bytes": 1}}}))
+            (claims / "one.json").write_text(json.dumps({"proofs": [
+                {"path": "experiments/one/subject.json"},
+                {"path": "experiments/one/tracked.json"}]}))
+            self.assertEqual(claim_inputs.claim_artifact_paths(root),
+                             ["experiments/one/subject.json"])
+
 
 
 class WorkflowBootstrap(unittest.TestCase):

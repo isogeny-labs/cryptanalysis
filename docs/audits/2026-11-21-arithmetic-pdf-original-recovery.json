@@ -1,0 +1,33 @@
+{
+  "bundle": {
+    "bytes": 78605,
+    "format": "gzip mtime=0 filename=empty",
+    "path": ".artifacts/recovery/eb814265f158fc0ad52d9306b5a2526da476bd40752c186d3918fa9b2d36279b.gz",
+    "sha256": "74fd8aeb305b79881ad2cef31392988ef2f1b97130db2a3b81918b213ca460be"
+  },
+  "ci_validation": "pending exact-head PCC run",
+  "frozen_artifacts_changed": false,
+  "local_validation": {
+    "cold_cache_pull": "passed; artifacts.py pull --source git restored one PDF from empty ARTIFACTS_CACHE",
+    "restored_digest_and_size": "matched target manifest; test output removed",
+    "artifact_suite": "41 tests passed after including .artifacts/config.json in the sparse checkout; the first attempt without this repository policy file failed one policy test"
+  },
+  "merge_gate": "remain draft until required checks pass",
+  "repository": "cryptanalysis",
+  "schema": "maintained-path-audit/v1",
+  "source": {
+    "commit": "0a531f1d6c3c52d5cd3dcd6b084cbfb6af6cd4c3",
+    "git_blob": "5c61d5e03254beb2bc106c3a7439811894332110",
+    "migration_commit": "a0c2ca10e",
+    "migration_run": "https://github.com/isogeny-labs/crypto/actions/runs/43560832504",
+    "path": "research/chained_jacobian_transfers_20261110/evidence/public-n4-arithmetic-raw-handoff-01/arithmetic-final-report.pdf.bin",
+    "repository": "isogeny-labs/crypto"
+  },
+  "target": {
+    "bytes": 92135,
+    "manifest": "docs/research-artifacts/chained-transfer/arithmetic-audit-01/.artifacts.json",
+    "manifest_sha256": "e42b8247e615d7b7d3f6f592019fc3c874b68bc541311dbd13ba80e80a6c65a9",
+    "path": "docs/research-artifacts/chained-transfer/arithmetic-audit-01/report.pdf",
+    "sha256": "eb814265f158fc0ad52d9306b5a2526da476bd40752c186d3918fa9b2d36279b"
+  }
+}
