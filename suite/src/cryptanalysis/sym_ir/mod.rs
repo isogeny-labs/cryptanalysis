@@ -824,3 +824,55 @@ pub fn eval_rounds(p: &Primitive, key: &[u8], block: &[u8], n: usize) -> Vec<u8>
 pub fn eval(p: &Primitive, key: &[u8], block: &[u8]) -> Vec<u8> {
     eval_rounds(p, key, block, p.rounds.len())
 }
+
+// ── Additive helpers for the technique/bridge layers ────────────────────
+
+/// Apply round `i` of `p` to the working state `state` (block bits followed
+/// by scratch bits, `words_for(state_bits)` words) with the already-expanded
+/// round keys `rks` (as returned by [`expand_key`]). This is the single-round
+/// step of [`eval_rounds`], exposed so that callers can run rounds against a
+/// cached key schedule or from a mid-cipher state. Panics if `i` is out of
+/// range.
+pub fn apply_round(p: &Primitive, i: usize, state: &mut Vec<u64>, rks: &[Vec<u64>]) {
+    let rkb = p.key_schedule.round_key_bits();
+    for l in &p.rounds[i].layers {
+        apply_layer(l, state, &p.sboxes, rks, rkb);
+    }
+}
+
+/// [`eval_rounds`] with a precomputed key schedule `rks` (all round keys,
+/// from [`expand_key`]) instead of a master key: encodes `block`, runs the
+/// first `n` rounds, applies the feed-forward and decodes. Gives the same
+/// bytes as `eval_rounds(p, key, block, n)` when `rks = expand_key(p, key)`.
+pub fn eval_rounds_with_keys(p: &Primitive, rks: &[Vec<u64>], block: &[u8], n: usize) -> Vec<u8> {
+    assert!(
+        n <= p.rounds.len(),
+        "{}: only {} rounds",
+        p.name,
+        p.rounds.len()
+    );
+    assert_eq!(
+        block.len() * 8,
+        p.block_bits,
+        "{}: wrong block length",
+        p.name
+    );
+    let init = p.block_codec.encode(block);
+    let mut state = vec![0u64; words_for(p.state_bits())];
+    state[..init.len()].copy_from_slice(&init);
+    for i in 0..n {
+        apply_round(p, i, &mut state, rks);
+    }
+    match p.feed_forward {
+        FeedForward::None => {}
+        FeedForward::Xor => xor_bits_into(&mut state, 0, &init, p.block_bits),
+        FeedForward::AddWords { word_bits: w } => {
+            for j in 0..p.block_bits / w {
+                let s = get_bits(&state, j * w, w);
+                let i = get_bits(&init, j * w, w);
+                set_bits(&mut state, j * w, w, s.wrapping_add(i) & mask_w(w));
+            }
+        }
+    }
+    p.block_codec.decode(&state, p.block_bits)
+}
