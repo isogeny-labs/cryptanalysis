@@ -1,0 +1,134 @@
+{
+  "distribution_law": "each of four target scalars per field is an independent uniform draw from 1..q-1 with replacement; convolve field hit-count histogram to fourth power across eight fields; this is a reference law separate from deterministic SHA target labels",
+  "failure_policy": "retain assertion or source digest mismatch as failure; do not silently drop a field or vector",
+  "fields": [
+    {
+      "order": 331,
+      "p": 313,
+      "q": 331
+    },
+    {
+      "order": 439,
+      "p": 421,
+      "q": 439
+    },
+    {
+      "order": 419,
+      "p": 431,
+      "q": 419
+    },
+    {
+      "order": 571,
+      "p": 547,
+      "q": 571
+    },
+    {
+      "order": 599,
+      "p": 571,
+      "q": 599
+    },
+    {
+      "order": 626,
+      "p": 593,
+      "q": 313
+    },
+    {
+      "order": 586,
+      "p": 617,
+      "q": 293
+    },
+    {
+      "order": 706,
+      "p": 677,
+      "q": 353
+    }
+  ],
+  "offsets": [
+    0,
+    1,
+    2,
+    3,
+    5,
+    8,
+    13,
+    21
+  ],
+  "outputs": [
+    "per-field histogram",
+    "exact total histogram",
+    "exact expectation",
+    "tail probability at each observed panel count",
+    "observed panel replay"
+  ],
+  "population_law": "for each field q, enumerate every w in 1..q-1; first 16 ordered distinct offset pairs with w!=t1 and w!=t2; count all 13 coefficient relations using (a+b)w-a*t1-b*t2 congruent 0 mod q",
+  "resource_cap_seconds": 120,
+  "schema": "xedni-shared-target-hit-law-protocol-v1",
+  "source_panels": [
+    {
+      "name": "height-selected",
+      "result_path": "../xedni-height-selected-two-image-20261116/run-result.json",
+      "result_sha256": "443e3a5c5b7e1d4535c6627f5026535c999ccdb10991fa1a417ba166bd1d7966",
+      "target_label": "xedni-height-selected-v1"
+    },
+    {
+      "name": "fresh-wide-grid",
+      "result_path": "../xedni-fresh-wide-grid-20261119/result.json",
+      "result_sha256": "6237e6a76b6fe2265b711183dd6bb727d15476afd11608a625dbb896dcdd2b96",
+      "target_label": "xedni-wide-grid-v1"
+    }
+  ],
+  "vectors": [
+    [
+      1,
+      -6
+    ],
+    [
+      2,
+      -1
+    ],
+    [
+      6,
+      5
+    ],
+    [
+      5,
+      4
+    ],
+    [
+      6,
+      1
+    ],
+    [
+      5,
+      3
+    ],
+    [
+      4,
+      -5
+    ],
+    [
+      6,
+      -1
+    ],
+    [
+      5,
+      -1
+    ],
+    [
+      6,
+      -5
+    ],
+    [
+      1,
+      5
+    ],
+    [
+      4,
+      -1
+    ],
+    [
+      4,
+      1
+    ]
+  ]
+}

@@ -33,7 +33,7 @@ static void test_zp(void)
         step = a;
         step.w[0] = ca_mont_mul(&g.mont, a.w[0], gen.w[0]);
         CHECK(ca_group_equal(&g, &prod, &step));
-        CHECK_EQ_U64(ca_group_hash(&g, &a), ca_zp_hash_word(a.w[0]));
+        CHECK_EQ_U64(ca_group_hash(&g, &a), ca_zp_hash_residue(a.w[0], g.p));
         a = prod;
     }
 }
@@ -263,7 +263,8 @@ static void test_ec_mul_matches_affine(void)
                 uint64_t oa = 0, ob = 0;
                 ca_group_mul(&g, &a, &pt, ks[i], &oa);
                 mul_affine(&g, &b, &pt, ks[i], &ob);
-                CHECK(memcmp(&a, &b, sizeof a) == 0);
+                /* Lazy REDC may leave mul_affine in [0, 2p); compare classes. */
+                CHECK(ca_group_equal(&g, &a, &b));
                 CHECK_EQ_U64(oa, ob);
             }
         }
