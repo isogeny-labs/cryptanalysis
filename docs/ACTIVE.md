@@ -30,7 +30,6 @@ and construction gates. [pcc:unverified]
 
 - [x] Coset filter behind the BASELINES n = 41 K_0 row: Koblitz base builder at n >= 41 and the filter wired into that row's pair-table pipeline — row made by crypto ic price; its subgroup-orbit base is one coset class, so the filter cannot help it; n=41 oom_alloc was real (136/544 GiB), now a clean refusal; koblitz-orbit points= base added (Claude Code, completed 2026-11-22; started 2026-11-22, branch claude/coset-filter-n41-koblitz) [pcc:unverified]
 
-- [x] Coset filter behind the BASELINES n = 41 K_0 row: Koblitz base builder at n >= 41 and the filter wired into that row's pair-table pipeline — row made by crypto ic price; its subgroup-orbit base is one coset class, so the filter cannot help it; n=41 oom_alloc was real (136/544 GiB), now a clean refusal; koblitz-orbit points= base added (Claude Code, completed 2026-11-22; started 2026-11-22, branch claude/coset-filter-n41-koblitz) [pcc:unverified]
 - [x] ic bench: coset-filtered MITM pair tables (`mitm` / `mitm-frobenius` `coset_filter=1`), frozen ratchet protocol and bench record; stage improvement from the trunk's graph-theory note — merged as PR #1892 (Claude Code, completed 2026-11-22; started 2026-11-22, branch claude/mitm-coset-class-filter, PR #1892) [pcc:unverified]
 
 - [ ] Controlled comparison of curve-coordinate relation solvers on growing toy instances with matched controls (Codex, started 2026-11-18, branch codex/curve-representation-controlled-20261118, PR #1767) [pcc:unverified]
