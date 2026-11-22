@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.16](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.15...cryptanalysis-v0.1.16) (2026-11-22)
+
+
+### Features
+
+* **prime-orbit-ic:** Aut-equivariant signed multi-orbit box (wsum) collector on Generic/J1728/J0 ([851f544](https://github.com/isogeny-labs/cryptanalysis/commit/851f54459eb2268f697881c5f24a2763652ac14f))
+
 ## [0.1.15](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.14...cryptanalysis-v0.1.15) (2026-11-22)
 
 
