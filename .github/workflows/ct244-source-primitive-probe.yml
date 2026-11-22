@@ -8,6 +8,7 @@ on:
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct302_full_native_gate.py'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct304_execution_receipt_gate.py'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT304_RAW_CAPTURE_CUSTODY_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT309_NATIVE_WALL_NESTING_PROTOCOL.md'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT302_FULL_NATIVE_POPULATION_ADMISSION_PROTOCOL.md'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT300_AUTHENTIC_SCALAR_FIX_PROTOCOL.md'
       - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT301_NATIVE_FIXTURE_BOUND_ADMISSION_PROTOCOL.md'
@@ -152,9 +153,10 @@ jobs:
           assert x["synthetic_other_rows"]==694
           assert x["synthetic_zero_ns_clock_samples"]==144
           assert x["synthetic_integrated_positive"]==1
-          assert x["synthetic_integrated_mutations_rejected"]==6
+          assert x["synthetic_integrated_mutations_rejected"]==7
+          assert x["synthetic_clock_nesting_positive"]==1
           assert x["native_executions"]==0 and x["pcc"]=="unverified"
-          print("CT304_FROZEN_SOURCE_MOCK_INTEGRATION_PASS six extra tamper controls; no native process")
+          print("CT304_FROZEN_SOURCE_MOCK_INTEGRATION_PASS seven extra tamper controls including impossible nested wall; no native process")
           PY
           if python3 -S "$script" --original /dev/null --fixture /dev/null > /tmp/ct304-partial.out 2> /tmp/ct304-partial.err; then
             echo 'ERROR: CT304 admitted a one-sided receipt' >&2; exit 1
