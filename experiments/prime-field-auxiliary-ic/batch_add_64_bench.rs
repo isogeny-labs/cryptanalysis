@@ -1,6 +1,10 @@
 //! Benchmark complete affine addition on fixed 64-point M31 batches.
-//! Columns are exceptional slots, reference ns/batch, and ns/batch for
-//! one, four, and eight product lanes. Each row covers 2,048 batches.
+//! By default, columns are exceptional slots, reference ns/batch, and one, four,
+//! and eight product lanes. With "tangents", columns compare reference, four
+//! lanes, shared tangent inversions, and shared inversions with cached numerators.
+//! With "isolated", the first column selects the exceptional case for all 64
+//! slots (0 left identity, 1 right identity, 2 doubling, 3 inverse pair).
+//! Each timing row covers 2,048 batches.
 //! Generated points and scalar-reference checks are outside the timer.
 //! rustc --edition=2021 -C opt-level=3 -C target-cpu=native batch_add_64_bench.rs -o /tmp/batch-add-64
 #![allow(dead_code)]
@@ -14,7 +18,7 @@ mod field {
     include!("../../crates/prime-field-auxiliary-ic/src/field.rs");
     pub type Batch = [Option<Point>; 64];
     #[inline(never)]
-    pub fn striped<const W: usize>(
+    pub fn striped<const W: usize, const TANGENTS: bool, const CACHE: bool>(
         curve: Curve<31>,
         points: &mut Batch,
         steps: &Batch,
@@ -24,11 +28,25 @@ mod field {
         let mut products = [1; W];
         let mut prefix = [0; 64];
         let mut denominators = [0; 64];
+        let mut numerators = [0; 64];
         for t in 0..64 / W {
             for j in 0..W {
                 let i = t * W + j;
                 let den = match (points[i], steps[i]) {
-                    (Some(a), Some(b)) => F::<31>::sub(b.x, a.x),
+                    (Some(a), Some(b)) => {
+                        if TANGENTS && a == b {
+                            if CACHE {
+                                numerators[i] =
+                                    F::<31>::add(F::<31>::mul(3, F::<31>::sq(a.x)), curve.a);
+                            }
+                            F::<31>::add(a.y, a.y)
+                        } else {
+                            if CACHE {
+                                numerators[i] = F::<31>::sub(b.y, a.y);
+                            }
+                            F::<31>::sub(b.x, a.x)
+                        }
+                    }
                     _ => 0,
                 };
                 prefix[i] = products[j];
@@ -59,7 +77,14 @@ mod field {
                 } else {
                     let a = points[i].unwrap();
                     let b = steps[i].unwrap();
-                    Some(curve.finish_add(a, b, F::<31>::mul(F::<31>::sub(b.y, a.y), inv)))
+                    let numerator = if CACHE {
+                        numerators[i]
+                    } else if TANGENTS && a.x == b.x {
+                        F::<31>::add(F::<31>::mul(3, F::<31>::sq(a.x)), curve.a)
+                    } else {
+                        F::<31>::sub(b.y, a.y)
+                    };
+                    Some(curve.finish_add(a, b, F::<31>::mul(numerator, inv)))
                 };
             }
         }
@@ -86,20 +111,56 @@ fn main() {
             break Some(p);
         }
     };
-    let paths: [fn(Curve<31>, &mut Batch, &Batch, &mut BatchScratch); 4] = [
-        field::reference,
-        field::striped::<1>,
-        field::striped::<4>,
-        field::striped::<8>,
-    ];
-    for exceptions in [0, 1, 8, 32, 64] {
+    let mode = std::env::args().nth(1).unwrap_or_else(|| "lanes".into());
+    assert!(
+        matches!(mode.as_str(), "lanes" | "tangents" | "isolated"),
+        "expected lanes, tangents, or isolated"
+    );
+    let paths: [fn(Curve<31>, &mut Batch, &Batch, &mut BatchScratch); 4] = if mode == "lanes" {
+        [
+            field::reference,
+            field::striped::<1, false, false>,
+            field::striped::<4, false, false>,
+            field::striped::<8, false, false>,
+        ]
+    } else {
+        [
+            field::reference,
+            field::striped::<4, false, false>,
+            field::striped::<4, true, false>,
+            field::striped::<4, true, true>,
+        ]
+    };
+    let auxiliary = Curve::<31>::new(1, 0).unwrap();
+    let torsion = Some(auxiliary.point(0, 0).unwrap());
+    for f in paths {
+        let mut batch = [torsion; 64];
+        f(
+            auxiliary,
+            &mut batch,
+            &[torsion; 64],
+            &mut BatchScratch::default(),
+        );
+        assert_eq!(batch, [None; 64]);
+    }
+    let cases: &[usize] = if mode == "isolated" {
+        &[0, 1, 2, 3]
+    } else {
+        &[0, 1, 8, 32, 64]
+    };
+    for &case in cases {
+        let exceptions = if mode == "isolated" { 64 } else { case };
         let mut pairs = Vec::new();
         for k in 0..128 {
             let mut a: Batch = std::array::from_fn(|_| sample());
             let mut b: Batch = std::array::from_fn(|_| sample());
             for j in 0..exceptions {
                 let i = (j * 17 + k) % 64;
-                match (j + k) % 4 {
+                match if mode == "isolated" {
+                    case
+                } else {
+                    (j + k) % 4
+                } {
                     0 => a[i] = None,
                     1 => b[i] = None,
                     2 => b[i] = a[i],
@@ -134,7 +195,7 @@ fn main() {
             if r > 0 {
                 println!(
                     "{} {} {} {} {}",
-                    exceptions, nanoseconds[0], nanoseconds[1], nanoseconds[2], nanoseconds[3]
+                    case, nanoseconds[0], nanoseconds[1], nanoseconds[2], nanoseconds[3]
                 );
             }
         }
