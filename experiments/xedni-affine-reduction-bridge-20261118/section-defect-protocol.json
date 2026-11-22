@@ -1,0 +1,15 @@
+{
+  "schema": "xedni-section-defect-census-v1",
+  "question": "What additive defect is forced by the least-nonnegative integer section of reduction modulo the recorded row-0 subgroup order?",
+  "subgroup_order": 331,
+  "source_of_order": "RecordedPointOrder.lean: row-0 public base has additive order 331",
+  "reduction": "Z to Z/331Z",
+  "section": "least nonnegative representative in [0,330]",
+  "input_law": "all 331^2 ordered pairs of residues, with multiplicity one each",
+  "defect": "s((x+y) mod 331)-s(x)-s(y), as an integer",
+  "statistics": ["defect_histogram", "defects_reducing_to_zero", "zero_pair_witness", "wrap_pair_witness", "exact_count_check"],
+  "expected_analytic_counts": {"zero": 54946, "minus_331": 54615},
+  "claim_boundary": "exact algebraic section audit; not a p-adic elliptic logarithm, relation-search cost, or sampled attack rate",
+  "resource_cap_seconds": 30,
+  "status": "frozen before execution"
+}
