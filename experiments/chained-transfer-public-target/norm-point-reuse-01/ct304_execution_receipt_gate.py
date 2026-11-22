@@ -221,6 +221,86 @@ def self_test():
         }
 
 
+
+def self_test_with_authentic_source(fixture_path):
+    """48 genuine selected vectors + 694 synthetic rows and 144 MOCK clocks."""
+    import ct302_full_native_gate as ct302
+    fixture_bytes = fixture_path.read_bytes()
+    original, candidate = ct302.synthetic_pair(fixture_bytes)
+    with tempfile.TemporaryDirectory(prefix='ct304-frozen48-synthetic-') as td:
+        root = Path(td)
+        log_a, log_b = root/'original.log', root/'reuse.log'
+        err_a, err_b = root/'original.stderr', root/'reuse.stderr'
+        exe_a, exe_b = root/'original.exe', root/'reuse.exe'
+        receipt_a, receipt_b = root/'original.json', root/'reuse.json'
+        log_a.write_text(original, encoding='utf-8')
+        log_b.write_text(candidate, encoding='utf-8')
+        err_a.write_bytes(b'synthetic original stderr')
+        err_b.write_bytes(b'synthetic reuse stderr')
+        exe_a.write_bytes(b'synthetic original executable')
+        exe_b.write_bytes(b'synthetic reuse executable')
+        paths = [(log_a, err_a, exe_a, receipt_a, 'original', 'a'),
+                 (log_b, err_b, exe_b, receipt_b, 'reuse', 'b')]
+        def record(stdout, stderr, exe, role, marker):
+            return {
+                'schema':SCHEMA, 'role':role, 'run_id':marker*32,
+                'source_commit_sha':marker*40,
+                'executable_sha256':digest(exe.read_bytes()),
+                'argv':[str(exe), '--synthetic-no-native'],
+                'host':{'hostname':'synthetic-host','machine':'x86_64',
+                        'system':'Linux','kernel':'synthetic','cpu_affinity':[0,1]},
+                'fixture_git_blob':gitblob(fixture_bytes),
+                'fixture_sha256':digest(fixture_bytes), 'exit_code':0,
+                'timed_out':False, 'capture_complete':True,
+                'stdout_sha256':digest(stdout.read_bytes()),
+                'stdout_bytes':len(stdout.read_bytes()),
+                'stderr_sha256':digest(stderr.read_bytes()),
+                'stderr_bytes':len(stderr.read_bytes()),
+                'external_wall_ns':12345, 'peak_rss_kib':0,
+            }
+        a,b=(record(o,e,x,role,m) for o,e,x,_,role,m in paths)
+        def trial(ra=a,rb=b,original_bytes=None,candidate_bytes=None):
+            receipt_a.write_text(json.dumps(ra))
+            receipt_b.write_text(json.dumps(rb))
+            log_a.write_bytes(original.encode() if original_bytes is None else original_bytes)
+            log_b.write_bytes(candidate.encode() if candidate_bytes is None else candidate_bytes)
+            return verify_pair(log_a,log_b,err_a,err_b,exe_a,exe_b,
+                               receipt_a,receipt_b,fixture_path)
+        good=trial()
+        if not good['full_695_and_144_population_consistent'] or good['native_execution_independently_verified']:
+            raise AssertionError('CT304 integrated mock standing changed')
+        mutations=[]
+        def mut(fn):
+            ra,rb=copy.deepcopy(a),copy.deepcopy(b)
+            fn(ra,rb)
+            mutations.append((ra,rb,None,None))
+        mut(lambda ra,rb: rb.update(run_id=ra['run_id']))
+        mut(lambda ra,rb: rb['host'].update(cpu_affinity=[2,3]))
+        mut(lambda ra,rb: rb.update(executable_sha256=ra['executable_sha256']))
+        mut(lambda ra,rb: ra.update(exit_code=True))
+        mutations.append((a,b,None,candidate.encode()+b'x'))
+        # A producer can forge a matching receipt checksum; the CT302 whole-population
+        # gate must still refuse a log with a removed event.
+        badlog='\n'.join(original.splitlines()[1:])+'\n'
+        forged=copy.deepcopy(a)
+        forged['stdout_sha256']=digest(badlog.encode())
+        forged['stdout_bytes']=len(badlog.encode())
+        mutations.append((forged,b,badlog.encode(),None))
+        for i,(ra,rb,oa,ob) in enumerate(mutations):
+            try:
+                trial(ra,rb,oa,ob)
+            except ValueError:
+                continue
+            raise AssertionError('CT304 frozen-source synthetic mutation escaped: '+str(i))
+        return {
+            'authentic_source_selected_rows':48,
+            'synthetic_other_rows':694,
+            'synthetic_zero_ns_clock_samples':144,
+            'synthetic_integrated_positive':1,
+            'synthetic_integrated_mutations_rejected':len(mutations),
+            'native_executions':0, 'pcc':'unverified',
+        }
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--self-test', action='store_true')
@@ -233,9 +313,12 @@ def main():
         if any(getattr(a,key.replace('-','_')) is not None for key in (
                 'original','optimized','original-stderr','optimized-stderr',
                 'original-executable','optimized-executable','original-receipt',
-                'optimized-receipt','fixture')):
+                'optimized-receipt')):
             p.error('self-test is synthetic and cannot admit external receipts')
-        print(json.dumps(self_test(),sort_keys=True)); return
+        result=self_test()
+        if a.fixture is not None:
+            result.update(self_test_with_authentic_source(a.fixture))
+        print(json.dumps(result,sort_keys=True)); return
     names=['original','optimized','original_stderr','optimized_stderr',
            'original_executable','optimized_executable','original_receipt',
            'optimized_receipt','fixture']
