@@ -60,3 +60,36 @@ void m31_batch_inverse(const uint32_t *input, uint32_t *output, size_t count) {
     }
     if (count) tile(input, output, count);
 }
+
+#if defined(__aarch64__) && defined(__ARM_NEON) && !defined(M31_PORTABLE_MULTIPLY)
+#include <arm_neon.h>
+
+namespace {
+inline uint32x4_t canonical_words(uint32x4_t words) {
+    const uint32x4_t p = vdupq_n_u32(prime);
+    const uint32x4_t folded = vaddq_u32(vandq_u32(words, p), vshrq_n_u32(words, 31));
+    return vminq_u32(folded, vsubq_u32(folded, p));
+}
+} // namespace
+#endif
+
+void m31_batch_multiply(const uint32_t *left, const uint32_t *right,
+                        uint32_t *output, size_t count) {
+#if defined(__aarch64__) && defined(__ARM_NEON) && !defined(M31_PORTABLE_MULTIPLY)
+    const uint32x4_t p = vdupq_n_u32(prime);
+    while (count >= 4) {
+        const uint32x4_t x = canonical_words(vld1q_u32(left));
+        const uint32x4_t y = canonical_words(vld1q_u32(right));
+        const uint32x4_t low = vandq_u32(vmulq_u32(x, y), p);
+        const int32x4_t high = vqdmulhq_s32(vreinterpretq_s32_u32(x), vreinterpretq_s32_u32(y));
+        const uint32x4_t folded = vaddq_u32(low, vreinterpretq_u32_s32(high));
+        vst1q_u32(output, vminq_u32(folded, vsubq_u32(folded, p)));
+        left += 4;
+        right += 4;
+        output += 4;
+        count -= 4;
+    }
+#endif
+    for (size_t i = 0; i < count; ++i)
+        output[i] = multiply(left[i] % prime, right[i] % prime);
+}

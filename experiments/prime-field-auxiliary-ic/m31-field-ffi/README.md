@@ -20,3 +20,17 @@ The ctypes check compares 93,440 outputs with Python's modular exponentiation, i
 ## Observed local throughput
 
 The shared Apple M4 Pro panel used 65,536 words per pass, eight passes per measurement, and 16 rounds of rotated call-size order. Median ns per input were 85.638 for single-word calls, 10.963 at 17 words, 9.139 at 20, 4.585 at 63, 3.151 at 64, 3.711 at 65, 3.026 at 1,024 and 3.004 at 65,536. timings.csv records round, words per call and ns per input. Timings include the native shared-library call boundary. The ctypes exercise checks correctness only. Collector timing and GPU performance are outside this panel.
+
+## Elementwise multiplication
+
+`m31_batch_multiply(left, right, output, count)` computes one canonical product per element for arbitrary unsigned 32-bit inputs. Each pair of buffers may be identical or disjoint. A zero count accepts null pointers. ARM64 builds with NEON use four independent lanes and a scalar tail. The portable build uses the same C ABI.
+
+To replay the multiplication checks and paired Python ctypes timings on the measured Apple M4 Pro:
+
+```sh
+clang++ -std=c++17 -O3 -mcpu=native -shared -fPIC m31.cpp -o native.so
+clang++ -std=c++17 -O3 -mcpu=native -DM31_PORTABLE_MULTIPLY -shared -fPIC m31.cpp -o portable.so
+python3 check_multiply.py ./portable.so ./native.so
+```
+
+The two warm-up rounds precede 24 measured rounds with alternating call order. Each timing covers repeated calls on the same buffers. The check includes exact aliasing, boundary residues, full-width inputs, tails and guard words. Replay Lane.lean in the same Lean environment as Fold.lean to check the arithmetic model.
