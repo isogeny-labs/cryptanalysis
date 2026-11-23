@@ -98,4 +98,27 @@ theorem necessaryRoot (a b A B : K) (C : WeierstrassCurve.VariableChange K)
     rw [← mul_assoc, mul_inv_cancel₀ (pow_ne_zero 4 C.u.ne_zero), one_mul] at h
     linear_combination h
 
+/-- For x different from zero, the standard degree-two quotient coordinates
+satisfy the curve equation with coefficients -2a and a²-4c. -/
+theorem quotientEquation (a c x y : K) (hx : x ≠ 0)
+    (onCurve : y^2 = x^3+a*x^2+c*x) :
+    let X := x+a+c/x
+    let Y := y*(1-c/x^2)
+    Y^2 = X^3-2*a*X^2+(a^2-4*c)*X := by
+  dsimp only
+  rw [mul_pow, onCurve]
+  field_simp
+  ring
+
+/-- If the other two roots after translation are u and v, the quotient's
+linear coefficient is (u-v)². This identifies the monic Montgomery model. -/
+theorem splitQuotientModel (u v : K) (distinct : u ≠ v) :
+    (⟨0,2*(u+v),0,(u+v)^2-4*(u*v),0⟩ : WeierstrassCurve.Affine K) =
+    model (2*(u+v)/(u-v)) (u-v) := by
+  have nz : u-v ≠ 0 := sub_ne_zero.mpr distinct
+  unfold model
+  rw [div_mul_cancel₀ _ nz]
+  congr 1
+  ring
+
 end M31TwoTorsionModels
