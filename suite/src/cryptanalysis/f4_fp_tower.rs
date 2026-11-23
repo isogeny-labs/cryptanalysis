@@ -614,9 +614,11 @@ pub struct TowerF4Options {
     /// certified). The count bounds the number of solutions.
     pub stop_staircase: Option<usize>,
     /// Stop as soon as every free variable has a pure power among the
-    /// leading monomials (the system is zero-dimensional, so the roots can
-    /// be read off). Useful for solving a known-solvable planted target:
-    /// the remaining pairs only reduce to zero.
+    /// leading monomials: the current subideal is zero-dimensional, so the
+    /// candidate roots are finite and can be extracted or enumerated by a
+    /// solver. The basis is not certified as a Gröbner basis; this is a
+    /// solver-mode stop, not a replacement for the full basis in a
+    /// degree-of-regularity measurement.
     pub stop_zero_dim: bool,
     /// Stop, reporting `oversize`, before building a matrix with more than
     /// this many non-zero entries, or a reduced reducer block with more
@@ -1493,8 +1495,8 @@ impl State {
 }
 
 /// True when every free variable has a pure power among the leading
-/// monomials: the quotient is finite-dimensional and each free coordinate
-/// can be recovered from a univariate elimination polynomial.
+/// monomials: the current quotient is finite-dimensional.  This is a
+/// candidate-set bound, not a complete-basis certificate.
 fn zero_dimensional(lms: &[Mono], n_free: usize) -> bool {
     (0..n_free).all(|k| {
         lms.iter().any(|&m| {
