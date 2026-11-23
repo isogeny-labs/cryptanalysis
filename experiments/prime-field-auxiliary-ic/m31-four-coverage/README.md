@@ -194,3 +194,19 @@ Compile as in the operand-shape panel. Run `phases alc 2048`, permuting the thre
 | Combined | 1216.48 | 1049.32 | 1.165 |
 
 The combined phase improved in 12 of 12 longer rounds. Median within-round (arithmetic + lookup) / combined was 0.997 for the parent and 1.000 for four lanes. The initial 24-round screen used 128 repetitions, exhibited much wider timing variation, and gave a 1.385 median paired combined ratio. Both raw panels are retained separately. The independent keys, repeated warm inputs and full miss scans limit transfer to a live workload. These timings exclude hit handling, setup, and outer-loop work.
+
+### Exact bucket lookup on canonical 31-bit keys
+
+A 1 KiB directory stores one of three values in each of 256 slots. An empty slot rejects a query. A singleton compares the entire key. A slot containing multiple distinct keys delegates to the sorted table. Two reserved u32 values lie above every canonical key. The multiplicative hash selects the slot. ExactBucket.lean establishes exact membership for the abstract three-state algorithm with any hash, including a constant hash, and allows duplicate keys.
+
+The standalone membership-bench.rs compares lookup on the same keys in the same order. Each of 24 deterministic seeds builds a sorted 71-key table including 0 and p−1. For each hit mix, 32 batches of 142 queries repeat 256 times, with the two methods timed in alternating order. Every query is checked against binary search. The Apple M4 Pro native release build measured these median times in ns per batch. The speedups are medians of the 24 within-seed ratios.
+
+| Hit fraction | Sorted | Exact bucket | Paired speedup |
+|---|---:|---:|---:|
+| Zero | 376.00 | 121.84 | 3.046× |
+| One eighth | 368.72 | 113.63 | 3.263× |
+| All | 378.63 | 157.41 | 2.367× |
+
+There were 4–12 crowded slots per table. Directory construction from sorted keys took a median 46.85 ns over repeated builds. Adding each seed's measured build cost to one warm batch still favored the directory for all 72 seed/mix pairs. That calculation models setup amortization and does not measure a cold cache. Timings cover integer membership alone. The fraction of real inputs sent to fallback and the full arithmetic-plus-lookup effect depend on the key distribution. Compile with rustc --edition=2021 -C opt-level=3 -C target-cpu=native and pass round numbers 1 through 24.
+
+PCC-20261123-301308 records the local measurement. [pcc:unverified]
