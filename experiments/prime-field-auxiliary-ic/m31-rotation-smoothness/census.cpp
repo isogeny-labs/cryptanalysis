@@ -20,19 +20,32 @@ bool square(U x) {
     return value == x;
 }
 
+struct SmoothValue {
+    uint32_t value;
+    bool nonsquare;
+};
+
 int main() {
-    std::vector<U> values{1};
+    std::vector<SmoothValue> values{{1, false}};
     std::unordered_set<U> seen;
     U eligible=0, lifts=0;
     for (U prime : {3,5,7,11,13,17,19,23,29,31,37,41,43,47}) {
         const auto previous=values.size();
-        for (size_t i=0; i<previous; ++i)
-            for (U x=values[i]*prime; x<p; x*=prime) values.push_back(x);
+        const bool primeNonsquare = !square(prime);
+        for (size_t i=0; i<previous; ++i) {
+            bool nonsquare = values[i].nonsquare;
+            for (U x=U(values[i].value)*prime; x<p; x*=prime) {
+                // Quadratic characters multiply on these nonzero residues.
+                nonsquare ^= primeNonsquare;
+                values.push_back({static_cast<uint32_t>(x), nonsquare});
+            }
+        }
         if (prime!=7 && prime!=13 && prime!=23 && prime!=47) continue;
-        for (U v : values) {
+        for (const auto entry : values) {
+            const U v = entry.value;
             U key=v, x=rotate(v);
             while (x!=v) {key=std::min(key,x); x=rotate(x);}
-            if (!seen.insert(key).second || square(key)) continue;
+            if (!seen.insert(key).second || !entry.nonsquare) continue;
             // Two is a square modulo p, so the whole orbit has the same character.
 #if defined(M31_BATCH_CENSUS) || defined(M31_EXPLICIT_CENSUS)
             // Every nonzero orbit has 31 elements. Pad each predicate to 32 lanes.
