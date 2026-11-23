@@ -132,7 +132,7 @@ def compare(bsgs_binary, old_binary, new_binary):
                 "native_children":len(obs),
                 "correct_public_logs":len(obs),
                 "statistics":stats,
-                "observations":obs,
+                "observations":[{k:v for k,v in r.items() if k!="result_scalar"} for r in obs],
                 "original_jacobian_executions":0,
                 "strongest_optimized_rho":False,
                 "complete_transfer_advantage":False,
