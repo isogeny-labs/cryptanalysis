@@ -62,7 +62,7 @@ jobs:
         run: |
           set -euo pipefail
           bash cryptanalysis/experiments/chained-transfer-reference/check-independent.sh crypto-independent "$RUNNER_TEMP/independent" 2>&1 | tee "$RUNNER_TEMP/independent.txt"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: always()
         with:
           name: chained-transfer-independent-${{ github.sha }}
@@ -170,7 +170,7 @@ jobs:
         run: |
           set -euo pipefail
           bash cryptanalysis/experiments/chained-transfer-reference/check-partial.sh crypto-partial "$RUNNER_TEMP/partial" 2>&1 | tee "$RUNNER_TEMP/partial.txt"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: always()
         with:
           name: chained-transfer-partial-${{ github.sha }}
@@ -239,7 +239,7 @@ jobs:
         run: |
           set -euo pipefail
           timeout 30m bash cryptanalysis/experiments/chained-transfer-reference/check-proper.sh crypto "$RUNNER_TEMP/proper" 2>&1 | tee "$RUNNER_TEMP/proper.txt"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: always()
         with:
           name: chained-transfer-proper-${{ github.sha }}
@@ -311,7 +311,7 @@ jobs:
         run: |
           set -euo pipefail
           timeout 55m bash cryptanalysis/experiments/chained-transfer-reference/check-prime-norms.sh crypto "$RUNNER_TEMP/prime-norms" 2>&1 | tee "$RUNNER_TEMP/prime-norms.txt"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: always()
         with:
           name: chained-transfer-prime-norms-${{ github.sha }}
@@ -406,7 +406,7 @@ jobs:
             cryptanalysis/experiments/chained-transfer-reference/check-fp-chain.sh \
             crypto "$RUNNER_TEMP/fp-chain" cryptanalysis-predecessor \
             2>&1 | tee "$RUNNER_TEMP/fp-chain.txt"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: always()
         with:
           name: chained-transfer-fp-chain-${{ github.sha }}
@@ -516,7 +516,7 @@ jobs:
           set -euo pipefail
           timeout 2100 bash cryptanalysis/experiments/chained-transfer-reference/check-g3-norm-successor.sh \
             crypto "$RUNNER_TEMP/g3-norm-output" cryptanalysis-predecessor
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: always()
         with:
           name: chained-transfer-g3-norm-${{ github.sha }}

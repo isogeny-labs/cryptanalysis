@@ -135,7 +135,7 @@ jobs:
         run: |
           set -euo pipefail
           timeout 2400 bash cryptanalysis/experiments/chained-transfer-public-target/ci_beta_complete/check.sh crypto "$RUNNER_TEMP/n4-beta-complete-output"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: always()
         with:
           name: beta-complete-${{ github.event.pull_request.head.sha || github.sha }}

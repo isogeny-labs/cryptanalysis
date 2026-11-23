@@ -127,7 +127,7 @@ jobs:
           bash ../checkpoint-tools/scripts/checkpoint.sh status > "$out/original-final-status.log" 2>&1
       - name: Retain whole nonsecret custody output on every outcome
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: original-checkpoint-${{ github.event.pull_request.head.sha || github.sha }}
           path: ${{ runner.temp }}/chained-transfer-checkpoint
