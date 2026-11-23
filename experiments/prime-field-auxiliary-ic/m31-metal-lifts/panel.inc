@@ -24,22 +24,27 @@ struct MetalLabels {
         if (!pipeline || !queue) { NSLog(@"pipeline: %@",error); std::exit(3); }
     }
 
-    double apply(std::vector<Word>& x) {
-        size_t bytes=x.size()*sizeof(Word);
-        auto buf=[device newBufferWithBytes:x.data() length:bytes options:MTLResourceStorageModeShared];
-        if (!buf) std::exit(4);
+    double dispatch(id<MTLBuffer> buf, size_t words) {
         auto cmd=[queue commandBuffer];
         auto enc=[cmd computeCommandEncoder];
         [enc setComputePipelineState:pipeline];
         [enc setBuffer:buf offset:0 atIndex:0];
-        [enc dispatchThreads:MTLSizeMake(x.size(),1,1)
+        [enc dispatchThreads:MTLSizeMake(words,1,1)
             threadsPerThreadgroup:MTLSizeMake(std::min<NSUInteger>(256,pipeline.maxTotalThreadsPerThreadgroup),1,1)];
         [enc endEncoding];
         [cmd commit];
         [cmd waitUntilCompleted];
         if (cmd.status!=MTLCommandBufferStatusCompleted) { NSLog(@"dispatch: %@",cmd.error); std::exit(5); }
-        std::memcpy(x.data(),buf.contents,bytes);
         return 1000*(cmd.GPUEndTime-cmd.GPUStartTime);
+    }
+
+    double apply(std::vector<Word>& x) {
+        size_t bytes=x.size()*sizeof(Word);
+        auto buf=[device newBufferWithBytes:x.data() length:bytes options:MTLResourceStorageModeShared];
+        if (!buf) std::exit(4);
+        double deviceTime=dispatch(buf,x.size());
+        std::memcpy(x.data(),buf.contents,bytes);
+        return deviceTime;
     }
 };
 int main(int argc,char** argv) {

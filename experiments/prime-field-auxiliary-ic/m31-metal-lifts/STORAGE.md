@@ -1,0 +1,5 @@
+# Shared-storage comparison
+
+Use two fresh processes. In each, prime the pipeline and run a warm-up round (-1), then twelve four-arm balanced crossover rounds with a fresh host or shared allocation on every call. Measure allocation and generation, host-side labeling including dispatch and any copies, command-buffer device time, CPU label counting, and complete wall time. Compare every ordered output with the pruned NEON reference. The bound-89 capacity used by the preallocated arms comes from the previous census. This panel concerns a reusable pipeline and a fixed workload.
+
+Arm 0 is the growable host vector with the prior Metal copy-in and copy-back path. Arm 1 reserves the known output capacity before generation with the same copy path. Arm 2 generates directly into a Metal-owned shared buffer and returns a host-readable view with that buffer as owner. Arm 3 adds a copy into an ordinary owning vector. Summarize each process separately with within-round wall ratios. Keep warm-up rows outside summaries. Build using build.sh OUTPUT storage and run OUTPUT 0 and OUTPUT 1 in this directory.
