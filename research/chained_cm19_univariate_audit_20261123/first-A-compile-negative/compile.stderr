@@ -1,0 +1,14 @@
+error: method `neg` is never used
+  --> /dev/shm/ct23-ca-firstA-native/source/research/chained_cm19_univariate_audit_20261123/cm_a.rs:43:12
+   |
+39 | impl C {
+   | ------ method in this implementation
+...
+43 |     pub fn neg(self) -> Self {
+   |            ^^^
+   |
+   = note: `-D dead-code` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[expect(dead_code)]` or `#[allow(dead_code)]`
+
+error: aborting due to 1 previous error
+
