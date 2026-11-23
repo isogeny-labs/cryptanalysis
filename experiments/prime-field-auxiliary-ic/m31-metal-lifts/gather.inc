@@ -1,7 +1,7 @@
 // Four contiguous largest-prime ranges. Their output counts are discovered
 // from generation itself. Only the first range writes directly to the result.
 void gatherSupport(Word* dst) {
-    const Word bounds[]={47,67,79,89};
+    static constexpr Word bounds[]={47,67,79,89};
     struct Piece { Word* base; size_t used; };
     Piece pieces[4]{};
     pieces[0].base=dst;
