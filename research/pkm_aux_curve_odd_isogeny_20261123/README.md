@@ -97,6 +97,8 @@ interpolation between completed sizes, no extrapolation):
 | 3 | 2,3 | 2.58 | 68.6 | 157 | 2.29 | 839 | 1,431 | 1.71 |
 | 3 | 2,3 | 3.58 | 4,337.2 | 6,777 | 1.56 | 7,955 | 7,664 | 0.96 |
 | 3 | 3 | 3.17 | 1,001.6 | 1,492 | 1.49 | 2,506 | 4,433 | 1.77 |
+| 3 | 3,2 | 2.58 | 38.3 | 157 | 4.10 | 907 | 1,431 | 1.58 |
+| 3 | 3,2 | 4.17 | 23,588.9 | - | - | 11,621 | - | - |
 
 Frontier (smallest log2|V| at which a random-target refutation timed out):
   m=2 degrees=2: 8.00
@@ -106,11 +108,12 @@ Frontier (smallest log2|V| at which a random-target refutation timed out):
   m=3 degrees=2: 5.00
   m=3 degrees=2,3: 5.17
   m=3 degrees=3: 4.75
+  m=3 degrees=3,2: 5.17
   m=3 degrees=5: 4.64
   m=4 degrees=2: 3.00
   m=4 degrees=3: 3.17
 
-Mixed 2,3 and 3,2 (`data/branch_a/deg23_*`, `deg32_*`): ratios 0.87–3.2x (wall) and 0.89–2.3x (widest matrix), on both sides of 1 with no trend: no material effect. The order 2,3 vs 3,2 makes no consistent difference. (`deg32_m3` was still running when this was written; see `data/branch_a/` for whatever it completed.)
+Mixed 2,3 and 3,2 (`data/branch_a/deg23_*`, `deg32_*`): ratios 0.87–3.2x (wall) and 0.89–2.3x (widest matrix), on both sides of 1 with no trend: no material effect. The order 2,3 vs 3,2 makes no consistent difference. At m = 3 the mixed orders give 1.6–4.1x (wall) and 0.96–1.7x (widest matrix) where a reference size brackets them, and every mixed form times out at `|V|` = 36, next to degree 2 at 32.
 
 Kummer and Dickson rows of the lead arm equal the baseline's (the flag touches
 the isogeny kind only). Planted solutions were found in every completed

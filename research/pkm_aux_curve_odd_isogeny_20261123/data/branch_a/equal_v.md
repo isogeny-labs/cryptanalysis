@@ -20,6 +20,8 @@
 | 3 | 2,3 | 2.58 | 68.6 | 157 | 2.29 | 839 | 1,431 | 1.71 |
 | 3 | 2,3 | 3.58 | 4,337.2 | 6,777 | 1.56 | 7,955 | 7,664 | 0.96 |
 | 3 | 3 | 3.17 | 1,001.6 | 1,492 | 1.49 | 2,506 | 4,433 | 1.77 |
+| 3 | 3,2 | 2.58 | 38.3 | 157 | 4.10 | 907 | 1,431 | 1.58 |
+| 3 | 3,2 | 4.17 | 23,588.9 | - | - | 11,621 | - | - |
 
 Frontier (smallest log2|V| at which a random-target refutation timed out):
   m=2 degrees=2: 8.00
@@ -29,6 +31,7 @@ Frontier (smallest log2|V| at which a random-target refutation timed out):
   m=3 degrees=2: 5.00
   m=3 degrees=2,3: 5.17
   m=3 degrees=3: 4.75
+  m=3 degrees=3,2: 5.17
   m=3 degrees=5: 4.64
   m=4 degrees=2: 3.00
   m=4 degrees=3: 3.17
