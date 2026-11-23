@@ -53,9 +53,6 @@ using Bits=std::vector<std::uint64_t>;
 template<bool reduced, bool weighted=false, class Record, class Filter=std::nullptr_t>
 void visit(Point a,unsigned start,unsigned left,Record& record,
            unsigned used=1,unsigned run=1,unsigned ways=1,Filter filter=nullptr) {
-    if constexpr (!std::is_same_v<Filter,std::nullptr_t>) {
-        if(left==1 && !(*filter)(a.x)) return;
-    }
     // Opposite signs share an abscissa. Invert one denominator per pair.
     constexpr unsigned lanes=4;
     static_assert(lanes && !(lanes & (lanes-1)));
@@ -91,18 +88,25 @@ void visit(Point a,unsigned start,unsigned left,Record& record,
     for(unsigned i=basis.size();i-->start;) {
         const Point b=basis[i];
         Point next;
+        Word slope=0;
         if(a.x==p) next=b;
         else if(a.x==b.x && (!a.y || a.y!=b.y)) next=infinity;
         else {
             Word numer;
             if(a.x!=b.x) numer=sub(b.y,a.y);
             else {Word xx=mul(a.x,a.x); numer=add(add(xx,add(xx,xx)),2);}
-            Word slope=mul(numer,inverse[i/2]);
+            slope=mul(numer,inverse[i/2]);
             next.x=sub(sub(mul(slope,slope),a.x),b.x);
-            if(left>1) next.y=sub(mul(slope,sub(a.x,next.x)),a.y);
+
         }
         // Sorted occurrences put opposite signs of one generator next to each other.
         if constexpr (reduced) if (i==(start^1U)) continue;
+        // The last expansion depends on x alone. Complete y only for survivors.
+        if constexpr (!std::is_same_v<Filter,std::nullptr_t>) {
+            if(left==2 && !(*filter)(next.x)) continue;
+        }
+        if(left>1 && a.x!=p && next.x!=p)
+            next.y=sub(mul(slope,sub(a.x,next.x)),a.y);
         if constexpr (weighted) {
             unsigned next_run=i==start ? run+1 : 1;
             unsigned permutations=ways*(used+1)/next_run;
@@ -389,9 +393,16 @@ static void five_prefixes(std::vector<Word> xs) {
     // generators. Hash abscissae only; collisions just keep extra nodes.
     constexpr Word mask=(1u<<22)-1;
     Bits pairs((mask+1)/64);
-    auto insert=[&](Word x) {pairs[(x & mask)>>6] |= UINT64_C(1)<<(x & 63);};
+    // One word lookup tests two marks, taken from separate abscissa bits.
+    auto marks=[](Word x) {
+        return (UINT64_C(1)<<(x & 63)) | (UINT64_C(1)<<((x>>22) & 63));
+    };
+    auto insert=[&](Word x) {pairs[(x & mask)>>6] |= marks(x);};
     for(unsigned i=0;i<basis.size();i+=2) visit<false>(basis[i],i,1,insert);
-    auto possible=[&](Word x) {return (pairs[(x & mask)>>6]>>(x & 63)) & 1;};
+    auto possible=[&](Word x) {
+        auto bits=marks(x);
+        return (pairs[(x & mask)>>6] & bits)==bits;
+    };
     for(unsigned i=0;i<basis.size();i+=2)
         visit<true,true>(basis[i],i,3,count,1,1,1,&possible);
     if constexpr (simple) { std::cout<<hits[24]<<'\n'; return; }
