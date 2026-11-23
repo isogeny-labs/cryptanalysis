@@ -135,3 +135,15 @@ Batching changes the stream: for each seed the ordered accepted rows differ from
 Each loop-time ratio is the product of the two preceding ratios before rounding. The 4.319 figure includes an unusually short batch run in processed queries. The timing records alone do not identify an instruction-level cause for the unit-cost difference.
 
 Keeping the observed batched query counts and allocating the entire corresponding rho cold time to those queries gives ceilings of 0.203948, 1.133058 and 0.402634 ns per processed query. SetupCoverage.lean proves the common necessary bound of less than 1.134 ns using the recorded counts and rho allowances rounded up to integer nanoseconds. These budgets measure aggregate wall time per processed query and allow concurrent arithmetic. All three seeds refer to one known public target.
+
+### Did the loops stop earlier because they needed fewer accepted relations?
+
+The signed-graph replay in archived_graphs.py computes the rank after every saved row. A row constrains its two vertex values up to a sign. Traversing a connected component leaves one free value if all signs agree around its cycles, and forces zero otherwise because the group order is odd. This also covers self-loops and isolated columns. All six v2 traces gain one rank per row until the final row, which contributes the first dependency. Deleting each row in turn recovers the exact support of that dependency; all six supports agree with the nonzero entries of the archived certificate weights. The earlier check_relation_ranks.py uses prefix minors and null vectors to check the rank certificates with Lean.
+
+| Seed | Accepted rows, chain / batch | Dependency support, chain / batch | Chain / batch accepted-row ratio | Chain / batch queries per accepted row |
+|---:|---:|---:|---:|---:|
+| 0 | 13 / 15 | 4 / 8 | 0.867 | 1.203 |
+| 1 | 15 / 14 | 6 / 7 | 1.071 | 2.905 |
+| 2 | 12 / 9 | 3 / 5 | 1.333 | 0.690 |
+
+The last two columns multiply to the processed-query ratio. On seed 1 the graph reached dependence just one accepted row sooner. Most of the 3.113-fold change in processed queries came from the difference between 4.005 million and 1.379 million queries per accepted row. On seed 2 the batched graph needed three fewer rows, yet processing took more queries overall. These are ratios of complete stopped runs; without per-rejection logs or fresh independent targets they do not establish a change in the probability of accepting an individual query. Replay with `python3 archived_graphs.py`.
