@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T02:38:11Z",
+ "id": "PCC-20261123-9e2be7",
+ "kind": "measurement",
+ "producer": {
+  "commit": "c51b4d621bf382c66db89abd0e6d7ff32313a45b",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-balanced-square/fused0.csv",
+    "sha256": "0d3205f382f89f49dae281c00782084cc67e41519bfd748c3b07944b5e87e0de"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-balanced-square/fused1.csv",
+    "sha256": "d3c73d4b175f44a4b00f069cf2121780ae4bc80c72ab63ddbcd50b34ae9f996b"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "At M31 bound 89 pruning and in-place NEON labeling reduced complete lift census time. Median paired CPU ratios were 1.862 and 1.961 and wall ratios 1.840 and 2.466 in two fresh processes, with exact ordered outputs."
+}
