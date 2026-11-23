@@ -467,10 +467,10 @@ fn matched_rho(
         Instance::Fp2(i) => {
             let (g, gen, r) = (&i.curve, i.generator, i.r);
             RhoReferences {
-                matched: rho_reference_for(g, gen, r, seed, repeats, runs, |t, _, s, cap| {
+                matched: rho_reference_for(g, gen, r, seed, repeats, runs, threads, |t, _, s, cap| {
                     rho_reference_negation(g, gen, t, r, s, cap)
                 }),
-                plain: rho_reference_for(g, gen, r, seed, repeats, runs, |t, _, s, cap| {
+                plain: rho_reference_for(g, gen, r, seed, repeats, runs, threads, |t, _, s, cap| {
                     rho_reference(g, gen, t, r, s, cap)
                 }),
                 candidates: Vec::new(),
