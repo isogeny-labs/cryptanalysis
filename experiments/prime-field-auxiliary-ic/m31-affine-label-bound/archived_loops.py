@@ -1,5 +1,6 @@
 """Replay the loop-time decomposition on the committed 31-bit single-target records."""
 import json
+import re
 import subprocess
 from decimal import Decimal
 from fractions import Fraction
@@ -51,5 +52,27 @@ def main():
         print(seed, *(f"{float(v):.6f}" for v in values), extra, f"{float(budget):.6f}", sep=",")
 
 
+def common_prefix():
+    print("seed,queries,chain_seconds,batch_seconds,ratio,faster_intervals,total_intervals")
+    for seed in range(3):
+        elapsed = []
+        for arm in ("v2_chain", "v2_batch"):
+            log = read(f"{arm}_seed{seed}", "log").decode()
+            checkpoints = re.findall(r"^queries (\d+), relations \d+, seconds ([\d.]+)", log, re.M)[:19]
+            assert [int(q) for q, _ in checkpoints] == list(range(1_000_000, 19_000_001, 1_000_000))
+            times = [Decimal(0)] + [Decimal(t) for _, t in checkpoints]
+            elapsed.append([end-start for start, end in zip(times, times[1:])])
+        chain, batch = elapsed
+        # Allow 10 microseconds at each printed endpoint of an interval.
+        tolerance = Decimal("0.000020")
+        assert all(b > tolerance and a-tolerance > Decimal("1.22")*(b+tolerance)
+                   for a, b in zip(chain, batch))
+        ratio = sum(chain)/sum(batch)
+        print(seed, 19_000_000, sum(chain), sum(batch), f"{ratio:.6f}",
+              sum(a > b for a, b in zip(chain, batch)), len(chain), sep=",")
+
+
 if __name__ == "__main__":
     main()
+    print()
+    common_prefix()
