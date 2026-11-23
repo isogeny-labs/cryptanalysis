@@ -613,6 +613,11 @@ pub struct TowerF4Options {
     /// standard monomials (with pairs pending: the basis is then not
     /// certified). The count bounds the number of solutions.
     pub stop_staircase: Option<usize>,
+    /// Stop as soon as every free variable has a pure power among the
+    /// leading monomials (the system is zero-dimensional, so the roots can
+    /// be read off). Useful for solving a known-solvable planted target:
+    /// the remaining pairs only reduce to zero.
+    pub stop_zero_dim: bool,
     /// Stop, reporting `oversize`, before building a matrix with more than
     /// this many non-zero entries, or a reduced reducer block with more
     /// than this many dense entries.
@@ -625,6 +630,7 @@ impl TowerF4Options {
             max_degree,
             deadline: None,
             stop_staircase: None,
+            stop_zero_dim: false,
             max_nnz: None,
         }
     }
@@ -634,6 +640,10 @@ impl TowerF4Options {
     }
     pub fn stopping_below(mut self, standard_monomials: usize) -> Self {
         self.stop_staircase = Some(standard_monomials);
+        self
+    }
+    pub fn stopping_at_zero_dim(mut self) -> Self {
+        self.stop_zero_dim = true;
         self
     }
     pub fn with_max_nnz(mut self, nnz: u64) -> Self {
@@ -709,6 +719,8 @@ pub struct TowerF4Report {
     pub pairs_above_bound: usize,
     /// Set when [`TowerF4Options::stop_staircase`] ended the run.
     pub staircase_at_stop: Option<usize>,
+    /// Set when [`TowerF4Options::stop_zero_dim`] ended the run.
+    pub stopped_zero_dim: bool,
     pub timed_out: bool,
     pub oversize: bool,
     pub ms: f64,
@@ -1480,6 +1492,21 @@ impl State {
     }
 }
 
+/// True when every free variable has a pure power among the leading
+/// monomials: the quotient is finite-dimensional and each free coordinate
+/// can be recovered from a univariate elimination polynomial.
+fn zero_dimensional(lms: &[Mono], n_free: usize) -> bool {
+    (0..n_free).all(|k| {
+        lms.iter().any(|&m| {
+            if mask_of(m) != 0 {
+                return false;
+            }
+            let f = free_of(m);
+            (0..MAX_FREE).all(|i| (i == k) == (f[i] > 0))
+        })
+    })
+}
+
 /// The number of standard monomials of `R / (lms)`, or `None` if it
 /// exceeds `bound` or is infinite (a free variable without a pure power
 /// among the leading monomials).
@@ -1965,6 +1992,10 @@ pub fn f4_tower(input: &[RPoly], ring: &TowerRing, opts: &TowerF4Options) -> Tow
         tr.ms = step_started.elapsed().as_secs_f64() * 1e3;
         rep.trace.push(tr);
 
+        if opts.stop_zero_dim && zero_dimensional(&s.active_lms(), ring.n_free) {
+            rep.stopped_zero_dim = true;
+            break;
+        }
         if let Some(bound) = opts.stop_staircase {
             if !s.pairs.is_empty() {
                 if let Some(count) =

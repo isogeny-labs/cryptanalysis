@@ -939,6 +939,7 @@ fn measure_tower(
     max_degree: u32,
     budget: Duration,
     stop_below: Option<usize>,
+    stop_zero_dim: bool,
     max_nnz: Option<u64>,
     trace: bool,
 ) -> (Outcome, Vec<RPoly>) {
@@ -969,6 +970,9 @@ fn measure_tower(
     let mut opts = TowerF4Options::new(max_degree).with_budget(budget);
     if let Some(b) = stop_below {
         opts = opts.stopping_below(b);
+    }
+    if stop_zero_dim {
+        opts = opts.stopping_at_zero_dim();
     }
     if let Some(c) = max_nnz {
         opts = opts.with_max_nnz(c);
@@ -1077,6 +1081,9 @@ struct Args {
     /// Stop F4 once at most this many candidate points remain (off by
     /// default; every committed run was made without it).
     stop_below: Option<usize>,
+    /// Stop the tower engine as soon as every free variable has a pure
+    /// power (zero-dimensional); skips the zero-reducing tail.
+    stop_zero_dim: bool,
     /// Diagnostic: F4's degree bound for every system, in place of
     /// `n + d + 6`. With `--dump`, shows what F4 knows at a given degree.
     cap: Option<u32>,
@@ -1141,6 +1148,7 @@ fn parse_args() -> Args {
         ladder_gs: vec![1, 2, 4, 8],
         out: None,
         stop_below: None,
+        stop_zero_dim: false,
         cap: None,
         dump: None,
         engine: Engine::F4,
@@ -1159,6 +1167,11 @@ fn parse_args() -> Args {
     while i < args.len() {
         if args[i] == "--trace" {
             a.trace = true;
+            i += 1;
+            continue;
+        }
+        if args[i] == "--stop-zero-dim" {
+            a.stop_zero_dim = true;
             i += 1;
             continue;
         }
@@ -1336,6 +1349,7 @@ fn run_cell(cell: &Cell, a: &Args, sink: &mut Sink) -> bool {
                     max_degree,
                     Duration::from_secs(a.budget),
                     a.stop_below,
+                    a.stop_zero_dim,
                     a.max_nnz,
                     a.trace,
                 );
