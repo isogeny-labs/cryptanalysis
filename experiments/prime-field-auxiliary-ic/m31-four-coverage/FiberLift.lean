@@ -65,4 +65,55 @@ theorem twist_lift_exact (a : ZMod 2147483647) :
   have he : Even (2^29 : ℕ) := ⟨2^28, by norm_num⟩
   simpa only [he.neg_pow] using h
 
+abbrev F31 := ZMod 2147483647
+
+noncomputable def rootCount (a : F31) : ℤ :=
+  (({y : F31 | y^2 = a}.toFinset.card : ℕ) : ℤ)
+
+theorem complementary_counts (a : F31) : rootCount a + rootCount (-a) = 2 := by
+  have hc : ringChar F31 ≠ 2 := by rw [ZMod.ringChar_zmod_n]; decide
+  have hn := quadraticChar_neg_one_iff_not_isSquare.mpr minus_one_nonsquare
+  unfold rootCount
+  rw [quadraticChar_card_sqrts hc, quadraticChar_card_sqrts hc,
+    ← neg_one_mul a, map_mul, hn]
+  ring
+
+/-- Each curve has one point at infinity. The twist term is reindexed by −x. -/
+theorem complementary_totals (rhs : F31 → F31) :
+    (1 + ∑ x, rootCount (rhs x)) + (1 + ∑ x, rootCount (-rhs (-x))) = 4294967296 := by
+  have he := Equiv.sum_comp (Equiv.neg F31) (fun x => rootCount (-rhs x))
+  change (∑ x, rootCount (-rhs (-x))) = ∑ x, rootCount (-rhs x) at he
+  rw [he]
+  have hs : (∑ x, rootCount (rhs x)) + (∑ x, rootCount (-rhs x)) = 4294967294 := by
+    rw [← Finset.sum_add_distrib]
+    simp [complementary_counts, ZMod.card, F31]
+  linarith
+
+/-- A homomorphism between finite groups of coprime sizes has trivial image. -/
+theorem coprime_transfer {A B : Type*} [AddGroup A] [AddGroup B] [Fintype A] [Fintype B]
+    (h : (Fintype.card A).Coprime (Fintype.card B)) (f : A →+ B) (x : A) : f x = 0 := by
+  have ha : Fintype.card A • f x = 0 := by
+    rw [← map_nsmul, card_nsmul_eq_zero, map_zero]
+  have d := Nat.dvd_gcd (addOrderOf_dvd_iff_nsmul_eq_zero.mpr ha)
+    (show addOrderOf (f x) ∣ Fintype.card B from addOrderOf_dvd_card)
+  rw [h.gcd_eq_one] at d
+  exact AddMonoid.addOrderOf_eq_one_iff.mp (Nat.eq_one_of_dvd_one d)
+
+/-- A mixed additive decomposition in a common ambient group has zero
+net twist contribution whenever the two source cardinalities are coprime. -/
+theorem mixed_sum {A T V : Type*} [AddCommGroup A] [AddCommGroup T] [AddCommGroup V]
+    [Fintype A] [Fintype T] (i : A →+ V) (j : T →+ V)
+    (hc : (Fintype.card A).Coprime (Fintype.card T)) (target base : A) (twist : T)
+    (balance : i target = i base + j twist) : j twist = 0 ∧ i target = i base := by
+  have same : i (target-base) = j twist := by rw [map_sub, balance]; abel
+  have ha : Fintype.card A • j twist = 0 := by rw [← same, ← map_nsmul, card_nsmul_eq_zero, map_zero]
+  have ht : Fintype.card T • j twist = 0 := by rw [← map_nsmul, card_nsmul_eq_zero, map_zero]
+  have d := Nat.dvd_gcd (addOrderOf_dvd_iff_nsmul_eq_zero.mpr ha)
+    (addOrderOf_dvd_iff_nsmul_eq_zero.mpr ht)
+  rw [hc.gcd_eq_one] at d
+  have zero := AddMonoid.addOrderOf_eq_one_iff.mp (Nat.eq_one_of_dvd_one d)
+  exact ⟨zero, by simpa [zero] using balance⟩
+
+theorem archived_orders_coprime : Nat.Coprime 2147505293 2147462003 := by decide
+
 end M31FiberLift
