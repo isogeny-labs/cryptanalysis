@@ -70,6 +70,19 @@ class Curve:
         raise RuntimeError('No point found')
 
 
+def _append_reciprocals(xs, p):
+    """Append the field inverses of the original entries in the same order."""
+    prefixes = []
+    product = 1
+    for x in xs:
+        prefixes.append(product)
+        product = product * x % p
+    inverse = pow(product, -1, p)
+    for i in range(len(xs)-1, -1, -1):
+        prefixes[i], inverse = prefixes[i] * inverse % p, xs[i] * inverse % p
+    xs.extend(prefixes)
+
+
 def _check_sibling_fiber(roots, maps, terminal, p):
     """Check each isogeny image once for a full, coset-ordered fiber."""
     layer = roots
@@ -148,16 +161,23 @@ def chain(p, s, enumerate_all=False, root_limit=None):
         if root_limit<0:raise ValueError('root_limit must be nonnegative')
         checked_count=min(2**s,root_limit)
     paired = p == 2**31-1 and checked_count == 2**s
-    for i in range(checked_count):
+    half_walk = paired and s >= 3
+    walk_count = checked_count // 2 if half_walk else checked_count
+    for i in range(walk_count):
         assert R is not None
         if not paired:
             assert eval_chain(R[0]) == 0
         V.append(R[0])
         R = E.add(R, G)
+    if half_walk:
+        # On y²=x³+x, translating by (0,0) sends x to its reciprocal.
+        # The midpoint is T + half; the second half ends at T.
+        assert half == (0, 0) and E.add(R, half) == T
+        _append_reciprocals(V, p)
     if paired:
         assert _check_sibling_fiber(V, maps, c, p)
     assert len(set(V)) == len(V)
-    if checked_count == 2**s:
+    if not half_walk and checked_count == 2**s:
         assert R == T
     info = dict(p=p, auxiliary_order=p+1, auxiliary_generator=T,
                 kernel_generator=G, kernel_order=2**s, maps=maps,
