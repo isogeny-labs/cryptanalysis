@@ -1,4 +1,4 @@
-// ARM64 M31 square membership for nonzero inputs. Replay on ARM64 with
+// ARM64 M31 square membership for canonical inputs. Replay on ARM64 with
 // clang++ -std=c++17 -O3 -mcpu=native bench.cpp -o bench && ./bench 4315
 // Rows give input count, block, method, and elapsed nanoseconds. Methods 0, 1,
 // and 2 are direct squaring, lookup, and lookup with fresh table construction.
@@ -104,7 +104,7 @@ __attribute__((noinline)) void eval(const std::vector<Word> &x,
         Word ys[4];
         vst1q_u32(ys, vminq_u32(sum, vsubq_u32(sum, vdupq_n_u32(prime))));
         for (int z = 0; z < 4; ++z)
-          out[i + 4 * k + z] = t.get(ys[z]);
+          out[i + 4 * k + z] = x[i + 4 * k + z] == 0 || t.get(ys[z]);
       } else
         vst1q_u32(&out[i + k * 4], vshrq_n_u32(vceqq_u32(a[k], b[k]), 31));
     }
@@ -123,6 +123,15 @@ int main(int argc, char **argv) {
   }
   if (y != 1)
     return 1;
+  // Exercise zero in every SIMD lane position before the nonzero timing panel.
+  std::vector<Word> edge(64), direct(64), projected(64);
+  for (size_t i = 0; i < edge.size(); ++i)
+    edge[i] = i % 3 == 0 ? 0 : (i % 3 == 1 ? 1 : prime - 1);
+  eval<false>(edge, direct, t);
+  eval<true>(edge, projected, t);
+  for (size_t i = 0; i < edge.size(); ++i)
+    if (direct[i] != Word(edge[i] != prime - 1) || projected[i] != direct[i])
+      return 4;
   // Six permutations per cycle. Drop the first cycle for timing summaries.
   for (size_t n : {1024, 65536, 1048576}) {
     std::vector<Word> x(n), out(n), ref(n);
