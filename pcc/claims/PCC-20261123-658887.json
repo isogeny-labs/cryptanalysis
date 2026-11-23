@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T22:43:59Z",
+ "id": "PCC-20261123-658887",
+ "kind": "measurement",
+ "producer": {
+  "commit": "5000e4d4a40672669481452db8611d92f83eabbc",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/torus7-build-confirm.csv",
+    "sha256": "3b50562d2137c767e0afe715c743da004ec91b53db15ec4177a6cf414c0c12d8"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/torus7-build.rs",
+    "sha256": "715bc8ff6f73f2c3e42dd5b06eb5f32f046570cb5f7892bbfa77ff25797e4156"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "Eight-lane curve-point lifting in the standalone M31 Torus7 coordinate generator measured a median paired 3.395x speedup against the same generator using scalar Curve::lift_x across 32 alternating local rounds. Sorted output matched the archived column digest."
+}
