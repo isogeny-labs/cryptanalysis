@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstdio>
-#include <unordered_set>
 #include <vector>
 using U = uint64_t;
 constexpr U p = 2147483647;
@@ -27,8 +26,7 @@ struct SmoothValue {
 
 int main() {
     std::vector<SmoothValue> values{{1, false}};
-    std::unordered_set<U> seen;
-    U eligible=0, lifts=0;
+    std::vector<uint32_t> keys;
     for (U prime : {3,5,7,11,13,17,19,23,29,31,37,41,43,47}) {
         const auto previous=values.size();
         const bool primeNonsquare = !square(prime);
@@ -41,12 +39,23 @@ int main() {
             }
         }
         if (prime!=7 && prime!=13 && prime!=23 && prime!=47) continue;
+        keys.clear();
+        keys.reserve(values.size());
         for (const auto entry : values) {
-            const U v = entry.value;
-            U key=v, x=rotate(v);
-            while (x!=v) {key=std::min(key,x); x=rotate(x);}
-            if (!seen.insert(key).second || !entry.nonsquare) continue;
-            // Two is a square modulo p, so the whole orbit has the same character.
+            U key = entry.value;
+            for (U x = rotate(key); x != entry.value; x = rotate(x))
+                key = std::min(key, x);
+            // The rotation key fits in 31 bits and its whole orbit has one character.
+            keys.push_back(static_cast<uint32_t>((key << 1) | entry.nonsquare));
+        }
+        std::sort(keys.begin(), keys.end());
+        keys.erase(std::unique(keys.begin(), keys.end()), keys.end());
+
+        U eligible = 0, lifts = 0;
+        for (const uint32_t packed : keys) {
+            if ((packed & 1) == 0) continue;
+            const U v = packed >> 1;
+            U x = v;
 #if defined(M31_BATCH_CENSUS) || defined(M31_EXPLICIT_CENSUS)
             // Every nonzero orbit has 31 elements. Pad each predicate to 32 lanes.
             uint32_t inputs[64] = {}, powers[64];
@@ -95,6 +104,6 @@ int main() {
 #endif
         }
         std::printf("%llu %zu %llu %llu\n",(unsigned long long)prime,
-            seen.size(),(unsigned long long)eligible,(unsigned long long)lifts);
+            keys.size(),(unsigned long long)eligible,(unsigned long long)lifts);
     }
 }
