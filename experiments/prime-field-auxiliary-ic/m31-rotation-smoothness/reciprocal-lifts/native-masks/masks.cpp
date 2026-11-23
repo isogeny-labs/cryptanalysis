@@ -9,6 +9,11 @@ namespace {
 using Word = std::uint32_t;
 using Wide = std::uint64_t;
 constexpr Word p = 2147483647;
+#ifdef M31_BOUND_211
+constexpr unsigned expected_pairs = 104580;
+#else
+constexpr unsigned expected_pairs = 3302;
+#endif
 using MaskSet = std::array<Word, 5>;
 
 Word rotate(Word x, unsigned shift) {
@@ -76,7 +81,7 @@ int main(int argc, char** argv) {
     Word x;
     int status;
     while ((status = std::scanf("%u", &x)) == 1) {
-        if (!x || x >= p || pairs == 3302) return 2;
+        if (!x || x >= p || pairs == expected_pairs) return 2;
         ++pairs;
         const auto m = lift_masks(x);
         if (audit) {
@@ -89,7 +94,7 @@ int main(int argc, char** argv) {
             for (unsigned j = 0; j < left.size(); ++j)
                 sums[phase][j] += __builtin_popcount(left[j] & rotate(right[j], phase));
     }
-    if (status != EOF || std::ferror(stdin) || pairs != 3302) return 2;
+    if (status != EOF || std::ferror(stdin) || pairs != expected_pairs) return 2;
     if (!audit) {
         std::puts("phase,coordinates,aux_joint,curve_joint,twist_joint,aux_curve_joint,aux_twist_joint");
         for (unsigned i = 0; i < 31; ++i)
