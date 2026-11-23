@@ -1,7 +1,34 @@
 // Each invocation starts with the same canonical x keys and prepared left operands.
+mod coordinate_source {
+    use super::{black_box, Curve};
+    use crate::field::F;
+    include!("torus7-coordinates.rs");
+
+    pub(super) fn generate(curve: Curve<31>) -> [(u64, u64); 71] {
+        let width = if cfg!(signed_pairs) { 8 } else { 0 };
+        build(width, curve).try_into().unwrap()
+    }
+}
+
 fn charge_setup(curve: Curve<31>, keys: &[u32; 71], cases: &[Option<Point>]) -> usize {
     let reps: [Point; 71] =
         std::array::from_fn(|i| curve.lift_x(u64::from(keys[i])).unwrap().unwrap());
+    scan_prepared(curve, keys, reps, cases)
+}
+
+fn charge_trace(curve: Curve<31>, cases: &[Option<Point>]) -> usize {
+    let coordinates = coordinate_source::generate(curve);
+    let keys = coordinates.map(|(x, _)| x as u32);
+    let reps = coordinates.map(|(x, y)| curve.point(x, y).unwrap());
+    scan_prepared(curve, &keys, reps, cases)
+}
+
+fn scan_prepared(
+    curve: Curve<31>,
+    keys: &[u32; 71],
+    reps: [Point; 71],
+    cases: &[Option<Point>],
+) -> usize {
     let mut output = vec![None; 142];
     let mut hits = 0;
     #[cfg(signed_pairs)]
@@ -42,7 +69,7 @@ fn charge_setup(curve: Curve<31>, keys: &[u32; 71], cases: &[Option<Point>]) -> 
     hits
 }
 
-fn setup_panel(curve: Curve<31>, path: &str, seed: u64) {
+fn setup_panel<const FROM_TRACE: bool>(curve: Curve<31>, path: &str, seed: u64) {
     let keys: [u32; 71] = std::fs::read_to_string(path)
         .unwrap()
         .lines()
@@ -51,6 +78,10 @@ fn setup_panel(curve: Curve<31>, path: &str, seed: u64) {
         .try_into()
         .unwrap();
     let reps = keys.map(|x| curve.lift_x(u64::from(x)).unwrap().unwrap());
+    if FROM_TRACE {
+        let expected = reps.map(|p| (p.x(), p.y()));
+        assert_eq!(coordinate_source::generate(curve), expected);
+    }
     let mut state = 0x2718281828459045 ^ seed;
     for positive in [false, true] {
         let cases: Vec<_> = (0..256)
@@ -88,11 +119,12 @@ fn setup_panel(curve: Curve<31>, path: &str, seed: u64) {
             let start = Instant::now();
             let mut hits = 0;
             for _ in 0..repetitions {
-                hits += black_box(charge_setup(
-                    curve,
-                    black_box(&keys),
-                    black_box(&cases[..n]),
-                ));
+                let batch = black_box(&cases[..n]);
+                hits += black_box(if FROM_TRACE {
+                    charge_trace(curve, batch)
+                } else {
+                    charge_setup(curve, black_box(&keys), batch)
+                });
             }
             let ns = start.elapsed().as_nanos() as f64 / repetitions as f64;
             assert_eq!(hits, repetitions * expected);

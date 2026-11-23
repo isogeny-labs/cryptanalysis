@@ -257,8 +257,16 @@ include!("setup-batches.rs");
 
 fn main() {
     let curve = Curve::<31>::new(2, 14).unwrap();
+    if std::env::args().nth(1).as_deref() == Some("trace-batches") {
+        setup_panel::<true>(
+            curve,
+            &std::env::args().nth(2).unwrap(),
+            std::env::args().nth(3).unwrap().parse().unwrap(),
+        );
+        return;
+    }
     if std::env::args().nth(1).as_deref() == Some("setup-batches") {
-        setup_panel(
+        setup_panel::<false>(
             curve,
             &std::env::args().nth(2).unwrap(),
             std::env::args().nth(3).unwrap().parse().unwrap(),

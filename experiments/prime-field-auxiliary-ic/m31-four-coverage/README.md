@@ -295,3 +295,18 @@ For each subset of branch bits, place its assignments on rows and the complement
 In an exact binary tensor train the contraction at a cut factors its unfolding through the bond. Consequently every one of the 5,040 orders requires bond dimensions at least 1,2,4,8,8,4,2,1, counting the two endpoints. These dimensions yield 296 binary entries in ordinary dense cores, compared with 128 bits in the direct table. The entry count includes structured cores that could be implicit. The rank result rules out lossless low-bond compression of this mask over GF(2); sparse or differently encoded networks require separate analysis.
 
 branch_tensor.py reproduces the ranks by binary elimination and checks an AND function as a rank-one control. It also computes the fewest individual table entries that can be flipped to reduce a single 8-by-16 cut below rank eight. A nonempty XOR of rows must vanish, and its current Hamming weight is both a lower bound and attainable by editing one participating row. Two cuts require one edit, 13 require two, 19 require three and one requires four. This is a single-cut sensitivity calculation with unconstrained edits. It does not establish an approximate train across all cuts.
+
+### One timer from trace selection through the last membership scan
+
+The trace-batches entry point reconstructs the Torus7 fiber, checks all 128 roots, lifts and orders its 71 curve points, checks the coordinates before passing them to the point API, prepares the lookup and point-addition state, scans all 142 outputs of each batch, then drops working storage. Generation returns both coordinates, so point lifting is charged once. The original build uses 663fc4fb5 arithmetic, scalar lifting and sorted lookup. The specialized build uses a82976381 arithmetic, eight-lane lifting, signed-pair addition and exact bucket lookup. Both use the same recurrence generator. Before timing, each build verifies its complete ordered table against lifts of the digest-matched archived keys. The scalar oracle checks each panel's full hit count.
+
+| Batches | Random median paired speedup | Positive mix median paired speedup | Original positive mix µs | Specialized positive mix µs | Matches in positive mix |
+|---:|---:|---:|---:|---:|---:|
+| 0 | 2.984 | 2.983 | 10.60 | 3.59 | 0 |
+| 1 | 2.892 | 2.879 | 12.03 | 4.18 | 2 |
+| 4 | 2.629 | 2.606 | 15.64 | 5.96 | 2 |
+| 16 | 2.268 | 2.288 | 29.92 | 13.00 | 4 |
+| 64 | 2.072 | 2.085 | 87.27 | 41.86 | 16 |
+| 256 | 1.948 | 1.982 | 316.51 | 158.89 | 64 |
+
+The specialized build was faster at each workload and input mix in all 24 paired rounds. Timings are wall time per invocation on the M4 Pro. Compile the common rust-batch-width.rs harness with the two field revisions and flags specified in the original-anchor comparison. Pass trace-batches, the reconstructed key file (for checking and fixture preparation), and seeds 133–156. Build order alternates by seed. Repeated invocations rebuild their state while reusing warm code and allocator caches. Input generation, process startup, relation production, and the rest of the solver are outside this interval. PCC-20261123-74b74c records the measurement. [pcc:unverified]

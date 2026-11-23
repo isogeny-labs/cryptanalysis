@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T23:02:10Z",
+ "id": "PCC-20261123-74b74c",
+ "kind": "measurement",
+ "producer": {
+  "commit": "63d588899c80f364cca52eaf4a74dad543e23380",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/trace-batches.csv",
+    "sha256": "77bf19da3cbb32b85a029fa3eb2335bc513050fcc60a097c8f6509b28f17a437"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/setup-batches.rs",
+    "sha256": "9b2e4064a55c7d617d8180eae305700e29515b30cc60268ef90fc9f8030e2bbd"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/torus7-coordinates.rs",
+    "sha256": "50404871839d1fca260ba5f0aed6cc0f129f036e96a0427eb54b067f3ddf0685"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "From trace selection through checked table generation and full point-membership scans, the M31 Torus7 specialized prototype measured 2.879x at one positive-control batch and 1.982x at 256 by median paired wall time across 24 seeds on Apple M4 Pro."
+}
