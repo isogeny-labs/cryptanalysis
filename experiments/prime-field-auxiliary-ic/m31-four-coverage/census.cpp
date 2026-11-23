@@ -56,12 +56,8 @@ void visit(Point a,unsigned start,unsigned left,Bits& support,bool& has_infinity
     }
 }
 
-int main(int argc,char** argv) {
-    std::vector<Word> xs;
-    Word x;
-    while(std::cin>>x) xs.push_back(x);
-    assert(!xs.empty() && xs.size()<=195);
-    if(argc==2 && std::string(argv[1])=="reverse") std::reverse(xs.begin(),xs.end());
+static Bits census(const std::vector<Word>& xs, int arm, const Bits& reference) {
+    basis.clear();
     for(Word u:xs) {
         assert(u<p);
         Word rhs=add(add(mul(mul(u,u),u),add(u,u)),14);
@@ -72,7 +68,6 @@ int main(int argc,char** argv) {
         basis.push_back({u,p-y});
     }
     Bits total((std::size_t(p)+63)/64), shell(total.size());
-    std::cout<<"arity,exact_finite,upto_finite,exact_has_infinity\n";
     for(unsigned n=1;n<=4;++n) {
         std::fill(shell.begin(),shell.end(),0);
         bool has_infinity=false;
@@ -88,6 +83,38 @@ int main(int argc,char** argv) {
             total[j]|=shell[j];
             upto+=__builtin_popcountll(total[j]);
         }
-        std::cout<<n<<','<<2*exact<<','<<2*upto<<','<<has_infinity<<std::endl;
+        if (arm>=0) std::cout<<arm<<',';
+        std::cout<<n<<','<<2*exact<<','<<2*upto<<','<<has_infinity;
+        if (arm>=0) {
+            if (n==4 && !reference.empty()) {
+                std::uint64_t common=0;
+                for (std::size_t j=0;j<total.size();++j)
+                    common+=__builtin_popcountll(total[j]&reference[j]);
+                std::cout<<','<<2*common;
+            } else std::cout<<',';
+        }
+        std::cout<<std::endl;
+    }
+    return total;
+}
+
+int main(int argc,char** argv) {
+    std::vector<Word> xs;
+    Word x;
+    while(std::cin>>x) xs.push_back(x);
+    if(argc==2 && std::string(argv[1])=="matched") {
+        assert(xs.size()==4*195);
+        std::cout<<"arm,arity,exact_finite,upto_finite,exact_has_infinity,common_with_smooth\n";
+        Bits reference;
+        for (int arm=0;arm<4;++arm) {
+            auto begin=xs.begin()+arm*195;
+            auto covered=census(std::vector<Word>(begin,begin+195),arm,reference);
+            if (!arm) reference.swap(covered);
+        }
+    } else {
+        assert(!xs.empty() && xs.size()<=195);
+        if(argc==2 && std::string(argv[1])=="reverse") std::reverse(xs.begin(),xs.end());
+        std::cout<<"arity,exact_finite,upto_finite,exact_has_infinity\n";
+        census(xs,-1,{});
     }
 }

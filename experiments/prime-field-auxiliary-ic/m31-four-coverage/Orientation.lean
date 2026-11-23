@@ -15,3 +15,22 @@ theorem oriented_card (s : Finset G) (h : ∀ x ∈ s, -x ∉ s) :
   omega
 
 end M31FourCoverage
+
+namespace M31FourCoverage
+variable {G : Type*} [AddCommGroup G] [DecidableEq G] [Fintype G]
+
+/-- Summing the overlap over all translations counts every ordered pair once.
+The inner sum counts points of A whose translate by -g belongs to B. -/
+theorem translate_overlap_sum (a b : Finset G) :
+    (∑ g : G, ∑ x ∈ a, ∑ y ∈ b, (if g = x-y then 1 else 0 : ℕ)) =
+    a.card*b.card := by
+  rw [Finset.sum_comm]
+  calc
+    _ = ∑ _x ∈ a, b.card := by
+      apply Finset.sum_congr rfl
+      intro x hx
+      rw [Finset.sum_comm]
+      simp
+    _ = _ := by simp
+
+end M31FourCoverage
