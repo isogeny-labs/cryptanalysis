@@ -11,7 +11,7 @@ private def g (u : K) := 196 - u*(u+2)^2
 private def left (x : K) := x^3 - 4*x^2 + 4*x + 196
 private def right (x : K) := x^3 - 4*x^2 - 784*x - 38416
 
-private theorem square_sum (oddChar : ringChar K ≠ 2) (h : K → ℤ) :
+theorem square_sum (oddChar : ringChar K ≠ 2) (h : K → ℤ) :
     ∑ x, h (x^2) = ∑ u, (χ u + 1) * h u := by
   classical
   rw [← Finset.sum_fiberwise' univ (fun x : K => x^2) h]
@@ -79,7 +79,7 @@ private def fibers (E : WeierstrassCurve.Affine K) (h : K → K)
   left_inv q := by cases q <;> rfl
   right_inv q := by rcases q with _ | ⟨x,y,hy⟩ <;> rfl
 
-private theorem trace_sum (oddChar : ringChar K ≠ 2) (E : WeierstrassCurve.Affine K) (h : K → K)
+theorem trace_sum (oddChar : ringChar K ≠ 2) (E : WeierstrassCurve.Affine K) (h : K → K)
     (eqn : ∀ x y, E.Nonsingular x y ↔ y^2 = h x) :
     (Nat.card E.Point : ℤ) = (∑ x, quadraticChar K (h x)) + (Fintype.card K + 1) := by
   classical

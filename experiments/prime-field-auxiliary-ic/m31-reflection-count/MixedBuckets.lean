@@ -11,7 +11,7 @@ def mixedRepresentative (x : F) : Prop :=
 private noncomputable def mark (x : F) : ℤ := by
   classical exact if mixedRepresentative x then 1 else 0
 
-private theorem sign_at (x : F) : quadraticChar F (cubic x) =
+theorem sign_at (x : F) : quadraticChar F (cubic x) =
     if IsSquare (cubic x) then 1 else -1 := by
   classical
   have nz : cubic x ≠ 0 := M31FixtureObstruction.no_root x
