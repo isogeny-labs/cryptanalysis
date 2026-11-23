@@ -1,3 +1,6 @@
+#ifdef M31_ORBIT_SIMD
+#include "orbit-simd/orbit.hpp"
+#endif
 #ifdef M31_BATCH_CENSUS
 #include "../m31-native-product/product.h"
 #endif
@@ -31,7 +34,9 @@ int main() {
             while (x!=v) {key=std::min(key,x); x=rotate(x);}
             if (!seen.insert(key).second || square(key)) continue;
             // Two is a square modulo p, so the whole orbit has the same character.
-#ifdef M31_BATCH_CENSUS
+#if defined(M31_ORBIT_SIMD)
+            orbit_simd::classify<(M31_ORBIT_SIMD != 0)>(x,eligible,lifts);
+#elif defined(M31_BATCH_CENSUS)
             // Every nonzero orbit has 31 elements. Pad each predicate to 32 lanes.
             uint32_t inputs[64] = {}, powers[64];
             for (unsigned j = 0; j < 31; ++j) {
