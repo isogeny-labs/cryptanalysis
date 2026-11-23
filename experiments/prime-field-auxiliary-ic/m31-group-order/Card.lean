@@ -205,4 +205,52 @@ theorem secondTwistTransfer (f : secondCurve.Point →+ (shortCurve (-36)).Point
   rw [secondCardinality, secondTwistCardinality]
   decide
 
+/-- A zero ordinate would supply a nonidentity rational point killed by two. -/
+theorem noZeroCubic (b : F) (smooth : (shortCurve b).Δ ≠ 0)
+    (odd : Odd (Nat.card (shortCurve b).Point)) (x : F) : cubic b x ≠ 0 := by
+  intro hx
+  have ns : (shortCurve b).Nonsingular x 0 := by
+    apply ((shortCurve b).equation_iff_nonsingular_of_Δ_ne_zero smooth).mp
+    exact (shortEquation b x 0).mpr (by rw [hx]; simp)
+  let A : (shortCurve b).Point := .some x 0 ns
+  have twice : (2 : ℕ) • A = 0 := by
+    rw [two_nsmul]
+    apply WeierstrassCurve.Affine.Point.add_self_of_Y_eq
+    simp [WeierstrassCurve.Affine.negY, shortCurve]
+    decide
+  have hd := Nat.dvd_gcd (addOrderOf_dvd_natCard A)
+    (addOrderOf_dvd_iff_nsmul_eq_zero.mpr twice)
+  rw [odd.coprime_two_right.gcd_eq_one] at hd
+  exact WeierstrassCurve.Affine.Point.some_ne_zero ns
+    (AddMonoid.addOrderOf_eq_one_iff.mp (Nat.dvd_one.mp hd))
+
+noncomputable def liftCount (b : F) : ℕ := by
+  classical
+  exact (Finset.univ.filter (fun x : F => IsSquare (cubic b x))).card
+
+theorem orderFromLiftCount (b : F) (smooth : (shortCurve b).Δ ≠ 0)
+    (odd : Odd (Nat.card (shortCurve b).Point)) :
+    Nat.card (shortCurve b).Point = 2*liftCount b + 1 := by
+  classical
+  have char_ne : ringChar F ≠ 2 := by rw [ZMod.ringChar_zmod_n]; decide
+  have fibers (x : F) : roots (cubic b x) = if IsSquare (cubic b x) then 2 else 0 := by
+    have h := quadraticChar_card_sqrts char_ne (cubic b x)
+    unfold roots
+    split <;> rename_i hs
+    · rw [(quadraticChar_one_iff_isSquare (noZeroCubic b smooth odd x)).mpr hs] at h
+      omega
+    · rw [quadraticChar_neg_one_iff_not_isSquare.mpr hs] at h
+      omega
+  rw [countShort b smooth]
+  simp_rw [fibers]
+  simp only [Nat.add_left_inj, ← Finset.sum_filter]
+  simp [liftCount, Nat.mul_comm]
+
+theorem fixtureLiftCounts : liftCount 14 = 1073752646 ∧ liftCount 36 = 1073753100 := by
+  have first : Nat.card (shortCurve 14).Point = 2147505293 := firstCardinality
+  have second : Nat.card (shortCurve 36).Point = 2147506201 := secondCardinality
+  have a := orderFromLiftCount 14 (by native_decide) (by rw [first]; decide)
+  have b := orderFromLiftCount 36 (by native_decide) (by rw [second]; decide)
+  omega
+
 end M31Card
