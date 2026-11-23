@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <chrono>
 #include <vector>
 
 constexpr uint32_t prime = 2147483647;
@@ -78,6 +79,65 @@ static int orbit_census(const std::vector<Row>& rows,uint32_t nonsquare) {
     return 0;
 }
 
+// Pick the least word among the rotations of r and its complement.
+// The low bit of the returned code records whether the complement won.
+static uint32_t signed_key(uint32_t r) {
+    uint32_t low=r, high=r;
+    for (unsigned i=1; i<31; ++i) {
+        r=((r<<1)&prime) | (r>>30);
+        low=std::min(low,r);
+        high=std::max(high,r);
+    }
+    return low<=prime-high ? 2*low : 2*(prime-high)+1;
+}
+
+static int orbit_timing(const std::vector<Row>& rows,uint32_t nonsquare) {
+    using Clock=std::chrono::steady_clock;
+    auto ns=[](auto duration) {
+        return std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count();
+    };
+    auto start=Clock::now();
+    // Each least representative is <= (p-1)/2. Two bits encode miss or label.
+    std::vector<uint8_t> table(1u<<28);
+    for (auto [x,mask]:rows) {
+        if (!(x&1)) continue;
+        unsigned positive=!__builtin_parity(mask&nonsquare);
+        for (auto r:{x,inverse(x)}) {
+            auto key=signed_key(r);
+            unsigned shift=2*((key>>1)&3);
+            uint8_t &byte=table[key>>3];
+            unsigned label=1+(positive^(key&1));
+            unsigned old=(byte>>shift)&3;
+            if (old && old!=label) return 1;
+            byte|=label<<shift;
+        }
+    }
+    auto setup=ns(Clock::now()-start);
+    std::vector<uint8_t> a(rows.size()),b(rows.size());
+    for (unsigned round=0; round<6; ++round) {
+        unsigned hits=0;
+        long long elapsed[2];
+        for (unsigned pos=0; pos<2; ++pos) {
+            unsigned arm=(round+pos)%2;
+            start=Clock::now();
+            for (size_t i=0; i<rows.size(); ++i) {
+                uint64_t x=rows[i].x;
+                uint32_t r=(x*x%prime*x+2*x+14)%prime;
+                if (!arm) { a[i]=square(r); continue; }
+                auto key=signed_key(r);
+                unsigned entry=(table[key>>3]>>(2*((key>>1)&3)))&3;
+                if (entry) { b[i]=(entry-1)^(key&1); ++hits; }
+                else b[i]=square(r);
+            }
+            elapsed[arm]=ns(Clock::now()-start);
+        }
+        if (a!=b || hits!=235328) return 1;
+        std::printf("%u,%zu,%u,%lld,%lld,%lld\n",round,rows.size(),hits,
+                    static_cast<long long>(setup),elapsed[0],elapsed[1]);
+    }
+    return 0;
+}
+
 int main(int argc,char **argv) {
     std::vector<Row> rows{{1,0}};
     uint32_t nonsquare = 0;
@@ -95,6 +155,7 @@ int main(int argc,char **argv) {
         }
     }
     if (argc==2 && std::strcmp(argv[1],"orbits")==0) return orbit_census(rows,nonsquare);
+    if (argc==2 && std::strcmp(argv[1],"timing")==0) return orbit_timing(rows,nonsquare);
     if (argc!=1) return 1;
     std::sort(rows.begin(),rows.end(),[](Row a,Row b){return a.x<b.x;});
     std::vector<std::array<uint32_t,2>> buckets(1u<<primes.size());
