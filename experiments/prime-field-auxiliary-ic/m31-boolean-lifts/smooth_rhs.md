@@ -48,3 +48,13 @@ A fresh M4 Pro comparison used 30f4fdf81 as the control with the same directory 
 | Packed signature array | 0.381257 | 0.37 | 68526080 |
 
 All 16 outputs matched the archived CSV. The median within-pair speedup was 1.070×. A separate exhaustive check used unsigned 128-bit squarefree products to classify all 16777216 masks and checked the compiled index's feasibility boundary, absence of collisions, and use of every slot. An address/undefined-behavior sanitizer run reproduced the same CSV. The raw process measurements are in signature_index_timing.csv. These results apply to the public census.
+
+## Does a parity signature predict a withheld lift?
+
+The 24 parity bits give 266975 nonempty groups, including 95824 singletons. Choosing the majority label after observing every label in each group gets 2194269 of 3846525 coordinates right (57.0455%). For each coordinate in turn, remove its label, predict from the other members of its group, and score a tie as half correct. The resulting score is 3839141/2 correct (49.9040%). There are 317063 tied votes, including singletons. Always predicting a lift scores 50.0198%. This leave-one-out score is exact for the archived population and tie convention.
+
+As a second check, among all 869861730 unordered pairs of distinct coordinates sharing a signature, 434923282 have the same label (49.9991%). This statistic weights larger groups by their number of pairs. Neither scoring rule measures collection time.
+
+Under an independent fair-label model with precisely the observed group sizes, the expected fitted majority score is 2194387.96 with standard deviation 584.81. In a group of n labels, the fitted score equals (n+|S|)/2, where S is the sum of n fair signs. The recurrence for expected |S| adds Pr(S=0) at each step, and E[S²]=n. The model provides a reference for the bias from fitting and scoring on the same labels. The actual curve labels are deterministic.
+
+Compile the census as above and run `./smooth_rhs signature-holdout | python3 signature_holdout.py` (use the name of the compiled binary). The scalar, direct-index implementation from f9c7b49e7 with histogram output produced the identical 6034 data rows. Holdout.lean checks the per-group scoring identity, the fair-sign recurrence step and the comparisons between the exact aggregate scores.

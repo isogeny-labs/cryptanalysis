@@ -221,7 +221,8 @@ int main(int argc,char **argv) {
     }
     if (argc==2 && std::strcmp(argv[1],"orbits")==0) return orbit_census(rows,nonsquare);
     if (argc==2 && std::strcmp(argv[1],"timing")==0) return orbit_timing(rows,nonsquare);
-    if (argc!=1) return 1;
+    const bool holdout = argc == 2 && std::strcmp(argv[1], "signature-holdout") == 0;
+    if (argc != 1 && !holdout) return 1;
     std::sort(rows.begin(),rows.end(),[](Row a,Row b){return a.x<b.x;});
     // first[b] is the first row with (x >> 12) >= b. The last entry is
     // rows.size(), including when the last bucket is empty.
@@ -267,6 +268,19 @@ int main(int argc,char **argv) {
         errors+=std::min(b[0],b[1]);
     }
     if (rows.size()!=3846525 || lifts!=1924024) return 1;
+    if (holdout) {
+        // Sorting the counters after the full census discards the signature
+        // identity but preserves the group sizes and both label counts.
+        std::sort(buckets.begin(), buckets.end());
+        std::puts("nonlifts,lifts,signatures");
+        for (size_t i = 0; i < buckets.size();) {
+            size_t j = i + 1;
+            while (j < buckets.size() && buckets[j] == buckets[i]) ++j;
+            std::printf("%u,%u,%zu\n", buckets[i][0], buckets[i][1], j-i);
+            i = j;
+        }
+        return 0;
+    }
     std::puts("coordinates,lifts,signatures,mixed_signatures,coordinates_in_mixed,pure_negative_rows,pure_positive_rows,minimum_errors,smooth_rhs,smooth_rhs_lifts");
     std::printf("%zu,%u,%u,%u,%u,%u,%u,%u,%u,%u\n",rows.size(),lifts,used,mixed,mixed_rows,pure_negatives,pure_positives,errors,overlap,overlap_lifts);
 }
