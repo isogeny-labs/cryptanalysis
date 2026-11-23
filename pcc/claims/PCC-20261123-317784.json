@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T01:16:02Z",
+ "id": "PCC-20261123-317784",
+ "kind": "theorem",
+ "producer": {
+  "commit": "6f79280e83e183b12acd04e2270a01f847be42d7",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "92702e68129c3f9788589ae8c2849f1fdf5a8f0f41bf04c7e25c72ca98589906",
+   "kind": "lean",
+   "path": "experiments/prime-field-auxiliary-ic/M31SquareDepth.lean",
+   "sha256": "5cb6869d5492ed586f18b4171459c623d9f3508ee59ea87c399aa6bdf07b4888",
+   "theorem": "M31SquareDepth.lower"
+  },
+  {
+   "decl_sha256": "0511c940a2ab349501cfe7df0d551e8dabcfeb254350b2e383f2ce17cc2076d4",
+   "kind": "lean",
+   "path": "experiments/prime-field-auxiliary-ic/M31SquareDepth.lean",
+   "sha256": "5cb6869d5492ed586f18b4171459c623d9f3508ee59ea87c399aa6bdf07b4888",
+   "theorem": "M31SquareDepth.upper"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "For the M31 nonzero square predicate, polynomial arithmetic circuits with a final equality require multiplication depth at least 30, attained by a chain of 30 squarings."
+}

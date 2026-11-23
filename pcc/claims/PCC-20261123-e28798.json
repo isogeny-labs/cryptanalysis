@@ -1,0 +1,23 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T01:25:03Z",
+ "id": "PCC-20261123-e28798",
+ "kind": "theorem",
+ "producer": {
+  "commit": "aceaa8799f40b029af30b0abc1609bfb3a823556",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "19c1c11bbc7e216d5acb86f0e99d5d410d962311ba75c515c36afbe20c24f8cf",
+   "kind": "lean",
+   "path": "experiments/prime-field-auxiliary-ic/M31ProjectionLabel.lean",
+   "sha256": "62572779bfe20942adc3b99bd168d25acb3ba13ef0bde167cede6ca927a35a47",
+   "theorem": "M31ProjectionLabel.lookup_correct"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "A lookup agreeing with exponent parity on the 65534 powers of the M31 subgroup generator classifies every nonzero field element after projection by exponent 32769."
+}

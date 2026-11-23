@@ -1,0 +1,23 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T02:38:11Z",
+ "id": "PCC-20261123-efadbb",
+ "kind": "theorem",
+ "producer": {
+  "commit": "c51b4d621bf382c66db89abd0e6d7ff32313a45b",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "6e5f2910567c2a4c38b23368796de1f8210b6ee9686133b708c1b7d2ffa4fc85",
+   "kind": "lean",
+   "path": "experiments/prime-field-auxiliary-ic/m31-balanced-square/Prune.lean",
+   "sha256": "7b546cf7ead142babb913f5083fbfeadbb3b16e3660aa9bb931460027825c662",
+   "theorem": "SmoothGeneration.prune_parents"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Filtering parents outside the child product bound preserves the ordered child list when those parents have no children."
+}
