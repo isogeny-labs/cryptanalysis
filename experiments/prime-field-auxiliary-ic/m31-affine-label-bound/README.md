@@ -25,3 +25,19 @@ build=$(mktemp -d)
 lake env lean --root="$SRC" -o "$build/M31FixtureObstruction.olean" "$SRC/M31FixtureObstruction.lean"
 lake env sh -c 'export LEAN_PATH="$1:$LEAN_PATH"; lean "$2"' sh "$build" "$SRC/m31-affine-label-bound/AffinePair.lean"
 ```
+
+## Can more consecutive lift bits predict the next one?
+
+For each coordinate in the full field, retain the preceding k lift bits in increasing coordinate order, including windows crossing zero. The best possible Boolean predictor for this information chooses the more frequent successor of each history. This is an exact population ceiling even if the rule is fitted on every field element.
+
+| History length | Maximum correct out of 2147483647 | Accuracy |
+|---:|---:|---:|
+| 0 | 1073752646 | 50.000504% |
+| 1 | 1073767621 | 50.001201% |
+| 2 | 1073767621 | 50.001201% |
+| 8 | 1074029859 | 50.013413% |
+| 12 | 1074925959 | 50.055141% |
+
+For k=2 each of the four strict majorities predicts the most recent bit. With k=12 every one of the 4096 histories has both successor labels at least 260209 times each. Consequently, even a predictor permitted to abstain cannot certify any history without errors. Shorter histories merge cells and also have both successors. The census uses consecutive coordinates and uniform weighting across the field. Other strides, nonuniform queries, or extra features define different populations.
+
+Run both compiled executables with `history12` and compare their output to history12.csv. The squaring implementation walks forward and appends the saved prefix at the end. The square-membership implementation walks backward, preloading the opposite end of the cyclic window. Run `python3 history.py` for all suffix lengths, cyclic marginal consistency, and comparison with translation.csv. Replay History.lean with `lake env lean /absolute/path/to/History.lean`. It reads the checked-in CSV, checks every cell index and count floor, and proves the 12-label optimal score is both an upper bound and attainable. The binding to actual curve labels is established by the two native enumerations.
