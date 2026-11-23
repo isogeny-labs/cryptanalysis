@@ -590,12 +590,12 @@ def signedLookup (y : F) : F :=
 theorem generator_order : IsPrimitiveRoot gen 2046 := by
   apply IsPrimitiveRoot.iff_orderOf.mpr
   apply orderOf_eq_of_pow_and_pow_div_prime (by decide)
-  · native_decide
+  · decide +kernel
   intro q prime dvd
   change q ∣ 2 * 3 * 11 * 31 at dvd
   rw [prime.dvd_mul, prime.dvd_mul, prime.dvd_mul] at dvd
   rcases dvd with ((h | h) | h) | h <;>
-    (obtain rfl := (Nat.prime_dvd_prime_iff_eq prime (by decide)).mp h; native_decide)
+    (obtain rfl := (Nat.prime_dvd_prime_iff_eq prime (by decide)).mp h; decide +kernel)
 
 theorem lookup_correct (lookup : F → F)
     (checked : ∀ j : Fin 2046, lookup (gen^j.val) * gen^j.val = 1)
@@ -631,3 +631,6 @@ theorem both_correct (x : F) :
   · exact ⟨raw_correct x hx, signed_correct x hx⟩
 
 end M31GraphReciprocal
+
+#print axioms M31GraphReciprocal.generator_order
+#print axioms M31GraphReciprocal.both_correct
