@@ -5,7 +5,11 @@ cd "$(dirname "$0")"
   sed '/^int main(/,$d' ../m31-projection-label/bench.cpp
   sed '/^int main(/,$d' ../m31-balanced-square/census.inc
   sed '/^int main(/,$d' ../m31-balanced-square/fused.inc
-  if [[ ${2:-} == storage ]]; then
+  if [[ ${2:-} == emit ]]; then
+    sed '/^int main(/,$d' panel.inc
+    sed '/^int main(/,$d' storage.inc
+    cat emit.inc
+  elif [[ ${2:-} == storage ]]; then
     sed '/^int main(/,$d' panel.inc
     cat storage.inc
   else
