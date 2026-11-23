@@ -1,0 +1,7 @@
+# Smooth coordinate signatures and target lifts
+
+Compile smooth_rhs.cpp with clang++ -std=c++17 -O3 and run locally. The domain is every positive integer less than 2147483647 whose prime factors are at most 89, without rotations. For each coordinate x, compute the canonical residue r of x³+2x+14 and test whether r is a square. The input signature records the exponent of each of the 24 primes in x modulo two. A deterministic classifier given only the signature must return one label per bucket. Summing the smaller class count in each bucket gives the attainable minimum number of classification errors on this domain. Only wholly negative buckets can be rejected if every lift must be retained.
+
+The second test looks for r in the sorted list of all positive 89-smooth integers. Whenever it is present, the parity of the nonsquare-prime exponents in the factorization of r gives its square class. The reported count uses the canonical positive representative and does not bound alternate representatives. The census checks this label against direct field exponentiation on every such r, confirms uniqueness of the coordinate enumeration, and verifies the previously established population and lift totals.
+
+The Lean theorem smooth_square_witness in CubicSpan.lean independently checks a minimal kind of collision: x=1 and x=9 differ by a factor of 3² and have opposite target lift labels. The full census counts are native computations. No table construction or lookup speedup is assumed.
