@@ -882,6 +882,7 @@ struct Outcome {
     timed_out: bool,
     pairs_above_bound: usize,
     staircase_at_stop: Option<usize>,
+    staircase_at_zero_dim: Option<usize>,
     planted_ok: Option<bool>,
     extra: Value,
 }
@@ -905,6 +906,7 @@ impl Outcome {
             timed_out: r.report.timed_out,
             pairs_above_bound: r.report.pairs_above_bound,
             staircase_at_stop: r.report.staircase_at_stop,
+            staircase_at_zero_dim: None,
             planted_ok: r.planted_ok,
             extra: json!({"engine": "f4_fp"}),
         }
@@ -1038,6 +1040,7 @@ fn measure_tower(
         timed_out: r.timed_out || r.oversize,
         pairs_above_bound: r.pairs_above_bound,
         staircase_at_stop: r.staircase_at_stop,
+        staircase_at_zero_dim: r.staircase_at_zero_dim,
         planted_ok,
         extra: json!({
             "engine": "f4_fp_tower",
@@ -1394,6 +1397,7 @@ fn run_cell(cell: &Cell, a: &Args, sink: &mut Sink) -> bool {
             "timed_out": r.timed_out,
             "pairs_above_bound": r.pairs_above_bound,
             "staircase_at_stop": r.staircase_at_stop,
+            "staircase_at_zero_dim": r.staircase_at_zero_dim,
             "planted_ok": r.planted_ok,
         });
         if let (Some((id, sha)), Some(obj)) = (exported, row.as_object_mut()) {

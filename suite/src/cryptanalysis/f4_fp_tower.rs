@@ -723,6 +723,9 @@ pub struct TowerF4Report {
     pub staircase_at_stop: Option<usize>,
     /// Set when [`TowerF4Options::stop_zero_dim`] ended the run.
     pub stopped_zero_dim: bool,
+    /// Number of standard monomials at the zero-dimensional stop, when it
+    /// is at most one million; `None` if larger or not computed.
+    pub staircase_at_zero_dim: Option<usize>,
     pub timed_out: bool,
     pub oversize: bool,
     pub ms: f64,
@@ -1996,6 +1999,8 @@ pub fn f4_tower(input: &[RPoly], ring: &TowerRing, opts: &TowerF4Options) -> Tow
 
         if opts.stop_zero_dim && ring.n_free > 0 && zero_dimensional(&s.active_lms(), ring.n_free) {
             rep.stopped_zero_dim = true;
+            rep.staircase_at_zero_dim =
+                staircase_at_most(&s.active_lms(), ring.n_tower(), ring.n_free, 1_000_000);
             break;
         }
         if let Some(bound) = opts.stop_staircase {
