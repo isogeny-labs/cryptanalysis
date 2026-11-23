@@ -135,4 +135,17 @@ theorem batch_accepts_iff (x : ℕ) (hx : 0 < x) :
   simp only [mem_factors]
   exact ⟨fun h q hq hd => (h q hq hd).1, fun h q hq hd => ⟨h q hq hd, hq⟩⟩
 
+/-- Divisibility by a fresh prime can be tested on the original input
+even after powers of other primes have been removed from the lane. -/
+theorem fresh_prime_mask (qs : List ℕ) (x q : ℕ) (hx : 0 < x)
+    (hp : ∀ r ∈ qs, Nat.Prime r) (prime : q.Prime) (fresh : q ∉ qs) :
+    q ∣ residual qs x ↔ q ∣ x := by
+  constructor
+  · exact fun h => h.trans (residual_dvd qs x hp)
+  · intro hd
+    have pos := prime.factorization_pos_of_dvd hx.ne' hd
+    have eq := residual_factor qs x q hp
+    rw [ite_eq_right fresh] at eq
+    exact Nat.dvd_of_factorization_pos (eq.trans_gt pos).ne'
+
 end NativeSmooth
