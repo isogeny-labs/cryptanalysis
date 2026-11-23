@@ -38,7 +38,7 @@ jobs:
           cmp ct133_audit.json ct133_audit_optimized.json
           sha256sum ct133_2026121*.csv ct133_audit.json >> ct133_sources.sha256
           cat ct133_audit.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: ct133-cold-cm-raw-${{ github.run_id }}

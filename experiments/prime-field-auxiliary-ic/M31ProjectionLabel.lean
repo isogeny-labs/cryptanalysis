@@ -47,4 +47,12 @@ theorem lookup_correct (lookup : K → Bool)
   obtain ⟨i, hi, key⟩ := covered x hx
   exact (key ▸ checked i hi).trans (label x hx i key).symm
 
+/-- Zero is a square and lies outside the multiplicative table domain. -/
+theorem lookup_correct_all (lookup : K → Bool)
+    (checked : ∀ i < 65534, lookup (generator^i) = true ↔ Even i) (x : K) :
+    (if x = 0 then true else lookup (x^32769)) = true ↔ IsSquare x := by
+  by_cases hx : x = 0
+  · simp [hx, IsSquare.zero]
+  · simpa [hx] using lookup_correct lookup checked x hx
+
 end M31ProjectionLabel

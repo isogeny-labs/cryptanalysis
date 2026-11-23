@@ -48,7 +48,7 @@ jobs:
               print(name,'scope and exact counted map operations pass')
           PY
           sha256sum "$p" ct134-artifacts/normal.json ct134-artifacts/optimized.json > ct134-artifacts/SHA256SUMS
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: ct134-scope-source-runs
           path: ct134-artifacts/

@@ -1,4 +1,4 @@
-// ARM64 M31 square membership for nonzero inputs. Replay on ARM64 with
+// ARM64 M31 square membership for canonical inputs. Replay on ARM64 with
 // clang++ -std=c++17 -O3 -mcpu=native bench.cpp -o bench && ./bench 4315
 // Rows give input count, block, method, and elapsed nanoseconds. Methods 0, 1,
 // and 2 are direct squaring, lookup, and lookup with fresh table construction.
@@ -33,58 +33,9 @@ template <bool highMultiply> Vec squareVector(Vec x) {
   return vsubq_u32(sum, vandq_u32(vcgeq_u32(sum, p), p));
 }
 
-#include <numeric>
-constexpr Word N = 1 << 17;
-// Each subgroup element imposes one XOR equation between two table entries.
-struct Tables {
-  std::vector<uint8_t> label = std::vector<uint8_t>(2 * N);
-  Word salt = 0;
-  Word left(Word x) const { return x & (N - 1); }
-  Word right(Word x) const { return N + ((x * salt) >> (32 - 17)); }
-  unsigned get(Word x) const { return label[left(x)] ^ label[right(x)]; }
-  Tables() {
-    for (salt = 2654435761u;; salt += 2) {
-      std::vector<Word> parent(2 * N);
-      std::iota(parent.begin(), parent.end(), 0);
-      std::vector<uint8_t> parity(2 * N), rank(2 * N);
-      // Accumulate parity along the path to the component root.
-      auto root = [&](Word x) {
-        unsigned val = 0;
-        while (x != parent[x]) {
-          val ^= parity[x];
-          x = parent[x];
-        }
-        return std::pair{x, val};
-      };
-      // An inconsistent cycle invalidates this salt.
-      Word y = 1;
-      bool ok = true;
-      for (Word i = 0; i < 65534; ++i) {
-        auto [a, u] = root(left(y));
-        auto [b, v] = root(right(y));
-        auto diff = u ^ v ^ ((i & 1) ^ 1);
-        if (a == b) {
-          if (diff) {
-            ok = false;
-            break;
-          }
-        } else {
-          if (rank[a] > rank[b])
-            std::swap(a, b);
-          parent[a] = b;
-          parity[a] = diff;
-          rank[b] += (rank[a] == rank[b]);
-        }
-        y = uint64_t(y) * 1251907261ULL % prime;
-      }
-      if (!ok)
-        continue;
-      for (Word j = 0; j < 2 * N; ++j)
-        label[j] = root(j).second;
-      break;
-    }
-  }
-};
+#include "../m31-projection-label/table.h"
+using m31_projection::Tables;
+using m31_projection::N;
 template <bool lookup>
 __attribute__((noinline)) void eval(const std::vector<Word> &x,
                                     std::vector<Word> &out, const Tables &t) {
@@ -104,7 +55,7 @@ __attribute__((noinline)) void eval(const std::vector<Word> &x,
         Word ys[4];
         vst1q_u32(ys, vminq_u32(sum, vsubq_u32(sum, vdupq_n_u32(prime))));
         for (int z = 0; z < 4; ++z)
-          out[i + 4 * k + z] = t.get(ys[z]);
+          out[i + 4 * k + z] = t.isSquare(x[i + 4 * k + z], ys[z]);
       } else
         vst1q_u32(&out[i + k * 4], vshrq_n_u32(vceqq_u32(a[k], b[k]), 31));
     }
@@ -123,6 +74,15 @@ int main(int argc, char **argv) {
   }
   if (y != 1)
     return 1;
+  // Exercise zero in every SIMD lane position before the nonzero timing panel.
+  std::vector<Word> edge(64), direct(64), projected(64);
+  for (size_t i = 0; i < edge.size(); ++i)
+    edge[i] = i % 3 == 0 ? 0 : (i % 3 == 1 ? 1 : prime - 1);
+  eval<false>(edge, direct, t);
+  eval<true>(edge, projected, t);
+  for (size_t i = 0; i < edge.size(); ++i)
+    if (direct[i] != Word(edge[i] != prime - 1) || projected[i] != direct[i])
+      return 4;
   // Six permutations per cycle. Drop the first cycle for timing summaries.
   for (size_t n : {1024, 65536, 1048576}) {
     std::vector<Word> x(n), out(n), ref(n);

@@ -53,6 +53,14 @@ class Curve:
             k >>= 1
         return R
 
+    def double_n(self, point, count):
+        """Apply exactly count successive doublings, stopping at infinity."""
+        for _ in range(count):
+            if point is None:
+                break
+            point = self.add(point, point)
+        return point
+
     def point(self, start=0):
         for x in range(start, self.p):
             rhs = (x**3 + self.a2*x*x + self.a4*x + self.a6) % self.p
@@ -62,26 +70,87 @@ class Curve:
         raise RuntimeError('No point found')
 
 
+def _layer_walk(curve, start, generator, count):
+    """Enumerate a power-of-two affine coset prefix in scalar order."""
+    points = [start]
+    stride = generator
+    p = curve.p
+    while len(points) < count:
+        u, v = stride
+        prefixes = []
+        product = 1
+        for x, _ in points:
+            prefixes.append(product)
+            product = product * (u-x) % p
+        # start lies outside the kernel, so no point equals ±stride.
+        assert product != 0
+        inverse = pow(product, -1, p)
+        translated = [None] * len(points)
+        for i in reversed(range(len(points))):
+            x, y = points[i]
+            slope = (v-y) * prefixes[i] * inverse % p
+            inverse = inverse * (u-x) % p
+            z = (slope*slope - curve.a2 - x - u) % p
+            translated[i] = z, (slope*(x-z)-y) % p
+        points.extend(translated)
+        if len(points) < count:
+            stride = curve.add(stride, stride)
+    return [x for x, _ in points], curve.add(points[-1], generator)
+
+
+def _append_reciprocals(xs, p):
+    """Append the field inverses of the original entries in the same order."""
+    prefixes = []
+    product = 1
+    for x in xs:
+        prefixes.append(product)
+        product = product * x % p
+    inverse = pow(product, -1, p)
+    for i in range(len(xs)-1, -1, -1):
+        prefixes[i], inverse = prefixes[i] * inverse % p, xs[i] * inverse % p
+    xs.extend(prefixes)
+
+
+def _check_sibling_fiber(roots, maps, terminal, p):
+    """Check each isogeny image once for a full, coset-ordered fiber."""
+    layer = roots
+    for step in maps:
+        half = len(layer) // 2
+        if not half or len(layer) != 2 * half:
+            return False
+        r, a, b = step['r'], step['A'], step['B']
+        parents = []
+        for i in range(half):
+            u, v = layer[i] - r, layer[half + i] - r
+            if not b or u * v % p != b:
+                return False
+            # uv=B makes both shifted images u+A+B/u and v+A+B/v equal.
+            parents.append((u + a + v) % p)
+        layer = parents
+    return layer == [terminal]
+
+
 def chain(p, s, enumerate_all=False, root_limit=None):
     k = (p+1).bit_length()-1
-    assert isprime(p) and p+1 == 2**k and s < k-1
+    assert isprime(p) and p+1 == 2**k and 1 <= s < k-1
     E = Curve(p, a4=1)
     # For p == 3 (mod 4), the character sum cancels under x -> -x,
     # so #E=p+1. Exactly one nonidentity rational 2-torsion point
     # makes this 2-group cyclic.
     for x in range(1, 100):
         T = E.point(x)
-        if E.mul(2**(k-1), T) is not None:
+        G = E.double_n(T, k-s)
+        half = E.double_n(G, s-1)
+        if half is not None:
             break
     else:
         raise RuntimeError('No auxiliary generator found')
-    assert E.mul(2**k, T) is None
-    G = E.mul(2**(k-s), T)
-    assert E.mul(2**s, G) is None and E.mul(2**(s-1), G) is not None
+    # half = [2^(s-1)]G = [2^(k-1)]T. One final doubling checks both orders.
+    assert E.add(half, half) is None
     current, H, image = E, G, T
     maps = []
     for j in range(s):
-        K = current.mul(2**(s-j-1), H)
+        K = current.double_n(H, s-j-1)
         assert K is not None and K[1] == 0
         r = K[0]
         A = (3*r + current.a2) % p
@@ -119,12 +188,27 @@ def chain(p, s, enumerate_all=False, root_limit=None):
     if root_limit is not None:
         if root_limit<0:raise ValueError('root_limit must be nonnegative')
         checked_count=min(2**s,root_limit)
-    for i in range(checked_count):
-        assert R is not None and eval_chain(R[0]) == 0
-        V.append(R[0])
-        R = E.add(R, G)
+    paired = p == 2**31-1 and checked_count == 2**s
+    half_walk = paired and s >= 3
+    walk_count = checked_count // 2 if half_walk else checked_count
+    if half_walk and s >= 8:
+        V, R = _layer_walk(E, T, G, walk_count)
+    else:
+        for i in range(walk_count):
+            assert R is not None
+            if not paired:
+                assert eval_chain(R[0]) == 0
+            V.append(R[0])
+            R = E.add(R, G)
+    if half_walk:
+        # On y²=x³+x, translating by (0,0) sends x to its reciprocal.
+        # The midpoint is T + half; the second half ends at T.
+        assert half == (0, 0) and E.add(R, half) == T
+        _append_reciprocals(V, p)
+    if paired:
+        assert _check_sibling_fiber(V, maps, c, p)
     assert len(set(V)) == len(V)
-    if checked_count == 2**s:
+    if not half_walk and checked_count == 2**s:
         assert R == T
     info = dict(p=p, auxiliary_order=p+1, auxiliary_generator=T,
                 kernel_generator=G, kernel_order=2**s, maps=maps,
