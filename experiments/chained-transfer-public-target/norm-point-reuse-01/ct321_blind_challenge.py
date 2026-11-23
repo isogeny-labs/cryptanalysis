@@ -125,6 +125,8 @@ def generate(curve, count=4, draw=None, saltgen=None):
 def audit(public_raw, private_raw, panel_raw=None, raw_root=None, fixture=None):
     public = strict(public_raw)
     private = strict(private_raw)
+    if public_raw != canonical(public) or private_raw != canonical(private):
+        refuse("noncanonical challenge/reveal bytes")
     if type(public) is not dict or set(public) != {
             "schema", "witness", "commitments"} or public["schema"] != PUBLIC:
         refuse("public keys/schema")
@@ -294,6 +296,16 @@ def self_test():
                 rejected += 1
             else:
                 raise AssertionError("admitted corruption " + name)
+        for name, pb, sb in (
+            ("public-noncanonical", praw.rstrip(b"\n"), sraw),
+            ("private-noncanonical", praw, sraw + b"\n"),
+        ):
+            try:
+                audit(pb, sb)
+            except ValueError:
+                rejected += 1
+            else:
+                raise AssertionError("accepted " + name)
         outpub, outpriv = root/"issue.json", root/"secret.json"
         issued_draws = iter(range(4))
         x = publish(c, 4, outpub, outpriv,
