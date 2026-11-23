@@ -205,6 +205,14 @@ theorem secondTwistTransfer (f : secondCurve.Point →+ (shortCurve (-36)).Point
   rw [secondCardinality, secondTwistCardinality]
   decide
 
+/-- Pooling any finite number of rational twist points still gives only the
+identity under an additive map back to the first fixture curve. -/
+theorem firstTwistBatchTransfer (n : ℕ)
+    (f : (Fin n → (shortCurve (-14)).Point) →+ E.Point) : f = 0 := by
+  apply zeroOfCoprime _ f
+  rw [Nat.card_fun, firstTwistCardinality, firstCardinality]
+  exact (show Nat.Coprime 2147462003 2147505293 by decide).pow_left _
+
 /-- A zero ordinate would supply a nonidentity rational point killed by two. -/
 theorem noZeroCubic (b : F) (smooth : (shortCurve b).Δ ≠ 0)
     (odd : Odd (Nat.card (shortCurve b).Point)) (x : F) : cubic b x ≠ 0 := by
@@ -216,8 +224,7 @@ theorem noZeroCubic (b : F) (smooth : (shortCurve b).Δ ≠ 0)
   have twice : (2 : ℕ) • A = 0 := by
     rw [two_nsmul]
     apply WeierstrassCurve.Affine.Point.add_self_of_Y_eq
-    simp [WeierstrassCurve.Affine.negY, shortCurve]
-    decide
+    simp [WeierstrassCurve.Affine.negY, shortCurve] <;> decide
   have hd := Nat.dvd_gcd (addOrderOf_dvd_natCard A)
     (addOrderOf_dvd_iff_nsmul_eq_zero.mpr twice)
   rw [odd.coprime_two_right.gcd_eq_one] at hd
