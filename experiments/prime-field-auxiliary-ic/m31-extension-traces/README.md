@@ -17,3 +17,11 @@ For every degree from 1 to 661992 inclusive, the qualifying list is exactly [−
 The Python entry point `qualifying_traces` implements this rule and falls back to the complete recurrence scan starting at the cutoff. The check compares both surviving traces against the sequential Lucas recurrence in every covered degree. Full independent Hasse scans also cover degrees 660001, 661992, and the first degree outside the rule.
 
 In a fixed-degree Python benchmark on the same M4 Pro, two recurrence checks took 6122.5 ns per call and parity lookup took 69.2 ns per call (medians of seven runs of 10000 calls at degree 3244). This measures list production for the public trace query with the theorem already available.
+
+## Applicability to the archived M31 comparison
+
+The matched comparison in `../snapshot/comparison` constructs the auxiliary curve with trace zero. Its purpose is to supply x-coordinates for lifting onto the target. It requires no target-order torsion on the auxiliary curve. Applying the trace screen to this construction would discard its working input.
+
+Replaying `chain(p, 10, enumerate_all=True)` from the archived `prepare.py` at revision 8ebe67d26 produced 1024 distinct labels. Lifting those labels in order reproduced all 500 representatives in `field31/auxiliary/public.json`, in order. The archived setup calls that fixed construction directly, and the timed C++ executable reads the resulting public factor base. Neither path calls the trace lookup.
+
+The archived setup charge is 0.019896647 seconds. On seeds 0, 1 and 2, even assigning zero cost to the entire setup gives total speedup ceilings of 1.032883×, 1.036065× and 1.037301×. Each ratio is (input_setup_seconds + solver_seconds) / solver_seconds from `runs.json`. These are derived bounds for those samples. The lookup on this branch changes zero operations in that archived benchmark.
