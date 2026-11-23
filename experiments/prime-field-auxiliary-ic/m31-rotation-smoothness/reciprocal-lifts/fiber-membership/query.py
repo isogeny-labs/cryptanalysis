@@ -38,6 +38,19 @@ def orbit_hits(x, smooth):
     return False
 
 
+def odd_orbit_hits(x, smooth):
+    # A set bit at position i becomes the low bit of the i-th right rotation.
+    doubled = (x << 31) | x
+    remaining = x
+    while remaining:
+        bit = remaining & -remaining
+        shift = bit.bit_length() - 1
+        if smooth((doubled >> shift) & P):
+            return True
+        remaining ^= bit
+    return False
+
+
 def coverage(fixture, bound, method, helper=None):
     if fixture["auxiliary"]["p"] != P:
         raise ValueError("requires an M31 fiber")
@@ -49,10 +62,11 @@ def coverage(fixture, bound, method, helper=None):
             return pow(x,31,P) in keys and pow(y,31,P) in keys
     else:
         smooth = make_smooth_test(bound, method)
+        hits_orbit = odd_orbit_hits if method == "odd" else orbit_hits
 
         def covered(x, y):
             return (pow(x,(P-1)//2,P) == P-1 and pow(x,62,P) != 1
-                    and orbit_hits(x,smooth) and orbit_hits(y,smooth))
+                    and hits_orbit(x,smooth) and hits_orbit(y,smooth))
 
     xs = fixture["structured_roots"]
     rows = []
@@ -80,7 +94,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("fixture", type=Path)
     parser.add_argument("bound", type=int, choices=(89,211))
-    parser.add_argument("--method", choices=("index","trial","multiple"), default="multiple")
+    parser.add_argument("--method", choices=("index","trial","multiple","odd"), default="multiple")
     parser.add_argument("--helper", help="native generator compiled at the selected bound")
     args = parser.parse_args()
     if args.method == "index" and not args.helper:
