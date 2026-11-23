@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <vector>
 
 constexpr uint32_t prime = 2147483647;
@@ -16,7 +17,68 @@ static bool square(uint32_t x) {
     return y==x;
 }
 
-int main() {
+static uint32_t orbit_key(uint32_t x) {
+    uint32_t least=x;
+    for (unsigned i=1; i<31; ++i) {
+        x=((x<<1)&prime) | (x>>30);
+        least=std::min(least,x);
+    }
+    return least;
+}
+
+static uint32_t inverse(uint32_t x) {
+    uint64_t y=1, z=x;
+    for (uint32_t e=prime-2; e; e>>=1, z=z*z%prime)
+        if (e&1) y=y*z%prime;
+    return uint32_t(y);
+}
+
+static void compact(std::vector<uint32_t>& keys) {
+    std::sort(keys.begin(),keys.end());
+    keys.erase(std::unique(keys.begin(),keys.end()),keys.end());
+    for (size_t i=1; i<keys.size(); ++i)
+        if ((keys[i]>>1)==(keys[i-1]>>1)) std::abort();
+}
+
+// A hit carries the class bit of the smooth representative.
+static int lookup(const std::vector<uint32_t>& keys,uint32_t key) {
+    auto it=std::lower_bound(keys.begin(),keys.end(),key*2);
+    return it!=keys.end() && (*it>>1)==key ? int(*it&1) : -1;
+}
+
+static int orbit_census(const std::vector<Row>& rows,uint32_t nonsquare) {
+    std::vector<uint32_t> direct,reciprocal;
+    for (auto [x,mask]:rows) {
+        if (!(x&1)) continue; // Removing powers of two preserves this orbit and class.
+        unsigned label=!__builtin_parity(mask&nonsquare);
+        direct.push_back(2*orbit_key(x)+label);
+        reciprocal.push_back(2*orbit_key(inverse(x))+label);
+    }
+    compact(direct);
+    compact(reciprocal);
+    std::array<uint32_t,16> patterns{},positive{};
+    for (auto row:rows) {
+        uint64_t x=row.x;
+        uint32_t r=(x*x%prime*x+2*x+14)%prime;
+        if (!r) return 1; // The fixture group has odd order.
+        uint32_t key=orbit_key(r),neg=orbit_key(prime-r);
+        int labels[]={lookup(direct,key),lookup(direct,neg),
+                      lookup(reciprocal,key),lookup(reciprocal,neg)};
+        unsigned pattern=0;
+        bool actual=square(r);
+        for (unsigned j=0; j<4; ++j) if (labels[j]>=0) {
+            if ((labels[j]^int(j&1))!=int(actual)) return 1;
+            pattern|=1u<<j;
+        }
+        ++patterns[pattern];
+        positive[pattern]+=actual;
+    }
+    std::puts("match_mask,coordinates,lifts");
+    for (unsigned j=0; j<16; ++j) std::printf("%u,%u,%u\n",j,patterns[j],positive[j]);
+    return 0;
+}
+
+int main(int argc,char **argv) {
     std::vector<Row> rows{{1,0}};
     uint32_t nonsquare = 0;
     for (size_t j=0; j<primes.size(); ++j) {
@@ -32,6 +94,8 @@ int main() {
             }
         }
     }
+    if (argc==2 && std::strcmp(argv[1],"orbits")==0) return orbit_census(rows,nonsquare);
+    if (argc!=1) return 1;
     std::sort(rows.begin(),rows.end(),[](Row a,Row b){return a.x<b.x;});
     std::vector<std::array<uint32_t,2>> buckets(1u<<primes.size());
     uint32_t lifts=0, overlap=0, overlap_lifts=0, errors=0, mixed=0, used=0, mixed_rows=0;
