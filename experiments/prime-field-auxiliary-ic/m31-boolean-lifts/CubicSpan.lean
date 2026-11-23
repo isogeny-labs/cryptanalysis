@@ -1,4 +1,6 @@
 import Mathlib.LinearAlgebra.Span.Basic
+import Mathlib.NumberTheory.LucasLehmer
+import Mathlib.FieldTheory.Finite.Basic
 
 namespace M31CubicSpan
 
@@ -23,11 +25,35 @@ private def features (x : Nat) : Nat := Id.run do
     wa := wa + 1
   return c
 
-private def lifts (x : Nat) : Bool := Id.run do
-  let rhs := (x*x*x + 2*x + 14) % p
-  let mut y := rhs
-  for _ in [:29] do y := (y*y) % p
-  return (y*y) % p == rhs
+local instance : Fact (Nat.Prime p) := ⟨by
+  change (mersenne 31).Prime
+  apply lucas_lehmer_sufficiency 31 (by decide)
+  norm_num⟩
+
+private def squareIter (x : ZMod p) : Nat → ZMod p
+  | 0 => x
+  | k+1 => let y := squareIter x k; y*y
+
+private theorem squareIter_pow (x : ZMod p) (k : Nat) :
+    squareIter x k = x^(2^k) := by
+  induction k with
+  | zero => simp [squareIter]
+  | succ n ih => rw [squareIter, ih, pow_succ 2, pow_mul, pow_two]
+
+private def rhs (x : Nat) : ZMod p := (x : ZMod p)^3 + 2*x + 14
+
+private def lifts (x : Nat) : Bool := squareIter (rhs x) 30 == rhs x
+
+/-- A coordinate is accepted exactly when the affine curve has a point above it. -/
+theorem lifts_iff_point (x : Nat) : lifts x = true ↔
+    ∃ y : ZMod 2147483647, y^2 = (x : ZMod 2147483647)^3 + 2*x + 14 := by
+  change (squareIter (rhs x) 30 == rhs x) = true ↔ ∃ y : ZMod p, y^2 = rhs x
+  rw [beq_iff_eq, squareIter_pow]
+  constructor
+  · intro h
+    exact ⟨rhs x ^ (2^29 : Nat), by rw [← pow_mul]; exact h⟩
+  · rintro ⟨y, hy⟩
+    rw [← hy, ← pow_mul, show 2 * 2^30 = p+1 by decide, pow_succ, ZMod.pow_card, pow_two]
 
 /-- Eliminate the highest remaining column. Each nonzero XOR step strictly
 lowers this column, so 4992 steps suffice. -/
