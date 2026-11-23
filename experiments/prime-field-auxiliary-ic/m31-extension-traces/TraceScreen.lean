@@ -90,6 +90,62 @@ theorem pointCountScreen {K : Type*} [Field K] [Algebra R K] [CharP K r]
   · exact traceScreen hd hlt ht hs hm (sub_eq_zero.mp h).symm
   · exact traceScreen hd hlt ht (add_comm x y ▸ hs) (mul_comm x y ▸ hm) (sub_eq_zero.mp h).symm
 
+/-- The point-count expression is unchanged by choosing another ordering of
+the roots of the same quadratic. -/
+private theorem sameCount {K : Type*} [Field K] {x y a b : K} (d : ℕ)
+    (hs : x+y = a+b) (hm : x*y = a*b) :
+    (1-x^d)*(1-y^d) = (1-a^d)*(1-b^d) := by
+  have h : (x-a)*(x-b) = 0 := by linear_combination x*hs - hm
+  rcases mul_eq_zero.mp h with h | h
+  · obtain rfl := sub_eq_zero.mp h
+    obtain rfl := add_left_cancel hs
+    rfl
+  · obtain rfl := sub_eq_zero.mp h
+    rw [add_comm a x] at hs
+    obtain rfl := add_left_cancel hs
+    ring
+
+theorem exactScreen {K : Type*} [Field K] [Algebra R K] [CharP K r]
+    {x y : K} {d : ℕ} {t : R} (hd : 0 < d) (hlt : d < 661993)
+    (ht : inHasse t) (hs : x+y = algebraMap R K t) (hm : x*y = algebraMap R K p) :
+    (1-x^d)*(1-y^d) = 0 ↔ t = -21645 ∨ (t = 21645 ∧ Even d) := by
+  let f := algebraMap R K
+  have posSum : (21645:R) = -1 + (-p) := by native_decide
+  have negSum : (-21645:R) = 1+p := by native_decide
+  have negPass (h : t = -21645) : (1-x^d)*(1-y^d) = 0 := by
+    have s : x+y = (1:K)+f p := by simpa [f, h, negSum] using hs
+    rw [sameCount d s (by simpa [f] using hm), one_pow, sub_self, zero_mul]
+  have posTest (h : t = 21645) : (1-x^d)*(1-y^d) = 0 ↔ Even d := by
+    have h1 : f (-1:R) = -1 := (map_neg f (1:R)).trans (congrArg Neg.neg f.map_one)
+    have s : x+y = (-1:K)+f (-p) := hs.trans (by
+      change f t = _
+      rw [h,posSum,map_add,h1])
+    have m : x*y = (-1:K)*f (-p) := calc
+      x*y = f p := hm
+      _ = f ((-1:R)*(-p)) := congrArg f (by native_decide)
+      _ = f (-1:R)*f (-p) := f.map_mul _ _
+      _ = _ := congrArg (fun z => z*f (-p)) h1
+    rw [sameCount d s m]
+    constructor
+    · intro hz
+      rcases mul_eq_zero.mp hz with hl | hr
+      · have he : (-1:R)^d = 1 := f.injective (by simpa only [map_pow, h1, map_one] using (sub_eq_zero.mp hl).symm)
+        have ho : orderOf (-1:R) = 2 := (CharP.orderOf_eq_two_iff r (by decide)).mpr rfl
+        exact even_iff_two_dvd.mpr (ho ▸ orderOf_dvd_of_pow_eq_one he)
+      · have he : (-p)^d = 1 := f.injective (by simpa only [map_one,map_pow] using (sub_eq_zero.mp hr).symm)
+        have hv := smallOrder hd hlt he (ZMod.pow_card_sub_one_eq_one (by native_decide : -p ≠ 0))
+        exact ((by native_decide : (-p)^3244 ≠ 1) (orderOf_dvd_iff_pow_eq_one.mp hv)).elim
+    · rintro ⟨k,rfl⟩
+      simp [← two_mul, pow_mul]
+  constructor
+  · intro h
+    rcases pointCountScreen hd hlt ht hs hm h with hn | hp
+    · exact Or.inl hn
+    · exact Or.inr ⟨hp,(posTest hp).mp h⟩
+  · rintro (hn | ⟨hp,he⟩)
+    · exact negPass hn
+    · exact (posTest hp).mpr he
+
 /-- At the endpoint another Hasse trace has a root of exact order 661993. -/
 theorem endpoint : inHasse (-74434) ∧
     (371347778:R) + p / 371347778 = -74434 ∧ orderOf (371347778:R) = 661993 := by

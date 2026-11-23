@@ -9,3 +9,11 @@ Frobenius either fixes x or swaps it with y. In the fixed case its order divides
 Run `lake env lean /absolute/path/to/TraceScreen.lean` from the project's mathlib environment. Finite checks use Lean's native_decide. Run `python3 check_counts.py --bench` from this directory for independent Lucas-recurrence checks over all traces at degrees 1, 2, 3244, and 661993 and a local timing comparison at degree 3244.
 
 On one Apple M4 Pro run the full scan median was 522.582 ms (3 calls), and checking the two shortlisted traces was 6.333 µs (1001 calls). Both returned exactly the same two traces. This measures a repeated public parameter search after the theorem is available. The timing excludes the one-time proof replay, solver setup, relation collection, and linear algebra. Auxiliary uses that do not require r to divide the extension point count fall outside the screen.
+
+## Exact lookup by extension degree
+
+For every degree from 1 to 661992 inclusive, the qualifying list is exactly [−21645] for odd degrees and [−21645, +21645] for even degrees. The two quadratics have root pairs {1,p} and {−1,−p} modulo r. The root −p cannot have order dividing any degree in this interval. Consequently the positive trace qualifies precisely when −1 raised to the extension degree is one. The theorem `exactScreen` proves both directions for any ordering of the two roots.
+
+The Python entry point `qualifying_traces` implements this rule and falls back to the complete recurrence scan starting at the cutoff. The check compares both surviving traces against the sequential Lucas recurrence in every covered degree. Full independent Hasse scans also cover degrees 660001, 661992, and the first degree outside the rule.
+
+In a fixed-degree Python benchmark on the same M4 Pro, two recurrence checks took 6122.5 ns per call and parity lookup took 69.2 ns per call (medians of seven runs of 10000 calls at degree 3244). This measures list production for the public trace query with the theorem already available.
