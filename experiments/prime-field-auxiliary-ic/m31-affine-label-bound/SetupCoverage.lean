@@ -32,4 +32,14 @@ theorem setupLimit (t s : ℝ)
            (11667566 ≤ t ∧ s ≤ 2391)) : t / (t-s) < 1.000427 := by
   rcases run with h | h | h <;> apply (div_lt_iff₀ (by linarith : 0 < t-s)).mpr <;> linarith
 
+/-- Keep the observed processed-query count. Even with zero other cost,
+matching each archived rho cold time caps average wall nanoseconds per query.
+Round the rho allowance up to the next integer nanosecond. -/
+theorem fixedCountBudget (queries rho unitCost : ℝ)
+    (run : (queries = 34771537 ∧ rho ≤ 7091596) ∨
+           (queries = 19300166 ∧ rho ≤ 21868217) ∨
+           (queries = 45496514 ∧ rho ≤ 18318453))
+    (withinBudget : queries * unitCost ≤ rho) : unitCost < 1.134 := by
+  rcases run with ⟨r,h⟩ | ⟨r,h⟩ | ⟨r,h⟩ <;> rw [r] at withinBudget <;> linarith
+
 end M31SetupCoverage

@@ -119,3 +119,19 @@ Consider an intentionally favorable counterfactual: remove both basis constructi
 | 2 | 11.667566 | 2.390376 | 1.000205× |
 
 The strict common upper bound 1.000427× is proved using the cold totals rounded down and setup rounded up to integer microseconds. This is a derived ceiling on those three recorded runs of one known fixture. It uses no cross-host timing ratios. Census acceleration alone has no demonstrated benefit for the measured single-target loop. The modern Rust crate also builds its factor base by lifting individual roots; the census artifact has no crate consumer at commit 08ed2eb14.
+
+### What changed in the archived loop timings?
+
+Run `python3 archived_loops.py` to compare the nine archived IC runs and the three rho records on field31_s5_base0. The replay reads the committed Git objects, compares every ordered relation record and uses exact rational arithmetic for the timing decomposition. The v1 and v2 unbatched variants have equal processed-query counts, ordered accepted rows and final ranks within each seed. Their loop speed ratios were 1.632, 1.795 and 2.349. The archive does not log every unsuccessful query.
+
+Batching changes the stream: for each seed the ordered accepted rows differ from the unbatched v2 run. Dividing loop time by processed queries gives an average inclusive of loop overhead. A final partially consumed batch adds 47, 58 and 62 generated targets respectively; its cost stays charged.
+
+| Seed | Unbatched v2 ns/query | Batched v2 ns/query | Unit-cost ratio | Processed-count ratio | Loop-time ratio |
+|---:|---:|---:|---:|---:|---:|
+| 0 | 397.44 | 278.29 | 1.428 | 1.043 | 1.489 |
+| 1 | 370.95 | 267.36 | 1.387 | 3.113 | 4.319 |
+| 2 | 360.29 | 256.34 | 1.406 | 0.920 | 1.293 |
+
+Each loop-time ratio is the product of the two preceding ratios before rounding. The 4.319 figure includes an unusually short batch run in processed queries. The timing records alone do not identify an instruction-level cause for the unit-cost difference.
+
+Keeping the observed batched query counts and allocating the entire corresponding rho cold time to those queries gives ceilings of 0.203948, 1.133058 and 0.402634 ns per processed query. SetupCoverage.lean proves the common necessary bound of less than 1.134 ns using the recorded counts and rho allowances rounded up to integer nanoseconds. These budgets measure aggregate wall time per processed query and allow concurrent arithmetic. All three seeds refer to one known public target.
