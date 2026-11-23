@@ -168,3 +168,15 @@ All six revision orders ran four times on the Apple M4 Pro with the preceding co
 | Repeated left, signed right | 142 | 967.05 | 900.95 | 737.54 | 1.228× |
 
 WalkShare.lean reads the archived E1 JSON and checks the walk fraction against the observed total, allowing 50 microseconds upward error for each printed walk time and 50 microseconds downward error for each total. For the 37 two-summand, five three-summand and four four-summand records, respectively, the upper bounds are 1.1705%, 0.0188% and 0.0009%. With all other elapsed work held fixed, these also bound the saving from eliminating the entire walk. Direct decomposition calls the batch kernel separately. Its share of decomposition time remains unmeasured.
+
+### Matched two-summand encoding comparison
+
+MatchedEncoding.lean replays 15 pairs from the archived E1 panel. Each pair agrees on column digest, attempted queries, matrix rank, relation count and recorded scalar. The timer is `ic_observed_total_s`. Each winning margin exceeds one printed tick, allowing for independent nearest-tick rounding. The following ratios use the five within-target circuit/direct time ratios for each base.
+
+| Base | Direct faster | Circuit faster | Median circuit/direct | Range |
+|---|---:|---:|---:|---:|
+| Auxiliary | 5 | 0 | 1.359 | 1.303–1.794 |
+| Multiplicative(126) | 1 | 4 | 0.949 | 0.895–1.172 |
+| Torus7 | 5 | 0 | 1.558 | 1.320–1.677 |
+
+The archived profiler brackets the entire decomposition call. Its attempted-query counter also includes points at infinity that skip decomposition. Across the direct records, median decomposition time per attempted query was 1,396 ns at width 112 (five records), 1,487 ns at width 116 (twelve), and 1,617 ns at width 142 (five). These denominators permit a throughput comparison. A breakdown between batch arithmetic, lookup and relation handling requires separate timing. The table summarizes an earlier source revision and predates the four-lane arithmetic change.
