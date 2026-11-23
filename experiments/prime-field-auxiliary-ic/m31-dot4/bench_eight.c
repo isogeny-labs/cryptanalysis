@@ -2,7 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#ifndef N
 #define N 2048
+#endif
+#define PASSES ((1048576 + N - 1) / N)
+_Static_assert(N >= 8 && N <= 1048576, "panel size must include all boundary rows and fit one timing sample");
 #define P UINT64_C(2147483647)
 #define M 1073741823
 static uint32_t a[N][8], b[N][8], o[N], ref[N];
@@ -110,16 +114,16 @@ int main(void)
         for (int i = 0; i < N; i++)
             if (o[i] != ref[i]) return 1;
     }
-    // Cycle through both orientations to balance position and predecessor.
+    // Cycle through both orientations to balance position and reverse the traversal order.
     for (int t = 0; t < 50; t++)
         for (int j = 0; j < 5; j++) {
             int k = (t + (t / 5 % 2 ? 4 - j : j)) % 5;
             uint64_t st = ns();
-            for (int n = 0; n < 512; n++) {
+            for (int n = 0; n < PASSES; n++) {
                 f[k]();
                 __asm__ volatile("" ::: "memory");
             }
-            double v = (double)(ns() - st) / (N * 512);
+            double v = (double)(ns() - st) / (N * PASSES);
             if (t >= 10) ts[k][t - 10] = v;
         }
     for (int k = 0; k < 5; k++) {
