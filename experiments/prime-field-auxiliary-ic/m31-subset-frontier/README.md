@@ -71,3 +71,28 @@ full affine point, orbit keys encode x. Each column below is in milliseconds.
 | 4 | 1115 | 480 | 2478 | 1097 |
 | 5 | 1008 | 458 | 1395 | 597 |
 | 6 | 910 | 408 | 1073 | 477 |
+
+## Matched x-key control
+
+Run the orbit replay with `matched.gp` in place of `orbit.gp`. Both paths
+construct sorted sets of x coordinates. The baseline visits every signed
+pair, while the orbit path chooses one sign of its outer point. After each
+timed pass, the program checks equality with the full 249970-key baseline.
+With eight paired blocks on the shared ARM64 host, the median paired
+baseline/orbit ratio was 1.904 for CPU and 2.212 for wall time.
+
+| Pair | Baseline CPU ms | Orbit CPU ms | Baseline wall ms | Orbit wall ms |
+|---:|---:|---:|---:|---:|
+| 1 | 787 | 401 | 2261 | 937 |
+| 2 | 710 | 399 | 2060 | 973 |
+| 3 | 721 | 428 | 1971 | 1413 |
+| 4 | 712 | 386 | 1723 | 921 |
+| 5 | 712 | 360 | 1136 | 482 |
+| 6 | 704 | 397 | 1448 | 579 |
+| 7 | 740 | 359 | 1331 | 577 |
+| 8 | 685 | 346 | 838 | 447 |
+
+`PairKeys.lean` proves equality of the four-sign and two-sign key sets for
+any negation-invariant key on an additive commutative group. The finite-point
+loop discards infinity in both arms. The measured times cover the enumeration
+and sorting of public coverage keys.
