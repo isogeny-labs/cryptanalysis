@@ -1,0 +1,133 @@
+{
+  "schema": "lead-testing.verdict/v1",
+  "lead_id": "LEAD-prime-batched-mitm-20261121",
+  "phase": 1,
+  "verdict": "PASS",
+  "reasons": [
+    "lower 95% bound of the paired speed-up above 1 on every instance of the phase at m in ['2', '3']"
+  ],
+  "carried_m": [
+    "2",
+    "3"
+  ],
+  "next": "promote: run phase 2",
+  "gated": "2026-11-23T05:17:08Z",
+  "registry_sha256": "d561f1826ea850e47b6f379be51d9064da9ae10ac0ae6daa60d6b9d00ac5b50a",
+  "cells": [
+    {
+      "id": "bench-prime-24",
+      "by_m": {
+        "2": {
+          "status": "ok",
+          "pairs": 8,
+          "lead_s": {
+            "492354324577": 10.927225508723481,
+            "492354365080": 9.04718292608947,
+            "492354405583": 9.524272081187103,
+            "492354446086": 8.776607712481907,
+            "492354486589": 9.887536977381819,
+            "492354527092": 9.46099939137891,
+            "492354567595": 9.082737081656038,
+            "492354608098": 9.06651481943065
+          },
+          "speedup_geomean": 4.568048009698441,
+          "speedup_ci": [
+            4.366054584921688,
+            4.730348487616962
+          ],
+          "lead_s_over_rho": 6.780997356166733,
+          "peak_rss_gib": 0.0218,
+          "better": true
+        },
+        "3": {
+          "status": "ok",
+          "pairs": 8,
+          "lead_s": {
+            "492354324577": 11.278254099728995,
+            "492354365080": 10.717533362206414,
+            "492354405583": 9.85079431497402,
+            "492354446086": 9.950203444544563,
+            "492354486589": 9.478529495956936,
+            "492354527092": 9.440831093232308,
+            "492354567595": 9.63691661492205,
+            "492354608098": 9.60340285294264
+          },
+          "speedup_geomean": 4.3275726208966425,
+          "speedup_ci": [
+            4.123096955425792,
+            4.5132862891487555
+          ],
+          "lead_s_over_rho": 7.155372392382053,
+          "peak_rss_gib": 0.0218,
+          "better": true
+        },
+        "4": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "5": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "6": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "7": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "8": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "9": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        }
+      },
+      "arms": {
+        "baseline": {
+          "status": "ok",
+          "wall_seconds": 0.163,
+          "peak_rss_gib": 0.0218,
+          "killed_by": null
+        },
+        "lead-m2": {
+          "status": "ok",
+          "wall_seconds": 0.082,
+          "peak_rss_gib": 0.0218,
+          "killed_by": null
+        },
+        "lead-m3": {
+          "status": "ok",
+          "wall_seconds": 0.122,
+          "peak_rss_gib": 0.0218,
+          "killed_by": null
+        }
+      },
+      "instance": "generated-24bit-11319949",
+      "rho_reference": {
+        "method": "negation-map r-adding walk: look-ahead, short-cycle escape by doubling, distinguished points, stride starts",
+        "automorphisms": 2,
+        "runs": 16,
+        "mean_s": 1.3967907764596805,
+        "min_s": 0.36137285373792644,
+        "max_s": 2.468687743421838,
+        "all_verified": true
+      },
+      "baseline_s": {
+        "492354324577": 43.5374151320436,
+        "492354365080": 41.93979502076623,
+        "492354405583": 43.34527807072453,
+        "492354446086": 42.86578582424353,
+        "492354486589": 43.932915696592985,
+        "492354527092": 43.42887201100908,
+        "492354567595": 43.07423406470338,
+        "492354608098": 43.289405457993176
+      },
+      "baseline_s_over_rho": 30.91136724799664,
+      "status": "ok"
+    }
+  ]
+}

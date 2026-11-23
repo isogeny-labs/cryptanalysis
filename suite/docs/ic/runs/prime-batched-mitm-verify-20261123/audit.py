@@ -3,6 +3,7 @@
 import json, subprocess, sys, os, math, random, glob
 CA = '/home/user/wt/mitm-batched-verify/suite/target/release/ca-ic'
 INST = {16: (40, 887597270407), 18: (63, 887597270407), 20: (100, 69066127048), 22: (160, 69066127048), 24: (256, 509897497596)}
+INST_EXT = {24: (256, 492354324577), 28: (645, 614611668204), 32: (1625, 575604615030)}
 ARMS = {  # name: (oracle string, rho_runs)
  'B0':   ('mitm', 8), 'B1': ('mitm:negation_folded=1', 0), 'B2': ('mitm:native_setup_pricing=1', 0),
  'B3':   ('mitm:negation_folded=1,native_setup_pricing=1', 0),
@@ -10,7 +11,10 @@ ARMS = {  # name: (oracle string, rho_runs)
  'M3':   ('mitm:m=3', 0), 'M3n': ('mitm:m=3,native_setup_pricing=1', 0),
  'L3':   ('mitm-prime-batched:m=3', 0), 'L3c': ('mitm-prime-batched:m=3,native_setup_pricing=0,native_probe_pricing=0', 0)}
 def run(out, R=5, reps=24, bits_list=(16, 18, 20, 22, 24)):
-    names = list(ARMS)
+    global INST
+    if os.environ.get('AUDIT_SET') == 'ext': INST = INST_EXT; bits_list = tuple(INST)
+    if os.environ.get('AUDIT_INST'): INST = {int(k): tuple(v) for k, v in json.loads(os.environ['AUDIT_INST']).items()}; bits_list = tuple(INST)
+    names = os.environ['AUDIT_ARMS'].split(',') if os.environ.get('AUDIT_ARMS') else list(ARMS)
     for b in bits_list:
         size, seed = INST[b]
         for rep in range(R):
@@ -55,6 +59,7 @@ def an(out):
                 S_over_rho=sum(agg(a, 's')) / row['targets'] / rho)
         # vs same-priced scalar controls (wall)
         for lead, ctl in (('L2', 'B3'), ('L2', 'B2'), ('L2', 'B1'), ('L3', 'M3n'), ('L3', 'M3')):
+            if lead not in data or ctl not in data: continue
             lw = [x - y for x, y in zip(lgm(ctl, 'w'), lgm(lead, 'w'))]; ls = [x - y for x, y in zip(lgm(ctl, 's'), lgm(lead, 's'))]
             row[f'{lead}_vs_{ctl}'] = dict(wall=[math.exp(sum(lw) / len(lw)), *ci(lw)], S=[math.exp(sum(ls) / len(ls)), *ci(ls)])
         res[b] = row

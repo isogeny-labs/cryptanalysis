@@ -51,3 +51,11 @@ averaged over replicates, then bootstrapped over targets. Metrics: priced S, tot
 (`wall_seconds`, no calibration), wall-S. Additional prediction P4 (before data): against the
 same-priced scalar control (`mitm:negation_folded=1,native_setup_pricing=1`) the lead's wall gain
 at m=2 is < 2x at every size and its CI is below the registry priced ratio.
+
+## Amendment 2 (after the 24/28/32 audit and the first size sweep, before the low-size sweep data)
+The size sweep (sizes 0.5x..2x of 2^(b/3) at 24, 28, 32 bits; arms B0,B3,L2,M3n,L3; R=4, 24
+targets) showed the baseline's S falls with smaller bases down to the lowest size tried, so its
+optimum is not bracketed. `sizesweep_low.sh` adds sizes 0.18x..0.5x of 2^(b/3) to bracket each
+arm's own S-minimum. Reported: each arm at its own S-optimal size (the fair constant), and the
+ratio of optima. Expectation (P5; NOT blind: written after seeing the first sweep, where the lead optimum over the base arm optimum at the sizes tried was about 2.2x): the lead's optimal-size gain over the baseline's
+optimal-size is smaller than the fixed-size ratio and is about 2x, roughly constant in bits.

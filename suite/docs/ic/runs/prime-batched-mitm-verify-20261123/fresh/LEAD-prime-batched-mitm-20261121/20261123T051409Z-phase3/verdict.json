@@ -1,0 +1,133 @@
+{
+  "schema": "lead-testing.verdict/v1",
+  "lead_id": "LEAD-prime-batched-mitm-20261121",
+  "phase": 3,
+  "verdict": "PASS",
+  "reasons": [
+    "lower 95% bound of the paired speed-up above 1 on every instance of the phase at m in ['2', '3']"
+  ],
+  "carried_m": [
+    "2",
+    "3"
+  ],
+  "next": "candidate for the baseline ratchet: freeze a protocol in cryptanalysis (docs/ic/BASELINES.md rules, Tier 1, pcc claim); this harness does not write rows",
+  "gated": "2026-11-23T05:14:10Z",
+  "registry_sha256": "312cd1dd6b49ea55276ef0195ad4290e176ffd6a812320a636b9998014374314",
+  "cells": [
+    {
+      "id": "bench-prime-24",
+      "by_m": {
+        "2": {
+          "status": "ok",
+          "pairs": 8,
+          "lead_s": {
+            "509897497596": 10.808772064197885,
+            "509897538099": 8.080593015390866,
+            "509897578602": 8.1599077267747,
+            "509897619105": 9.789989665160112,
+            "509897659608": 8.142003472787836,
+            "509897700111": 9.908060482709041,
+            "509897740614": 8.40445815700617,
+            "509897781117": 7.359437845950639
+          },
+          "speedup_geomean": 4.401320409099005,
+          "speedup_ci": [
+            4.098214777957313,
+            4.715902052155989
+          ],
+          "lead_s_over_rho": 7.7504719410678895,
+          "peak_rss_gib": 0.0219,
+          "better": true
+        },
+        "3": {
+          "status": "ok",
+          "pairs": 8,
+          "lead_s": {
+            "509897497596": 10.235155833257911,
+            "509897538099": 10.560146227375576,
+            "509897578602": 10.722000513284419,
+            "509897619105": 11.205539718303859,
+            "509897659608": 10.283905061484285,
+            "509897700111": 10.050793425746624,
+            "509897740614": 9.318937973982786,
+            "509897781117": 9.697802641386314
+          },
+          "speedup_geomean": 3.7654706009131735,
+          "speedup_ci": [
+            3.6279165152911044,
+            3.914892305212505
+          ],
+          "lead_s_over_rho": 9.003331952259002,
+          "peak_rss_gib": 0.0219,
+          "better": true
+        },
+        "4": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "5": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "6": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "7": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "8": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "9": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        }
+      },
+      "arms": {
+        "baseline": {
+          "status": "ok",
+          "wall_seconds": 0.142,
+          "peak_rss_gib": 0.0219,
+          "killed_by": null
+        },
+        "lead-m2": {
+          "status": "ok",
+          "wall_seconds": 0.122,
+          "peak_rss_gib": 0.0219,
+          "killed_by": null
+        },
+        "lead-m3": {
+          "status": "ok",
+          "wall_seconds": 0.122,
+          "peak_rss_gib": 0.0219,
+          "killed_by": null
+        }
+      },
+      "instance": "generated-24bit-14891917",
+      "rho_reference": {
+        "method": "negation-map r-adding walk: look-ahead, short-cycle escape by doubling, distinguished points, stride starts",
+        "automorphisms": 2,
+        "runs": 16,
+        "mean_s": 1.1394987132267842,
+        "min_s": 0.3528820355360753,
+        "max_s": 2.548160660423862,
+        "all_verified": true
+      },
+      "baseline_s": {
+        "509897497596": 39.607492921642006,
+        "509897538099": 37.603805686685206,
+        "509897578602": 38.282017877238836,
+        "509897619105": 39.111755784229565,
+        "509897659608": 38.314059895059074,
+        "509897700111": 39.87393499623214,
+        "509897740614": 38.43841047879738,
+        "509897781117": 37.437020231384324
+      },
+      "baseline_s_over_rho": 33.86011917876525,
+      "status": "ok"
+    }
+  ]
+}
