@@ -103,3 +103,19 @@ In the complete comparison (six runs per build), the medians were 374.3 ms and 1
 | Batched history and eligibility, rotated squares | 174.1 | 172.2 |
 
 Batching eligibility accounts for most of the additional gain. The four observations per arm give limited precision for comparing the two square-generation methods. The ratio of scalar to candidate median wall times is 6.63 on the entire public-coordinate census. Raw observations in execution order are in orbit_panel.csv.
+
+### Does the smooth census pay for itself on the archived single-target fixture?
+
+The archived field31_s5_base0 public.json lists 32 structured roots. The preparation code in snapshot/algebraic/optimized/benchmark.py checks a curve lift for each and retains 17 points. Checking all 31 rotations of every root gives exactly one smooth-orbit match at bound 47, x = 3; it also passes the auxiliary eligibility test and lifts. This covers 1/32 raw coordinates and 1/17 accepted coordinates. The census CSV stores counts by history, so even this one coordinate has no individually addressable entry there.
+
+SetupCoverage.lean checks the smoothness test on both lists. Each rotated positive representative is below 2³¹, so every prime exponent is at most 30. Divisibility by (47!)³⁰ is consequently equivalent to having no prime factor above 47. A separate replay using trial division by each prime through 47 gave the same match. The stored Lean lists were compared in order against the archived public.json and same_base.txt.
+
+Consider an intentionally favorable counterfactual: remove both basis construction and all reported native setup, at zero replacement cost, while retaining all other costs. For cold total T and those two charges S, the speedup ceiling is T/(T−S). The archived v2_batch_seed{0,1,2}.audited.json records give:
+
+| Seed | Cold total (s) | Combined setup (ms) | Ceiling |
+|---:|---:|---:|---:|
+| 0 | 9.685108 | 2.397886 | 1.000248× |
+| 1 | 5.167236 | 2.203726 | 1.000427× |
+| 2 | 11.667566 | 2.390376 | 1.000205× |
+
+The strict common upper bound 1.000427× is proved using the cold totals rounded down and setup rounded up to integer microseconds. This is a derived ceiling on those three recorded runs of one known fixture. It uses no cross-host timing ratios. Census acceleration alone has no demonstrated benefit for the measured single-target loop. The modern Rust crate also builds its factor base by lifting individual roots; the census artifact has no crate consumer at commit 08ed2eb14.
