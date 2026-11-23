@@ -10,3 +10,4 @@ lean -R "$src/.." -o "$out/M31FixtureObstruction.olean" "$src/../M31FixtureObstr
 lean -R "$src" -o "$out/Correlation.olean" "$src/Correlation.lean"
 lean -R "$src" -o "$out/MixedBuckets.olean" "$src/MixedBuckets.lean"
 lean "$src/Shifted.lean"
+lean "$src/FixtureHash.lean"
