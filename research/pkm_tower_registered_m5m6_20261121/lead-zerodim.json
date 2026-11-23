@@ -1,0 +1,21 @@
+{
+  "schema": "lead-testing.lead/v1",
+  "id": "PKM-TOWER-ZERODIM-SOLVER-20261123",
+  "title": "PKM tower phase 1 with the zero-dimensional solver-mode stop",
+  "hypothesis": "Stopping the tower F4 engine at the zero-dimensional certificate completes the phase-1 planted and random cells without the full-basis tail, while the raw-presentation baseline keeps the same registered fields and targets.",
+  "prior_art": [
+    "cryptanalysis:suite/src/cryptanalysis/f4_fp_tower.rs stop_zero_dim (commit 48b11355d)",
+    "workspace:docs/notes/subexp-algo-20261121/PKM_F4_EARLY_ZERODIM_SPEEDUP.md",
+    "workspace:docs/lead-testing/PROTOCOL.md"
+  ],
+  "kind": "pkm",
+  "pkm": {
+    "args": [
+      "--engine",
+      "tower",
+      "--stop-zero-dim"
+    ],
+    "m_max": 6
+  },
+  "pkm_m_max_why": "f4_fp_tower holds at most MAX_FREE = 4 free variables; m >= 7 panics. The zero-dimensional stop is guarded off for m = 2, where the ring has no free variables."
+}
