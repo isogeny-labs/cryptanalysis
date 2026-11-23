@@ -1,0 +1,19 @@
+# Smooth coordinate signatures and target lifts
+
+Compile smooth_rhs.cpp with clang++ -std=c++17 -O3 and run locally. The domain is every positive integer less than 2147483647 whose prime factors are at most 89, without rotations. For each coordinate x, compute the canonical residue r of x³+2x+14 and test whether r is a square. The input signature records the exponent of each of the 24 primes in x modulo two. A deterministic classifier given only the signature must return one label per bucket. Summing the smaller class count in each bucket gives the attainable minimum number of classification errors on this domain. Only wholly negative buckets can be rejected if every lift must be retained.
+
+The second test looks for r in the sorted list of all positive 89-smooth integers. Whenever it is present, the parity of the nonsquare-prime exponents in the factorization of r gives its square class. The reported count uses the canonical positive representative and does not bound alternate representatives. The census checks this label against direct field exponentiation on every such r, confirms uniqueness of the coordinate enumeration, and verifies the previously established population and lift totals.
+
+The Lean theorem smooth_square_witness in CubicSpan.lean independently checks a minimal kind of collision: x=1 and x=9 differ by a factor of 3² and have opposite target lift labels. The full census counts are native computations. No table construction or lookup speedup is assumed.
+
+## Signed rotations and reciprocals
+
+Run the same program with the argument orbits. The four bits in match_mask mark a smooth representative among rotations of r, of −r, of its reciprocal, and of the negated reciprocal, respectively. The program indexes reciprocal orbits of smooth integers and queries the orbit of r to avoid inverting every query. Stripping powers of two from the indexed integers preserves the orbit. It checks for conflicting labels within each table and verifies every matching route independently against direct exponentiation, including overlapping routes. The zero case is checked and excluded for this domain. SmoothOrbit.lean proves the quadratic-character identities used by the rotation, inversion and negation rules.
+
+Each coordinate is counted once per mask. The nested unions for mask bits 1, 3 and 15 cover 59807, 118910 and 235328 coordinates. The combined table covers 117734 lifts and 117594 nonlifts. Its 6.118% coverage is a ceiling on the fraction of direct label tests that this particular rule can replace on this smooth-input domain. The census does not charge a setup or lookup time.
+
+## Charged label throughput
+
+Build with Apple Clang 21, -O3 -mcpu=native -std=c++17. Run with the argument timing. Three fresh local M4 Pro processes timed six paired traversals each, alternating arm order. The common coordinate list is already generated, in identical order for both arms. Both arms compute the cubic right-hand side and emit a byte per coordinate. The direct arm invokes the same 30-square arithmetic used by the hybrid on a miss. The hybrid combines rotations and negations in a single 31-word min/max scan, then probes one packed two-bit entry. The same table stores reciprocal representatives. A miss triggers direct squaring. Every pair verified identical output vectors and exactly 235328 hits.
+
+The 256 MiB index setup is measured from allocation through representative insertion, once per process. Output allocation and verification are outside the timers. CSV setup values repeat on each row only to identify the single charged setup. For warm comparisons exclude setup; for one cold traversal add it once to the first hybrid time. Each process uses the same coordinate set on a shared unpinned host. Hot and cold comparisons both favor direct arithmetic. This is a complete label pass over the smooth-coordinate population and excludes collector work.

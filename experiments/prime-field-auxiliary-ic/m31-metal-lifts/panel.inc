@@ -10,14 +10,14 @@ struct MetalLabels {
     id<MTLCommandQueue> queue;
     id<MTLComputePipelineState> pipeline;
 
-    void setup() {
+    void setup(NSString *name=@"labels") {
         device=MTLCreateSystemDefaultDevice();
         NSError *error=nil;
         NSString *src=[NSString stringWithContentsOfFile:@"lifts.metal"
                             encoding:NSUTF8StringEncoding error:&error];
         if (!device || !src) { NSLog(@"Metal setup: %@",error); std::exit(1); }
         auto lib=[device newLibraryWithSource:src options:nil error:&error];
-        auto fn=[lib newFunctionWithName:@"labels"];
+        auto fn=[lib newFunctionWithName:name];
         if (!fn) { NSLog(@"shader: %@",error); std::exit(2); }
         pipeline=[device newComputePipelineStateWithFunction:fn error:&error];
         queue=[device newCommandQueue];
