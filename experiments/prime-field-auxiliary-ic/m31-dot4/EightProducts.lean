@@ -41,3 +41,24 @@ theorem deferred_fold (s t : ℕ) (hs : s < 2^64) (ht : t < 2^64) :
       (if v ≥ 2147483647 then v-2147483647 else v) = (s+t)%2147483647 := by
   dsimp
   split <;> omega
+
+/-- NEON widening multiply-add groups even and odd columns into separate lanes.
+The column arguments are natural products of two canonical M31 residues. -/
+theorem neon_lane_fold (a b c d e f g h : ℕ)
+    (bounds : ∀ x ∈ [a,b,c,d,e,f,g,h], x ≤ 2147483646^2) :
+    let s := a+c+e+g
+    let t := b+d+f+h
+    let u := s%2^31 + s/2^31 + (t%2^31 + t/2^31)
+    let v := u%2^31 + u/2^31
+    s < 2^64 ∧ t < 2^64 ∧ u < 2^35 ∧ v < 2^32 ∧
+      (if v ≥ 2147483647 then v-2147483647 else v) =
+        (a+b+c+d+e+f+g+h)%2147483647 := by
+  simp only [List.mem_cons, List.not_mem_nil, or_false, forall_eq_or_imp,
+    forall_eq] at bounds
+  dsimp
+  have hs : a+c+e+g < 2^64 := by omega
+  have ht : b+d+f+h < 2^64 := by omega
+  have result := deferred_fold _ _ hs ht
+  dsimp at result
+  rw [← Nat.add_assoc] at *
+  exact ⟨hs, ht, by omega, by omega, by convert result.2.2 using 1; omega⟩
