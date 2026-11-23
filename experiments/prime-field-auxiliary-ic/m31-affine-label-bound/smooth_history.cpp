@@ -1,4 +1,7 @@
 // Exact conditional distribution on the existing bound-47 smooth-orbit population.
+#ifdef SIGNED_BATCH_HISTORY
+#include "signed_square.h"
+#endif
 #ifdef BATCH_HISTORY
 #include "../m31-native-product/product.h"
 #endif
@@ -40,6 +43,21 @@ Word rhs(Word x) { return ((x*x % p)*x + 2*x + 14) % p; }
 using Counts = std::array<unsigned,2048>;
 #ifdef BATCH_HISTORY
 void squarePowers(const uint32_t* inputs, uint32_t* powers, size_t n) {
+#ifdef SIGNED_BATCH_HISTORY
+    constexpr size_t vectors = 8;
+    while (n >= 4 * vectors) {
+        std::array<uint32x4_t, vectors> state;
+        for (size_t j = 0; j < vectors; ++j) state[j] = vld1q_u32(inputs + 4*j);
+        for (unsigned round = 0; round < 30; ++round)
+            for (auto& group : state) group = signedSquare(group);
+        for (size_t j = 0; j < vectors; ++j)
+            vst1q_u32(powers + 4*j, canonicalSigned(state[j]));
+        inputs += 4 * vectors;
+        powers += 4 * vectors;
+        n -= 4 * vectors;
+    }
+    if (n == 0) return;
+#endif
     m31_products(inputs, inputs, powers, n);
     for (unsigned i = 1; i < 30; ++i)
         m31_products(powers, powers, powers, n);

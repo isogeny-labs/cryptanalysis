@@ -2,7 +2,7 @@
 // clang++ -std=c++17 -O3 -mcpu=native neon_character.cpp product.o -o neon_character
 // Supply the 256 public structured roots as whitespace-separated decimal integers on stdin.
 #include "../m31-native-product/product.h"
-#include <arm_neon.h>
+#include "signed_square.h"
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -84,15 +84,6 @@ __attribute__((noinline)) void arraySquares(const Panel& xs, uint32_t b, Panel& 
     for (size_t i=0;i<xs.size();++i) out[i] = fromSquare(y[i],out[i]);
 }
 
-// Every signed input lane is in [-p,p]. The square is nonnegative and fits
-// the doubling-high operation even for -p. The new lane is in [-p,p).
-uint32x4_t signedSquare(uint32x4_t bits) {
-    auto x = vreinterpretq_s32_u32(bits);
-    auto hi = vreinterpretq_u32_s32(vqdmulhq_s32(x,x));
-    auto lo = vandq_u32(vmulq_u32(bits,bits), vdupq_n_u32(p));
-    return vsubq_u32(vaddq_u32(hi,lo), vdupq_n_u32(p));
-}
-
 template<bool signedLanes>
 __attribute__((noinline)) void tiledSquares(const Panel& xs, uint32_t b, Panel& out) {
     constexpr unsigned vectors = 8;
@@ -110,8 +101,7 @@ __attribute__((noinline)) void tiledSquares(const Panel& xs, uint32_t b, Panel& 
             }
         for (unsigned j=0;j<vectors;++j) {
             if constexpr (signedLanes) {
-                auto negative = vcltq_s32(vreinterpretq_s32_u32(z[j]), vdupq_n_s32(0));
-                z[j] = vaddq_u32(z[j], vandq_u32(negative,vdupq_n_u32(p)));
+                z[j] = canonicalSigned(z[j]);
             }
             vst1q_u32(out.data()+i+4*j,fromSquare(y[j],z[j]));
         }
