@@ -91,6 +91,16 @@ theorem lifts_iff_point (x : Nat) : lifts x = true ↔
   · rintro ⟨y, hy⟩
     rw [← hy, ← pow_mul, show 2 * 2^30 = p+1 by decide, pow_succ, ZMod.pow_card, pow_two]
 
+/-- Multiplication by a smooth integer square preserves every exponent parity,
+but it can change whether the target curve lifts the coordinate. -/
+theorem smooth_square_witness :
+    9 = 1 * (3:ℕ)^2 ∧
+    (∃ y : ZMod 2147483647, y^2 = (1:ZMod 2147483647)^3 + 2*1 + 14) ∧
+    ¬(∃ y : ZMod 2147483647, y^2 = (9:ZMod 2147483647)^3 + 2*9 + 14) := by
+  refine ⟨by decide, (lifts_iff_point 1).mp (by native_decide), ?_⟩
+  intro h
+  exact (by native_decide : lifts 9 ≠ true) ((lifts_iff_point 9).mpr h)
+
 /-- Eliminate the highest remaining column. Each nonzero XOR step strictly
 lowers this column, so 4992 steps suffice. -/
 private def residual (ps : Array Nat) : Nat → Nat → Nat
