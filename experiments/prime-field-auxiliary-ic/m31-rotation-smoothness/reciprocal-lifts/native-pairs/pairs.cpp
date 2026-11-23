@@ -30,6 +30,42 @@ struct Entry {
     Word key;
     Word inverse_key;
 };
+
+#ifdef M31_FLAT_INDEX
+// A zero key marks an empty slot. Every orbit key is a power of a nonzero
+// field element. Keep the ordinal in the low word for last-value updates.
+class OrbitIndex {
+    std::vector<Wide> slots;
+    std::size_t mask;
+
+    std::size_t locate(Word key) const {
+        std::size_t i = key & mask;
+        while (slots[i] && Word(slots[i] >> 32) != key)
+            i = (i + 1) & mask;
+        return i;
+    }
+
+public:
+    explicit OrbitIndex(std::size_t max_keys) {
+        std::size_t capacity = 1;
+        while (capacity <= max_keys) capacity *= 2;
+        slots.resize(capacity);
+        mask = capacity - 1;
+    }
+
+    void record(Entry e, std::vector<Entry>& groups) {
+        Wide& slot = slots[locate(e.key)];
+        if (slot) {
+            groups[Word(slot)] = e;
+        } else {
+            slot = (Wide(e.key) << 32) | groups.size();
+            groups.push_back(e);
+        }
+    }
+
+    bool contains(Word key) const { return slots[locate(key)] != 0; }
+};
+#endif
 }
 
 int main(int argc, char** argv) {
@@ -59,7 +95,14 @@ int main(int argc, char** argv) {
     }
 
     // Python dict retains first insertion order and the last value for a key.
+#ifdef M31_FLAT_INDEX
+    OrbitIndex position(smooth.size());
+#else
     std::unordered_map<Word, std::size_t> position;
+#ifdef M31_RESERVE_INDEX
+    position.reserve(smooth.size());
+#endif
+#endif
     std::vector<Entry> groups;
     for (Entry e : smooth) {
         if (e.signed_value >= 0) continue;
@@ -67,13 +110,24 @@ int main(int argc, char** argv) {
         e.key = power(Word(-e.signed_value), 31);
         e.inverse_key = power(e.key, p-2);
 #endif
+#ifdef M31_FLAT_INDEX
+        position.record(e, groups);
+#else
         const auto [it, inserted] = position.emplace(e.key, groups.size());
         if (inserted) groups.push_back(e);
         else groups[it->second] = e;
+#endif
     }
+    const auto contains = [&](Word key) {
+#ifdef M31_FLAT_INDEX
+        return position.contains(key);
+#else
+        return position.count(key) != 0;
+#endif
+    };
     for (const Entry& e : groups) {
         if (audit) std::printf("%u %d\n", e.key, -e.signed_value);
-        else if (e.key < e.inverse_key && position.count(e.inverse_key))
+        else if (e.key < e.inverse_key && contains(e.inverse_key))
             std::printf("%d\n", -e.signed_value);
     }
     return std::fflush(stdout) != 0;
