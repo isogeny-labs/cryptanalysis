@@ -65,4 +65,55 @@ theorem wrapCount : ∀ d : Fin 53,
     (Finset.univ.filter (fun i : Fin 53 => 53 ≤ i.val + d.val)).card = d.val := by
   decide
 
+/-- For an unordered pair i < j count both directed jumps, using the
+positive forward distance around the cycle in each direction. -/
+def pairScore {H : Type*} [AddCommGroup H] [DecidableEq H]
+    (f : Fin 53 → H) (t : H) (i j : Fin 53) : ℕ :=
+  if i < j then
+    (if f j = f i + (j.val - i.val) • t then 1 else 0) +
+    (if f i = f j + (53 - (j.val - i.val)) • t then 1 else 0)
+  else 0
+
+theorem pairScore_le {H : Type*} [AddCommGroup H] [DecidableEq H]
+    (f : Fin 53 → H) (t : H) (ht : 53 • t ≠ 0) (i j : Fin 53) :
+    pairScore f t i j ≤ (if i < j then 1 else 0) := by
+  by_cases hij : i < j
+  · simp only [pairScore, hij, ↓reduceIte]
+    by_cases forward : f j = f i + (j.val - i.val) • t
+    · have backward : f i ≠ f j + (53 - (j.val - i.val)) • t := by
+        intro eqn
+        rw [forward, add_assoc, ← add_nsmul] at eqn
+        have dist : (j.val - i.val) + (53 - (j.val - i.val)) = 53 := by
+          have := j.isLt
+          omega
+        rw [dist] at eqn
+        exact ht (add_left_cancel (a := f i) (by simpa using eqn.symm))
+      simp only [backward, ↓reduceIte, add_zero]
+      simp [forward]
+    · simp [forward]
+      split <;> decide
+  · simp [pairScore, hij]
+
+theorem directedJumpBound {H : Type*} [AddCommGroup H] [DecidableEq H]
+    (f : Fin 53 → H) (t : H) (ht : 53 • t ≠ 0) :
+    (∑ i, ∑ j, pairScore f t i j) ≤ 1378 := by
+  calc
+    _ ≤ ∑ i : Fin 53, ∑ j : Fin 53, (if i < j then 1 else 0 : ℕ) :=
+      Finset.sum_le_sum fun i _ => Finset.sum_le_sum fun j _ => pairScore_le f t ht i j
+    _ = 1378 := by decide
+
+theorem directedJumpSharp {H : Type*} [AddCommGroup H] [DecidableEq H]
+    (t : H) (ht : 53 • t ≠ 0) :
+    (∑ i, ∑ j, pairScore (fun k => k.val • t) t i j) = 1378 := by
+  have scores (i j : Fin 53) :
+      pairScore (fun k => k.val • t) t i j = (if i < j then 1 else 0) := by
+    apply le_antisymm (pairScore_le _ _ ht _ _)
+    by_cases hij : i < j
+    · have h : j.val • t = i.val • t + (j.val - i.val) • t := by
+        rw [← add_nsmul, Nat.add_sub_of_le (Nat.le_of_lt hij)]
+      simp [pairScore, hij, h]
+    · simp [hij]
+  simp_rw [scores]
+  decide
+
 end M31Translation
