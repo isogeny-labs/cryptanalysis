@@ -9,7 +9,7 @@ WIDTH = 7
 DIR = Path(__file__).resolve().parent
 
 
-def coordinates():
+def coordinates(terminal=None):
     def forward(x):
         return (x*x - 2) % P
 
@@ -18,8 +18,9 @@ def coordinates():
             x = forward(x)
         return x
 
-    trace = next(x for x in range(4096) if iterate(x, 30) == P-2)
-    terminal = iterate(trace, WIDTH)
+    if terminal is None:
+        trace = next(x for x in range(4096) if iterate(x, 30) == P-2)
+        terminal = iterate(trace, WIDTH)
     roots = {terminal}
     for _ in range(WIDTH):
         children = set()

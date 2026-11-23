@@ -342,3 +342,11 @@ For integer smoothness, torus7-smooth.gp factors each canonical representative x
 | 4096 | 7/16 | 246/517 | 1746/3451 |
 
 None of the three bounds enriched base lifts on the additional fibers. The deterministic panel measures lift frequency. It supplies no relation-yield or runtime estimate. Run gp -fq torus7-smooth.gp to reproduce the per-fiber counts. PCC-20261123-e7071a records the census. [pcc:unverified]
+
+### Reuse of branch labels across 32 Torus7 fibers
+
+fiber_masks.py reconstructs the roots for the previously selected odd-power terminals and computes the 128-bit base-point label mask for each one. A second calculation using PARI polynomial roots and quadratic characters reproduced every terminal and mask. The archived mask makes 1,965 errors on the 3,968 coordinates of the other fibers. A per-key majority fitted on the first 16 fibers makes 1,026 errors on the last 2,048 coordinates (ties predict twist). These are deterministic panel comparisons.
+
+FiberMaskReuse.lean reads fiber-masks.csv and proves that every branch key occurs with both labels. Any classifier that sees only the key makes at least 1,761 errors on the 4,096 equally weighted records. Per-key majority attains this bound. Any filter shared across the whole panel that must keep every base label must admit all 128 keys.
+
+Terminal identity allows a smaller, one-sided filter. Pair each fiber in the first half with one from the second half and store the union of each pair's positive masks. The weight of a pairing edge counts keys that both fibers can reject. An optimal bipartite matching has total weight 574, rejecting 1,148 records across the paired fibers. All 2,063 base records pass, along with 885 of the 2,033 twist records. Pairing by the same position in each half rejects 1,008 records. Lean checks the attaining assignment, all 256 edge-price inequalities and the matching upper bound; a subset dynamic program independently reproduces the optimum. The 16 masks occupy 256 bytes before routing metadata. Exact classification of survivors needs further work. This count gives the best safe rejection rate for this specific pairing constraint, assuming the branch key and fiber identity are available. No timing is inferred.
