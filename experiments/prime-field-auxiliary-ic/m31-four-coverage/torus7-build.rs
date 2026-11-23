@@ -139,7 +139,16 @@ fn branch_cost(seed: u64, order: &str) {
     }
 }
 
+include!("fiber-filter.rs");
+
 fn main() {
+    if std::env::args().nth(1).as_deref() == Some("fiber-filter") {
+        filter_bench(
+            std::env::args().nth(2).unwrap().parse().unwrap(),
+            &std::env::args().nth(3).unwrap(),
+        );
+        return;
+    }
     #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
     if std::env::args().nth(1).as_deref() == Some("validate-neon") {
         neon_lift::validate();
