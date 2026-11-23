@@ -130,4 +130,68 @@ theorem archived_first_nonsquare : ¬ IsSquare (308768278 : F) := by
 #print axioms no_root
 #print axioms certificate
 #print axioms no_fixed_root
+
+/-- Homogeneous quartic with the three cubic roots and infinity as its zeros. -/
+def branchQuartic (x z : F) := z*(x^3+2*x*z^2+14*z^3)
+
+/-- A linear substitution preserving the branch quartic up to a scalar
+represents the identity in the projective linear group. -/
+theorem branch_stabilizer (a b c d k : F) (det : a*d-b*c ≠ 0)
+    (h : ∀ x z : F, branchQuartic (a*x+b*z) (c*x+d*z) = k*branchQuartic x z) :
+    c = 0 ∧ b = 0 ∧ a = d := by
+  have inf := h 1 0
+  simp [branchQuartic] at inf
+  have hc : c = 0 := by
+    by_contra hn
+    apply no_root (a/c)
+    have eq := inf.resolve_left hn
+    field_simp
+    linear_combination eq
+  subst c
+  simp only [mul_zero, sub_zero, ne_eq, mul_eq_zero, not_or] at det
+  obtain ⟨ha,hd⟩ := det
+  have eq (x : F) := h x 1
+  simp only [branchQuartic, zero_mul, zero_add, mul_one, one_pow, one_mul] at eq
+  have hb0 : 6 * a^2 * b * d = 0 := by
+    linear_combination eq 1 + eq (-1) - 2 * eq 0
+  have hb : b = 0 := by
+    rcases mul_eq_zero.mp hb0 with h' | h'
+    · rcases mul_eq_zero.mp h' with h'' | h''
+      · exact ((mul_ne_zero (by decide : (6:F) ≠ 0) (pow_ne_zero _ ha)) h'').elim
+      · exact h''
+    · exact (hd h').elim
+  subst b
+  have hab : (12:F) * d^3 * (a-d) = 0 := by
+    have h14 : (14:F) ≠ 0 := by decide
+    have hk0 : (14:F) * (d^4-k) = 0 := by linear_combination eq 0
+    have hk := (mul_eq_zero.mp hk0).resolve_left h14
+    linear_combination 8 * eq 1 - eq 2 - 7 * eq 0 - 12 * hk
+  have had := (mul_eq_zero.mp hab).resolve_left
+    (mul_ne_zero (by decide : (12:F) ≠ 0) (pow_ne_zero _ hd))
+  exact ⟨rfl,rfl,sub_eq_zero.mp had⟩
+
+def twistBranch (x z : F) := z*(x^3+2*x*z^2-14*z^3)
+
+theorem twist_reflection (x z : F) : twistBranch (-x) z = -branchQuartic x z := by
+  unfold twistBranch branchQuartic
+  ring
+
+/-- Between the specified curve and twist, reflection is the only projective
+coordinate substitution carrying one quartic to a scalar multiple of the other. -/
+theorem branch_to_twist (a b c d k : F) (det : a*d-b*c ≠ 0)
+    (h : ∀ x z : F, twistBranch (a*x+b*z) (c*x+d*z) = k*branchQuartic x z) :
+    c = 0 ∧ b = 0 ∧ a = -d := by
+  have det' : (-a)*d-(-b)*c ≠ 0 := by
+    intro e
+    apply det
+    linear_combination -e
+  have eq (x z : F) : branchQuartic ((-a)*x+(-b)*z) (c*x+d*z) = (-k)*branchQuartic x z := by
+    have orig := h x z
+    unfold twistBranch branchQuartic at *
+    linear_combination -orig
+  obtain ⟨hc,hb,ha⟩ := branch_stabilizer (-a) (-b) c d (-k) det' eq
+  exact ⟨hc,neg_eq_zero.mp hb, by linear_combination -ha⟩
+
+#print axioms branch_stabilizer
+#print axioms branch_to_twist
 end M31FixtureObstruction
