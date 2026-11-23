@@ -62,6 +62,25 @@ class Curve:
         raise RuntimeError('No point found')
 
 
+def _check_sibling_fiber(roots, maps, terminal, p):
+    """Check each isogeny image once for a full, coset-ordered fiber."""
+    layer = roots
+    for step in maps:
+        half = len(layer) // 2
+        if not half or len(layer) != 2 * half:
+            return False
+        r, a, b = step['r'], step['A'], step['B']
+        parents = []
+        for i in range(half):
+            u, v = layer[i] - r, layer[half + i] - r
+            if not b or u * v % p != b:
+                return False
+            # uv=B makes both shifted images u+A+B/u and v+A+B/v equal.
+            parents.append((u + a + v) % p)
+        layer = parents
+    return layer == [terminal]
+
+
 def chain(p, s, enumerate_all=False, root_limit=None):
     k = (p+1).bit_length()-1
     assert isprime(p) and p+1 == 2**k and s < k-1
@@ -119,10 +138,15 @@ def chain(p, s, enumerate_all=False, root_limit=None):
     if root_limit is not None:
         if root_limit<0:raise ValueError('root_limit must be nonnegative')
         checked_count=min(2**s,root_limit)
+    paired = p == 2**31-1 and checked_count == 2**s
     for i in range(checked_count):
-        assert R is not None and eval_chain(R[0]) == 0
+        assert R is not None
+        if not paired:
+            assert eval_chain(R[0]) == 0
         V.append(R[0])
         R = E.add(R, G)
+    if paired:
+        assert _check_sibling_fiber(V, maps, c, p)
     assert len(set(V)) == len(V)
     if checked_count == 2**s:
         assert R == T
