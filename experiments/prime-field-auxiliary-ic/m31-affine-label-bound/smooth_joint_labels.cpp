@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <vector>
+#include <string_view>
 
 constexpr uint64_t p = (1ULL << 31) - 1;
 
@@ -38,7 +39,47 @@ std::vector<uint32_t> populationCandidates() {
     return coordinates;
 }
 
-int main() {
+size_t uniqueCount(std::vector<uint32_t>& values) {
+    std::sort(values.begin(),values.end());
+    values.erase(std::unique(values.begin(),values.end()),values.end());
+    return values.size();
+}
+
+uint32_t rotationKey(uint32_t value) {
+    uint32_t least = value;
+    for (unsigned j = 1; j < 31; ++j) {
+        value = 2ULL*value % p;
+        least = std::min(least,value);
+    }
+    return least;
+}
+
+// Count distinct arithmetic inputs for the eleven b=14 history labels.
+int cacheKeys() {
+    std::vector<uint32_t> values;
+    for (uint64_t x : populationCandidates()) {
+        if (square(x) || square((x*x+1)%p)) continue;
+        for (unsigned k=0; k<=10; ++k) values.push_back((x+p-k)%p);
+    }
+    const auto calls = values.size();
+    const auto coordinates = uniqueCount(values);
+    for (auto& v : values) {
+        uint64_t x = v;
+        v = (x*x%p*x+2*x+14)%p;
+    }
+    const auto residues = uniqueCount(values);
+    for (auto& v : values) v = rotationKey(v);
+    const auto rotations = uniqueCount(values);
+    for (auto& v : values) v = std::min(v, rotationKey(v ? p-v : 0));
+    const auto signedRotations = uniqueCount(values);
+    std::puts("calls,coordinates,residues,rotation_keys,signed_rotation_keys");
+    std::printf("%zu,%zu,%zu,%zu,%zu\n", calls, coordinates, residues, rotations, signedRotations);
+    return calls != 11*1852867;
+}
+
+int main(int argc, char** argv) {
+    if (argc == 2 && std::string_view(argv[1]) == "--cache-keys") return cacheKeys();
+    if (argc != 1) return 2;
     std::array<unsigned, 4> counts{};
     for (uint64_t x : populationCandidates()) {
         uint64_t xx = x*x % p;
