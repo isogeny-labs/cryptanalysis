@@ -25,6 +25,24 @@ Word power(Word a,Word e) {
     for (;e;e>>=1,a=mul(a,a)) if(e&1) r=mul(r,a);
     return r;
 }
+// If u = x^(2^k - 1), squaring k times then multiplying by u
+// yields x^(2^(2k) - 1). Build blocks of 2, 3, 6, 7, 14, 28, 29 bits.
+static Word inverse_nonzero(Word x) {
+    auto extend=[](Word u,unsigned k) {
+        Word v=u;
+        for(unsigned i=0;i<k;++i) v=mul(v,v);
+        return mul(v,u);
+    };
+    Word u=extend(x,1);
+    u=mul(mul(u,u),x);
+    u=extend(u,3);
+    u=mul(mul(u,u),x);
+    u=extend(u,7);
+    u=extend(u,14);
+    u=mul(mul(u,u),x);
+    u=mul(u,u);
+    return mul(mul(u,u),x);
+}
 std::vector<Point> basis;
 using Bits=std::vector<std::uint64_t>;
 
@@ -33,26 +51,48 @@ using Bits=std::vector<std::uint64_t>;
 template<bool reduced, bool weighted=false, class Record>
 void visit(Point a,unsigned start,unsigned left,Record& record,
            unsigned used=1,unsigned run=1,unsigned ways=1) {
-    std::array<Word,390> prefix,den;
-    Word prod=1;
-    for(unsigned i=start;i<basis.size();++i) {
-        const Point b=basis[i];
-        Word d=a.x==p?0:(a.x!=b.x?sub(b.x,a.x):(a.y==b.y?add(a.y,a.y):0));
-        den[i]=d;
-        prefix[i]=prod;
-        if(d) prod=mul(prod,d);
+    // Opposite signs share an abscissa. Invert one denominator per pair.
+    constexpr unsigned lanes=4;
+    static_assert(lanes && !(lanes & (lanes-1)));
+    std::array<Word,195> prefix,den,inverse;
+    std::array<Word,lanes> products,lane_prefix;
+    products.fill(1);
+    const unsigned first=start/2, end=basis.size()/2;
+    for(unsigned j=first;j<end;++j) {
+        Word x=basis[2*j].x;
+        // On the diagonal one sign doubles and the other cancels.
+        Word d=a.x==p ? 1 : (a.x==x ? add(a.y,a.y) : sub(x,a.x));
+        den[j]=d ? d : 1;
+        Word& product=products[j % lanes];
+        prefix[j]=product;
+        product=mul(product,den[j]);
     }
-    Word inv=power(prod,p-2);
+    Word product=1;
+    for(unsigned k=0;k<lanes;++k) {
+        lane_prefix[k]=product;
+        product=mul(product,products[k]);
+    }
+    Word reciprocal=inverse_nonzero(product);
+    for(unsigned k=lanes;k-->0;) {
+        Word lane_product=products[k];
+        products[k]=mul(reciprocal,lane_prefix[k]);
+        reciprocal=mul(reciprocal,lane_product);
+    }
+    for(unsigned j=end;j-->first;) {
+        Word& lane=products[j % lanes];
+        inverse[j]=mul(prefix[j],lane);
+        lane=mul(lane,den[j]);
+    }
     for(unsigned i=basis.size();i-->start;) {
         const Point b=basis[i];
         Point next;
-        if(!den[i]) next=a.x==p?b:infinity;
+        if(a.x==p) next=b;
+        else if(a.x==b.x && (!a.y || a.y!=b.y)) next=infinity;
         else {
             Word numer;
             if(a.x!=b.x) numer=sub(b.y,a.y);
             else {Word xx=mul(a.x,a.x); numer=add(add(xx,add(xx,xx)),2);}
-            Word slope=mul(numer,mul(prefix[i],inv));
-            inv=mul(inv,den[i]);
+            Word slope=mul(numer,inverse[i/2]);
             next.x=sub(sub(mul(slope,slope),a.x),b.x);
             if(left>1) next.y=sub(mul(slope,sub(a.x,next.x)),a.y);
         }
