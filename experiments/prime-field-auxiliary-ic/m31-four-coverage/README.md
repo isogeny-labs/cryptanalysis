@@ -364,3 +364,22 @@ At each inverse step, place the lower root in slot 2i and the higher root in 2i+
 On Apple M4 Pro, the direct generator and eight-lane lift took a median 269.76 µs per panel. Changing only the root order took 274.82 µs. Using the exact mask to select slots took 243.39 µs. Skipping empty final forks as well took 221.51 µs, a median within-round ratio of 1.227 against direct and 48 wins in 48 rounds. Each arm generated roots from the terminals, wrote points and sorted the output by fiber. All returned the same 2,063 points. Mask construction remains outside timing. The workload models regenerating points from known terminals where 512 bytes of exact masks are available. It does not measure cold mask discovery, cached-point retrieval, a tuned vector inverse-tree comparator or a collector run.
 
 Reproduce using the native torus7-build.rs build above and the fiber-address mode with a terminal rotation and method order. Codes d, a, e and s select the four arms in report order. Rotations 0–23 use the permutations of daes in input enumeration order and rotations 24–47 reverse that schedule. Each timing averages 32 panels. PCC-20261123-be7ea0 [pcc:unverified]
+
+### Cold generation from 32 terminal coordinates
+
+The fiber-cache benchmark charges the first build and resets retained state between campaigns. Within a campaign each request materializes the same sequence in caller-provided output storage, sorted separately by fiber. Only the terminal column of the archived input is read. The mask arm constructs its 512 bytes of membership data while producing the first output. The point-cache arms copy that output into a newly allocated vector and copy from it on subsequent requests (33,008 bytes of point payload). All arms exclude parsing the terminals and allocating caller storage.
+
+Starting from an arbitrary terminal in this panel, seven successive inverse steps give one leaf. Its 24th forward iterate supplies the step trace for the single-fiber recurrence already used by roots(). One further square root supplies a neighboring trace. A second-order linear recurrence then expands the full fiber. Each of the 32 sorted coordinate arrays exactly matched the inverse-tree oracle, including coordinates that do not lift. Each benchmark arm also compared its full output to scalar lifting on every request before timing. FiberRecurrence.lean proves the trace recurrence identity and preservation of the terminal power under multiplication by a period root of unity. The selection of the seed and neighbor and exhaustive coverage on this panel are checked by the native oracle.
+
+Median campaign times in µs on Apple M4 Pro:
+
+| Requests | Tree | Tree with mask reuse | Tree with point reuse | Recurrence | Recurrence + NEON | Recurrence + NEON with point reuse |
+|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 274.65 | 273.61 | 272.84 | 95.82 | 61.82 | 63.20 |
+| 2 | 543.89 | 500.36 | 275.96 | 188.92 | 122.19 | 63.64 |
+| 4 | 1093.73 | 937.96 | 279.33 | 372.75 | 248.15 | 64.30 |
+| 8 | 2188.40 | 1831.87 | 278.14 | 755.37 | 499.18 | 65.76 |
+
+The one-request paired ratios against the inverse tree were 2.860 for recurrence with the identical eight-lane lift and 4.462 with the existing NEON lift. Both won all 24 comparisons. Neither needs cached labels. This generalizes the repository's existing single-fiber recurrence to this panel of supplied terminal coordinates. The control was the inverse tree used for the preceding pruning experiment. This benchmark measures point-table construction, with cold referring to algorithm state, on a warmed process.
+
+Build torus7-build.rs with the native flags above. Mode fiber-cache takes the terminal rotation, number of requests, and method order. Codes d,m,c,r,v,C correspond to the six columns in order. The initial three-method screen used rotations 0 through 23. The six-method comparison used rotations 24 through 47, cycling initial position and reversing order on alternate groups of six. Each timing averages eight fresh campaigns. PCC-20261123-52c75f [pcc:unverified]

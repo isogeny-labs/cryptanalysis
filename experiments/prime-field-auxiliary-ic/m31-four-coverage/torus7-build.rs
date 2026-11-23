@@ -143,7 +143,14 @@ include!("fiber-filter.rs");
 
 include!("fiber-address.rs");
 
+include!("fiber-cache.rs");
+
 fn main() {
+    if std::env::args().nth(1).as_deref() == Some("fiber-cache") {
+        let args: Vec<_> = std::env::args().collect();
+        cache_bench(args[2].parse().unwrap(), args[3].parse().unwrap(), &args[4]);
+        return;
+    }
     if std::env::args().nth(1).as_deref() == Some("fiber-address") {
         address_bench(
             std::env::args().nth(2).unwrap().parse().unwrap(),
