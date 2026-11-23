@@ -17,3 +17,19 @@ Each coordinate is counted once per mask. The nested unions for mask bits 1, 3 a
 Build with Apple Clang 21, -O3 -mcpu=native -std=c++17. Run with the argument timing. Three fresh local M4 Pro processes timed six paired traversals each, alternating arm order. The common coordinate list is already generated, in identical order for both arms. Both arms compute the cubic right-hand side and emit a byte per coordinate. The direct arm invokes the same 30-square arithmetic used by the hybrid on a miss. The hybrid combines rotations and negations in a single 31-word min/max scan, then probes one packed two-bit entry. The same table stores reciprocal representatives. A miss triggers direct squaring. Every pair verified identical output vectors and exactly 235328 hits.
 
 The 256 MiB index setup is measured from allocation through representative insertion, once per process. Output allocation and verification are outside the timers. CSV setup values repeat on each row only to identify the single charged setup. For warm comparisons exclude setup; for one cold traversal add it once to the first hybrid time. Each process uses the same coordinate set on a shared unpinned host. Hot and cold comparisons both favor direct arithmetic. This is a complete label pass over the smooth-coordinate population and excludes collector work.
+
+## Complete census with bucketed lookup and field arithmetic in blocks
+
+The default executable partitions the sorted coordinates by their top 19 bits and stores 524289 offsets (2 MiB plus four bytes). A query searches just the rows with the same top bits and still compares the full coordinate. The offsets are built in one pass over the sorted rows. Cubic values are classified in blocks of 32 with the same 30 successive field squarings. The implementation widens each product to 64 bits and folds at bit 31. Apple Clang reported vectorization width 4 with interleave count 4 for the inner squaring loop. The final partial block uses its actual length.
+
+On one Apple M4 Pro with Apple Clang 21.0.0, all six orders of the three builds were run. Each observation is a complete fresh process including generation, sort, directory and bucket allocation, cubic evaluation, lookup, aggregation and output. The table reports medians in seconds. Compilation is outside the measurements.
+
+| Build | Wall | User + system CPU |
+|---|---:|---:|
+| Original, f9c7b49e7 | 1.051354 | 1.046992 |
+| Directory only, 4f9bb3425 | 0.585722 | 0.582144 |
+| Directory and field arithmetic in blocks | 0.401838 | 0.393886 |
+
+The median of the six within-block original/final wall-time ratios was 2.655. All 18 outputs matched smooth_rhs.csv byte for byte. A separate untimed cross-check compared each new label, lookup membership and matched row against the scalar square test and full-range binary search over all 3846525 coordinates. Run the default executable after compiling smooth_rhs.cpp with `clang++ -std=c++17 -O3 -mcpu=native`. The raw block and position data are in smooth_rhs_directory_timing.csv.
+
+Directory.lean checks the sorted bucket boundaries, membership equivalence and last offset index. The existing ../m31-field-ffi/Fold.lean checks the field product identity and word bounds. This measures the complete public smoothness census on one shared host. Collector runtime and other processor architectures are outside this measurement.

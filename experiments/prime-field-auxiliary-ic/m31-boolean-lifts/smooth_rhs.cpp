@@ -18,6 +18,25 @@ static bool square(uint32_t x) {
     return y==x;
 }
 
+// Evaluate independent cubic labels in lanes. Keeping the square state at
+// 32 bits lets a vectorizing compiler widen just the products.
+constexpr size_t label_block = 32;
+static void cubic_labels(const Row* rows, size_t count,
+                         uint32_t (&rhs)[label_block], uint32_t (&state)[label_block]) {
+    for (size_t j = 0; j < count; ++j) {
+        const uint64_t x = rows[j].x;
+        rhs[j] = (x*x%prime*x + 2*x + 14) % prime;
+        state[j] = rhs[j];
+    }
+    for (unsigned step = 0; step < 30; ++step) {
+        for (size_t j = 0; j < count; ++j) {
+            const uint64_t product = uint64_t(state[j]) * state[j];
+            const uint32_t folded = (product & prime) + (product >> 31);
+            state[j] = folded >= prime ? folded - prime : folded;
+        }
+    }
+}
+
 static uint32_t orbit_key(uint32_t x) {
     uint32_t least=x;
     for (unsigned i=1; i<31; ++i) {
@@ -169,21 +188,27 @@ int main(int argc,char **argv) {
     }
     std::vector<std::array<uint32_t,2>> buckets(1u<<primes.size());
     uint32_t lifts=0, overlap=0, overlap_lifts=0, errors=0, mixed=0, used=0, mixed_rows=0;
-    for (size_t i=0; i<rows.size(); ++i) {
-        auto [x,mask]=rows[i];
-        if (i && x==rows[i-1].x) return 1;
-        uint32_t rhs=(uint64_t(x)*x%prime*x+2ull*x+14)%prime;
-        bool label=square(rhs);
-        lifts+=label;
-        ++buckets[mask][label];
-        const auto bucket = rhs >> shift;
-        auto end = rows.begin() + first[bucket+1];
-        auto it = std::lower_bound(rows.begin() + first[bucket], end, rhs,
-                                   [](const Row& a, uint32_t b) { return a.x < b; });
-        if (it!=end && it->x==rhs) {
-            if (label != (__builtin_parity(it->parity & nonsquare)==0)) return 1;
-            ++overlap;
-            overlap_lifts+=label;
+    uint32_t residues[label_block], states[label_block];
+    for (size_t base = 0; base < rows.size(); base += label_block) {
+        const size_t count = std::min(label_block, rows.size() - base);
+        cubic_labels(rows.data() + base, count, residues, states);
+        for (size_t lane = 0; lane < count; ++lane) {
+            const size_t i = base + lane;
+            auto [x,mask] = rows[i];
+            if (i && x == rows[i-1].x) return 1;
+            const uint32_t rhs = residues[lane];
+            const bool label = states[lane] == rhs;
+            lifts+=label;
+            ++buckets[mask][label];
+            const auto bucket = rhs >> shift;
+            auto end = rows.begin() + first[bucket+1];
+            auto it = std::lower_bound(rows.begin() + first[bucket], end, rhs,
+                                       [](const Row& a, uint32_t b) { return a.x < b; });
+            if (it!=end && it->x==rhs) {
+                if (label != (__builtin_parity(it->parity & nonsquare)==0)) return 1;
+                ++overlap;
+                overlap_lifts+=label;
+            }
         }
     }
     uint32_t pure_negatives=0, pure_positives=0;
