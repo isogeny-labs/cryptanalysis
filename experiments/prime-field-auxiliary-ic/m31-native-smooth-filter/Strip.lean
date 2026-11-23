@@ -106,4 +106,33 @@ theorem signed_filter (x p : ℕ) :
   · simp [accepts, hz]
   · simp [accepts, hz, native_filter _ (Nat.pos_of_ne_zero hz)]
 
+/-- After stripping a list of primes, the residual is one exactly when
+the list covers every prime divisor of the positive input. -/
+theorem residual_one_iff (qs : List ℕ) (x : ℕ) (hx : 0 < x)
+    (hp : ∀ q ∈ qs, Nat.Prime q) :
+    residual qs x = 1 ↔ ∀ q : ℕ, q.Prime → q ∣ x → q ∈ qs := by
+  constructor
+  · intro h q hq hd
+    by_contra absent
+    have hf := residual_factor qs x q hp
+    rw [h, Nat.factorization_one, ite_eq_right absent] at hf
+    have pos := hq.factorization_pos_of_dvd hx.ne' hd
+    simp [← hf] at pos
+  · intro covered
+    by_contra h
+    let y := residual qs x
+    have prime := Nat.minFac_prime h
+    have divides := Nat.minFac_dvd y
+    have member := covered y.minFac prime (divides.trans (residual_dvd qs x hp))
+    have pos := prime.factorization_pos_of_dvd (residual_pos qs x hx hp).ne' divides
+    change 0 < (residual qs x).factorization y.minFac at pos
+    rw [residual_factor qs x y.minFac hp, ite_eq_left member] at pos
+    omega
+
+theorem batch_accepts_iff (x : ℕ) (hx : 0 < x) :
+    residual factors x = 1 ↔ early factors x = true := by
+  rw [native_filter x hx, residual_one_iff factors x hx (fun q h => ((mem_factors q).mp h).2)]
+  simp only [mem_factors]
+  exact ⟨fun h q hq hd => (h q hq hd).1, fun h q hq hd => ⟨h q hq hd, hq⟩⟩
+
 end NativeSmooth
