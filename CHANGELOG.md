@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.1.17](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.16...cryptanalysis-v0.1.17) (2026-11-23)
+
+
+### Features
+
+* **research:** compose CT315 cost and CT317 group replay on same raw panel ([a740f85](https://github.com/isogeny-labs/cryptanalysis/commit/a740f8560cd6c34fcb759bc1c02fc8390e8c89a2))
+
+
+### Bug Fixes
+
+* **ct319:** bind every cold wall/RSS and invocation to CT304 capture bytes ([284c8c5](https://github.com/isogeny-labs/cryptanalysis/commit/284c8c5addbd86a5f134a761b0a447bb4d57064e))
+* **ct321:** match existing CT318 synthetic source curve identity ([c088ec9](https://github.com/isogeny-labs/cryptanalysis/commit/c088ec986b7c3240b7ae6ef3fcc70a9fa465cf4a))
+* **ct321:** preserve random-range callback signature in publish fixture ([049e84c](https://github.com/isogeny-labs/cryptanalysis/commit/049e84ce60bd7aea6263e4d4030cc9856afffa87))
+* **ct324:** derive Hash for canonical distinguished-point table keys ([57d04c0](https://github.com/isogeny-labs/cryptanalysis/commit/57d04c03017a070092cba48874cea27f47f3fad2))
+* **ct324:** omit private post-reveal scalars from public cold-panel evidence ([adec294](https://github.com/isogeny-labs/cryptanalysis/commit/adec2949a8c8de82118ac0a77327ef54a41cd7b4))
+
 ## [0.1.16](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.15...cryptanalysis-v0.1.16) (2026-11-22)
 
 
