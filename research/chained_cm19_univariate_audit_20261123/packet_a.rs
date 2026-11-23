@@ -26,7 +26,10 @@ impl<'a> Reader<'a> {
     }
     pub fn take(&mut self, n: usize) -> AResult<&'a [u8]> {
         let end = self.offset.checked_add(n).ok_or("packet offset overflow")?;
-        let result = self.bytes.get(self.offset..end).ok_or("incomplete packet bytes")?;
+        let result = self
+            .bytes
+            .get(self.offset..end)
+            .ok_or("incomplete packet bytes")?;
         self.offset = end;
         Ok(result)
     }
@@ -59,7 +62,10 @@ impl<'a> Packet<'a> {
         need(bytes.len() == 59_325, "full original packet length")?;
         let mut input = Reader::new(bytes);
         need(input.take(8)? == b"CTJ4A001", "packet magic")?;
-        need(input.u32()? == 1 && input.u32()? == 117_649, "packet version/field")?;
+        need(
+            input.u32()? == 1 && input.u32()? == 117_649,
+            "packet version/field",
+        )?;
         for expected in [16, 11, 4096, 64, 1331, 15] {
             need(input.u32()? == expected, "packet planned cohort")?;
         }
@@ -70,13 +76,20 @@ impl<'a> Packet<'a> {
             need(input.u32()? as usize == width, "packet record width")?;
             need(input.u32()? as usize == length, "packet payload length")?;
             let start = input.offset;
-            sections.push(Section { tag, start, bytes: input.take(length)? });
+            sections.push(Section {
+                tag,
+                start,
+                bytes: input.take(length)?,
+            });
         }
         need(input.take(8)? == b"COMPLETE", "packet completion footer")?;
         input.end()?;
         Ok(Self { sections })
     }
     pub fn section(&self, tag: &[u8; 4]) -> &Section<'a> {
-        self.sections.iter().find(|s| &s.tag == tag).expect("all fixed sections parsed")
+        self.sections
+            .iter()
+            .find(|s| &s.tag == tag)
+            .expect("all fixed sections parsed")
     }
 }

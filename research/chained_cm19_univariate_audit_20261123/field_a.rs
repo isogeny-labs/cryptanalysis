@@ -30,8 +30,7 @@ impl F {
         let mut coefficients = [0_u32; 11];
         for (i, &a) in self.0.iter().enumerate() {
             for (j, &b) in rhs.0.iter().enumerate() {
-                coefficients[i + j] =
-                    (coefficients[i + j] + u32::from(a) * u32::from(b)) % 7;
+                coefficients[i + j] = (coefficients[i + j] + u32::from(a) * u32::from(b)) % 7;
             }
         }
         for k in (6..11).rev() {
@@ -86,21 +85,45 @@ pub fn qualify() -> AResult<Encoding> {
     let z = F([0, 1, 0, 0, 0, 0]);
     let a_numerator = z.pow(3).plus(z.scale(4)).plus(F::prime(6));
     let denominator = z.pow(2).scale(3).plus(F::prime(5));
-    let inverse = z.pow(4).scale(2).plus(z.pow(2).scale(3)).plus(z.scale(3)).plus(ONE);
-    need(denominator.times(inverse) == ONE, "D inverse polynomial identity")?;
-    need(a_numerator.pow(2) == denominator.pow(2).scale(3), "norm polynomial identity")?;
+    let inverse = z
+        .pow(4)
+        .scale(2)
+        .plus(z.pow(2).scale(3))
+        .plus(z.scale(3))
+        .plus(ONE);
+    need(
+        denominator.times(inverse) == ONE,
+        "D inverse polynomial identity",
+    )?;
+    need(
+        a_numerator.pow(2) == denominator.pow(2).scale(3),
+        "norm polynomial identity",
+    )?;
     let b = a_numerator.times(inverse);
     let a = z.minus(b);
     need(b.pow(2) == F::prime(3), "new model square relation")?;
-    need(a.pow(3).plus(a.scale(2)).plus(F::prime(6)) == ZERO, "new model cubic relation")?;
-    need((0..7).all(|n| F::prime(n).pow(3).plus(F::prime(2 * n + 6)) != ZERO), "cubic irreducibility over F7")?;
-    need(F::prime(3).pow(171) == F::prime(-1), "nonsquare in odd cubic extension")?;
+    need(
+        a.pow(3).plus(a.scale(2)).plus(F::prime(6)) == ZERO,
+        "new model cubic relation",
+    )?;
+    need(
+        (0..7).all(|n| F::prime(n).pow(3).plus(F::prime(2 * n + 6)) != ZERO),
+        "cubic irreducibility over F7",
+    )?;
+    need(
+        F::prime(3).pow(171) == F::prime(-1),
+        "nonsquare in odd cubic extension",
+    )?;
     let basis = [ONE, a, a.pow(2), b, a.times(b), a.pow(2).times(b)];
     let mut matrix: [[u8; 6]; 6] = std::array::from_fn(|i| std::array::from_fn(|j| basis[j].0[i]));
     for column in 0..6 {
-        let pivot = (column..6).find(|&row| matrix[row][column] != 0).ok_or("basis change rank less than6")?;
+        let pivot = (column..6)
+            .find(|&row| matrix[row][column] != 0)
+            .ok_or("basis change rank less than6")?;
         matrix.swap(column, pivot);
-        let inverse = (1..7).find(|&n| (u16::from(matrix[column][column]) * n) % 7 == 1).ok_or("prime pivot inverse")?;
+        let inverse = (1..7)
+            .find(|&n| (u16::from(matrix[column][column]) * n) % 7 == 1)
+            .ok_or("prime pivot inverse")?;
         for value in &mut matrix[column] {
             *value = ((u16::from(*value) * inverse) % 7) as u8;
         }
@@ -114,11 +137,20 @@ pub fn qualify() -> AResult<Encoding> {
             }
         }
     }
-    need(matrix == std::array::from_fn(|i| std::array::from_fn(|j| u8::from(i == j))), "full basis change inverse")?;
+    need(
+        matrix == std::array::from_fn(|i| std::array::from_fn(|j| u8::from(i == j))),
+        "full basis change inverse",
+    )?;
     // The tower is a field and this is a unital full-rank algebra map. Only now
     // is Fermat inversion used in this six-dimensional quotient.
-    need(z.times(z.inverse()) == ONE, "field inverse after algebra isomorphism")?;
-    need(a.pow(343) == a && b.pow(7) == b.neg(), "field Frobenius bridge")?;
+    need(
+        z.times(z.inverse()) == ONE,
+        "field inverse after algebra isomorphism",
+    )?;
+    need(
+        a.pow(343) == a && b.pow(7) == b.neg(),
+        "field Frobenius bridge",
+    )?;
     println!("FIELD_MODEL\tmodulus=[3,6,3,5,2,0,1]\ta={a:?}\tb={b:?}\tfull_rank=6\tPASS");
     Ok(Encoding { basis })
 }

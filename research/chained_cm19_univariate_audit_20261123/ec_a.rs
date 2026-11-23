@@ -87,8 +87,16 @@ pub struct Group {
 }
 impl Group {
     pub fn new(points: Vec<Point>, exponent: i64) -> AResult<Self> {
-        need(points.iter().all(|&p| times(p, exponent as u32).is_none()), "actual point exponent")?;
-        let index = |point| points.iter().position(|&p| p == point).ok_or("actual group not closed");
+        need(
+            points.iter().all(|&p| times(p, exponent as u32).is_none()),
+            "actual point exponent",
+        )?;
+        let index = |point| {
+            points
+                .iter()
+                .position(|&p| p == point)
+                .ok_or("actual group not closed")
+        };
         let mut plus = Vec::new();
         for &p in &points {
             let mut row = Vec::new();
@@ -103,21 +111,43 @@ impl Group {
             negative.push(index(neg(p))?);
             frobenius.push(index(frob(p))?);
         }
-        let result = Self { points, plus, negative, frobenius, exponent };
+        let result = Self {
+            points,
+            plus,
+            negative,
+            frobenius,
+            exponent,
+        };
         for p in 0..result.points.len() {
-            need(result.plus[p][result.negative[p]] == 0, "actual inverse table")?;
+            need(
+                result.plus[p][result.negative[p]] == 0,
+                "actual inverse table",
+            )?;
             for q in 0..result.points.len() {
-                need(result.plus[p][q] == result.plus[q][p], "actual group commutative")?;
-                need(result.frobenius[result.plus[p][q]] == result.plus[result.frobenius[p]][result.frobenius[q]], "actual Frobenius homomorphism")?;
+                need(
+                    result.plus[p][q] == result.plus[q][p],
+                    "actual group commutative",
+                )?;
+                need(
+                    result.frobenius[result.plus[p][q]]
+                        == result.plus[result.frobenius[p]][result.frobenius[q]],
+                    "actual Frobenius homomorphism",
+                )?;
                 for r in 0..result.points.len() {
-                    need(result.plus[result.plus[p][q]][r] == result.plus[p][result.plus[q][r]], "complete group associativity")?;
+                    need(
+                        result.plus[result.plus[p][q]][r] == result.plus[p][result.plus[q][r]],
+                        "complete group associativity",
+                    )?;
                 }
             }
         }
         Ok(result)
     }
     pub fn index(&self, point: Point) -> AResult<usize> {
-        self.points.iter().position(|&p| p == point).ok_or("point absent from full actual group")
+        self.points
+            .iter()
+            .position(|&p| p == point)
+            .ok_or("point absent from full actual group")
     }
     pub fn scalar(&self, p: usize, n: i64) -> usize {
         (0..n.rem_euclid(self.exponent)).fold(0, |sum, _| self.plus[sum][p])
@@ -129,9 +159,15 @@ impl Group {
         self.plus[self.scalar(p, coefficient[0])][self.scalar(self.omega(p), coefficient[1])]
     }
     pub fn addition_records(&self, bytes: &[u8]) -> AResult<()> {
-        need(bytes.len() == self.points.len().pow(2), "addition record length")?;
+        need(
+            bytes.len() == self.points.len().pow(2),
+            "addition record length",
+        )?;
         for (i, &value) in bytes.iter().enumerate() {
-            need(usize::from(value) == self.plus[i / self.points.len()][i % self.points.len()], "actual addition record differs")?;
+            need(
+                usize::from(value) == self.plus[i / self.points.len()][i % self.points.len()],
+                "actual addition record differs",
+            )?;
         }
         Ok(())
     }
@@ -151,7 +187,9 @@ fn line_ratio(p: Point, q: Point, x: Point) -> Option<F> {
     } else {
         (qx.minus(px), qy.minus(py))
     };
-    let numerator = denominator_constant.times(y.minus(py)).minus(slope_numerator.times(x.minus(px)));
+    let numerator = denominator_constant
+        .times(y.minus(py))
+        .minus(slope_numerator.times(x.minus(px)));
     let vertical = add(p, q).map_or(ONE, |(u, _)| x.minus(u));
     let denominator = denominator_constant.times(vertical);
     if numerator == ZERO || denominator == ZERO {
