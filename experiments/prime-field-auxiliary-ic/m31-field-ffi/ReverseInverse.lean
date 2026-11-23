@@ -42,7 +42,7 @@ theorem correct (x : F) (hx : x ≠ 0) :
     simpa only [ZMod.card] using FiniteField.pow_card_sub_one_eq_one x hx
   obtain ⟨i, hi, eq⟩ := order62.eq_pow_of_pow_eq_one hpow
   have allKeys : ∀ j : Fin 62, reciprocal ((-2 : F)^j.val) * ((-2 : F)^j.val) = 1 := by
-    native_decide
+    decide +kernel
   have hk := allKeys ⟨i,hi⟩
   change reciprocal ((-2 : F)^i) * ((-2 : F)^i) = 1 at hk
   rw [eq] at hk
@@ -61,3 +61,5 @@ theorem schedule (x : F) (hx : x ≠ 0) :
   exact correct x hx
 
 end ReverseInverse
+
+#print axioms ReverseInverse.schedule
