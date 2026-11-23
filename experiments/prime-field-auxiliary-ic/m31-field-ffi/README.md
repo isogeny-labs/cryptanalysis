@@ -48,3 +48,16 @@ git show c414fb141:experiments/prime-field-auxiliary-ic/m31-field-ffi/m31.cpp | 
 clang++ -std=c++17 -O3 -mcpu=native -shared -fPIC m31.cpp -o native.so
 python3 time_inverse.py ./control.so ./native.so
 ```
+
+## ARM64 reciprocal correction table for public inputs
+
+Build with `-DM31_PUBLIC_COSET_INVERSE` to use the 256-byte table in the ARM64
+batch-inverse implementation. This path uses input-dependent table addresses.
+Three cyclic Hamming distances select the correction in each lane.
+CosetInverse.lean verifies the table over the entire 2,046-element projection
+image and proves the inverse formula for nonzero field elements.
+
+```sh
+clang++ -O3 -std=c++17 -mcpu=native -DM31_PUBLIC_COSET_INVERSE -shared -fPIC m31.cpp -o public-coset.so
+python3 check.py ./public-coset.so
+```
