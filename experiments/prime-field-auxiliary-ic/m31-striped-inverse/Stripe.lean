@@ -1,17 +1,17 @@
 import Mathlib.Algebra.Field.Basic
 
 namespace M31StripedInverse
-variable {F : Type*} [Field F]
+variable {F : Type*} [Field F] {lanes : Nat}
 
-/-- Each column carries its own acc product. On the reverse pass the incoming
+/-- Each column carries its own prefix product. On the reverse pass the incoming
 state is its inverse after the current row. Return the outgoing state and row. -/
-def walk (acc : Fin 4 → F) : List (Fin 4 → F) → (Fin 4 → F) × List (Fin 4 → F)
+def walk (acc : Fin lanes → F) : List (Fin lanes → F) → (Fin lanes → F) × List (Fin lanes → F)
   | [] => (fun j => (acc j)⁻¹, [])
   | x :: xs =>
     let (r, tail) := walk (fun j => acc j * x j) xs
     (fun j => r j * x j, (fun j => acc j * r j) :: tail)
 
-theorem walk_correct (rows : List (Fin 4 → F)) (acc : Fin 4 → F)
+theorem walk_correct (rows : List (Fin lanes → F)) (acc : Fin lanes → F)
     (hp : ∀ j, acc j ≠ 0) (hx : ∀ x ∈ rows, ∀ j, x j ≠ 0) :
     walk acc rows = (fun j => (acc j)⁻¹, rows.map (fun x j => (x j)⁻¹)) := by
   induction rows generalizing acc with
