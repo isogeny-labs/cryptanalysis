@@ -134,3 +134,56 @@ theorem cellFloor (nn nl ln ll : ℤ) (total : nn+nl+ln+ll = 2147483647)
   omega
 
 end M31AffinePair
+
+namespace M31AffinePair
+
+theorem translatedCoprime (t u : F) (hne : t ≠ u) :
+    IsCoprime (pull 1 t).toPoly (pull 1 u).toPoly := by
+  have ht := irreduciblePull 1 t one_ne_zero
+  have hu := irreduciblePull 1 u one_ne_zero
+  apply (ht.isCoprime_or_dvd _).resolve_right
+  intro hd
+  have h := Cubic.b_of_eq (Polynomial.eq_of_monic_of_associated
+    (Cubic.monic_of_a_eq_one (show (pull 1 t).a = 1 from rfl))
+    (Cubic.monic_of_a_eq_one (show (pull 1 u).a = 1 from rfl)) (ht.associated_of_dvd hu hd))
+  apply hne
+  apply mul_left_cancel₀ (by native_decide : (3:F) ≠ 0)
+  simpa [pull] using h
+
+abbrev nonemptySubsets := (Finset.univ : Finset (Fin 11)).powerset.erase ∅
+
+/-- Signs have already been multiplied by the chosen pattern. The only
+analytic input is the lower bound on each nonempty signed character sum. -/
+theorem patternFloor {X : Type*} [Fintype X] (size : Fintype.card X = 2147483647)
+    (g : Fin 11 → X → ℤ) (sign : ∀ i x, g i x = 1 ∨ g i x = -1)
+    (bound : ∀ s ∈ nonemptySubsets,
+      -((3*s.card-1)*46341 : ℕ) ≤ (∑ x, ∏ i ∈ s, g i x : ℤ)) :
+    330268 ≤ (Finset.univ.filter (fun x => ∀ i, g i x = 1)).card := by
+  classical
+  let W (s : Finset (Fin 11)) : ℤ := ∑ x, ∏ i ∈ s, g i x
+  have hw : W ∅ = 2147483647 := by simp [W, size]
+  have split := Finset.sum_erase_add ((Finset.univ : Finset (Fin 11)).powerset) W
+    (Finset.empty_mem_powerset _)
+  have budget : (∑ s ∈ nonemptySubsets, (-(((3*s.card-1)*46341 : ℕ) : ℤ))) = -1471095045 := by
+    native_decide
+  have low := Finset.sum_le_sum bound
+  rw [budget] at low
+  have term (x : X) : (∏ i, (1+g i x)) = if ∀ i, g i x = 1 then 2048 else 0 := by
+    split_ifs with h
+    · simp [h]
+    · push Not at h
+      obtain ⟨i, hi⟩ := h
+      exact Finset.prod_eq_zero (Finset.mem_univ i) (by rw [(sign i x).resolve_left hi]; decide)
+  have expansion : (∑ s ∈ (Finset.univ : Finset (Fin 11)).powerset, W s) =
+      ((Finset.univ.filter fun x => ∀ i, g i x = 1).card : ℤ)*2048 := by
+    unfold W
+    rw [Finset.sum_comm]
+    simp_rw [← Finset.prod_one_add, term]
+    rw [← Finset.sum_filter]
+    simp
+  change -1471095045 ≤ ∑ s ∈ nonemptySubsets, W s at low
+  change (∑ s ∈ nonemptySubsets, W s) + W ∅ = _ at split
+  rw [hw, expansion] at split
+  omega
+
+end M31AffinePair
