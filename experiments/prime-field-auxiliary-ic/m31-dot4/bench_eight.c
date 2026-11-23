@@ -1,8 +1,15 @@
+#if defined(__aarch64__)
+#include <arm_neon.h>
+#endif
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#ifndef N
 #define N 2048
+#endif
+#define PASSES ((1048576 + N - 1) / N)
+_Static_assert(N >= 8 && N <= 1048576, "panel size must include all boundary rows and fit one timing sample");
 #define P UINT64_C(2147483647)
 #define M 1073741823
 static uint32_t a[N][8], b[N][8], o[N], ref[N];
@@ -49,6 +56,49 @@ __attribute__((noinline)) static void in(void)
         o[i] = reduce(s);
     }
 }
+__attribute__((noinline)) static void folded(void)
+{
+    for (int i = 0; i < N; i++) {
+        uint64_t s = 0, t = 0;
+        for (int j = 0; j < 4; j++) {
+            s += (uint64_t)a[i][j] * b[i][j];
+            t += (uint64_t)a[i][4 + j] * b[i][4 + j];
+        }
+        uint64_t u = (s & P) + (s >> 31) + (t & P) + (t >> 31);
+        u = (u & P) + (u >> 31);
+        o[i] = u >= P ? u - P : u;
+    }
+}
+#if defined(__aarch64__)
+// Each lane accumulates four canonical products, whose sum fits in 64 bits.
+static inline uint64x2_t folded_lanes(const uint32_t *left, const uint32_t *right)
+{
+    uint32x4_t a0 = vld1q_u32(left), a1 = vld1q_u32(left + 4);
+    uint32x4_t b0 = vld1q_u32(right), b1 = vld1q_u32(right + 4);
+    uint64x2_t acc = vmull_u32(vget_low_u32(a0), vget_low_u32(b0));
+    acc = vmlal_high_u32(acc, a0, b0);
+    acc = vmlal_u32(acc, vget_low_u32(a1), vget_low_u32(b1));
+    acc = vmlal_high_u32(acc, a1, b1);
+    return vsraq_n_u64(vandq_u64(acc, vdupq_n_u64(P)), acc, 31);
+}
+
+__attribute__((noinline)) static void neon_rows(void)
+{
+    int i = 0;
+    for (; i + 1 < N; i += 2) {
+        uint64x2_t sums = vpaddq_u64(folded_lanes(a[i], b[i]),
+                                     folded_lanes(a[i+1], b[i+1]));
+        uint32x2_t v = vmovn_u64(vsraq_n_u64(vandq_u64(sums, vdupq_n_u64(P)), sums, 31));
+        uint32x2_t p = vdup_n_u32(P);
+        vst1_u32(o + i, vsub_u32(v, vand_u32(vcge_u32(v, p), p)));
+    }
+    if (i < N) {
+        uint64_t u = vaddvq_u64(folded_lanes(a[i], b[i]));
+        u = (u & P) + (u >> 31);
+        o[i] = u >= P ? u - P : u;
+    }
+}
+#endif
 static uint64_t ns(void)
 {
     struct timespec t;
@@ -89,29 +139,39 @@ int main(void)
         if (i >= 5 && i <= 7 && s != (((__uint128_t)1 << 64) - 1 + (i - 5))) return 1;
         ref[i] = s % P;
     }
-    void (*f[])(void) = {canonical, pre, in, carry};
-    const char *labels[] = {"two reductions", "precentered", "center on input", "carry correction"};
-    double ts[4][36];
-    for (int k = 0; k < 4; k++) {
+    void (*f[])(void) = {canonical, pre, in, carry, folded
+#if defined(__aarch64__)
+        , neon_rows
+#endif
+    };
+    const char *labels[] = {"two reductions", "precentered", "center on input", "carry correction", "deferred fold"
+#if defined(__aarch64__)
+        , "NEON row pair"
+#endif
+    };
+    enum { arms = sizeof(f) / sizeof(f[0]), samples = 8 * arms, warmup = 2 * arms };
+    _Static_assert(sizeof(labels) / sizeof(labels[0]) == arms, "missing benchmark label");
+    double ts[arms][samples];
+    for (int k = 0; k < arms; k++) {
         f[k]();
         for (int i = 0; i < N; i++)
             if (o[i] != ref[i]) return 1;
     }
-    int perms[4][4] = {{0, 1, 3, 2}, {1, 2, 0, 3}, {2, 3, 1, 0}, {3, 0, 2, 1}};
-    for (int t = 0; t < 40; t++)
-        for (int j = 0; j < 4; j++) {
-            int k = perms[t % 4][j];
+    // Cycle through both orientations to balance position and reverse the traversal order.
+    for (int t = 0; t < samples + warmup; t++)
+        for (int j = 0; j < arms; j++) {
+            int k = (t + (t / arms % 2 ? arms - 1 - j : j)) % arms;
             uint64_t st = ns();
-            for (int n = 0; n < 512; n++) {
+            for (int n = 0; n < PASSES; n++) {
                 f[k]();
                 __asm__ volatile("" ::: "memory");
             }
-            double v = (double)(ns() - st) / (N * 512);
-            if (t >= 4) ts[k][t - 4] = v;
+            double v = (double)(ns() - st) / (N * PASSES);
+            if (t >= warmup) ts[k][t - warmup] = v;
         }
-    for (int k = 0; k < 4; k++) {
-        qsort(ts[k], 36, sizeof(double), cmp);
-        printf("%s: %.3f ns/dot\n", labels[k], (ts[k][17] + ts[k][18]) / 2);
+    for (int k = 0; k < arms; k++) {
+        qsort(ts[k], samples, sizeof(double), cmp);
+        printf("%s: %.3f ns/dot\n", labels[k], (ts[k][samples/2 - 1] + ts[k][samples/2]) / 2);
     }
     return 0;
 }

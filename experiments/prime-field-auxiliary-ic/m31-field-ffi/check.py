@@ -13,7 +13,7 @@ inverse(None, None, 0)
 rng = random.Random(291153)
 edges = [0, 1, P-1, P, P+1, 2*P-1, 2*P, 2*P+1]
 checks = 0
-for n in [*range(257), 511, 512, 513, 4095, 4096, 4097]:
+for n in [*range(1026), 1535, 1536, 1537, 2047, 2048, 2049, 4095, 4096, 4097]:
     xs = [rng.choice(edges) if i % 3 == 0 else rng.getrandbits(32) for i in range(n)]
     expected = [pow(x, P-2, P) for x in xs]
     for inplace in [False, True]:

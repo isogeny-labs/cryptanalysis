@@ -1,0 +1,5 @@
+# Batched emission into shared memory
+
+Use the previous complete warm Metal shared-view census as arm zero. Arm one replaces parent compaction with a four-word scan. Arm two groups four eligible consecutive parents if every parent exceeds floor((p−1)/q²); they have exactly one child each and those children cannot become parents at the same prime. Emit all four products in order. Arm three combines compaction and batched emission. Scalar fallback handles other parents. All arms allocate a fresh shared buffer and return the same ordered word labels.
+
+Run two fresh processes, one untimed coordinate-vector check per arm, one warm-up round (-1), then sixteen balanced four-arm rounds per process. Check every label and the count after stopping clocks. Compare complete within-round wall times and process CPU times, with allocation and generation measured separately from device execution. Summarize processes separately. Replay with bash build.sh /tmp/m31-emit-panel emit followed by /tmp/m31-emit-panel 0 and /tmp/m31-emit-panel 1 from this directory.

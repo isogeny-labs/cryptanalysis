@@ -1,0 +1,5 @@
+# Interpreting the archived M31 timing ratios
+
+Replay with python3 work_counts.py. The input is the pinned retrospective depth-five benchmark archive used by replay.py. The script reads timing records and archived row files only. It compares v1_chain and v2_chain for byte-identical rows, matching query counts and matching weights. For v2_chain and v2_batch the query stream changes. The loop-time ratio factors exactly into the ratio of tested query counts times the ratio of mean loop time per tested query. Partial-batch overhead is already charged in that mean. The two factors describe the observed runs. They cannot identify an effect on the probability of success for a new target.
+
+End-to-end comparisons with rho use the archived wall fields including charged basis time. The ratio of medians and the median of per-seed ratios answer different questions. Both are descriptive for three search seeds on one public target, with a shared unpinned host. The script does no extrapolation between hardware or targets. Output rounds only after checking the identity with exact fractions on the archived decimal literals.

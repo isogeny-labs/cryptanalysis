@@ -1,0 +1,37 @@
+process,rows,kernel,median_ns_per_dot
+1,2048,two reductions,1.856
+1,2048,precentered,1.607
+1,2048,center on input,2.273
+1,2048,carry correction,1.656
+1,2048,deferred fold,1.257
+1,2048,NEON row pair,0.662
+2,65535,two reductions,2.606
+2,65535,precentered,2.600
+2,65535,center on input,2.688
+2,65535,carry correction,2.068
+2,65535,deferred fold,2.317
+2,65535,NEON row pair,0.863
+3,1048576,two reductions,2.202
+3,1048576,precentered,1.712
+3,1048576,center on input,3.234
+3,1048576,carry correction,2.358
+3,1048576,deferred fold,1.645
+3,1048576,NEON row pair,0.866
+4,1048576,two reductions,1.972
+4,1048576,precentered,1.736
+4,1048576,center on input,2.254
+4,1048576,carry correction,1.597
+4,1048576,deferred fold,1.369
+4,1048576,NEON row pair,0.780
+5,65535,two reductions,2.657
+5,65535,precentered,2.355
+5,65535,center on input,3.630
+5,65535,carry correction,1.736
+5,65535,deferred fold,1.636
+5,65535,NEON row pair,0.714
+6,2048,two reductions,1.993
+6,2048,precentered,1.644
+6,2048,center on input,2.180
+6,2048,carry correction,1.500
+6,2048,deferred fold,1.315
+6,2048,NEON row pair,0.659
