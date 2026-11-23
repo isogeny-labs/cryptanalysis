@@ -1,6 +1,6 @@
 // CT324: batched affine group-addition kernel, no complete-solver timing claim.
 // p <= 2^31-1, with canonical points on short Weierstrass curves.
-#[derive(Copy,Clone,Debug,PartialEq,Eq)]
+#[derive(Copy,Clone,Debug,PartialEq,Eq,Hash)]
 struct Pt{x:u64,y:u64}
 type Point=Option<Pt>;
 #[derive(Default,Debug)]struct Counts{adds:u64,inversions:u64,batches:u64,elements:u64}
