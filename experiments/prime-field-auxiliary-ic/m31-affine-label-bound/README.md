@@ -147,3 +147,21 @@ The signed-graph replay in archived_graphs.py computes the rank after every save
 | 2 | 12 / 9 | 3 / 5 | 1.333 | 0.690 |
 
 The last two columns multiply to the processed-query ratio. On seed 1 the graph reached dependence just one accepted row sooner. Most of the 3.113-fold change in processed queries came from the difference between 4.005 million and 1.379 million queries per accepted row. On seed 2 the batched graph needed three fewer rows, yet processing took more queries overall. These are ratios of complete stopped runs; without per-rejection logs or fresh independent targets they do not establish a change in the probability of accepting an individual query. Replay with `python3 archived_graphs.py`.
+
+### Can a walk return to an eligible point within four steps?
+
+The archived native_v2.cpp uses 32 public step points per seed, shared by the 64 batched walks. For the 578-point eligible set A, a displacement d permits two eligible endpoints exactly when d is a difference of two elements of A. The number of eligible starting points that return is the multiplicity of d in the ordered difference histogram. Negation preserves A, so the existing batched point-addition code computes that histogram by summation.
+
+Run `python3 archived_lags.py` to reconstruct the three step tables from the archived C++ RNG initialization, enumerate all ordered choices through lag four, and compare their displacements with all 578² ordered differences. Repeated step choices are included. The experiment counts possible paths independently of whether the archived run selected them.
+
+For all three seeds, every displacement at lags 1, 2 and 3 has zero overlap. Thus any four consecutive positions of one walk contain at most one eligible point. At lag four the enumeration gives:
+
+| Seed | Ordered step choices | Choices permitting return | Sum of eligible starting-point counts over choices |
+|---:|---:|---:|---:|
+| 0 | 1048576 | 24 | 144 |
+| 1 | 1048576 | 0 | 0 |
+| 2 | 1048576 | 12 | 72 |
+
+Seed 1 thus has the same exclusion across five consecutive positions of each lane. This structural difference from independent queries is small on the scale of the archived run. Under independent uniform queries, the probability of *any* pair of hits separated by one to four same-lane steps, in the fixed first 19300166 processed queries, is at most 4 × 19300166 × (578/2147505293)² < 0.0000056. This union bound does not condition on the archived stopping event. It measures how rarely the independent reference violates this particular constraint. Longer lags and pairs from different lanes are outside the enumeration.
+
+LagOverlap.lean checks the group-theoretic difference criterion, the at-most-one-hit implication for a separated window, and the rational inequality. The Python/C++ replay supplies the finite histogram and the seed-specific displacement counts.
