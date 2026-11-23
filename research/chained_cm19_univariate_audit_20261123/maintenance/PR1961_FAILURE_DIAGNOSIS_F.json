@@ -1,0 +1,33 @@
+{
+  "recorded": "2026-11-23T23:54:14.728804+00:00",
+  "source_head": "6d99cfc9995b80198c2e1fc233c23690feb5d12d",
+  "first_CI_claim": "PCC-20261123-161df3",
+  "setup_repair_claim": "PCC-20261123-4d44cd",
+  "whole_failed_logs": 27,
+  "whole_small_logs_committed": 21,
+  "whole_large_logs_RAM_pending": 6,
+  "all_changed_paths": 197,
+  "unexpected_changed_paths": [],
+  "setup_failure": "Organization action allowlist rejects dtolnay/rust-toolchain@stable; explicit original annotation at run45284281306. Native official rustup setup repair, no policy change.",
+  "base_equal_blobs": {
+    "tests/test_indexcalc.c": "ea5d74ecabe875d649af122f92d72594df5bec9e",
+    "tools/pcc/pcc.py": "dc6e5c70267b1c2a8d8e2ceba0f9d9e4bd82377e",
+    "tools/pcc/test_pcc.py": "3ad43953fd19586e8b185390cdb717b74f2e96b7",
+    ".github/workflows/ct244-source-primitive-probe.yml": "83ba6b0591f2acfe35b64753156d310c713ad541",
+    ".github/workflows/ct245-primitive-native-typecheck.yml": "9a08333edab9a18eb3eb7b62b36e4d87aee49eec",
+    "tools/lean/current-corpus-gate.py": "96a3a20277af90900deeb7ccb3ab75c546662f06"
+  },
+  "first_local_metadata_comparison_negative": "The isolated checkout lacks the local base commit object; native rev-parse reported nonexistent paths. This is not remote absence. Exact remote base/head file SHAs establish equality; both attempted original rows and correction retained.",
+  "other_log_findings": [
+    "C matrix/coverage/sanitizers/clang-tidy/cppcheck fail on unchanged tests/test_indexcalc.c syntax near13/15, all owned changed paths reviewed.",
+    "PCC unit/parity jobs stop on unchanged tools/pcc tool/test hash drift vs existing shared-code lock. Canonical tools/locks are not changed.",
+    "PCC gate stops recovering four preexisting storage-backed subjects: g3-norm primary archive, ic-mitm-xonly lookup pricing, collector-counterfactual summary/source check; no S3 read in those recovery errors.",
+    "Artifact/store aliases fail because original artifacts job fails. Artifact wiring identifies existing ct244/ct245 workflows reading store subjects without wiring. Both exact workflow blobs unchanged.",
+    "Corpus gate says frozen receipt changed in research/xedni_lift_optimizer_20261101; never rewrite frozen receipts or targets.",
+    "Source-receipts job flags preexisting preserved selftest canary Lean files in chained-transfer-lp-presentation evidence; no gate waiver.",
+    "Bench records credential setup reports invalid security token; no credential/identity/backend replacement.",
+    "Induced replay original failure remains held and its complete original log315739B retained; no proof pass inferred."
+  ],
+  "merge_status": "Blocked by failed/active applicable CI,47>30 first-head budget and existing original custody/gates. No rerun, empty commit, test suppression, policy relaxation or merge.",
+  "workflow_only_repair": "The actual native certificate, mutational cohort, Lean source and original qualification remain unchanged; no local research repetition."
+}

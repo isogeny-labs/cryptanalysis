@@ -29,10 +29,9 @@ jobs:
             /pcc/claims/PCC-20261123-ac68db.json
             /pcc/claims/PCC-20261123-c1adb4.json
             /research/chained_cm19_univariate_audit_20261123/
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: 1.99.1
-          components: rustfmt, clippy
+      - name: Install pinned Rust toolchain with official rustup
+        shell: bash
+        run: rustup toolchain install 1.99.1 --profile minimal --component rustfmt --component clippy
       - name: Install exact standard Lean release
         shell: bash
         run: |

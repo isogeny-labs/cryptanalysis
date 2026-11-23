@@ -1,0 +1,23 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T23:53:02Z",
+ "id": "PCC-20261123-4d44cd",
+ "kind": "statement",
+ "producer": {
+  "commit": "6d99cfc9995b80198c2e1fc233c23690feb5d12d",
+  "model": "GPT-6",
+  "session": "chained-transfers-20261123"
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/chained_cm19_univariate_audit_20261123/CI_SETUP_REPAIR_F.json",
+    "sha256": "7f5dc310b0db89859a6bf29b0bc0ab66987faeec710b504980da94445837459d"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "CA1961 focused workflow startup failure is explicitly the organization rejection of dtolnay/rust-toolchain@stable in original GitHub annotation; repair uses official rustup CLI for identical1.99.1/rustfmt/clippy on same runner, without policy/source/limit changes. Exact repaired workflow actionlint1.7.7 and YAML parse exit0, no scientific rerun or CI outcome asserted; full annotation hash and original source preserved."
+}

@@ -1,0 +1,425 @@
+﻿2026-11-23T22:55:54.8334548Z Current runner version: '2.338.2'
+2026-11-23T22:55:54.8354279Z ##[group]Runner Image Provisioner
+2026-11-23T22:55:54.8354816Z Hosted Compute Agent
+2026-11-23T22:55:54.8355262Z Version: 20261111.635
+2026-11-23T22:55:54.8355635Z Commit: b8a594ea514ff44cadb5342986c68b1eac6e22ed
+2026-11-23T22:55:54.8356086Z Build Date: 2026-11-11T01:49:01Z
+2026-11-23T22:55:54.8356529Z Worker ID: {30be260f-0294-4b5a-b2ce-fad758f73575}
+2026-11-23T22:55:54.8356949Z Region: westus3
+2026-11-23T22:55:54.8357312Z Cloud: Azure
+2026-11-23T22:55:54.8357661Z ##[endgroup]
+2026-11-23T22:55:54.8358707Z ##[group]Operating System
+2026-11-23T22:55:54.8359297Z Ubuntu
+2026-11-23T22:55:54.8359608Z 24.04.5
+2026-11-23T22:55:54.8359952Z LTS
+2026-11-23T22:55:54.8360262Z ##[endgroup]
+2026-11-23T22:55:54.8360579Z ##[group]Runner Image
+2026-11-23T22:55:54.8361024Z Image: ubuntu-24.04
+2026-11-23T22:55:54.8361366Z Version: 20261116.376.1
+2026-11-23T22:55:54.8362182Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261116.376/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-23T22:55:54.8363035Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261116.376
+2026-11-23T22:55:54.8363658Z ##[endgroup]
+2026-11-23T22:55:54.8364312Z ##[group]GITHUB_TOKEN Permissions
+2026-11-23T22:55:54.8365562Z Contents: read
+2026-11-23T22:55:54.8365932Z Metadata: read
+2026-11-23T22:55:54.8366341Z ##[endgroup]
+2026-11-23T22:55:54.8367715Z Secret source: Actions
+2026-11-23T22:55:54.8368282Z Cache mode: write
+2026-11-23T22:55:54.8368736Z Prepare workflow directory
+2026-11-23T22:55:54.8589587Z Prepare all required actions
+2026-11-23T22:55:54.8623399Z Getting action download info
+2026-11-23T22:55:55.1722708Z Download action repository 'actions/checkout@v7' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-11-23T22:55:55.3705675Z Complete job name: artifacts
+2026-11-23T22:55:55.4240913Z ##[group]Run actions/checkout@v7
+2026-11-23T22:55:55.4241327Z with:
+2026-11-23T22:55:55.4241560Z   fetch-depth: 2
+2026-11-23T22:55:55.4241798Z   filter: blob:none
+2026-11-23T22:55:55.4242073Z   sparse-checkout-cone-mode: false
+2026-11-23T22:55:55.4242508Z   sparse-checkout: /tools/artifacts/
+/.artifacts/
+/.github/workflows/
+**/.artifacts.json
+
+2026-11-23T22:55:55.4242977Z   repository: isogeny-labs/cryptanalysis
+2026-11-23T22:55:55.4245034Z   token: ***
+2026-11-23T22:55:55.4245264Z   ssh-strict: true
+2026-11-23T22:55:55.4245500Z   ssh-user: git
+2026-11-23T22:55:55.4245743Z   persist-credentials: true
+2026-11-23T22:55:55.4246007Z   clean: true
+2026-11-23T22:55:55.4246233Z   fetch-tags: false
+2026-11-23T22:55:55.4246478Z   show-progress: true
+2026-11-23T22:55:55.4246719Z   lfs: false
+2026-11-23T22:55:55.4246941Z   submodules: false
+2026-11-23T22:55:55.4247183Z   set-safe-directory: true
+2026-11-23T22:55:55.4247458Z   allow-unsafe-pr-checkout: false
+2026-11-23T22:55:55.4247826Z ##[endgroup]
+2026-11-23T22:55:55.6717667Z Syncing repository: isogeny-labs/cryptanalysis
+2026-11-23T22:55:55.6719325Z ##[group]Getting Git version info
+2026-11-23T22:55:55.6719805Z Working directory is '/home/runner/work/cryptanalysis/cryptanalysis'
+2026-11-23T22:55:55.6720463Z [command]/usr/bin/git version
+2026-11-23T22:55:55.6805462Z git version 2.56.1
+2026-11-23T22:55:55.6825582Z ##[endgroup]
+2026-11-23T22:55:55.6835433Z Temporarily overriding HOME='/home/runner/work/_temp/ccd6729e-6ac4-46ac-9df1-7908f4451f92' before making global git config changes
+2026-11-23T22:55:55.6840593Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-23T22:55:55.6841260Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cryptanalysis/cryptanalysis
+2026-11-23T22:55:55.6901481Z Deleting the contents of '/home/runner/work/cryptanalysis/cryptanalysis'
+2026-11-23T22:55:55.6902983Z ##[group]Determining repository object format
+2026-11-23T22:55:55.6903931Z ##[endgroup]
+2026-11-23T22:55:55.6904781Z ##[group]Initializing the repository
+2026-11-23T22:55:55.6909796Z [command]/usr/bin/git init /home/runner/work/cryptanalysis/cryptanalysis
+2026-11-23T22:55:55.7016455Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-23T22:55:55.7017741Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-23T22:55:55.7018719Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-23T22:55:55.7019771Z hint: call:
+2026-11-23T22:55:55.7020255Z hint:
+2026-11-23T22:55:55.7020859Z hint: 	git config --global init.defaultBranch <name>
+2026-11-23T22:55:55.7021553Z hint:
+2026-11-23T22:55:55.7022196Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-23T22:55:55.7023163Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-23T22:55:55.7023954Z hint:
+2026-11-23T22:55:55.7024430Z hint: 	git branch -m <name>
+2026-11-23T22:55:55.7024981Z hint:
+2026-11-23T22:55:55.7025691Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-23T22:55:55.7026906Z Initialized empty Git repository in /home/runner/work/cryptanalysis/cryptanalysis/.git/
+2026-11-23T22:55:55.7034527Z [command]/usr/bin/git remote add origin https://github.com/isogeny-labs/cryptanalysis
+2026-11-23T22:55:55.7096410Z ##[endgroup]
+2026-11-23T22:55:55.7097178Z ##[group]Disabling automatic garbage collection
+2026-11-23T22:55:55.7099017Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-23T22:55:55.7137228Z ##[endgroup]
+2026-11-23T22:55:55.7138355Z ##[group]Setting up auth
+2026-11-23T22:55:55.7138897Z Removing SSH command configuration
+2026-11-23T22:55:55.7142607Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-23T22:55:55.7185850Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-23T22:55:55.7532368Z Removing HTTP extra header
+2026-11-23T22:55:55.7536463Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-23T22:55:55.7576034Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-23T22:55:55.7770117Z Removing includeIf entries pointing to credentials config files
+2026-11-23T22:55:55.7774135Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-23T22:55:55.7814485Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-23T22:55:55.8017697Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-862aca1f-339d-4d56-9a8c-aa966605f2eb.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-23T22:55:55.8062479Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path /home/runner/work/_temp/git-credentials-862aca1f-339d-4d56-9a8c-aa966605f2eb.config
+2026-11-23T22:55:55.8104227Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-862aca1f-339d-4d56-9a8c-aa966605f2eb.config
+2026-11-23T22:55:55.8151497Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-862aca1f-339d-4d56-9a8c-aa966605f2eb.config
+2026-11-23T22:55:55.8192948Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-862aca1f-339d-4d56-9a8c-aa966605f2eb.config
+2026-11-23T22:55:55.8232334Z ##[endgroup]
+2026-11-23T22:55:55.8232785Z ##[group]Fetching the repository
+2026-11-23T22:55:55.8237965Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --filter=blob:none --depth=2 origin +a55a512557ebf72eda966df1a418578e2f2a03ab:refs/remotes/pull/1961/merge
+2026-11-23T22:55:56.7122331Z From https://github.com/isogeny-labs/cryptanalysis
+2026-11-23T22:55:56.7124370Z  * [new ref]         a55a512557ebf72eda966df1a418578e2f2a03ab -> pull/1961/merge
+2026-11-23T22:55:56.7127735Z ##[endgroup]
+2026-11-23T22:55:56.7128648Z ##[group]Determining the checkout info
+2026-11-23T22:55:56.7129991Z ##[endgroup]
+2026-11-23T22:55:56.7131091Z ##[group]Setting up sparse checkout
+2026-11-23T22:55:56.7131887Z [command]/usr/bin/git config core.sparseCheckout true
+2026-11-23T22:55:56.7182339Z [command]/usr/bin/git rev-parse --git-path info/sparse-checkout
+2026-11-23T22:55:56.7215658Z .git/info/sparse-checkout
+2026-11-23T22:55:56.7224819Z ##[endgroup]
+2026-11-23T22:55:56.7225835Z ##[group]Checking out the ref
+2026-11-23T22:55:56.7229524Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/1961/merge
+2026-11-23T22:55:58.4405743Z Updating files:   0% (1/1376)
+2026-11-23T22:55:58.4420122Z Updating files:   1% (14/1376)
+2026-11-23T22:55:58.4426927Z Updating files:   2% (28/1376)
+2026-11-23T22:55:58.4432660Z Updating files:   3% (42/1376)
+2026-11-23T22:55:58.4436473Z Updating files:   4% (56/1376)
+2026-11-23T22:55:58.4441755Z Updating files:   5% (69/1376)
+2026-11-23T22:55:58.4447281Z Updating files:   6% (83/1376)
+2026-11-23T22:55:58.4452382Z Updating files:   7% (97/1376)
+2026-11-23T22:55:58.4457170Z Updating files:   8% (111/1376)
+2026-11-23T22:55:58.4462596Z Updating files:   9% (124/1376)
+2026-11-23T22:55:58.4466592Z Updating files:  10% (138/1376)
+2026-11-23T22:55:58.4471755Z Updating files:  11% (152/1376)
+2026-11-23T22:55:58.4475836Z Updating files:  12% (166/1376)
+2026-11-23T22:55:58.4481474Z Updating files:  13% (179/1376)
+2026-11-23T22:55:58.4485436Z Updating files:  14% (193/1376)
+2026-11-23T22:55:58.4489480Z Updating files:  15% (207/1376)
+2026-11-23T22:55:58.4494387Z Updating files:  16% (221/1376)
+2026-11-23T22:55:58.4501954Z Updating files:  17% (234/1376)
+2026-11-23T22:55:58.4508042Z Updating files:  18% (248/1376)
+2026-11-23T22:55:58.4513091Z Updating files:  19% (262/1376)
+2026-11-23T22:55:58.4518305Z Updating files:  20% (276/1376)
+2026-11-23T22:55:58.4523138Z Updating files:  21% (289/1376)
+2026-11-23T22:55:58.4526994Z Updating files:  22% (303/1376)
+2026-11-23T22:55:58.4532271Z Updating files:  23% (317/1376)
+2026-11-23T22:55:58.4535997Z Updating files:  24% (331/1376)
+2026-11-23T22:55:58.4540870Z Updating files:  25% (344/1376)
+2026-11-23T22:55:58.4545378Z Updating files:  26% (358/1376)
+2026-11-23T22:55:58.4551295Z Updating files:  27% (372/1376)
+2026-11-23T22:55:58.4557370Z Updating files:  28% (386/1376)
+2026-11-23T22:55:58.4564567Z Updating files:  29% (400/1376)
+2026-11-23T22:55:58.4570916Z Updating files:  30% (413/1376)
+2026-11-23T22:55:58.8186094Z Updating files:  31% (427/1376)
+2026-11-23T22:55:59.1755584Z Updating files:  32% (441/1376)
+2026-11-23T22:55:59.1757580Z Updating files:  32% (450/1376)
+2026-11-23T22:55:59.1766288Z Updating files:  33% (455/1376)
+2026-11-23T22:55:59.1773066Z Updating files:  34% (468/1376)
+2026-11-23T22:55:59.1779968Z Updating files:  35% (482/1376)
+2026-11-23T22:55:59.1786755Z Updating files:  36% (496/1376)
+2026-11-23T22:55:59.1793387Z Updating files:  37% (510/1376)
+2026-11-23T22:55:59.5578237Z Updating files:  38% (523/1376)
+2026-11-23T22:56:00.6078579Z Updating files:  39% (537/1376)
+2026-11-23T22:56:00.6079352Z Updating files:  39% (548/1376)
+2026-11-23T22:56:01.1095622Z Updating files:  40% (551/1376)
+2026-11-23T22:56:01.1096239Z Updating files:  40% (564/1376)
+2026-11-23T22:56:01.1103416Z Updating files:  41% (565/1376)
+2026-11-23T22:56:01.1110771Z Updating files:  42% (578/1376)
+2026-11-23T22:56:01.1121431Z Updating files:  43% (592/1376)
+2026-11-23T22:56:01.1129307Z Updating files:  44% (606/1376)
+2026-11-23T22:56:01.1136715Z Updating files:  45% (620/1376)
+2026-11-23T22:56:01.1143925Z Updating files:  46% (633/1376)
+2026-11-23T22:56:01.1151349Z Updating files:  47% (647/1376)
+2026-11-23T22:56:02.3173655Z Updating files:  48% (661/1376)
+2026-11-23T22:56:02.3180339Z Updating files:  48% (672/1376)
+2026-11-23T22:56:02.3183517Z Updating files:  49% (675/1376)
+2026-11-23T22:56:02.6860438Z Updating files:  50% (688/1376)
+2026-11-23T22:56:02.6869663Z Updating files:  51% (702/1376)
+2026-11-23T22:56:02.6879803Z Updating files:  52% (716/1376)
+2026-11-23T22:56:03.0843829Z Updating files:  53% (730/1376)
+2026-11-23T22:56:03.0844374Z Updating files:  53% (741/1376)
+2026-11-23T22:56:03.0850741Z Updating files:  54% (744/1376)
+2026-11-23T22:56:03.0862289Z Updating files:  55% (757/1376)
+2026-11-23T22:56:03.0872051Z Updating files:  56% (771/1376)
+2026-11-23T22:56:03.0883527Z Updating files:  57% (785/1376)
+2026-11-23T22:56:03.0894437Z Updating files:  58% (799/1376)
+2026-11-23T22:56:03.0903893Z Updating files:  59% (812/1376)
+2026-11-23T22:56:03.0913241Z Updating files:  60% (826/1376)
+2026-11-23T22:56:03.0921407Z Updating files:  61% (840/1376)
+2026-11-23T22:56:03.4686698Z Updating files:  62% (854/1376)
+2026-11-23T22:56:03.8398526Z Updating files:  63% (867/1376)
+2026-11-23T22:56:03.8414429Z Updating files:  64% (881/1376)
+2026-11-23T22:56:03.8422421Z Updating files:  65% (895/1376)
+2026-11-23T22:56:04.2102199Z Updating files:  66% (909/1376)
+2026-11-23T22:56:04.2113769Z Updating files:  66% (915/1376)
+2026-11-23T22:56:04.2122489Z Updating files:  67% (922/1376)
+2026-11-23T22:56:04.2130584Z Updating files:  68% (936/1376)
+2026-11-23T22:56:04.2157725Z Updating files:  69% (950/1376)
+2026-11-23T22:56:04.2173239Z Updating files:  70% (964/1376)
+2026-11-23T22:56:04.2180711Z Updating files:  71% (977/1376)
+2026-11-23T22:56:04.5820102Z Updating files:  72% (991/1376)
+2026-11-23T22:56:04.5829472Z Updating files:  73% (1005/1376)
+2026-11-23T22:56:04.5839613Z Updating files:  74% (1019/1376)
+2026-11-23T22:56:04.5851989Z Updating files:  75% (1032/1376)
+2026-11-23T22:56:04.5862039Z Updating files:  76% (1046/1376)
+2026-11-23T22:56:04.5873456Z Updating files:  77% (1060/1376)
+2026-11-23T22:56:04.5884139Z Updating files:  78% (1074/1376)
+2026-11-23T22:56:04.5893245Z Updating files:  79% (1088/1376)
+2026-11-23T22:56:04.9481225Z Updating files:  80% (1101/1376)
+2026-11-23T22:56:05.3125808Z Updating files:  81% (1115/1376)
+2026-11-23T22:56:05.6779386Z Updating files:  81% (1124/1376)
+2026-11-23T22:56:06.3695408Z Updating files:  82% (1129/1376)
+2026-11-23T22:56:06.3696058Z Updating files:  82% (1142/1376)
+2026-11-23T22:56:06.6998425Z Updating files:  83% (1143/1376)
+2026-11-23T22:56:07.0660421Z Updating files:  84% (1156/1376)
+2026-11-23T22:56:07.0665775Z Updating files:  84% (1160/1376)
+2026-11-23T22:56:07.0673268Z Updating files:  85% (1170/1376)
+2026-11-23T22:56:07.0680344Z Updating files:  86% (1184/1376)
+2026-11-23T22:56:07.0686556Z Updating files:  87% (1198/1376)
+2026-11-23T22:56:07.0694624Z Updating files:  88% (1211/1376)
+2026-11-23T22:56:07.0702646Z Updating files:  89% (1225/1376)
+2026-11-23T22:56:07.0710532Z Updating files:  90% (1239/1376)
+2026-11-23T22:56:07.4381331Z Updating files:  91% (1253/1376)
+2026-11-23T22:56:07.4387274Z Updating files:  92% (1266/1376)
+2026-11-23T22:56:07.4394570Z Updating files:  93% (1280/1376)
+2026-11-23T22:56:07.7779537Z Updating files:  94% (1294/1376)
+2026-11-23T22:56:08.1392875Z Updating files:  95% (1308/1376)
+2026-11-23T22:56:08.4949432Z Updating files:  95% (1319/1376)
+2026-11-23T22:56:08.8296611Z Updating files:  96% (1321/1376)
+2026-11-23T22:56:08.8304317Z Updating files:  97% (1335/1376)
+2026-11-23T22:56:09.1725918Z Updating files:  98% (1349/1376)
+2026-11-23T22:56:09.8508627Z Updating files:  98% (1355/1376)
+2026-11-23T22:56:10.1891087Z Updating files:  99% (1363/1376)
+2026-11-23T22:56:10.1909995Z Updating files:  99% (1372/1376)
+2026-11-23T22:56:10.1919698Z Updating files: 100% (1376/1376)
+2026-11-23T22:56:10.1919940Z Updating files: 100% (1376/1376), done.
+2026-11-23T22:56:10.2644841Z Note: switching to 'refs/remotes/pull/1961/merge'.
+2026-11-23T22:56:10.2645104Z 
+2026-11-23T22:56:10.2645265Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-23T22:56:10.2645684Z changes and commit them, and you can discard any commits you make in this
+2026-11-23T22:56:10.2646053Z state without impacting any branches by switching back to a branch.
+2026-11-23T22:56:10.2646601Z 
+2026-11-23T22:56:10.2646755Z If you want to create a new branch to retain commits you create, you may
+2026-11-23T22:56:10.2647111Z do so (now or later) by using -c with the switch command. Example:
+2026-11-23T22:56:10.2647314Z 
+2026-11-23T22:56:10.2647407Z   git switch -c <new-branch-name>
+2026-11-23T22:56:10.2647547Z 
+2026-11-23T22:56:10.2647634Z Or undo this operation with:
+2026-11-23T22:56:10.2647762Z 
+2026-11-23T22:56:10.2647835Z   git switch -
+2026-11-23T22:56:10.2647935Z 
+2026-11-23T22:56:10.2648101Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-23T22:56:10.2648341Z 
+2026-11-23T22:56:10.2648615Z HEAD is now at a55a512 Merge 6d99cfc9995b80198c2e1fc233c23690feb5d12d into 5005bedbe4fd4f1a43456918dd255fd2cbc4a5d1
+2026-11-23T22:56:10.2684383Z ##[endgroup]
+2026-11-23T22:56:10.2744771Z [command]/usr/bin/git log -1 --format=%H
+2026-11-23T22:56:10.2785155Z a55a512557ebf72eda966df1a418578e2f2a03ab
+2026-11-23T22:56:10.3042139Z ##[group]Run python3 -m unittest tools/artifacts/test_artifacts.py
+2026-11-23T22:56:10.3042493Z [36;1mpython3 -m unittest tools/artifacts/test_artifacts.py[0m
+2026-11-23T22:56:10.3061098Z shell: /usr/bin/bash -e {0}
+2026-11-23T22:56:10.3061244Z env:
+2026-11-23T22:56:10.3061354Z   GIT_AUTHOR_NAME: ci
+2026-11-23T22:56:10.3061487Z   GIT_AUTHOR_EMAIL: ci@example.invalid
+2026-11-23T22:56:10.3061639Z   GIT_COMMITTER_NAME: ci
+2026-11-23T22:56:10.3061775Z   GIT_COMMITTER_EMAIL: ci@example.invalid
+2026-11-23T22:56:10.3061921Z ##[endgroup]
+2026-11-23T22:56:18.2723386Z .................................artifacts: not a sha256 digest: '../../etc/passwd'
+2026-11-23T22:56:18.2898917Z .........
+2026-11-23T22:56:18.2899661Z ----------------------------------------------------------------------
+2026-11-23T22:56:18.2900075Z Ran 42 tests in 7.891s
+2026-11-23T22:56:18.2900204Z 
+2026-11-23T22:56:18.2900280Z OK
+2026-11-23T22:56:18.3161380Z ##[group]Run if python3 tools/artifacts/artifacts.py check HEAD^1 HEAD; then exit 0; fi
+2026-11-23T22:56:18.3161824Z [36;1mif python3 tools/artifacts/artifacts.py check HEAD^1 HEAD; then exit 0; fi[0m
+2026-11-23T22:56:18.3162076Z [36;1mif [ "$LARGE_FILE_OK" = true ]; then[0m
+2026-11-23T22:56:18.3162326Z [36;1m  echo "::warning::store-policy files committed under the large-file-ok label"[0m
+2026-11-23T22:56:18.3162554Z [36;1m  exit 0[0m
+2026-11-23T22:56:18.3162669Z [36;1mfi[0m
+2026-11-23T22:56:18.3162781Z [36;1mexit 1[0m
+2026-11-23T22:56:18.3180275Z shell: /usr/bin/bash -e {0}
+2026-11-23T22:56:18.3180418Z env:
+2026-11-23T22:56:18.3180540Z   LARGE_FILE_OK: false
+2026-11-23T22:56:18.3180672Z ##[endgroup]
+2026-11-23T22:57:04.7361148Z artifacts check: no data files committed
+2026-11-23T22:57:04.7492395Z ##[group]Run python3 tools/artifacts/wire_workflows.py --check
+2026-11-23T22:57:04.7492677Z [36;1mpython3 tools/artifacts/wire_workflows.py --check[0m
+2026-11-23T22:57:04.7509230Z shell: /usr/bin/bash -e {0}
+2026-11-23T22:57:04.7509470Z ##[endgroup]
+2026-11-23T22:57:06.6051282Z chained-transfer-arithmetic-audit.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6051879Z chained-transfer-arithmetic-audit.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6052356Z chained-transfer-arithmetic-audit.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6052835Z chained-transfer-arithmetic-audit.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6060164Z chained-transfer-beta-complete.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6060829Z chained-transfer-beta-complete.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6061368Z chained-transfer-beta-complete.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6062093Z chained-transfer-beta-rational-lift.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6062793Z chained-transfer-beta-rational-lift.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6063316Z chained-transfer-beta-rational-lift.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6063792Z chained-transfer-bitangents.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6064599Z chained-transfer-bitangents.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6079664Z chained-transfer-chain-kernels.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6080041Z chained-transfer-chain-kernels.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6166392Z chained-transfer-common-origin.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6166727Z chained-transfer-common-origin.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6167007Z chained-transfer-common-origin.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6168325Z chained-transfer-completed-descent.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6168680Z chained-transfer-completed-descent.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6170951Z chained-transfer-completed-v2.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6171268Z chained-transfer-completed-v2.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6174425Z chained-transfer-fixed-chain.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6174810Z chained-transfer-fixed-chain.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6175094Z chained-transfer-fixed-chain.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6177095Z chained-transfer-gluing.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.6177381Z chained-transfer-gluing.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.7212926Z chained-transfer-induced-proof.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.7213331Z chained-transfer-induced-proof.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.7213648Z chained-transfer-induced-proof.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.7213959Z chained-transfer-induced-proof.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.7215445Z chained-transfer-kernels.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.7215796Z chained-transfer-kernels.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8008090Z chained-transfer-new-target-ic.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8008651Z chained-transfer-new-target-ic.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8009302Z chained-transfer-new-target-ic.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8011710Z chained-transfer-nondual-preflight.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8012278Z chained-transfer-nondual-preflight.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8013357Z chained-transfer-nondual-preflight.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8015186Z chained-transfer-norm-halving.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8015812Z chained-transfer-norm-halving.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8016175Z chained-transfer-norm-halving.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8119662Z chained-transfer-norm-sampling.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8120117Z chained-transfer-norm-sampling.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8120507Z chained-transfer-norm-sampling.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8122677Z chained-transfer-odd-product.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8123102Z chained-transfer-odd-product.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8123484Z chained-transfer-odd-product.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8125689Z chained-transfer-odd-refinement.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8126151Z chained-transfer-odd-refinement.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8126533Z chained-transfer-odd-refinement.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8128014Z chained-transfer-odd-source.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8128719Z chained-transfer-odd-source.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8131810Z chained-transfer-original-fixed-ic.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8132279Z chained-transfer-original-fixed-ic.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8132645Z chained-transfer-original-fixed-ic.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8135162Z chained-transfer-original-full.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8135581Z chained-transfer-original-full.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8135936Z chained-transfer-original-full.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8336587Z chained-transfer-original-relation-02.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8337112Z chained-transfer-original-relation-02.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8337477Z chained-transfer-original-relation-02.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8343608Z chained-transfer-original-relation.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8344112Z chained-transfer-original-relation.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8344525Z chained-transfer-original-relation.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8348108Z chained-transfer-paired-fourth.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8348645Z chained-transfer-paired-fourth.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8349342Z chained-transfer-paired-fourth.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8350778Z chained-transfer-public-target.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8351290Z chained-transfer-public-target.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8455289Z chained-transfer-reference.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8455706Z chained-transfer-reference.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8456138Z chained-transfer-reference.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8456536Z chained-transfer-reference.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8456804Z chained-transfer-reference.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8457065Z chained-transfer-reference.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8457326Z chained-transfer-reference.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8457594Z chained-transfer-reference.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8458303Z chained-transfer-reference.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8458590Z chained-transfer-reference.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8458867Z chained-transfer-reference.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8459347Z chained-transfer-reference.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8459722Z chained-transfer-reference.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8460078Z chained-transfer-reference.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8460446Z chained-transfer-reference.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8460810Z chained-transfer-reference.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8461202Z chained-transfer-twisted-pair.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8461660Z chained-transfer-twisted-pair.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8462063Z chained-transfer-twisted-pair.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8469695Z chained-transfer-two-primary.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.8489401Z chained-transfer-two-primary.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.9809686Z ct127-fixed-chain-absolute-manual.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.9810721Z ct127-fixed-chain-absolute-manual.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:06.9811027Z ct127-fixed-chain-absolute-manual.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:07.0833566Z ct137-native-pricing-compile.yml: native-price-compile: checkout into a `path:` left unwired
+2026-11-23T22:57:07.0833986Z ct137-native-pricing-compile.yml: native-price-compile: checkout into a `path:` left unwired
+2026-11-23T22:57:07.0942933Z ct141-admitted-price.yml: admitted-native-price: checkout into a `path:` left unwired
+2026-11-23T22:57:07.0943292Z ct141-admitted-price.yml: admitted-native-price: checkout into a `path:` left unwired
+2026-11-23T22:57:07.7003626Z ct200-public48-native-typecheck.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:07.7004071Z ct200-public48-native-typecheck.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:07.7105871Z ct244-source-primitive-probe.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:07.7109779Z ct245-primitive-native-typecheck.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:07.7110171Z ct245-primitive-native-typecheck.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:13.0940101Z sage-compatibility.yml: checkout into a `path:` left unwired
+2026-11-23T22:57:13.3027687Z 
+2026-11-23T22:57:13.3028385Z 2 workflow(s) read store data without pulling it; run python3 tools/artifacts/wire_workflows.py
+2026-11-23T22:57:13.3051200Z ct244-source-primitive-probe.yml: needs `Pull store data this workflow reads (tools/artifacts)` for experiments/chained-transfer-public-target
+2026-11-23T22:57:13.3052269Z ct245-primitive-native-typecheck.yml: needs `Pull store data this workflow reads (tools/artifacts)` for docs/research-artifacts/chained-transfer/nondual-models-18 experiments/chained-transfer-public-target
+2026-11-23T22:57:13.3206424Z ##[error]Process completed with exit code 1.
+2026-11-23T22:57:13.3294804Z Post job cleanup.
+2026-11-23T22:57:13.3919752Z [command]/usr/bin/git version
+2026-11-23T22:57:13.3989376Z git version 2.56.1
+2026-11-23T22:57:13.4021093Z Temporarily overriding HOME='/home/runner/work/_temp/d4fa154a-5116-4bd3-9bdc-c6eaab08d466' before making global git config changes
+2026-11-23T22:57:13.4021819Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-23T22:57:13.4022366Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cryptanalysis/cryptanalysis
+2026-11-23T22:57:13.4061539Z Removing SSH command configuration
+2026-11-23T22:57:13.4068024Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-23T22:57:13.4108769Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-23T22:57:13.4516992Z Removing HTTP extra header
+2026-11-23T22:57:13.4522201Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-23T22:57:13.4576540Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-23T22:57:13.4961245Z Removing includeIf entries pointing to credentials config files
+2026-11-23T22:57:13.4967640Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-23T22:57:13.5008683Z includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path
+2026-11-23T22:57:13.5009314Z includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path
+2026-11-23T22:57:13.5009579Z includeif.gitdir:/github/workspace/.git.path
+2026-11-23T22:57:13.5009786Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-23T22:57:13.5017179Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path
+2026-11-23T22:57:13.5055851Z /home/runner/work/_temp/git-credentials-862aca1f-339d-4d56-9a8c-aa966605f2eb.config
+2026-11-23T22:57:13.5065645Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-862aca1f\-339d\-4d56\-9a8c\-aa966605f2eb\.config
+2026-11-23T22:57:13.5123050Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path
+2026-11-23T22:57:13.5159850Z /home/runner/work/_temp/git-credentials-862aca1f-339d-4d56-9a8c-aa966605f2eb.config
+2026-11-23T22:57:13.5167793Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-862aca1f\-339d\-4d56\-9a8c\-aa966605f2eb\.config
+2026-11-23T22:57:13.5213579Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-23T22:57:13.5249313Z /github/runner_temp/git-credentials-862aca1f-339d-4d56-9a8c-aa966605f2eb.config
+2026-11-23T22:57:13.5256577Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-862aca1f\-339d\-4d56\-9a8c\-aa966605f2eb\.config
+2026-11-23T22:57:13.5305286Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-23T22:57:13.5343019Z /github/runner_temp/git-credentials-862aca1f-339d-4d56-9a8c-aa966605f2eb.config
+2026-11-23T22:57:13.5349938Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-862aca1f\-339d\-4d56\-9a8c\-aa966605f2eb\.config
+2026-11-23T22:57:13.5398957Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-23T22:57:13.5789186Z Removing credentials config '/home/runner/work/_temp/git-credentials-862aca1f-339d-4d56-9a8c-aa966605f2eb.config'
+2026-11-23T22:57:13.5945064Z Cleaning up orphan processes

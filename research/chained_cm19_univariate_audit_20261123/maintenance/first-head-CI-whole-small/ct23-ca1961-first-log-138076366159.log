@@ -1,0 +1,424 @@
+﻿2026-11-23T22:55:57.2593738Z Current runner version: '2.338.2'
+2026-11-23T22:55:57.2626602Z ##[group]Runner Image Provisioner
+2026-11-23T22:55:57.2627641Z Hosted Compute Agent
+2026-11-23T22:55:57.2628503Z Version: 20261111.635
+2026-11-23T22:55:57.2629212Z Commit: b8a594ea514ff44cadb5342986c68b1eac6e22ed
+2026-11-23T22:55:57.2630049Z Build Date: 2026-11-11T01:49:01Z
+2026-11-23T22:55:57.2630800Z Worker ID: {4f5aa08c-50db-4399-b607-742395704ada}
+2026-11-23T22:55:57.2631550Z Region: northcentralus
+2026-11-23T22:55:57.2632243Z Cloud: Azure
+2026-11-23T22:55:57.2632883Z ##[endgroup]
+2026-11-23T22:55:57.2634946Z ##[group]Operating System
+2026-11-23T22:55:57.2636220Z Ubuntu
+2026-11-23T22:55:57.2636831Z 24.04.5
+2026-11-23T22:55:57.2637516Z LTS
+2026-11-23T22:55:57.2638104Z ##[endgroup]
+2026-11-23T22:55:57.2638696Z ##[group]Runner Image
+2026-11-23T22:55:57.2639482Z Image: ubuntu-24.04-arm
+2026-11-23T22:55:57.2640100Z Version: 20261116.188.1
+2026-11-23T22:55:57.2641686Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24-arm64/20261116.188/images/ubuntu/Ubuntu2404-Arm64-Readme.md
+2026-11-23T22:55:57.2643332Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24-arm64%2F20261116.188
+2026-11-23T22:55:57.2644458Z ##[endgroup]
+2026-11-23T22:55:57.2645976Z ##[group]GITHUB_TOKEN Permissions
+2026-11-23T22:55:57.2649160Z Contents: read
+2026-11-23T22:55:57.2649801Z Metadata: read
+2026-11-23T22:55:57.2650513Z ##[endgroup]
+2026-11-23T22:55:57.2653196Z Secret source: Actions
+2026-11-23T22:55:57.2654430Z Cache mode: write
+2026-11-23T22:55:57.2655253Z Prepare workflow directory
+2026-11-23T22:55:57.3291604Z Prepare all required actions
+2026-11-23T22:55:57.3354947Z Getting action download info
+2026-11-23T22:55:57.5399171Z Download action repository 'actions/checkout@v7' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-11-23T22:55:57.7716641Z Complete job name: ubuntu-24.04-arm / gcc / Release
+2026-11-23T22:55:57.8702977Z ##[group]Run actions/checkout@v7
+2026-11-23T22:55:57.8704376Z with:
+2026-11-23T22:55:57.8705029Z   repository: isogeny-labs/cryptanalysis
+2026-11-23T22:55:57.8709770Z   token: ***
+2026-11-23T22:55:57.8710548Z   ssh-strict: true
+2026-11-23T22:55:57.8711302Z   ssh-user: git
+2026-11-23T22:55:57.8712058Z   persist-credentials: true
+2026-11-23T22:55:57.8712703Z   clean: true
+2026-11-23T22:55:57.8713898Z   sparse-checkout-cone-mode: true
+2026-11-23T22:55:57.8714613Z   fetch-depth: 1
+2026-11-23T22:55:57.8715218Z   fetch-tags: false
+2026-11-23T22:55:57.8716277Z   show-progress: true
+2026-11-23T22:55:57.8716875Z   lfs: false
+2026-11-23T22:55:57.8717495Z   submodules: false
+2026-11-23T22:55:57.8718112Z   set-safe-directory: true
+2026-11-23T22:55:57.8718855Z   allow-unsafe-pr-checkout: false
+2026-11-23T22:55:57.8720214Z env:
+2026-11-23T22:55:57.8720769Z   CC: gcc
+2026-11-23T22:55:57.8721412Z ##[endgroup]
+2026-11-23T22:55:57.9661283Z Syncing repository: isogeny-labs/cryptanalysis
+2026-11-23T22:55:57.9663885Z ##[group]Getting Git version info
+2026-11-23T22:55:57.9665052Z Working directory is '/home/runner/work/cryptanalysis/cryptanalysis'
+2026-11-23T22:55:57.9666733Z [command]/usr/bin/git version
+2026-11-23T22:55:57.9739193Z git version 2.56.1
+2026-11-23T22:55:57.9757159Z ##[endgroup]
+2026-11-23T22:55:57.9772019Z Temporarily overriding HOME='/home/runner/work/_temp/11aa59e6-657a-4dd9-9447-102a4e6a543d' before making global git config changes
+2026-11-23T22:55:57.9773580Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-23T22:55:57.9777154Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cryptanalysis/cryptanalysis
+2026-11-23T22:55:57.9813608Z Deleting the contents of '/home/runner/work/cryptanalysis/cryptanalysis'
+2026-11-23T22:55:57.9816411Z ##[group]Determining repository object format
+2026-11-23T22:55:57.9818208Z ##[endgroup]
+2026-11-23T22:55:57.9819780Z ##[group]Initializing the repository
+2026-11-23T22:55:57.9822028Z [command]/usr/bin/git init /home/runner/work/cryptanalysis/cryptanalysis
+2026-11-23T22:55:57.9907597Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-23T22:55:57.9909956Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-23T22:55:57.9911305Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-23T22:55:57.9912475Z hint: call:
+2026-11-23T22:55:57.9913276Z hint:
+2026-11-23T22:55:57.9914127Z hint: 	git config --global init.defaultBranch <name>
+2026-11-23T22:55:57.9915177Z hint:
+2026-11-23T22:55:57.9916362Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-23T22:55:57.9917711Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-23T22:55:57.9918847Z hint:
+2026-11-23T22:55:57.9919598Z hint: 	git branch -m <name>
+2026-11-23T22:55:57.9920470Z hint:
+2026-11-23T22:55:57.9921466Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-23T22:55:57.9923164Z Initialized empty Git repository in /home/runner/work/cryptanalysis/cryptanalysis/.git/
+2026-11-23T22:55:57.9938958Z [command]/usr/bin/git remote add origin https://github.com/isogeny-labs/cryptanalysis
+2026-11-23T22:55:58.0012457Z ##[endgroup]
+2026-11-23T22:55:58.0013728Z ##[group]Disabling automatic garbage collection
+2026-11-23T22:55:58.0018581Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-23T22:55:58.0055773Z ##[endgroup]
+2026-11-23T22:55:58.0057217Z ##[group]Setting up auth
+2026-11-23T22:55:58.0058143Z Removing SSH command configuration
+2026-11-23T22:55:58.0061841Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-23T22:55:58.0106935Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-23T22:55:58.0454784Z Removing HTTP extra header
+2026-11-23T22:55:58.0460063Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-23T22:55:58.0495072Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-23T22:55:58.0758425Z Removing includeIf entries pointing to credentials config files
+2026-11-23T22:55:58.0759762Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-23T22:55:58.0783155Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-23T22:55:58.1000442Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-4560b4c6-cb09-421d-b124-31f3e97e598b.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-23T22:55:58.1042350Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path /home/runner/work/_temp/git-credentials-4560b4c6-cb09-421d-b124-31f3e97e598b.config
+2026-11-23T22:55:58.1080765Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-4560b4c6-cb09-421d-b124-31f3e97e598b.config
+2026-11-23T22:55:58.1122127Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-4560b4c6-cb09-421d-b124-31f3e97e598b.config
+2026-11-23T22:55:58.1156220Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-4560b4c6-cb09-421d-b124-31f3e97e598b.config
+2026-11-23T22:55:58.1190081Z ##[endgroup]
+2026-11-23T22:55:58.1191339Z ##[group]Fetching the repository
+2026-11-23T22:55:58.1194753Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +a55a512557ebf72eda966df1a418578e2f2a03ab:refs/remotes/pull/1961/merge
+2026-11-23T22:56:36.7315131Z From https://github.com/isogeny-labs/cryptanalysis
+2026-11-23T22:56:36.7317090Z  * [new ref]             a55a512557ebf72eda966df1a418578e2f2a03ab -> pull/1961/merge
+2026-11-23T22:56:36.7324817Z ##[endgroup]
+2026-11-23T22:56:36.7326128Z ##[group]Determining the checkout info
+2026-11-23T22:56:36.7326971Z ##[endgroup]
+2026-11-23T22:56:36.7327517Z [command]/usr/bin/git sparse-checkout disable
+2026-11-23T22:56:36.7366096Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-23T22:56:36.7400202Z ##[group]Checking out the ref
+2026-11-23T22:56:36.7402950Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/1961/merge
+2026-11-23T22:56:37.8566432Z Updating files:  28% (37021/131129)
+2026-11-23T22:56:37.9052544Z Updating files:  29% (38028/131129)
+2026-11-23T22:56:37.9873934Z Updating files:  30% (39339/131129)
+2026-11-23T22:56:38.8246964Z Updating files:  31% (40650/131129)
+2026-11-23T22:56:39.4986507Z Updating files:  31% (41635/131129)
+2026-11-23T22:56:39.8250436Z Updating files:  32% (41962/131129)
+2026-11-23T22:56:40.6372513Z Updating files:  32% (42428/131129)
+2026-11-23T22:56:40.8211027Z Updating files:  33% (43273/131129)
+2026-11-23T22:56:41.5374059Z Updating files:  33% (43544/131129)
+2026-11-23T22:56:41.8818804Z Updating files:  34% (44584/131129)
+2026-11-23T22:56:42.8253416Z Updating files:  34% (44932/131129)
+2026-11-23T22:56:43.2286731Z Updating files:  34% (45683/131129)
+2026-11-23T22:56:43.8319632Z Updating files:  35% (45896/131129)
+2026-11-23T22:56:44.3429445Z Updating files:  35% (46461/131129)
+2026-11-23T22:56:44.6276423Z Updating files:  36% (47207/131129)
+2026-11-23T22:56:44.8275379Z Updating files:  37% (48518/131129)
+2026-11-23T22:56:44.9042652Z Updating files:  37% (49522/131129)
+2026-11-23T22:56:45.4951784Z Updating files:  38% (49830/131129)
+2026-11-23T22:56:45.8220841Z Updating files:  39% (51141/131129)
+2026-11-23T22:56:46.3727034Z Updating files:  39% (51705/131129)
+2026-11-23T22:56:46.8741016Z Updating files:  40% (52452/131129)
+2026-11-23T22:56:46.8835486Z Updating files:  40% (53676/131129)
+2026-11-23T22:56:47.0234212Z Updating files:  41% (53763/131129)
+2026-11-23T22:56:47.1682998Z Updating files:  42% (55075/131129)
+2026-11-23T22:56:47.8374540Z Updating files:  43% (56386/131129)
+2026-11-23T22:56:47.9081409Z Updating files:  43% (57460/131129)
+2026-11-23T22:56:48.1198798Z Updating files:  44% (57697/131129)
+2026-11-23T22:56:48.1568557Z Updating files:  45% (59009/131129)
+2026-11-23T22:56:48.1827347Z Updating files:  46% (60320/131129)
+2026-11-23T22:56:48.2125617Z Updating files:  47% (61631/131129)
+2026-11-23T22:56:48.2569502Z Updating files:  48% (62942/131129)
+2026-11-23T22:56:48.3033675Z Updating files:  49% (64254/131129)
+2026-11-23T22:56:48.3503755Z Updating files:  50% (65565/131129)
+2026-11-23T22:56:48.4254410Z Updating files:  51% (66876/131129)
+2026-11-23T22:56:48.4922973Z Updating files:  52% (68188/131129)
+2026-11-23T22:56:48.8210577Z Updating files:  53% (69499/131129)
+2026-11-23T22:56:48.8247881Z Updating files:  53% (70600/131129)
+2026-11-23T22:56:48.8482958Z Updating files:  54% (70810/131129)
+2026-11-23T22:56:48.8835358Z Updating files:  55% (72121/131129)
+2026-11-23T22:56:48.9338178Z Updating files:  56% (73433/131129)
+2026-11-23T22:56:48.9887762Z Updating files:  57% (74744/131129)
+2026-11-23T22:56:49.0520365Z Updating files:  58% (76055/131129)
+2026-11-23T22:56:49.1151190Z Updating files:  59% (77367/131129)
+2026-11-23T22:56:49.1614613Z Updating files:  60% (78678/131129)
+2026-11-23T22:56:49.2110103Z Updating files:  61% (79989/131129)
+2026-11-23T22:56:49.2488043Z Updating files:  62% (81300/131129)
+2026-11-23T22:56:49.2968560Z Updating files:  63% (82612/131129)
+2026-11-23T22:56:49.3394920Z Updating files:  64% (83923/131129)
+2026-11-23T22:56:49.3859593Z Updating files:  65% (85234/131129)
+2026-11-23T22:56:49.4309699Z Updating files:  66% (86546/131129)
+2026-11-23T22:56:49.4868206Z Updating files:  67% (87857/131129)
+2026-11-23T22:56:49.5357750Z Updating files:  68% (89168/131129)
+2026-11-23T22:56:49.5849619Z Updating files:  69% (90480/131129)
+2026-11-23T22:56:49.6272687Z Updating files:  70% (91791/131129)
+2026-11-23T22:56:49.7471362Z Updating files:  71% (93102/131129)
+2026-11-23T22:56:49.8028392Z Updating files:  72% (94413/131129)
+2026-11-23T22:56:49.8209456Z Updating files:  73% (95725/131129)
+2026-11-23T22:56:49.8309182Z Updating files:  73% (96573/131129)
+2026-11-23T22:56:49.8595133Z Updating files:  74% (97036/131129)
+2026-11-23T22:56:49.8879813Z Updating files:  75% (98347/131129)
+2026-11-23T22:56:49.9138206Z Updating files:  76% (99659/131129)
+2026-11-23T22:56:49.9539689Z Updating files:  77% (100970/131129)
+2026-11-23T22:56:50.0002474Z Updating files:  78% (102281/131129)
+2026-11-23T22:56:50.0833370Z Updating files:  79% (103592/131129)
+2026-11-23T22:56:50.1774970Z Updating files:  80% (104904/131129)
+2026-11-23T22:56:50.2736233Z Updating files:  81% (106215/131129)
+2026-11-23T22:56:50.3646712Z Updating files:  82% (107526/131129)
+2026-11-23T22:56:50.4212666Z Updating files:  83% (108838/131129)
+2026-11-23T22:56:50.4554075Z Updating files:  84% (110149/131129)
+2026-11-23T22:56:50.4905877Z Updating files:  85% (111460/131129)
+2026-11-23T22:56:50.5792345Z Updating files:  86% (112771/131129)
+2026-11-23T22:56:50.7651723Z Updating files:  87% (114083/131129)
+2026-11-23T22:56:50.8070649Z Updating files:  88% (115394/131129)
+2026-11-23T22:56:50.8212391Z Updating files:  89% (116705/131129)
+2026-11-23T22:56:50.8944664Z Updating files:  89% (116860/131129)
+2026-11-23T22:56:50.9323108Z Updating files:  90% (118017/131129)
+2026-11-23T22:56:50.9791820Z Updating files:  91% (119328/131129)
+2026-11-23T22:56:51.0250955Z Updating files:  92% (120639/131129)
+2026-11-23T22:56:51.1058805Z Updating files:  93% (121950/131129)
+2026-11-23T22:56:51.2091359Z Updating files:  94% (123262/131129)
+2026-11-23T22:56:51.2611527Z Updating files:  95% (124573/131129)
+2026-11-23T22:56:51.3104448Z Updating files:  96% (125884/131129)
+2026-11-23T22:56:51.3522083Z Updating files:  97% (127196/131129)
+2026-11-23T22:56:51.4620881Z Updating files:  98% (128507/131129)
+2026-11-23T22:56:51.7624205Z Updating files:  99% (129818/131129)
+2026-11-23T22:56:51.7624720Z Updating files: 100% (131129/131129)
+2026-11-23T22:56:51.7625278Z Updating files: 100% (131129/131129), done.
+2026-11-23T22:56:51.8962207Z Note: switching to 'refs/remotes/pull/1961/merge'.
+2026-11-23T22:56:51.8962884Z 
+2026-11-23T22:56:51.8963147Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-23T22:56:51.8963949Z changes and commit them, and you can discard any commits you make in this
+2026-11-23T22:56:51.8964464Z state without impacting any branches by switching back to a branch.
+2026-11-23T22:56:51.8964730Z 
+2026-11-23T22:56:51.8964993Z If you want to create a new branch to retain commits you create, you may
+2026-11-23T22:56:51.8965783Z do so (now or later) by using -c with the switch command. Example:
+2026-11-23T22:56:51.8966113Z 
+2026-11-23T22:56:51.8966218Z   git switch -c <new-branch-name>
+2026-11-23T22:56:51.8966495Z 
+2026-11-23T22:56:51.8966642Z Or undo this operation with:
+2026-11-23T22:56:51.8966830Z 
+2026-11-23T22:56:51.8966919Z   git switch -
+2026-11-23T22:56:51.8967069Z 
+2026-11-23T22:56:51.8967418Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-23T22:56:51.8967719Z 
+2026-11-23T22:56:51.8968097Z HEAD is now at a55a51255 Merge 6d99cfc9995b80198c2e1fc233c23690feb5d12d into 5005bedbe4fd4f1a43456918dd255fd2cbc4a5d1
+2026-11-23T22:56:51.9237026Z ##[endgroup]
+2026-11-23T22:56:51.9278445Z [command]/usr/bin/git log -1 --format=%H
+2026-11-23T22:56:51.9305077Z a55a512557ebf72eda966df1a418578e2f2a03ab
+2026-11-23T22:56:52.0407857Z ##[group]Run cmake -S . -B build \
+2026-11-23T22:56:52.0408608Z [36;1mcmake -S . -B build \[0m
+2026-11-23T22:56:52.0408970Z [36;1m  -DCMAKE_BUILD_TYPE=Release \[0m
+2026-11-23T22:56:52.0409337Z [36;1m  -DCA_WERROR=ON [0m
+2026-11-23T22:56:52.0445290Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-23T22:56:52.0446164Z env:
+2026-11-23T22:56:52.0446421Z   CC: gcc
+2026-11-23T22:56:52.0446738Z ##[endgroup]
+2026-11-23T22:56:53.7701108Z -- The C compiler identification is GNU 13.3.0
+2026-11-23T22:56:53.9782500Z -- Detecting C compiler ABI info
+2026-11-23T22:56:54.6133997Z -- Detecting C compiler ABI info - done
+2026-11-23T22:56:54.6281368Z -- Check for working C compiler: /usr/bin/gcc - skipped
+2026-11-23T22:56:54.7786329Z -- Detecting C compile features
+2026-11-23T22:56:54.7792600Z -- Detecting C compile features - done
+2026-11-23T22:56:55.0041016Z -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+2026-11-23T22:56:55.2914851Z -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+2026-11-23T22:56:55.2985326Z -- Found Threads: TRUE
+2026-11-23T22:56:55.2999665Z -- cryptanalysis: arch=baseline-aarch64 compiler="GNU 13.3.0" lto=0 fp-contract=off
+2026-11-23T22:56:55.5086100Z -- Configuring done (2.4s)
+2026-11-23T22:56:55.5457793Z -- Generating done (0.0s)
+2026-11-23T22:56:55.5530812Z -- Build files have been written to: /home/runner/work/cryptanalysis/cryptanalysis/build
+2026-11-23T22:56:55.5718846Z ##[group]Run cmake --build build -j"$(getconf _NPROCESSORS_ONLN)"
+2026-11-23T22:56:55.5719664Z [36;1mcmake --build build -j"$(getconf _NPROCESSORS_ONLN)"[0m
+2026-11-23T22:56:55.5751471Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-23T22:56:55.5751905Z env:
+2026-11-23T22:56:55.5752171Z   CC: gcc
+2026-11-23T22:56:55.5752518Z ##[endgroup]
+2026-11-23T22:56:55.5997614Z [  1%] Building C object CMakeFiles/cryptanalysis_objects.dir/src/modarith.c.o
+2026-11-23T22:56:55.6001776Z [  2%] Building C object CMakeFiles/cryptanalysis_objects.dir/src/util.c.o
+2026-11-23T22:56:55.6002525Z [  4%] Building C object CMakeFiles/cryptanalysis_objects.dir/src/group_common.c.o
+2026-11-23T22:56:55.6041440Z [  5%] Building C object CMakeFiles/cryptanalysis_objects.dir/src/group_zp.c.o
+2026-11-23T22:56:55.7077084Z [  6%] Building C object CMakeFiles/cryptanalysis_objects.dir/src/group_ec.c.o
+2026-11-23T22:56:55.7361064Z [  8%] Building C object CMakeFiles/cryptanalysis_objects.dir/src/ec_tau.c.o
+2026-11-23T22:56:55.7476987Z [  9%] Building C object CMakeFiles/cryptanalysis_objects.dir/src/bsgs.c.o
+2026-11-23T22:56:56.1227048Z [ 10%] Building C object CMakeFiles/cryptanalysis_objects.dir/src/rho.c.o
+2026-11-23T22:56:56.3546896Z [ 12%] Building C object CMakeFiles/cryptanalysis_objects.dir/src/kangaroo.c.o
+2026-11-23T22:56:56.6897450Z [ 13%] Building C object CMakeFiles/cryptanalysis_objects.dir/src/grumpy.c.o
+2026-11-23T22:56:56.9638830Z [ 14%] Building C object CMakeFiles/cryptanalysis_objects.dir/src/precomp.c.o
+2026-11-23T22:56:57.0189895Z [ 16%] Building C object CMakeFiles/cryptanalysis_objects.dir/src/curve.c.o
+2026-11-23T22:56:57.1497090Z [ 17%] Building C object CMakeFiles/cryptanalysis_objects.dir/src/sixclass.c.o
+2026-11-23T22:56:57.4107183Z [ 18%] Building C object CMakeFiles/cryptanalysis_objects.dir/src/pohlig.c.o
+2026-11-23T22:56:57.7447160Z [ 20%] Building C object CMakeFiles/cryptanalysis_objects.dir/src/cheon.c.o
+2026-11-23T22:56:57.8497119Z [ 21%] Building C object CMakeFiles/cryptanalysis_objects.dir/src/linalg.c.o
+2026-11-23T22:56:57.9807129Z [ 22%] Building C object CMakeFiles/cryptanalysis_objects.dir/src/indexcalc.c.o
+2026-11-23T22:56:58.6070136Z [ 24%] Building C object CMakeFiles/cryptanalysis_objects.dir/src/coord.c.o
+2026-11-23T22:56:59.2093042Z [ 25%] Building C object CMakeFiles/cryptanalysis_objects.dir/src/coord_net.c.o
+2026-11-23T22:56:59.2888210Z [ 26%] Building C object CMakeFiles/cryptanalysis_objects.dir/src/ffi.c.o
+2026-11-23T22:56:59.3241633Z [ 28%] Building C object CMakeFiles/cryptanalysis_objects.dir/src/gpu_rho.c.o
+2026-11-23T22:56:59.4766969Z [ 29%] Building C object CMakeFiles/cryptanalysis_objects.dir/src/gpu_emulate.c.o
+2026-11-23T22:56:59.5587042Z [ 30%] Building C object CMakeFiles/cryptanalysis_objects.dir/src/gpu_cuda_stub.c.o
+2026-11-23T22:57:04.9380489Z [ 30%] Built target cryptanalysis_objects
+2026-11-23T22:57:04.9444213Z [ 32%] Linking C shared library libcryptanalysis.so
+2026-11-23T22:57:04.9445110Z [ 33%] Linking C static library libcryptanalysis.a
+2026-11-23T22:57:05.0256174Z [ 33%] Built target cryptanalysis
+2026-11-23T22:57:05.3256402Z [ 33%] Built target cryptanalysis_static
+2026-11-23T22:57:05.3329698Z [ 34%] Building C object CMakeFiles/cryptanalysis_cli.dir/tools/ca_cli.c.o
+2026-11-23T22:57:05.3354865Z [ 36%] Building C object CMakeFiles/ca.dir/tools/ca_cli.c.o
+2026-11-23T22:57:05.3386628Z [ 37%] Building C object CMakeFiles/ca_bench.dir/tools/ca_bench.c.o
+2026-11-23T22:57:05.3387435Z [ 38%] Building C object CMakeFiles/ca_sixclass_bench.dir/tools/ca_sixclass_bench.c.o
+2026-11-23T22:57:05.3957092Z [ 40%] Linking C executable ca_sixclass_bench
+2026-11-23T22:57:05.4356855Z [ 40%] Built target ca_sixclass_bench
+2026-11-23T22:57:05.4416861Z [ 41%] Building C object CMakeFiles/ca_perfbench.dir/tools/ca_perfbench.c.o
+2026-11-23T22:57:05.8576966Z [ 42%] Linking C executable ca_bench
+2026-11-23T22:57:05.9007046Z [ 42%] Built target ca_bench
+2026-11-23T22:57:05.9050020Z [ 44%] Building C object CMakeFiles/test_modarith.dir/tests/test_modarith.c.o
+2026-11-23T22:57:06.5179981Z [ 45%] Linking C executable test_modarith
+2026-11-23T22:57:06.5280894Z [ 46%] Linking C executable cryptanalysis
+2026-11-23T22:57:06.5413777Z [ 48%] Linking C executable ca
+2026-11-23T22:57:06.5420466Z [ 48%] Built target test_modarith
+2026-11-23T22:57:06.5540412Z [ 49%] Building C object CMakeFiles/test_group.dir/tests/test_group.c.o
+2026-11-23T22:57:06.5776796Z [ 49%] Built target cryptanalysis_cli
+2026-11-23T22:57:06.5836589Z [ 50%] Building C object CMakeFiles/test_bsgs.dir/tests/test_bsgs.c.o
+2026-11-23T22:57:06.5896697Z [ 50%] Built target ca
+2026-11-23T22:57:06.5956569Z [ 52%] Building C object CMakeFiles/test_rho.dir/tests/test_rho.c.o
+2026-11-23T22:57:06.7777597Z [ 53%] Linking C executable test_rho
+2026-11-23T22:57:06.8013070Z [ 53%] Built target test_rho
+2026-11-23T22:57:06.8066606Z [ 54%] Linking C executable test_bsgs
+2026-11-23T22:57:06.8096627Z [ 56%] Building C object CMakeFiles/test_kangaroo.dir/tests/test_kangaroo.c.o
+2026-11-23T22:57:06.8300170Z [ 56%] Built target test_bsgs
+2026-11-23T22:57:06.8356850Z [ 57%] Building C object CMakeFiles/test_grumpy.dir/tests/test_grumpy.c.o
+2026-11-23T22:57:06.9246941Z [ 58%] Linking C executable test_group
+2026-11-23T22:57:06.9487071Z [ 58%] Built target test_group
+2026-11-23T22:57:06.9556603Z [ 60%] Building C object CMakeFiles/test_precomp.dir/tests/test_precomp.c.o
+2026-11-23T22:57:06.9889621Z [ 61%] Linking C executable test_kangaroo
+2026-11-23T22:57:07.0178028Z [ 61%] Built target test_kangaroo
+2026-11-23T22:57:07.0229055Z [ 62%] Linking C executable ca_perfbench
+2026-11-23T22:57:07.0287002Z [ 64%] Building C object CMakeFiles/test_curve.dir/tests/test_curve.c.o
+2026-11-23T22:57:07.0656695Z [ 64%] Built target ca_perfbench
+2026-11-23T22:57:07.0706614Z [ 65%] Building C object CMakeFiles/test_sixclass.dir/tests/test_sixclass.c.o
+2026-11-23T22:57:07.1097013Z [ 66%] Linking C executable test_grumpy
+2026-11-23T22:57:07.1347022Z [ 66%] Built target test_grumpy
+2026-11-23T22:57:07.1376440Z [ 68%] Building C object CMakeFiles/test_joint_tau.dir/tests/test_joint_tau.c.o
+2026-11-23T22:57:07.1436242Z [ 69%] Linking C executable test_sixclass
+2026-11-23T22:57:07.1556160Z [ 70%] Linking C executable test_precomp
+2026-11-23T22:57:07.1796800Z [ 70%] Built target test_sixclass
+2026-11-23T22:57:07.1826420Z [ 70%] Built target test_precomp
+2026-11-23T22:57:07.1856471Z [ 73%] Building C object CMakeFiles/test_pohlig.dir/tests/test_pohlig.c.o
+2026-11-23T22:57:07.1857231Z [ 73%] Building C object CMakeFiles/test_cheon.dir/tests/test_cheon.c.o
+2026-11-23T22:57:07.3086839Z [ 74%] Linking C executable test_cheon
+2026-11-23T22:57:07.3296621Z [ 74%] Built target test_cheon
+2026-11-23T22:57:07.3356639Z [ 76%] Building C object CMakeFiles/test_linalg.dir/tests/test_linalg.c.o
+2026-11-23T22:57:07.4486722Z [ 77%] Linking C executable test_pohlig
+2026-11-23T22:57:07.4736594Z [ 77%] Built target test_pohlig
+2026-11-23T22:57:07.4796779Z [ 78%] Building C object CMakeFiles/test_indexcalc.dir/tests/test_indexcalc.c.o
+2026-11-23T22:57:07.5109371Z [ 80%] Linking C executable test_joint_tau
+2026-11-23T22:57:07.5178689Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_indexcalc.c: In function ‘test_fixed_divisors’:
+2026-11-23T22:57:07.5180659Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_indexcalc.c:15:5: error: parameter ‘n’ is initialized
+2026-11-23T22:57:07.5181642Z    15 |     size_t n = ca_sieve_primes(13000, primes, 1600);
+2026-11-23T22:57:07.5182246Z       |     ^~~~~~
+2026-11-23T22:57:07.5182852Z In file included from /home/runner/work/cryptanalysis/cryptanalysis/tests/test_fixtures.h:6,
+2026-11-23T22:57:07.5183966Z                  from /home/runner/work/cryptanalysis/cryptanalysis/tests/test_indexcalc.c:1:
+2026-11-23T22:57:07.5185077Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:13:21: error: expected declaration specifiers before ‘do’
+2026-11-23T22:57:07.5186137Z    13 | #define CHECK(cond) do { \
+2026-11-23T22:57:07.5186657Z       |                     ^~
+2026-11-23T22:57:07.5187747Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_indexcalc.c:16:5: note: in expansion of macro ‘CHECK’
+2026-11-23T22:57:07.5188492Z    16 |     CHECK(n <= 1600);
+2026-11-23T22:57:07.5188991Z       |     ^~~~~
+2026-11-23T22:57:07.5189849Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_util.h:18:9: error: expected declaration specifiers before ‘while’
+2026-11-23T22:57:07.5190582Z    18 |     } } while (0)
+2026-11-23T22:57:07.5191058Z       |         ^~~~~
+2026-11-23T22:57:07.5191854Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_indexcalc.c:16:5: note: in expansion of macro ‘CHECK’
+2026-11-23T22:57:07.5192679Z    16 |     CHECK(n <= 1600);
+2026-11-23T22:57:07.5193080Z       |     ^~~~~
+2026-11-23T22:57:07.5193920Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_indexcalc.c:18:5: error: expected declaration specifiers before ‘primes’
+2026-11-23T22:57:07.5194846Z    18 |     primes[n++] = UINT32_C(4294967291);
+2026-11-23T22:57:07.5195315Z       |     ^~~~~~
+2026-11-23T22:57:07.5196497Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_indexcalc.c:20:5: error: expected declaration specifiers before ‘ca_rng_seed’
+2026-11-23T22:57:07.5197410Z    20 |     ca_rng_seed(&rng, 0x1c20261115ULL);
+2026-11-23T22:57:07.5197880Z       |     ^~~~~~~~~~~
+2026-11-23T22:57:07.5198689Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_indexcalc.c:21:5: error: expected declaration specifiers before ‘for’
+2026-11-23T22:57:07.5199406Z    21 |     for (size_t i = 0; i < n; ++i) {
+2026-11-23T22:57:07.5199922Z       |     ^~~
+2026-11-23T22:57:07.5200718Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_indexcalc.c:21:24: error: expected declaration specifiers before ‘i’
+2026-11-23T22:57:07.5201550Z    21 |     for (size_t i = 0; i < n; ++i) {
+2026-11-23T22:57:07.5201968Z       |                        ^
+2026-11-23T22:57:07.5202782Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_indexcalc.c:21:31: error: expected declaration specifiers before ‘++’ token
+2026-11-23T22:57:07.5203632Z    21 |     for (size_t i = 0; i < n; ++i) {
+2026-11-23T22:57:07.5204064Z       |                               ^~
+2026-11-23T22:57:07.5247738Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_indexcalc.c:133:3: error: expected declaration specifiers before ‘journal_record_v2’
+2026-11-23T22:57:07.5255466Z   133 | } journal_record_v2;
+2026-11-23T22:57:07.5260034Z       |   ^~~~~~~~~~~~~~~~~
+2026-11-23T22:57:07.5262012Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_indexcalc.c:139:1: error: expected declaration specifiers before ‘}’ token
+2026-11-23T22:57:07.5262863Z   139 | } rexp_header;
+2026-11-23T22:57:07.5263335Z       | ^
+2026-11-23T22:57:07.5264382Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_indexcalc.c:139:3: error: expected declaration specifiers before ‘rexp_header’
+2026-11-23T22:57:07.5265148Z   139 | } rexp_header;
+2026-11-23T22:57:07.5265848Z       |   ^~~~~~~~~~~
+2026-11-23T22:57:07.5266912Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_indexcalc.c:142:5: error: expected ‘=’, ‘,’, ‘;’, ‘asm’ or ‘__attribute__’ before ‘const’
+2026-11-23T22:57:07.5267942Z   142 |     const unsigned char *p = data;
+2026-11-23T22:57:07.5268721Z       |     ^~~~~
+2026-11-23T22:57:07.5269548Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_indexcalc.c:143:5: error: expected declaration specifiers before ‘for’
+2026-11-23T22:57:07.5270442Z   143 |     for (size_t i = 0; i < n; i++) {
+2026-11-23T22:57:07.5270892Z       |     ^~~
+2026-11-23T22:57:07.5271837Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_indexcalc.c:143:24: error: expected declaration specifiers before ‘i’
+2026-11-23T22:57:07.5272596Z   143 |     for (size_t i = 0; i < n; i++) {
+2026-11-23T22:57:07.5273025Z       |                        ^
+2026-11-23T22:57:07.5273917Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_indexcalc.c:143:31: error: expected declaration specifiers before ‘i’
+2026-11-23T22:57:07.5274692Z   143 |     for (size_t i = 0; i < n; i++) {
+2026-11-23T22:57:07.5275440Z       |                               ^
+2026-11-23T22:57:07.5276557Z /home/runner/work/cryptanalysis/cryptanalysis/tests/test_indexcalc.c:13:13: error: old-style parameter declarations in prototyped function definition
+2026-11-23T22:57:07.5277427Z    13 | static void test_fixed_divisors(void)
+2026-11-23T22:57:07.5277977Z       |             ^~~~~~~~~~~~~~~~~~~
+2026-11-23T22:57:07.5278749Z gmake[2]: *** [CMakeFiles/test_indexcalc.dir/build.make:79: CMakeFiles/test_indexcalc.dir/tests/test_indexcalc.c.o] Error 1
+2026-11-23T22:57:07.5279676Z gmake[1]: *** [CMakeFiles/Makefile2:840: CMakeFiles/test_indexcalc.dir/all] Error 2
+2026-11-23T22:57:07.5280393Z gmake[1]: *** Waiting for unfinished jobs....
+2026-11-23T22:57:07.5567737Z [ 80%] Built target test_joint_tau
+2026-11-23T22:57:07.8476500Z [ 81%] Linking C executable test_linalg
+2026-11-23T22:57:07.8714782Z [ 81%] Built target test_linalg
+2026-11-23T22:57:09.7985765Z [ 82%] Linking C executable test_curve
+2026-11-23T22:57:09.8418270Z [ 82%] Built target test_curve
+2026-11-23T22:57:09.8423686Z gmake: *** [Makefile:146: all] Error 2
+2026-11-23T22:57:09.8446224Z ##[error]Process completed with exit code 2.
+2026-11-23T22:57:09.8636515Z Post job cleanup.
+2026-11-23T22:57:09.9443212Z [command]/usr/bin/git version
+2026-11-23T22:57:09.9468178Z git version 2.56.1
+2026-11-23T22:57:09.9510680Z Temporarily overriding HOME='/home/runner/work/_temp/5c73c154-9dd0-459c-b532-978931a92236' before making global git config changes
+2026-11-23T22:57:09.9511467Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-23T22:57:09.9512296Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cryptanalysis/cryptanalysis
+2026-11-23T22:57:09.9539796Z Removing SSH command configuration
+2026-11-23T22:57:09.9546263Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-23T22:57:09.9582173Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-23T22:57:09.9995481Z Removing HTTP extra header
+2026-11-23T22:57:10.0001598Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-23T22:57:10.0041540Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-23T22:57:10.0431450Z Removing includeIf entries pointing to credentials config files
+2026-11-23T22:57:10.0438922Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-23T22:57:10.0470996Z includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path
+2026-11-23T22:57:10.0471734Z includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path
+2026-11-23T22:57:10.0472225Z includeif.gitdir:/github/workspace/.git.path
+2026-11-23T22:57:10.0472672Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-23T22:57:10.0480001Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path
+2026-11-23T22:57:10.0507987Z /home/runner/work/_temp/git-credentials-4560b4c6-cb09-421d-b124-31f3e97e598b.config
+2026-11-23T22:57:10.0517785Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-4560b4c6\-cb09\-421d\-b124\-31f3e97e598b\.config
+2026-11-23T22:57:10.0557988Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path
+2026-11-23T22:57:10.0589499Z /home/runner/work/_temp/git-credentials-4560b4c6-cb09-421d-b124-31f3e97e598b.config
+2026-11-23T22:57:10.0592917Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-4560b4c6\-cb09\-421d\-b124\-31f3e97e598b\.config
+2026-11-23T22:57:10.0635986Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-23T22:57:10.0663384Z /github/runner_temp/git-credentials-4560b4c6-cb09-421d-b124-31f3e97e598b.config
+2026-11-23T22:57:10.0670671Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-4560b4c6\-cb09\-421d\-b124\-31f3e97e598b\.config
+2026-11-23T22:57:10.0708983Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-23T22:57:10.0735165Z /github/runner_temp/git-credentials-4560b4c6-cb09-421d-b124-31f3e97e598b.config
+2026-11-23T22:57:10.0742458Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-4560b4c6\-cb09\-421d\-b124\-31f3e97e598b\.config
+2026-11-23T22:57:10.0778174Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-23T22:57:10.1213369Z Removing credentials config '/home/runner/work/_temp/git-credentials-4560b4c6-cb09-421d-b124-31f3e97e598b.config'
+2026-11-23T22:57:10.1378802Z Cleaning up orphan processes

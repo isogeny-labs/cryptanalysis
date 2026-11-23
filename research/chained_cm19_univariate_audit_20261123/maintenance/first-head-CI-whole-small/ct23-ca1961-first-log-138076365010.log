@@ -1,0 +1,375 @@
+﻿2026-11-23T22:55:54.5931942Z Current runner version: '2.338.2'
+2026-11-23T22:55:54.5950338Z ##[group]Runner Image Provisioner
+2026-11-23T22:55:54.5951013Z Hosted Compute Agent
+2026-11-23T22:55:54.5951580Z Version: 20261111.635
+2026-11-23T22:55:54.5952071Z Commit: b8a594ea514ff44cadb5342986c68b1eac6e22ed
+2026-11-23T22:55:54.5952649Z Build Date: 2026-11-11T01:49:01Z
+2026-11-23T22:55:54.5953200Z Worker ID: {033daa0c-e92c-40e3-9942-066c432e0245}
+2026-11-23T22:55:54.5953728Z Region: centralus
+2026-11-23T22:55:54.5954178Z Cloud: Azure
+2026-11-23T22:55:54.5954606Z ##[endgroup]
+2026-11-23T22:55:54.5956221Z ##[group]Operating System
+2026-11-23T22:55:54.5956750Z Ubuntu
+2026-11-23T22:55:54.5957153Z 26.04.1
+2026-11-23T22:55:54.5957592Z LTS
+2026-11-23T22:55:54.5957992Z ##[endgroup]
+2026-11-23T22:55:54.5958412Z ##[group]Runner Image
+2026-11-23T22:55:54.5958907Z Image: ubuntu-26.04
+2026-11-23T22:55:54.5959343Z Version: 20261116.202.1
+2026-11-23T22:55:54.5960399Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261116.202/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-23T22:55:54.5961588Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261116.202
+2026-11-23T22:55:54.5962364Z ##[endgroup]
+2026-11-23T22:55:54.5963242Z ##[group]GITHUB_TOKEN Permissions
+2026-11-23T22:55:54.5965598Z Contents: read
+2026-11-23T22:55:54.5966040Z Metadata: read
+2026-11-23T22:55:54.5966644Z ##[endgroup]
+2026-11-23T22:55:54.5968839Z Secret source: Actions
+2026-11-23T22:55:54.5969728Z Cache mode: write
+2026-11-23T22:55:54.5970485Z Prepare workflow directory
+2026-11-23T22:55:54.6274227Z Prepare all required actions
+2026-11-23T22:55:54.6316514Z Getting action download info
+2026-11-23T22:55:54.8299059Z Download action repository 'actions/checkout@v7' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-11-23T22:55:54.9917492Z Complete job name: cppcheck
+2026-11-23T22:55:55.0531531Z ##[group]Run actions/checkout@v7
+2026-11-23T22:55:55.0532210Z with:
+2026-11-23T22:55:55.0532647Z   repository: isogeny-labs/cryptanalysis
+2026-11-23T22:55:55.0536233Z   token: ***
+2026-11-23T22:55:55.0536657Z   ssh-strict: true
+2026-11-23T22:55:55.0537101Z   ssh-user: git
+2026-11-23T22:55:55.0537539Z   persist-credentials: true
+2026-11-23T22:55:55.0537988Z   clean: true
+2026-11-23T22:55:55.0538428Z   sparse-checkout-cone-mode: true
+2026-11-23T22:55:55.0538907Z   fetch-depth: 1
+2026-11-23T22:55:55.0539328Z   fetch-tags: false
+2026-11-23T22:55:55.0539768Z   show-progress: true
+2026-11-23T22:55:55.0540220Z   lfs: false
+2026-11-23T22:55:55.0540627Z   submodules: false
+2026-11-23T22:55:55.0541050Z   set-safe-directory: true
+2026-11-23T22:55:55.0541531Z   allow-unsafe-pr-checkout: false
+2026-11-23T22:55:55.0542192Z ##[endgroup]
+2026-11-23T22:55:55.3344527Z Syncing repository: isogeny-labs/cryptanalysis
+2026-11-23T22:55:55.3346895Z ##[group]Getting Git version info
+2026-11-23T22:55:55.3347928Z Working directory is '/home/runner/work/cryptanalysis/cryptanalysis'
+2026-11-23T22:55:55.3349147Z [command]/usr/bin/git version
+2026-11-23T22:55:55.3349768Z git version 2.56.1
+2026-11-23T22:55:55.3355135Z ##[endgroup]
+2026-11-23T22:55:55.3364222Z Temporarily overriding HOME='/home/runner/work/_temp/76419a7c-c8bc-46ec-8be9-0e757d9d7da9' before making global git config changes
+2026-11-23T22:55:55.3365809Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-23T22:55:55.3368940Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cryptanalysis/cryptanalysis
+2026-11-23T22:55:55.3421831Z Deleting the contents of '/home/runner/work/cryptanalysis/cryptanalysis'
+2026-11-23T22:55:55.3424377Z ##[group]Determining repository object format
+2026-11-23T22:55:55.3425756Z ##[endgroup]
+2026-11-23T22:55:55.3427046Z ##[group]Initializing the repository
+2026-11-23T22:55:55.3428607Z [command]/usr/bin/git init /home/runner/work/cryptanalysis/cryptanalysis
+2026-11-23T22:55:55.3515530Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-23T22:55:55.3516474Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-23T22:55:55.3517506Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-23T22:55:55.3518099Z hint: call:
+2026-11-23T22:55:55.3518465Z hint:
+2026-11-23T22:55:55.3518965Z hint: 	git config --global init.defaultBranch <name>
+2026-11-23T22:55:55.3519577Z hint:
+2026-11-23T22:55:55.3520218Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-23T22:55:55.3521080Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-23T22:55:55.3521842Z hint:
+2026-11-23T22:55:55.3522299Z hint: 	git branch -m <name>
+2026-11-23T22:55:55.3522694Z hint:
+2026-11-23T22:55:55.3523192Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-23T22:55:55.3533103Z Initialized empty Git repository in /home/runner/work/cryptanalysis/cryptanalysis/.git/
+2026-11-23T22:55:55.3541385Z [command]/usr/bin/git remote add origin https://github.com/isogeny-labs/cryptanalysis
+2026-11-23T22:55:55.3590420Z ##[endgroup]
+2026-11-23T22:55:55.3591327Z ##[group]Disabling automatic garbage collection
+2026-11-23T22:55:55.3592251Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-23T22:55:55.3616221Z ##[endgroup]
+2026-11-23T22:55:55.3617789Z ##[group]Setting up auth
+2026-11-23T22:55:55.3618719Z Removing SSH command configuration
+2026-11-23T22:55:55.3619903Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-23T22:55:55.3640257Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-23T22:55:55.3965992Z Removing HTTP extra header
+2026-11-23T22:55:55.3971642Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-23T22:55:55.3986501Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-23T22:55:55.4157543Z Removing includeIf entries pointing to credentials config files
+2026-11-23T22:55:55.4160150Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-23T22:55:55.4180257Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-23T22:55:55.4350172Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-5dbfae96-271e-4ef8-a97d-cd062fd1406e.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-23T22:55:55.4374495Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path /home/runner/work/_temp/git-credentials-5dbfae96-271e-4ef8-a97d-cd062fd1406e.config
+2026-11-23T22:55:55.4396441Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-5dbfae96-271e-4ef8-a97d-cd062fd1406e.config
+2026-11-23T22:55:55.4420608Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-5dbfae96-271e-4ef8-a97d-cd062fd1406e.config
+2026-11-23T22:55:55.4590150Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-5dbfae96-271e-4ef8-a97d-cd062fd1406e.config
+2026-11-23T22:55:55.4610355Z ##[endgroup]
+2026-11-23T22:55:55.4610945Z ##[group]Fetching the repository
+2026-11-23T22:55:55.4614698Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +a55a512557ebf72eda966df1a418578e2f2a03ab:refs/remotes/pull/1961/merge
+2026-11-23T22:56:34.8555758Z From https://github.com/isogeny-labs/cryptanalysis
+2026-11-23T22:56:34.8556802Z  * [new ref]             a55a512557ebf72eda966df1a418578e2f2a03ab -> pull/1961/merge
+2026-11-23T22:56:34.8559700Z ##[endgroup]
+2026-11-23T22:56:34.8560785Z ##[group]Determining the checkout info
+2026-11-23T22:56:34.8561562Z ##[endgroup]
+2026-11-23T22:56:34.8565970Z [command]/usr/bin/git sparse-checkout disable
+2026-11-23T22:56:34.8612415Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-23T22:56:34.8639824Z ##[group]Checking out the ref
+2026-11-23T22:56:34.8642206Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/1961/merge
+2026-11-23T22:56:36.0100785Z Updating files:  27% (36578/131129)
+2026-11-23T22:56:36.0559817Z Updating files:  28% (36717/131129)
+2026-11-23T22:56:36.1053768Z Updating files:  29% (38028/131129)
+2026-11-23T22:56:36.1982914Z Updating files:  30% (39339/131129)
+2026-11-23T22:56:36.9436018Z Updating files:  31% (40650/131129)
+2026-11-23T22:56:37.9284961Z Updating files:  31% (41533/131129)
+2026-11-23T22:56:38.1209061Z Updating files:  32% (41962/131129)
+2026-11-23T22:56:38.9466531Z Updating files:  32% (42013/131129)
+2026-11-23T22:56:39.2117856Z Updating files:  32% (42986/131129)
+2026-11-23T22:56:39.9690573Z Updating files:  33% (43273/131129)
+2026-11-23T22:56:40.2098412Z Updating files:  33% (44328/131129)
+2026-11-23T22:56:40.9475010Z Updating files:  34% (44584/131129)
+2026-11-23T22:56:41.9551434Z Updating files:  34% (45053/131129)
+2026-11-23T22:56:42.2514703Z Updating files:  34% (45737/131129)
+2026-11-23T22:56:42.9495930Z Updating files:  35% (45896/131129)
+2026-11-23T22:56:43.8933947Z Updating files:  35% (46461/131129)
+2026-11-23T22:56:43.9517642Z Updating files:  36% (47207/131129)
+2026-11-23T22:56:44.5495121Z Updating files:  36% (47338/131129)
+2026-11-23T22:56:44.9466588Z Updating files:  37% (48518/131129)
+2026-11-23T22:56:45.0374485Z Updating files:  37% (49538/131129)
+2026-11-23T22:56:45.9651170Z Updating files:  38% (49830/131129)
+2026-11-23T22:56:46.0013338Z Updating files:  38% (51132/131129)
+2026-11-23T22:56:46.9626497Z Updating files:  39% (51141/131129)
+2026-11-23T22:56:47.8308392Z Updating files:  39% (51762/131129)
+2026-11-23T22:56:47.9458990Z Updating files:  40% (52452/131129)
+2026-11-23T22:56:48.6291650Z Updating files:  40% (52601/131129)
+2026-11-23T22:56:48.8588710Z Updating files:  41% (53763/131129)
+2026-11-23T22:56:48.9432390Z Updating files:  42% (55075/131129)
+2026-11-23T22:56:49.1688684Z Updating files:  42% (55586/131129)
+2026-11-23T22:56:49.9972036Z Updating files:  43% (56386/131129)
+2026-11-23T22:56:50.5157494Z Updating files:  43% (57252/131129)
+2026-11-23T22:56:50.8774587Z Updating files:  44% (57697/131129)
+2026-11-23T22:56:50.9237492Z Updating files:  45% (59009/131129)
+2026-11-23T22:56:50.9431904Z Updating files:  46% (60320/131129)
+2026-11-23T22:56:50.9525156Z Updating files:  46% (61011/131129)
+2026-11-23T22:56:50.9898066Z Updating files:  47% (61631/131129)
+2026-11-23T22:56:51.0487038Z Updating files:  48% (62942/131129)
+2026-11-23T22:56:51.1115870Z Updating files:  49% (64254/131129)
+2026-11-23T22:56:51.1798031Z Updating files:  50% (65565/131129)
+2026-11-23T22:56:51.3124333Z Updating files:  51% (66876/131129)
+2026-11-23T22:56:51.4939144Z Updating files:  52% (68188/131129)
+2026-11-23T22:56:51.5409541Z Updating files:  53% (69499/131129)
+2026-11-23T22:56:51.8198649Z Updating files:  54% (70810/131129)
+2026-11-23T22:56:51.8550363Z Updating files:  55% (72121/131129)
+2026-11-23T22:56:51.9093709Z Updating files:  56% (73433/131129)
+2026-11-23T22:56:51.9459810Z Updating files:  57% (74744/131129)
+2026-11-23T22:56:51.9703937Z Updating files:  57% (75378/131129)
+2026-11-23T22:56:52.0429612Z Updating files:  58% (76055/131129)
+2026-11-23T22:56:52.1164118Z Updating files:  59% (77367/131129)
+2026-11-23T22:56:52.1675825Z Updating files:  60% (78678/131129)
+2026-11-23T22:56:52.2213429Z Updating files:  61% (79989/131129)
+2026-11-23T22:56:52.2589748Z Updating files:  62% (81300/131129)
+2026-11-23T22:56:52.3116903Z Updating files:  63% (82612/131129)
+2026-11-23T22:56:52.3571164Z Updating files:  64% (83923/131129)
+2026-11-23T22:56:52.4072490Z Updating files:  65% (85234/131129)
+2026-11-23T22:56:52.4561318Z Updating files:  66% (86546/131129)
+2026-11-23T22:56:52.5140638Z Updating files:  67% (87857/131129)
+2026-11-23T22:56:52.5663016Z Updating files:  68% (89168/131129)
+2026-11-23T22:56:52.6197271Z Updating files:  69% (90480/131129)
+2026-11-23T22:56:52.6634923Z Updating files:  70% (91791/131129)
+2026-11-23T22:56:52.7223604Z Updating files:  71% (93102/131129)
+2026-11-23T22:56:52.7551146Z Updating files:  72% (94413/131129)
+2026-11-23T22:56:52.8349103Z Updating files:  73% (95725/131129)
+2026-11-23T22:56:52.9476548Z Updating files:  74% (97036/131129)
+2026-11-23T22:56:52.9588436Z Updating files:  74% (97790/131129)
+2026-11-23T22:56:52.9841375Z Updating files:  75% (98347/131129)
+2026-11-23T22:56:53.0081105Z Updating files:  76% (99659/131129)
+2026-11-23T22:56:53.0477802Z Updating files:  77% (100970/131129)
+2026-11-23T22:56:53.0956306Z Updating files:  78% (102281/131129)
+2026-11-23T22:56:53.1908706Z Updating files:  79% (103592/131129)
+2026-11-23T22:56:53.3491365Z Updating files:  80% (104904/131129)
+2026-11-23T22:56:53.5594576Z Updating files:  81% (106215/131129)
+2026-11-23T22:56:53.8081207Z Updating files:  82% (107526/131129)
+2026-11-23T22:56:53.8953382Z Updating files:  83% (108838/131129)
+2026-11-23T22:56:53.9380911Z Updating files:  84% (110149/131129)
+2026-11-23T22:56:53.9431600Z Updating files:  85% (111460/131129)
+2026-11-23T22:56:53.9821447Z Updating files:  85% (111731/131129)
+2026-11-23T22:56:54.1229808Z Updating files:  86% (112771/131129)
+2026-11-23T22:56:54.2655285Z Updating files:  87% (114083/131129)
+2026-11-23T22:56:54.3398336Z Updating files:  88% (115394/131129)
+2026-11-23T22:56:54.5148574Z Updating files:  89% (116705/131129)
+2026-11-23T22:56:54.5630721Z Updating files:  90% (118017/131129)
+2026-11-23T22:56:54.7328893Z Updating files:  91% (119328/131129)
+2026-11-23T22:56:54.7743966Z Updating files:  92% (120639/131129)
+2026-11-23T22:56:54.9414334Z Updating files:  93% (121950/131129)
+2026-11-23T22:56:54.9432178Z Updating files:  94% (123262/131129)
+2026-11-23T22:56:55.2409127Z Updating files:  94% (123334/131129)
+2026-11-23T22:56:55.3628490Z Updating files:  95% (124573/131129)
+2026-11-23T22:56:55.4381447Z Updating files:  96% (125884/131129)
+2026-11-23T22:56:55.4978415Z Updating files:  97% (127196/131129)
+2026-11-23T22:56:55.6855579Z Updating files:  98% (128507/131129)
+2026-11-23T22:56:55.8614276Z Updating files:  99% (129818/131129)
+2026-11-23T22:56:55.8615253Z Updating files: 100% (131129/131129)
+2026-11-23T22:56:55.8615527Z Updating files: 100% (131129/131129), done.
+2026-11-23T22:56:55.9711040Z Note: switching to 'refs/remotes/pull/1961/merge'.
+2026-11-23T22:56:55.9711462Z 
+2026-11-23T22:56:55.9711905Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-23T22:56:55.9712433Z changes and commit them, and you can discard any commits you make in this
+2026-11-23T22:56:55.9713044Z state without impacting any branches by switching back to a branch.
+2026-11-23T22:56:55.9713404Z 
+2026-11-23T22:56:55.9713704Z If you want to create a new branch to retain commits you create, you may
+2026-11-23T22:56:55.9714334Z do so (now or later) by using -c with the switch command. Example:
+2026-11-23T22:56:55.9714651Z 
+2026-11-23T22:56:55.9715063Z   git switch -c <new-branch-name>
+2026-11-23T22:56:55.9715369Z 
+2026-11-23T22:56:55.9716531Z Or undo this operation with:
+2026-11-23T22:56:55.9716859Z 
+2026-11-23T22:56:55.9717125Z   git switch -
+2026-11-23T22:56:55.9717429Z 
+2026-11-23T22:56:55.9717714Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-23T22:56:55.9718086Z 
+2026-11-23T22:56:55.9718460Z HEAD is now at a55a51255 Merge 6d99cfc9995b80198c2e1fc233c23690feb5d12d into 5005bedbe4fd4f1a43456918dd255fd2cbc4a5d1
+2026-11-23T22:56:55.9858471Z ##[endgroup]
+2026-11-23T22:56:55.9893255Z [command]/usr/bin/git log -1 --format=%H
+2026-11-23T22:56:55.9923999Z a55a512557ebf72eda966df1a418578e2f2a03ab
+2026-11-23T22:56:56.1287169Z ##[group]Run sudo apt-get update || true
+2026-11-23T22:56:56.1287623Z [36;1msudo apt-get update || true[0m
+2026-11-23T22:56:56.1287963Z [36;1msudo apt-get install -y --no-install-recommends cppcheck[0m
+2026-11-23T22:56:56.1310811Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-23T22:56:56.1311159Z ##[endgroup]
+2026-11-23T22:56:56.3504701Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-23T22:56:56.3791657Z Hit:2 http://azure.archive.ubuntu.com/ubuntu resolute InRelease
+2026-11-23T22:56:56.3813366Z Get:3 http://azure.archive.ubuntu.com/ubuntu resolute-updates InRelease [137 kB]
+2026-11-23T22:56:56.3822917Z Get:6 https://packages.microsoft.com/ubuntu/26.04/prod resolute InRelease [3964 B]
+2026-11-23T22:56:56.4061193Z Get:4 http://azure.archive.ubuntu.com/ubuntu resolute-backports InRelease [137 kB]
+2026-11-23T22:56:56.4261774Z Get:13 https://packages.microsoft.com/ubuntu/26.04/prod resolute/main amd64 Packages [186 kB]
+2026-11-23T22:56:56.4500197Z Get:5 http://azure.archive.ubuntu.com/ubuntu resolute-security InRelease [137 kB]
+2026-11-23T22:56:56.4679615Z Get:14 https://packages.microsoft.com/ubuntu/26.04/prod resolute/main arm64 Packages [173 kB]
+2026-11-23T22:56:56.4836125Z Get:7 http://azure.archive.ubuntu.com/ubuntu resolute-updates/main amd64v3 Packages [914 kB]
+2026-11-23T22:56:56.4906304Z Get:8 http://azure.archive.ubuntu.com/ubuntu resolute-updates/main Translation-en [201 kB]
+2026-11-23T22:56:56.5183809Z Get:9 http://azure.archive.ubuntu.com/ubuntu resolute-updates/universe amd64v3 Packages [394 kB]
+2026-11-23T22:56:56.5539889Z Get:10 http://azure.archive.ubuntu.com/ubuntu resolute-updates/universe Translation-en [124 kB]
+2026-11-23T22:56:56.5568182Z Get:11 http://azure.archive.ubuntu.com/ubuntu resolute-updates/restricted amd64v3 Packages [640 kB]
+2026-11-23T22:56:56.5890700Z Get:12 http://azure.archive.ubuntu.com/ubuntu resolute-updates/restricted Translation-en [132 kB]
+2026-11-23T22:56:56.5921776Z Get:15 http://azure.archive.ubuntu.com/ubuntu resolute-security/main amd64v3 Packages [747 kB]
+2026-11-23T22:56:56.6435139Z Get:16 http://azure.archive.ubuntu.com/ubuntu resolute-security/main Translation-en [162 kB]
+2026-11-23T22:56:56.6491886Z Get:17 http://azure.archive.ubuntu.com/ubuntu resolute-security/universe amd64v3 Packages [224 kB]
+2026-11-23T22:56:56.6541912Z Get:18 http://azure.archive.ubuntu.com/ubuntu resolute-security/universe Translation-en [73.2 kB]
+2026-11-23T22:56:56.7010120Z Get:19 http://azure.archive.ubuntu.com/ubuntu resolute-security/restricted amd64v3 Packages [614 kB]
+2026-11-23T22:56:56.7932170Z Get:20 http://azure.archive.ubuntu.com/ubuntu resolute-security/restricted Translation-en [127 kB]
+2026-11-23T22:56:59.8944904Z Fetched 5128 kB in 1s (8444 kB/s)
+2026-11-23T22:57:00.3867783Z Reading package lists...
+2026-11-23T22:57:00.4155918Z Reading package lists...
+2026-11-23T22:57:00.5063434Z Building dependency tree...
+2026-11-23T22:57:00.5068322Z Reading state information...
+2026-11-23T22:57:00.5619478Z Solving dependencies...
+2026-11-23T22:57:00.6354119Z The following additional packages will be installed:
+2026-11-23T22:57:00.6356848Z   libtinyxml2-11
+2026-11-23T22:57:00.6363892Z Suggested packages:
+2026-11-23T22:57:00.6364369Z   cppcheck-gui clang clang-tidy
+2026-11-23T22:57:00.6509576Z The following NEW packages will be installed:
+2026-11-23T22:57:00.6516146Z   cppcheck libtinyxml2-11
+2026-11-23T22:57:00.6671063Z 0 upgraded, 2 newly installed, 0 to remove and 57 not upgraded.
+2026-11-23T22:57:00.6671508Z Need to get 2392 kB of archives.
+2026-11-23T22:57:00.6671993Z After this operation, 10.5 MB of additional disk space will be used.
+2026-11-23T22:57:00.6672458Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-23T22:57:00.7946216Z Get:2 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libtinyxml2-11 amd64 11.0.0+dfsg-1build1 [33.5 kB]
+2026-11-23T22:57:00.9243793Z Get:3 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 cppcheck amd64 2.19.0-3 [2358 kB]
+2026-11-23T22:57:01.2863768Z Fetched 2392 kB in 0s (7260 kB/s)
+2026-11-23T22:57:01.4104314Z Selecting previously unselected package libtinyxml2-11:amd64.
+2026-11-23T22:57:01.4433963Z (Reading database ... 
+2026-11-23T22:57:01.4434534Z (Reading database ... 5%
+2026-11-23T22:57:01.4435024Z (Reading database ... 10%
+2026-11-23T22:57:01.4435261Z (Reading database ... 15%
+2026-11-23T22:57:01.4435466Z (Reading database ... 20%
+2026-11-23T22:57:01.4435676Z (Reading database ... 25%
+2026-11-23T22:57:01.4435881Z (Reading database ... 30%
+2026-11-23T22:57:01.4436091Z (Reading database ... 35%
+2026-11-23T22:57:01.4436400Z (Reading database ... 40%
+2026-11-23T22:57:01.4436746Z (Reading database ... 45%
+2026-11-23T22:57:01.4436975Z (Reading database ... 50%
+2026-11-23T22:57:01.4697786Z (Reading database ... 55%
+2026-11-23T22:57:01.5011016Z (Reading database ... 60%
+2026-11-23T22:57:01.5653764Z (Reading database ... 65%
+2026-11-23T22:57:01.5926463Z (Reading database ... 70%
+2026-11-23T22:57:01.6747493Z (Reading database ... 75%
+2026-11-23T22:57:01.8196881Z (Reading database ... 80%
+2026-11-23T22:57:02.0220838Z (Reading database ... 85%
+2026-11-23T22:57:02.2267175Z (Reading database ... 90%
+2026-11-23T22:57:02.3807050Z (Reading database ... 95%
+2026-11-23T22:57:02.3807370Z (Reading database ... 100%
+2026-11-23T22:57:02.3807749Z (Reading database ... 214296 files and directories currently installed.)
+2026-11-23T22:57:02.3840216Z Preparing to unpack .../libtinyxml2-11_11.0.0+dfsg-1build1_amd64v3.deb ...
+2026-11-23T22:57:02.4221877Z Unpacking libtinyxml2-11:amd64 (11.0.0+dfsg-1build1) ...
+2026-11-23T22:57:02.9436408Z Selecting previously unselected package cppcheck.
+2026-11-23T22:57:02.9528889Z Preparing to unpack .../cppcheck_2.19.0-3_amd64v3.deb ...
+2026-11-23T22:57:02.9725952Z Unpacking cppcheck (2.19.0-3) ...
+2026-11-23T22:57:04.2007664Z Setting up libtinyxml2-11:amd64 (11.0.0+dfsg-1build1) ...
+2026-11-23T22:57:04.2165106Z Setting up cppcheck (2.19.0-3) ...
+2026-11-23T22:57:04.2235837Z Processing triggers for man-db (2.13.1-1build1) ...
+2026-11-23T22:57:04.2304089Z Not building database; man-db/auto-update is not 'true'.
+2026-11-23T22:57:04.2361555Z Processing triggers for libc-bin (2.43-2ubuntu2.7) ...
+2026-11-23T22:57:04.8943702Z 
+2026-11-23T22:57:04.8944443Z Running kernel seems to be up-to-date.
+2026-11-23T22:57:04.8944700Z 
+2026-11-23T22:57:04.8944886Z Restarting services...
+2026-11-23T22:57:04.8999315Z 
+2026-11-23T22:57:04.8999941Z Service restarts being deferred:
+2026-11-23T22:57:04.9001798Z  systemctl restart hosted-compute-agent.service
+2026-11-23T22:57:04.9002081Z 
+2026-11-23T22:57:04.9002504Z No containers need to be restarted.
+2026-11-23T22:57:04.9002647Z 
+2026-11-23T22:57:04.9002778Z No user sessions are running outdated binaries.
+2026-11-23T22:57:04.9002939Z 
+2026-11-23T22:57:04.9003105Z No VM guests are running outdated hypervisor (qemu) binaries on this host.
+2026-11-23T22:57:05.7076069Z ##[group]Run cppcheck --enable=warning,performance,portability,style \
+2026-11-23T22:57:05.7076529Z [36;1mcppcheck --enable=warning,performance,portability,style \[0m
+2026-11-23T22:57:05.7076955Z [36;1m         --inline-suppr --std=c11 --error-exitcode=1 \[0m
+2026-11-23T22:57:05.7077265Z [36;1m         --suppress=missingIncludeSystem \[0m
+2026-11-23T22:57:05.7077676Z [36;1m         --suppress=variableScope:include/cryptanalysis/ca_modarith.h \[0m
+2026-11-23T22:57:05.7078034Z [36;1m         -Iinclude -Isrc -Icuda --quiet \[0m
+2026-11-23T22:57:05.7078345Z [36;1m         src tools tests[0m
+2026-11-23T22:57:05.7098658Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-23T22:57:05.7098991Z ##[endgroup]
+2026-11-23T23:05:14.6600451Z tests/test_indexcalc.c:100:25: error: Unmatched ')'. Configuration: ''. [syntaxError]
+2026-11-23T23:05:14.6601098Z           CA_ERR_INVALID);
+2026-11-23T23:05:14.6601352Z                         ^
+2026-11-23T23:05:14.6702309Z tests/test_indexcalc.c:100:25: error: Unmatched ')'. Configuration: 'CA_BUILDING;CA_SHARED;_WIN32'. [syntaxError]
+2026-11-23T23:05:14.6702805Z           CA_ERR_INVALID);
+2026-11-23T23:05:14.6703065Z                         ^
+2026-11-23T23:05:14.6797863Z tests/test_indexcalc.c:100:25: error: Unmatched ')'. Configuration: 'CA_GLV_FIELD_COUNT'. [syntaxError]
+2026-11-23T23:05:14.6798324Z           CA_ERR_INVALID);
+2026-11-23T23:05:14.6801132Z                         ^
+2026-11-23T23:05:14.6897639Z tests/test_indexcalc.c:100:25: error: Unmatched ')'. Configuration: 'CA_SHARED;_WIN32'. [syntaxError]
+2026-11-23T23:05:14.6898055Z           CA_ERR_INVALID);
+2026-11-23T23:05:14.6898488Z                         ^
+2026-11-23T23:05:14.6991509Z tests/test_indexcalc.c:100:25: error: Unmatched ')'. Configuration: '__GNUC__'. [syntaxError]
+2026-11-23T23:05:14.6992336Z           CA_ERR_INVALID);
+2026-11-23T23:05:14.6992695Z                         ^
+2026-11-23T23:05:14.7088804Z tests/test_indexcalc.c:100:25: error: Unmatched ')'. Configuration: '__aarch64__'. [syntaxError]
+2026-11-23T23:05:14.7089360Z           CA_ERR_INVALID);
+2026-11-23T23:05:14.7089593Z                         ^
+2026-11-23T23:05:29.0576779Z ##[error]Process completed with exit code 1.
+2026-11-23T23:05:29.0691321Z Post job cleanup.
+2026-11-23T23:05:29.1362037Z [command]/usr/bin/git version
+2026-11-23T23:05:29.1392695Z git version 2.56.1
+2026-11-23T23:05:29.1419183Z Temporarily overriding HOME='/home/runner/work/_temp/a40340da-fe6c-4269-a94a-f7472eb685bc' before making global git config changes
+2026-11-23T23:05:29.1419947Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-23T23:05:29.1423607Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cryptanalysis/cryptanalysis
+2026-11-23T23:05:29.1452697Z Removing SSH command configuration
+2026-11-23T23:05:29.1457631Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-23T23:05:29.1484733Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-23T23:05:29.1867348Z Removing HTTP extra header
+2026-11-23T23:05:29.1871349Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-23T23:05:29.1894970Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-23T23:05:29.2255505Z Removing includeIf entries pointing to credentials config files
+2026-11-23T23:05:29.2260486Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-23T23:05:29.2275999Z includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path
+2026-11-23T23:05:29.2276820Z includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path
+2026-11-23T23:05:29.2277400Z includeif.gitdir:/github/workspace/.git.path
+2026-11-23T23:05:29.2277856Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-23T23:05:29.2282445Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path
+2026-11-23T23:05:29.2298026Z /home/runner/work/_temp/git-credentials-5dbfae96-271e-4ef8-a97d-cd062fd1406e.config
+2026-11-23T23:05:29.2305778Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-5dbfae96\-271e\-4ef8\-a97d\-cd062fd1406e\.config
+2026-11-23T23:05:29.2340544Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path
+2026-11-23T23:05:29.2356003Z /home/runner/work/_temp/git-credentials-5dbfae96-271e-4ef8-a97d-cd062fd1406e.config
+2026-11-23T23:05:29.2361266Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-5dbfae96\-271e\-4ef8\-a97d\-cd062fd1406e\.config
+2026-11-23T23:05:29.2389245Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-23T23:05:29.2403026Z /github/runner_temp/git-credentials-5dbfae96-271e-4ef8-a97d-cd062fd1406e.config
+2026-11-23T23:05:29.2407393Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-5dbfae96\-271e\-4ef8\-a97d\-cd062fd1406e\.config
+2026-11-23T23:05:29.2430574Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-23T23:05:29.2444184Z /github/runner_temp/git-credentials-5dbfae96-271e-4ef8-a97d-cd062fd1406e.config
+2026-11-23T23:05:29.2448470Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-5dbfae96\-271e\-4ef8\-a97d\-cd062fd1406e\.config
+2026-11-23T23:05:29.2474444Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-23T23:05:29.2807089Z Removing credentials config '/home/runner/work/_temp/git-credentials-5dbfae96-271e-4ef8-a97d-cd062fd1406e.config'
+2026-11-23T23:05:29.2928001Z Cleaning up orphan processes
