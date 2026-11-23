@@ -116,4 +116,48 @@ theorem directedJumpSharp {H : Type*} [AddCommGroup H] [DecidableEq H]
   simp_rw [scores]
   decide
 
+/-- At the optimum every pair is saturated. Subtracting the linear label
+then leaves either equal residuals or one downward jump of 53 increments. -/
+theorem optimalResidualStep {H : Type*} [AddCommGroup H] [DecidableEq H]
+    (f : Fin 53 → H) (t : H) (ht : 53 • t ≠ 0)
+    (opt : (∑ i, ∑ j, pairScore f t i j) = 1378)
+    (i j : Fin 53) (hij : i < j) :
+    f j - j.val • t = f i - i.val • t ∨
+    f j - j.val • t = f i - i.val • t - 53 • t := by
+  let cap (u v : Fin 53) : ℕ := if u < v then 1 else 0
+  have leCap (u v) : pairScore f t u v ≤ cap u v := pairScore_le f t ht u v
+  have total : (∑ u, ∑ v, pairScore f t u v) = ∑ u, ∑ v, cap u v :=
+    opt.trans (by decide)
+  have row := (Finset.sum_eq_sum_iff_of_le (fun u _ =>
+    Finset.sum_le_sum (fun v _ => leCap u v))).mp total i (Finset.mem_univ _)
+  have pair := (Finset.sum_eq_sum_iff_of_le (fun v _ => leCap i v)).mp row j (Finset.mem_univ _)
+  have hlen : j.val • t = i.val • t + (j.val - i.val) • t := by
+    rw [← add_nsmul, Nat.add_sub_of_le (Nat.le_of_lt hij)]
+  by_cases h : f j = f i + (j.val - i.val) • t
+  · left
+    rw [h, hlen]
+    abel
+  · have rev : f i = f j + (53 - (j.val - i.val)) • t := by
+      by_contra hn
+      simp [pairScore, cap, hij, h, hn] at pair
+    have h53 : 53 • t = (j.val - i.val) • t + (53 - (j.val - i.val)) • t := by
+      rw [← add_nsmul]
+      apply congrArg (fun n : ℕ => n • t)
+      have := j.isLt
+      omega
+    right
+    rw [rev, hlen, h53]
+    abel
+
+theorem residualCannotRise {H : Type*} [AddCommGroup H] (r : Fin 53 → H) (s : H)
+    (hs : s ≠ 0) (hss : s + s ≠ 0)
+    (step : ∀ i j : Fin 53, i < j → r j = r i ∨ r j = r i - s)
+    (i j : Fin 53) (hij : i < j) (low : r i = r 0 - s) : r j ≠ r 0 := by
+  intro high
+  rcases step i j hij with eq | eq
+  · rw [high, low] at eq
+    exact hs (by simpa using eq.symm)
+  · rw [high, low, sub_sub] at eq
+    exact hss (by simpa using eq.symm)
+
 end M31Translation
