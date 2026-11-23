@@ -1,6 +1,7 @@
 """Check the native aggregate counter against independent full affine-point sets."""
 import csv
 import io
+from math import factorial, prod
 from collections import Counter
 from itertools import combinations_with_replacement
 from pathlib import Path
@@ -42,6 +43,20 @@ def check(xs):
         assert int(row['exact_finite'])==len(sums-{None})
         assert int(row['upto_finite'])==len(union-{None})
         assert int(row['exact_has_infinity'])==(None in sums)
+
+    # Count one orientation per reduced vector using separately computed endpoints.
+    prefixes = Counter()
+    for vector, point in vectors.items():
+        if sum(map(abs, vector)) != 4 or point not in signed:
+            continue
+        if next(value for value in vector if value) < 0:
+            continue
+        prefixes[24 // prod(factorial(abs(value)) for value in vector)] += 1
+    raw = subprocess.check_output([sys.argv[1], "five-prefixes"],
+        input="".join(f"{x}\n" for x in xs), text=True)
+    rows = list(csv.DictReader(io.StringIO(raw)))
+    assert [(int(r["prefix_permutations"]), int(r["completable_prefixes_up_to_sign"]))
+            for r in rows] == [(w, prefixes[w]) for w in (1, 4, 6, 12, 24)]
 
     # Include the empty sum explicitly when translating a radius-four ball.
     union.add(None)

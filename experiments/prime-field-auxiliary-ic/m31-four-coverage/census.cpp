@@ -317,10 +317,33 @@ static void walk_histogram(const std::vector<Word>& xs, bool sample) {
         if(entry.second) std::cout<<entry.first<<','<<entry.second<<'\n';
 }
 
+// Count four-letter prefixes up to sign whose endpoint admits a fifth letter.
+static void five_prefixes(std::vector<Word> xs) {
+    load_basis(xs);
+    std::sort(xs.begin(),xs.end());
+    if(std::adjacent_find(xs.begin(),xs.end())!=xs.end())
+        throw std::invalid_argument("duplicate generator abscissa");
+    std::array<bool,65536> suffix{};
+    for(Word x:xs) suffix[x & 65535]=true;
+    std::array<std::uint64_t,25> hits{};
+    auto count=[&](Word x,unsigned ways) {
+        if(suffix[x & 65535] && std::binary_search(xs.begin(),xs.end(),x))
+            ++hits[ways];
+    };
+    for(unsigned i=0;i<basis.size();i+=2) visit<true,true>(basis[i],i,3,count);
+    std::cout<<"prefix_permutations,completable_prefixes_up_to_sign\n";
+    for(unsigned ways:{1,4,6,12,24}) std::cout<<ways<<','<<hits[ways]<<'\n';
+}
+
 int main(int argc,char** argv) {
     std::vector<Word> xs;
     Word x;
     while(std::cin>>x) xs.push_back(x);
+    if(argc==2 && std::string(argv[1])=="five-prefixes") {
+        if(xs.empty() || xs.size()>195) throw std::invalid_argument("invalid basis size");
+        five_prefixes(xs);
+        return 0;
+    }
     if(argc==2 && (std::string(argv[1])=="walk-four" || std::string(argv[1])=="walk-five-sample")) {
         assert(!xs.empty() && xs.size()<=195);
         walk_histogram(xs,std::string(argv[1])=="walk-five-sample");
