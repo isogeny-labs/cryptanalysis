@@ -33,3 +33,13 @@ For each archive of length n, the first n−1 rows have rank n−1, and the full
 Run `python3 -B prefix_audit.py` with python-flint and SciPy. The script reads the signed codes only. The finite ranks are independently computed by FLINT. Leaf.lean also proves the general consequence that any nonzero dependence at this boundary has nonzero weight on the last row.
 
 Exact rational rank from the signed integer matrix agrees with the full target-field rank in each row of the table. In particular, auxiliary seed 2 gives a concrete 465-row matrix with a matching covering every row and rational rank 464. Its dependence survives in characteristic zero, so reduction modulo the target order is unnecessary to explain this example.
+
+## Size of coefficients in the first dependence
+
+Every nonzero dependence on each archived terminal matrix needs at least one centered coefficient of magnitude greater than 8,388,608. This excludes a direct signed 24-bit representation of the whole dependence, even allowing an arbitrary common rescaling modulo 2147505293. The bound concerns final coefficients in this specific representation. Bit-sliced arithmetic, multi-limb encodings, intermediate representations and changes to the input rows lie outside the result.
+
+The archived weight vectors have 317, 306 and 323 nonzero entries on the auxiliary arm and 353, 346 and 305 on the plain arm. Identifying each nonzero value with its negative gives respectively 179, 179, 186 and 206, 206, 175 distinct classes. A nonzero common scalar permutes these signed classes. In particular a single nonzero magnitude cannot encode these dependences.
+
+The stronger bit-width bound uses the normalized final coordinate, which is one in all six certificates. The full left nullspace has dimension one. If every centered coefficient of another nonzero dependence had magnitude at most 8388608, its final coordinate would force its scale, up to an overall sign, into [1,8388608]. For every such scale in each archive, at least one of the first five distinct nonzero magnitudes has scaled residue strictly between 8388608 and 2147505293−8388608. Negation preserves that open interval.
+
+Run `python3 -B weight_audit.py` to verify the archived weights against all 500 signed columns, recompute the rank in FLINT, check the Lean witness values against the archive, and enumerate scales with exact 64-bit arithmetic. Replay `ScaleBound.lean` in the mathlib environment for the independent finite exclusion proof using native_decide. The link between the checked witness constants and the archived files is verified by Python.
