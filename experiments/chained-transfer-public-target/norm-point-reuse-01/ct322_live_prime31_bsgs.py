@@ -130,22 +130,21 @@ def benchmark(binary):
                 ("toy-composite-order", (97,2,3,4,3,6,80,10), False)):
             d = root / title
             d.mkdir()
-            try:
-                cap = native_child(binary, fields, d)
-                if not valid:
-                    refuse("native accepted invalid " + title)
-                answer = check_response(
-                    cap["native"], [80, 10],
-                    {"subgroup_prime": 5, "p": 97, "a": 2,
-                     "generator": [3, 6]})
-                if answer["result_scalar"] != 2:
-                    refuse("toy BSGS returned wrong source logarithm")
-            except ValueError:
-                if valid:
-                    raise
-                # A refusal from the child is expected for every invalid toy.
-                if "cap" in locals() and valid is False:
+            if not valid:
+                try:
+                    native_child(binary, fields, d)
+                except ValueError:
                     pass
+                else:
+                    refuse("native accepted invalid " + title)
+                continue
+            cap = native_child(binary, fields, d)
+            answer = check_response(
+                cap["native"], [80, 10],
+                {"subgroup_prime": 5, "p": 97, "a": 2,
+                 "generator": [3, 6]})
+            if answer["result_scalar"] != 2:
+                refuse("toy BSGS returned wrong source logarithm")
         public_path, private_path = root / "public.json", root / "private.json"
         issued = blind.publish(PRIME31, 4, public_path, private_path)
         public_raw = public_path.read_bytes()
