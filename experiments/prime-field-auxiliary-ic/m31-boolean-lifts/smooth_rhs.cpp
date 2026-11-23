@@ -203,6 +203,34 @@ static int orbit_timing(const std::vector<Row>& rows,uint32_t nonsquare) {
     return 0;
 }
 
+// Directed integer edges x -> q^2*x. Both ends are in the enumerated
+// smooth domain. Their order in the sorted list allows a monotone join.
+static int square_edges(std::vector<Row>& rows) {
+    std::sort(rows.begin(), rows.end(), [](Row a, Row b){ return a.x < b.x; });
+    std::vector<uint8_t> labels(rows.size());
+    uint32_t rhs[label_block], state[label_block];
+    for (size_t base = 0; base < rows.size(); base += label_block) {
+        size_t count = std::min(label_block, rows.size() - base);
+        cubic_labels(rows.data() + base, count, rhs, state);
+        for (size_t j = 0; j < count; ++j) labels[base+j] = rhs[j] == state[j];
+    }
+    std::puts("prime,nonlift_nonlift,nonlift_lift,lift_nonlift,lift_lift");
+    for (uint32_t q : primes) {
+        std::array<uint32_t,4> counts{};
+        size_t dst = 0;
+        for (size_t src = 0; src < rows.size(); ++src) {
+            uint64_t x = uint64_t(q)*q*rows[src].x;
+            if (x >= prime) break;
+            while (dst < rows.size() && rows[dst].x < x) ++dst;
+            if (dst == rows.size() || rows[dst].x != x ||
+                rows[dst].parity != rows[src].parity) return 1;
+            ++counts[2*labels[src] + labels[dst]];
+        }
+        std::printf("%u,%u,%u,%u,%u\n", q, counts[0], counts[1], counts[2], counts[3]);
+    }
+    return 0;
+}
+
 int main(int argc,char **argv) {
     std::vector<Row> rows{{1,0}};
     uint32_t nonsquare = 0;
@@ -221,6 +249,7 @@ int main(int argc,char **argv) {
     }
     if (argc==2 && std::strcmp(argv[1],"orbits")==0) return orbit_census(rows,nonsquare);
     if (argc==2 && std::strcmp(argv[1],"timing")==0) return orbit_timing(rows,nonsquare);
+    if (argc == 2 && std::strcmp(argv[1], "square-edges") == 0) return square_edges(rows);
     const bool holdout = argc == 2 && std::strcmp(argv[1], "signature-holdout") == 0;
     if (argc != 1 && !holdout) return 1;
     std::sort(rows.begin(),rows.end(),[](Row a,Row b){return a.x<b.x;});
