@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
+#include <charconv>
+#include <cstring>
 #include <cstdint>
 #include <cstdio>
 #include <random>
@@ -82,6 +84,16 @@ __attribute__((noinline)) void arraySquares(const Panel& xs, uint32_t b, Panel& 
     for (size_t i=0;i<xs.size();++i) out[i] = fromSquare(y[i],out[i]);
 }
 
+// Every signed input lane is in [-p,p]. The square is nonnegative and fits
+// the doubling-high operation even for -p. The new lane is in [-p,p).
+uint32x4_t signedSquare(uint32x4_t bits) {
+    auto x = vreinterpretq_s32_u32(bits);
+    auto hi = vreinterpretq_u32_s32(vqdmulhq_s32(x,x));
+    auto lo = vandq_u32(vmulq_u32(bits,bits), vdupq_n_u32(p));
+    return vsubq_u32(vaddq_u32(hi,lo), vdupq_n_u32(p));
+}
+
+template<bool signedLanes>
 __attribute__((noinline)) void tiledSquares(const Panel& xs, uint32_t b, Panel& out) {
     constexpr unsigned vectors = 8;
     for (size_t i=0;i<xs.size();i+=4*vectors) {
@@ -92,9 +104,17 @@ __attribute__((noinline)) void tiledSquares(const Panel& xs, uint32_t b, Panel& 
         }
         z = y;
         for (unsigned k=0;k<30;++k)
-            for (auto& laneGroup : z) laneGroup = multiply(laneGroup,laneGroup);
-        for (unsigned j=0;j<vectors;++j)
+            for (auto& laneGroup : z) {
+                if constexpr (signedLanes) laneGroup = signedSquare(laneGroup);
+                else laneGroup = multiply(laneGroup,laneGroup);
+            }
+        for (unsigned j=0;j<vectors;++j) {
+            if constexpr (signedLanes) {
+                auto negative = vcltq_s32(vreinterpretq_s32_u32(z[j]), vdupq_n_s32(0));
+                z[j] = vaddq_u32(z[j], vandq_u32(negative,vdupq_n_u32(p)));
+            }
             vst1q_u32(out.data()+i+4*j,fromSquare(y[j],z[j]));
+        }
     }
 }
 
@@ -107,18 +127,25 @@ uint32_t reference(uint64_t x, uint32_t b) {
     return acc;
 }
 
-int main() {
+int main(int argc, char** argv) {
+    unsigned seed = 1953;
+    if (argc > 2) return 1;
+    if (argc == 2) {
+        const char* end = argv[1] + std::strlen(argv[1]);
+        auto parsed = std::from_chars(argv[1],end,seed);
+        if (parsed.ec != std::errc{} || parsed.ptr != end) return 1;
+    }
     Panel xs, expected, out;
     for (auto& x : xs) if (std::scanf("%u",&x) != 1 || x >= p) return 1;
     const std::array kernels = {evaluate<false,Power::binary>,evaluate<false,Power::shortened>,
                                 evaluate<true,Power::binary>,evaluate<true,Power::shortened>,
                                 evaluate<false,Power::squares>,evaluate<true,Power::squares>,
-                                arraySquares,tiledSquares};
+                                arraySquares,tiledSquares<false>,tiledSquares<true>};
     const char* names[] = {"fold_binary","fold_short","neon_binary","neon_short","fold_squares","neon_squares",
-                           "array_c_abi","tiled_squares"};
-    std::mt19937 rng(1953);
-    std::array<unsigned, 8> order{0,1,2,3,4,5,6,7};
-    std::puts("curve_b,round,method,ns_per_coordinate");
+                           "array_c_abi","tiled_squares","tiled_signed_squares"};
+    std::mt19937 rng(seed);
+    std::array<unsigned, 9> order{0,1,2,3,4,5,6,7,8};
+    std::puts("seed,curve_b,round,method,ns_per_coordinate");
     for (unsigned b : {14u,36u}) {
         for (size_t i=0;i<xs.size();++i) expected[i]=reference(xs[i],b);
         for (unsigned round=0;round<30;++round) {
@@ -134,7 +161,7 @@ int main() {
                 auto elapsed = std::chrono::steady_clock::now()-start;
                 if (out != expected) return 2;
                 double ns = std::chrono::duration<double,std::nano>(elapsed).count();
-                std::printf("%u,%u,%s,%.6f\n", b, round, names[k], ns/(repeats*xs.size()));
+                std::printf("%u,%u,%u,%s,%.6f\n", seed, b, round, names[k], ns/(repeats*xs.size()));
             }
         }
     }

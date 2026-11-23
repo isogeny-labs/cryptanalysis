@@ -163,4 +163,20 @@ theorem squaresCharacter {F : Type*} [Field F] (y : F) (hy : y ≠ 0) :
   · intro h
     rw [h, one_mul]
 
+/-- The signed representative produced after squaring remains admissible for
+the next doubling-high multiply. Subtracting p unconditionally saves the
+canonical comparison inside the squaring loop. -/
+def signedSquare (x : ℤ) : ℤ :=
+  (x*x) % 2147483648 + (x*x) / 2147483648 - 2147483647
+
+theorem signedSquareInvariant {x : ℤ} (lo : -2147483647 ≤ x) (hi : x ≤ 2147483647) :
+    -2147483647 ≤ signedSquare x ∧ signedSquare x < 2147483647 ∧
+    2*(x*x) < 2^63 ∧ signedSquare x % 2147483647 = (x*x) % 2147483647 := by
+  have lower := mul_self_nonneg x
+  have upper : x*x ≤ 2147483647*2147483647 := by
+    nlinarith [mul_nonneg (show 0 ≤ 2147483647 + x by omega)
+      (show 0 ≤ 2147483647 - x by omega)]
+  unfold signedSquare
+  omega
+
 end M31Reduction
