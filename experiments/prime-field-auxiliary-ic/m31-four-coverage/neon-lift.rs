@@ -49,6 +49,8 @@ mod neon_lift {
         out
     }
 
+    include!("paired-cubic.rs");
+
     pub(super) fn validate() {
         let mut seed = 2718281828u64;
         for i in 0..4096 {

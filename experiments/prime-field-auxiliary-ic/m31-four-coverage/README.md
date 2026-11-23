@@ -418,3 +418,22 @@ The local Apple M4 Pro comparison starts from each terminal, constructs the full
 Widths four and eight each beat the full recurrence in all 48 rounds on each panel. The measurements concern rebuilding sorted point tables on this host. To reproduce, build torus7-build.rs with the native flags above and invoke fiber-half ROTATION ORDER, adding holdout for the second panel. The method codes in table order are f,h,q,o. Rotations 0–23 enumerate permutations in input order fhqo and 24–47 traverse that list in reverse.
 
 PCC-20261123-962b7b [pcc:unverified]
+
+### Sharing cubic work between opposite abscissas
+
+On y² = x³ + ax + b, the curve values at x and −x sum to 2b. The paired lift loads 16 abscissas and their 16 opposites, evaluates the first cubic for each pair and obtains the second by subtraction. Both ordinates still use the same 32-wide NEON square-root kernel and verification. The sorted output retains canonical ordinates in the original coordinate-pair format. PairedCubic.lean proves the cubic identity, lossless 31-bit field packing, the 62-bit bound, and preservation of lexicographic order by the packed integer comparison.
+
+The first local Apple M4 Pro panel compared four methods, all using the four-lane half-period generator. Relative to a matched layout that independently evaluated both cubics, sharing them gave median paired ratios of 1.039 and 1.041 on the archived and held-out panels. Unconditionally writing candidates to a temporary array before compacting yielded archived/holdout medians of 51.96/52.10 µs, versus 51.71/51.61 µs when pushing accepted points directly.
+
+A second comparison crossed the original and paired lifts with tuple and packed sorting. The packed sorter spends one pass encoding the accepted coordinates as (x << 31) | y, sorts unsigned 64-bit keys, then restores the ordinary coordinate tuples. All passes, root generation, lifting and output sorting are included. The four method codes in table order are q,p,s,w.
+
+| Method | Archived median µs | Holdout median µs |
+|---|---:|---:|
+| Original lift, tuple sort | 54.69 | 53.48 |
+| Paired lift, tuple sort | 51.82 | 52.21 |
+| Original lift, packed sort | 50.75 | 50.25 |
+| Paired lift, packed sort | 49.21 | 48.80 |
+
+The combined method won all 48 matched rounds per panel against the original lift with tuple sorting. Median within-round ratios were 1.111 and 1.096. Each method checks the full ordered point output against scalar lifting over independently generated inverse trees. Use the fiber-half entry point and the preceding native flags. For paired-cubic.csv use rotations 0–47 and method permutations of qdpc. For paired-sort.csv use rotations 48–95 and permutations of qpsw. Both enumerate all 24 orders then reverse that schedule and alternate which terminal panel runs first. Rotations permute the same fixed terminals in each panel. Check the Lean module with Lean 4.34.1 and -DwarningAsError=true.
+
+PCC-20261123-1f8f24 [pcc:unverified]

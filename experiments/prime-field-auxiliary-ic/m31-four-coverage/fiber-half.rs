@@ -70,13 +70,22 @@ fn half_bench(rotation: usize, order: &str, holdout: bool) {
                 let xs = match method {
                     'f' => recurrence_fiber(t),
                     'h' => half_fiber::<1>(t),
-                    'q' => half_fiber::<4>(t),
+                    'q' | 'd' | 'p' | 'c' | 'w' | 's' => half_fiber::<4>(t),
                     'o' => half_fiber::<8>(t),
                     _ => panic!("unknown method"),
                 };
                 let start = out.len();
-                out.extend(neon_lift::points::<8>(&xs, 14));
-                out[start..].sort_unstable();
+                match method {
+                    'd' => neon_lift::paired_points::<false, false>(&xs, 14, &mut out),
+                    'p' | 'w' => neon_lift::paired_points::<true, false>(&xs, 14, &mut out),
+                    'c' => neon_lift::paired_points::<true, true>(&xs, 14, &mut out),
+                    _ => out.extend(neon_lift::points::<8>(&xs, 14)),
+                }
+                if matches!(method, 'w' | 's') {
+                    neon_lift::sort_words(&mut out[start..]);
+                } else {
+                    out[start..].sort_unstable();
+                }
             }
             black_box(out.as_slice());
         };
