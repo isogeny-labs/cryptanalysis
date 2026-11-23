@@ -66,4 +66,36 @@ theorem evenExtension (k : Nat) : traceParity k = 0 ↔ 3 ∣ k := by
     · rw [periodThree, ih k (by omega)]
       omega
 
+omit [DecidableEq K]
+
+/-- Translating a root to zero gives a Montgomery model in monic
+coordinates when the derivative there is a nonzero square. -/
+theorem rootModel (a b r B x y : K) (root : r^3+a*r+b=0)
+    (deriv : B^2=3*r^2+a) (nz : B ≠ 0) :
+    (model (3*r/B) B).Equation (x-r) y ↔ y^2=x^3+a*x+b := by
+  rw [WeierstrassCurve.Affine.equation_iff]
+  simp only [model, zero_mul, add_zero, div_mul_cancel₀ _ nz, deriv]
+  constructor <;> intro h <;> first | linear_combination h + root | linear_combination h - root
+
+/-- In odd characteristic, a Weierstrass change to a monic Montgomery
+model forces the translation parameter to be a root with square derivative. -/
+theorem necessaryRoot (a b A B : K) (C : WeierstrassCurve.VariableChange K)
+    (oddChar : (2 : K) ≠ 0)
+    (eqn : C • (⟨0,0,0,a,b⟩ : WeierstrassCurve K) = model A B) :
+    C.r^3+a*C.r+b=0 ∧ IsSquare (3*C.r^2+a) := by
+  have one := congrArg WeierstrassCurve.a₁ eqn
+  have three := congrArg WeierstrassCurve.a₃ eqn
+  have four := congrArg WeierstrassCurve.a₄ eqn
+  have six := congrArg WeierstrassCurve.a₆ eqn
+  simp [WeierstrassCurve.variableChange_a₁, model, oddChar] at one
+  simp [WeierstrassCurve.variableChange_a₃, model, oddChar] at three
+  simp [WeierstrassCurve.variableChange_a₄, model, one, three] at four
+  simp [WeierstrassCurve.variableChange_a₆, model, three] at six
+  constructor
+  · linear_combination six
+  · refine ⟨(C.u : K)^2 * B, ?_⟩
+    have h := congrArg (fun z : K => (C.u : K)^4 * z) four
+    rw [← mul_assoc, mul_inv_cancel₀ (pow_ne_zero 4 C.u.ne_zero), one_mul] at h
+    linear_combination h
+
 end M31TwoTorsionModels
