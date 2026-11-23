@@ -1,3 +1,17 @@
+const FIXED_STEP: u64 = 1_330_526_061;
+
+// For slots i >= 1, x[i] = weights[i]*x[1] - weights[i-1]*x[0].
+const FIXED_WEIGHTS: [u32; 64] = {
+    let mut u = [0; 64];
+    u[1] = 1;
+    let mut i = 2;
+    while i < 64 {
+        u[i] = ((FIXED_STEP * u[i - 1] as u64 + M::P - u[i - 2] as u64) % M::P) as u32;
+        i += 1;
+    }
+    u
+};
+
 #[inline(always)]
 fn terminal_root<const MODE: u8>(x: u64) -> u64 {
     match MODE {
@@ -9,7 +23,7 @@ fn terminal_root<const MODE: u8>(x: u64) -> u64 {
             }
             v
         }
-        2 => {
+        2 | 3 | 4 => {
             let p = M::P as i64;
             let mut v = x as i64;
             for _ in 0..29 {
@@ -34,7 +48,12 @@ fn half_fiber_root<const W: usize, const ROOT: u8>(terminal: u64) -> [u64; 128] 
     for _ in 0..7 {
         leaf = terminal_root::<ROOT>(M::add(leaf, 2));
     }
-    let step = iterate(leaf, 24);
+    // Trace of an order-128 element, shared by all fibers in this panel.
+    let step = if ROOT >= 3 {
+        FIXED_STEP
+    } else {
+        iterate(leaf, 24)
+    };
     let delta = M::mul(M::sub(M::sq(leaf), 4), M::sub(M::sq(step), 4));
     let mut xs = [0; 128];
     xs[0] = leaf;
@@ -42,13 +61,24 @@ fn half_fiber_root<const W: usize, const ROOT: u8>(terminal: u64) -> [u64; 128] 
         M::add(M::mul(leaf, step), terminal_root::<ROOT>(delta)),
         1 << 30,
     );
-    for i in 2..2 * W {
-        xs[i] = M::sub(M::mul(step, xs[i - 1]), xs[i - 2]);
-    }
-    let stride = iterate(step, W.trailing_zeros() as usize);
-    for block in (2 * W..64).step_by(W) {
-        for i in block..block + W {
-            xs[i] = M::sub(M::mul(stride, xs[i - W]), xs[i - 2 * W]);
+    if ROOT == 4 {
+        let a = xs[0];
+        let b = xs[1];
+        for i in 2..64 {
+            xs[i] = M::sub(
+                M::mul(u64::from(FIXED_WEIGHTS[i]), b),
+                M::mul(u64::from(FIXED_WEIGHTS[i - 1]), a),
+            );
+        }
+    } else {
+        for i in 2..2 * W {
+            xs[i] = M::sub(M::mul(step, xs[i - 1]), xs[i - 2]);
+        }
+        let stride = iterate(step, W.trailing_zeros() as usize);
+        for block in (2 * W..64).step_by(W) {
+            for i in block..block + W {
+                xs[i] = M::sub(M::mul(stride, xs[i - W]), xs[i - 2 * W]);
+            }
         }
     }
     for i in 0..64 {
@@ -90,6 +120,14 @@ fn half_bench(rotation: usize, order: &str, holdout: bool, single: bool) {
         for candidate in [half_fiber::<1>(t), half_fiber::<4>(t), half_fiber::<8>(t)] {
             assert_eq!(candidate, full);
         }
+        let mut fixed = half_fiber_root::<4, 3>(t);
+        let mut baseline = full;
+        let mut weighted = half_fiber_root::<4, 4>(t);
+        weighted.sort_unstable();
+        fixed.sort_unstable();
+        baseline.sort_unstable();
+        assert_eq!(fixed, baseline);
+        assert_eq!(weighted, baseline);
         let start = expected.len();
         for x in inverse_tree::<false, false>(t, 0) {
             if let Some(q) = curve.lift_x(x).unwrap() {
@@ -100,12 +138,14 @@ fn half_bench(rotation: usize, order: &str, holdout: bool, single: bool) {
     }
     let mut out = Points::with_capacity(4096);
     for method in order.chars() {
-        if matches!(method, 'P' | 'U' | 'D' | 'E') {
+        if matches!(method, 'P' | 'U' | 'D' | 'E' | 'G' | 'H') {
             assert!(single, "phase profile requires one terminal");
             match method {
                 'P' => table_phases::<true, 0>(terminals[0], &expected, &mut out),
                 'U' => table_phases::<false, 0>(terminals[0], &expected, &mut out),
                 'D' => table_phases::<true, 2>(terminals[0], &expected, &mut out),
+                'G' => table_phases::<true, 3>(terminals[0], &expected, &mut out),
+                'H' => table_phases::<false, 3>(terminals[0], &expected, &mut out),
                 'E' => table_phases::<false, 2>(terminals[0], &expected, &mut out),
                 _ => unreachable!(),
             }
@@ -116,6 +156,8 @@ fn half_bench(rotation: usize, order: &str, holdout: bool, single: bool) {
             for &t in black_box(&terminals) {
                 let xs = match method {
                     'A' => half_fiber_root::<4, 1>(t),
+                    'J' => half_fiber_root::<4, 4>(t),
+                    'F' => half_fiber_root::<4, 3>(t),
                     'B' => half_fiber_root::<4, 2>(t),
                     't' => inverse_tree::<false, false>(t, 0),
                     'f' => recurrence_fiber(t),
@@ -130,13 +172,13 @@ fn half_bench(rotation: usize, order: &str, holdout: bool, single: bool) {
                     'd' => neon_lift::paired_points::<false, false, 0>(&xs, 14, &mut out),
                     'p' | 'w' => neon_lift::paired_points::<true, false, 0>(&xs, 14, &mut out),
                     'n' => neon_lift::paired_points::<true, false, 2>(&xs, 14, &mut out),
-                    'z' | 'A' | 'B' => {
+                    'z' | 'A' | 'B' | 'F' | 'J' => {
                         neon_lift::paired_points::<true, false, 1>(&xs, 14, &mut out)
                     }
                     'c' => neon_lift::paired_points::<true, true, 0>(&xs, 14, &mut out),
                     _ => out.extend(neon_lift::points::<8>(&xs, 14)),
                 }
-                if matches!(method, 'w' | 's' | 'z' | 'n' | 'A' | 'B') {
+                if matches!(method, 'w' | 's' | 'z' | 'n' | 'A' | 'B' | 'F' | 'J') {
                     neon_lift::sort_words(&mut out[start..]);
                 } else {
                     out[start..].sort_unstable();

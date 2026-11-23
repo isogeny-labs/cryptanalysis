@@ -467,3 +467,23 @@ A separate eight-round comparison used four methods on each terminal. P and U us
 All runs use the local M4 Pro, a warmed process and reusable output storage. Each invocation rebuilds one sorted point table from its terminal. The generator variants check all 128 slots against the full recurrence and the point output against scalar lifting on an independent inverse tree. TerminalRoot.lean proves that the signed scalar loop with canonicalization returns the canonical residue of x raised to 2^29 for every canonical input. The signed-product bounds are in SignedSquare.lean. The phase and three-method CSV files give per-terminal method order. Replay with fiber-half TERMINAL ORDER single and append holdout for that panel. The three-method codes are z, A and B. Compile SignedSquare.lean then TerminalRoot.lean with warnings as errors in the existing mathlib 4.34.1 environment. The axiom report for terminal_root_exact lists propext, Classical.choice and Quot.sound.
 
 PCC-20261123-0a204c [pcc:unverified]
+
+### Shared trace coefficient and independent coordinate generation
+
+The trace coefficient 1330526061 comes from the first archived terminal. Seven doublings of this coefficient reach 2, and five reach 0. With a valid neighboring trace it can replace the leaf-dependent coefficient on all 64 tested fibers. The order of the roots may change. For each terminal the native oracle compares the full sorted array of 128 abscissas to the previous recurrence, and compares the returned sorted points to scalar lifts over the inverse tree.
+
+Fixing the coefficient alone removed 24 serial squarings but failed to improve the single-table time. In the first two-method screen, leaf-dependent and fixed-step archived medians were 1246 and 1270 ns, respectively (1253 and 1285 ns on holdout). In the instrumented confirmation, generation alone took 540 versus 561 ns on the archived group and 539 versus 579 ns on holdout. These measurements do not isolate a microarchitectural cause.
+
+The fixed coefficient also permits a 256-byte, compile-time array of 64 unsigned 32-bit weights. Given the leaf a and its neighbor b, each slot from 2 to 63 is obtained from two weights as u[i] b − u[i−1] a. This removes dependencies between successive output coordinates. The upper 64 slots follow by field negation. No terminal-specific labels, roots or points are cached. FixedWeights.lean proves the weight formula for any second-order trace recurrence, the half-period sign change for this coefficient, and preservation of the terminal under seven doublings for the certified panel seeds.
+
+| Single-table rebuild, ns | Archived | Holdout |
+|---|---:|---:|
+| Prior signed generator B | 1279.5 | 1273.3 |
+| Shared coefficient with dependent recurrence F | 1304.2 | 1311.0 |
+| Shared coefficient with independent coordinates J | 1170.3 | 1172.7 |
+
+On the Apple M4 Pro, the median within-round B/J ratios were 1.090 and 1.087. Each of the 64 terminals favored J on its 12-round median. Lifting and sorting are charged as before. Measurements start from one terminal in a warm process and reuse caller output capacity. The coordinate construction is specialized to the measured fiber family. The timings concern table generation.
+
+Use fiber-half TERMINAL ORDER single, appending holdout for the second group. The tables in fixed-step.csv and fixed-weights.csv give the method orders and terminal indices. The three-method comparison runs all six orders twice per terminal. In fixed-step-phases.csv D/E are instrumented/uninstrumented leaf-dependent controls and G/H use the shared coefficient with the dependent recurrence.
+
+PCC-20261123-3836ed [pcc:unverified]

@@ -30,6 +30,8 @@ fn table_phases<const PROFILE: bool, const ROOT: u8>(
         match (PROFILE, ROOT) {
             (true, 0) => "P",
             (false, 0) => "U",
+            (true, 3) => "G",
+            (false, 3) => "H",
             (true, _) => "D",
             (false, _) => "E",
         },
