@@ -1,0 +1,23 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T02:13:52Z",
+ "id": "PCC-20261123-d6db72",
+ "kind": "theorem",
+ "producer": {
+  "commit": "db6d32b77db952341b0cddfb7caee11dd836d3f1",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "c3d27a1da92be73173bd439bfeb6f93e754c974142ca1186a8553c98e654a613",
+   "kind": "lean",
+   "path": "experiments/prime-field-auxiliary-ic/m31-rotation-smoothness/partition-timing/MulWord.lean",
+   "sha256": "7d6839c7324854fc2a85f941f1ba5cdd04e54fcb89780f954b8cb34ad940c4f3",
+   "theorem": "M31CensusWord.mul_correct"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "The census mixed-width word multiplication computes the canonical M31 product of any two canonical 32-bit representatives."
+}

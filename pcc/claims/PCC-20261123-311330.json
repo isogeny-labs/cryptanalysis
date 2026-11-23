@@ -1,0 +1,23 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T02:13:52Z",
+ "id": "PCC-20261123-311330",
+ "kind": "theorem",
+ "producer": {
+  "commit": "db6d32b77db952341b0cddfb7caee11dd836d3f1",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "8b9f0a926aac4cfdc3fca5badfad036ed89fa5e4ac90170f5d8aeba0a72b5152",
+   "kind": "lean",
+   "path": "experiments/prime-field-auxiliary-ic/m31-rotation-smoothness/partition-timing/MulWord.lean",
+   "sha256": "7d6839c7324854fc2a85f941f1ba5cdd04e54fcb89780f954b8cb34ad940c4f3",
+   "theorem": "M31CensusWord.first_failure"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "At 2^62-1 the one-fold reducer returns the M31 modulus while the canonical residue is zero."
+}
