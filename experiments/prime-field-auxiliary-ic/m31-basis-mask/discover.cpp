@@ -56,9 +56,22 @@ struct Projection {
     }
 };
 
+// Integer-key baseline using the same 2,048 key slots as the projection.
+struct FlatSet {
+    std::array<Word,2048> slots;
+    FlatSet() { slots.fill(UINT32_MAX); }
+    unsigned locate(Word x) const {
+        unsigned i = (x * 2654435761u) >> 21;
+        while (slots[i] != UINT32_MAX && slots[i] != x)
+            i = (i + 1) & 2047u;
+        return i;
+    }
+};
+
 int main(int argc, char** argv) {
     const bool compare_pairs = argc == 4 && std::string_view(argv[3]) == "--compare-pairs";
-    if (argc != 3 && !compare_pairs) return 2;
+    const bool compare_flat = argc == 4 && std::string_view(argv[3]) == "--compare-flat";
+    if (argc != 3 && !compare_pairs && !compare_flat) return 2;
     std::ifstream bf(argv[1]), qf(argv[2]);
     std::vector<Word> basis, queries;
     for (Word x; bf >> x;) basis.push_back(x);
@@ -69,9 +82,10 @@ int main(int argc, char** argv) {
     std::vector<unsigned char> expected, result(queries.size());
     for (Word x : queries) expected.push_back(std::binary_search(sorted.begin(), sorted.end(), x));
     std::cout << "block,scans,arm,discovery_ns,total_ns\n";
+    const std::array<unsigned,4> scans_per_build = compare_flat ? std::array<unsigned,4>{1,2,4,8} : std::array<unsigned,4>{1,8,16,32};
     std::array<unsigned,3> arms = {0,1,2};
     for (unsigned block = 0; block < (compare_pairs ? 66u : 26u); ++block) {
-        for (unsigned scans : {1u, 8u, 16u, 32u}) {
+        for (unsigned scans : scans_per_build) {
             if (compare_pairs && scans != 1) continue;
             auto scan = [&](auto contains) {
                 for (unsigned r = 0; r < scans; ++r) {
@@ -84,13 +98,17 @@ int main(int argc, char** argv) {
                 const unsigned arm = compare_pairs ? arms[order] : (order + block) % 2;
                 auto start = Clock::now();
                 long long discovery = 0;
-                if (arm == 0) {
+                if (compare_flat && arm == 0) {
+                    FlatSet table;
+                    for (Word x : basis) table.slots[table.locate(x)] = x;
+                    scan([&](Word x) { return table.slots[table.locate(x)] == x; });
+                } else if (arm == 0) {
                     std::unordered_set<Word> table;
                     table.reserve(basis.size());
                     table.insert(basis.begin(), basis.end());
                     scan([&](Word x) { return table.count(x) != 0; });
                 } else {
-                    Word mask = discover(basis, arm == 1);
+                    Word mask = discover(basis, !compare_flat && arm == 1);
                     discovery = std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now()-start).count();
                     if (__builtin_popcount(mask) != 11) return 3;
                     Projection table(mask);
