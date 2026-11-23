@@ -811,8 +811,24 @@ charged ρ/IC ratio is below 1 at every one. Read its
     ./target/release/ca-ic prime --curve p224 --bits 36 --targets 256
     ./target/release/ca-ic prime --type j1728 --bits 24 --json
     ./target/release/ca-ic prime --curve secp256k1 --bits 28 --relation-coordinates jacobian
-    ./target/release/ca-ic prime --curve secp256k1 --bits 28 --no-large-primes --no-learn   # the control
     ./target/release/ca-ic prime --curve secp256k1 --bits 16 --solver semaev
+
+The default orbit solver uses single-large-prime relation collection.
+For a paired comparison on a synthetic curve, use the same seed, target
+count and factor-base width in both runs. Pass `--no-learn` to both so
+each descent uses only the database built during relation collection.
+`--no-large-primes` selects full 2-decompositions for the control.
+
+```sh
+./target/release/ca-ic prime --type j0 --bits 22 --targets 4 --seed 1 --width 2 --no-learn --json
+./target/release/ca-ic prime --type j0 --bits 22 --targets 4 --seed 1 --width 2 --no-learn --no-large-primes --json
+```
+
+Check `descent.verified` for the recovered target count. The sum of
+`logs.oracle_ops` and `logs.probe_ops` counts relation-collection work,
+and `logs.combined_relations` counts rows produced by cancelling a
+large prime. Use `vs_rho.whole_process` for the comparison that includes
+precomputation and descent.
 
 The binary pipeline gets its speed-up from a factor base closed under
 Frobenius. A prime field has no Frobenius acting on the points, but some
