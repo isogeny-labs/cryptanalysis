@@ -3,6 +3,7 @@
 Each row is a fresh process. Timing includes launch and reading its output,
 and excludes compilation and the byte-for-byte check against population.txt.
 """
+import argparse
 import itertools
 from pathlib import Path
 import platform
@@ -19,8 +20,10 @@ MODES = ("scalar", "batch", "batch_lto", "explicit_lto")
 def compile_census(directory, mode):
     binary = directory / mode
     flags = ["-O3", "-mcpu=native"]
-    if mode in ("batch_lto", "explicit_lto"):
+    if mode in ("batch_lto", "explicit_lto", "projected_lto"):
         flags.append("-flto")
+    if mode == "projected_lto":
+        flags.append("-DM31_PROJECTED_CENSUS")
     objects = []
     if mode == "explicit_lto":
         flags.append("-DM31_EXPLICIT_CENSUS")
@@ -45,20 +48,28 @@ def measure(binary, expected):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--projection", action="store_true",
+                        help="compare direct and projected batch builds in 16 paired rounds")
+    projection = parser.parse_args().projection
+    modes = ("batch_lto", "projected_lto") if projection else MODES
+    orders = tuple(itertools.permutations(modes)) * (8 if projection else 1)
     expected = (HERE / "population.txt").read_bytes()
     print(platform.platform(), platform.machine())
     print(subprocess.check_output(["clang", "--version"], text=True).splitlines()[0])
     with tempfile.TemporaryDirectory() as directory:
-        binaries = {mode: compile_census(Path(directory), mode) for mode in MODES}
+        binaries = {mode: compile_census(Path(directory), mode) for mode in modes}
         for binary in binaries.values():
             measure(binary, expected)
-        print("round", "order", *(m + "_ns" for m in MODES), sep=",")
+        print("round", "order", *(m + "_ns" for m in modes), sep=",")
         rows = []
-        for number, order in enumerate(itertools.permutations(MODES), start=1):
+        for number, order in enumerate(orders, start=1):
             row = {mode: measure(binaries[mode], expected) for mode in order}
             rows.append(row)
-            print(number, "/".join(order), *(row[m] for m in MODES), sep=",")
-        for mode in ("scalar", "batch", "explicit_lto"):
+            print(number, "/".join(order), *(row[m] for m in modes), sep=",")
+        for mode in modes:
+            if mode == "batch_lto":
+                continue
             ratio = median(row[mode] / row["batch_lto"] for row in rows)
             print(f"Median paired {mode}/batch_lto wall time = {ratio:.4f}")
 

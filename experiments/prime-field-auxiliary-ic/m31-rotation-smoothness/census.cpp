@@ -4,6 +4,12 @@
 #ifdef M31_BATCH_CENSUS
 #include "../m31-native-product/product.h"
 #endif
+#ifdef M31_PROJECTED_CENSUS
+#if !defined(M31_BATCH_CENSUS) || defined(M31_EXPLICIT_CENSUS)
+#error "Projected classification requires the batch product kernel"
+#endif
+#include "../m31-projection-label/table.h"
+#endif
 #include <algorithm>
 #include <cstdint>
 #include <cstdio>
@@ -42,6 +48,9 @@ void sortKeys(std::vector<uint32_t>& keys) {
 }
 
 int main() {
+#ifdef M31_PROJECTED_CENSUS
+    const m31_projection::Tables table;
+#endif
     std::vector<SmoothValue> values{{1, false}};
     constexpr unsigned bounds[] = {7, 13, 23, 47};
     std::vector<uint32_t> keys;
@@ -112,12 +121,25 @@ int main() {
             vst1q_u32(powers + 4*j, lanes[j]);
 #else
         std::copy_n(inputs, 64, powers);
-        for (unsigned step = 0; step < 30; ++step)
+#ifdef M31_PROJECTED_CENSUS
+        constexpr unsigned squares = 15;
+#else
+        constexpr unsigned squares = 30;
+#endif
+        for (unsigned step = 0; step < squares; ++step)
             m31_products(powers, powers, powers, 64);
+#ifdef M31_PROJECTED_CENSUS
+        m31_products(powers, inputs, powers, 64);
+#endif
 #endif
         for (unsigned j = 0; j < 31; ++j) {
+#ifdef M31_PROJECTED_CENSUS
+            const bool qualifies = !table.isSquare(inputs[j], powers[j]);
+            const bool lift = table.isSquare(inputs[32+j], powers[32+j]);
+#else
             const bool qualifies = inputs[j] != powers[j];
             const bool lift = inputs[32 + j] == powers[32 + j];
+#endif
             eligible += qualifies;
             lifts += qualifies && lift;
         }
