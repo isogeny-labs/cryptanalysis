@@ -12,10 +12,75 @@ struct Row { uint32_t x, parity; };
 constexpr std::array<uint32_t,24> primes = {2,3,5,7,11,13,17,19,23,29,31,37,
                                              41,43,47,53,59,61,67,71,73,79,83,89};
 
+// A parity mask is realizable iff the product of its selected primes is
+// below prime. For each upper half-mask, the allowed lower half-masks form
+// a prefix when ordered by product. Concatenate those prefixes.
+struct SignatureIndex {
+    static constexpr unsigned half = 12;
+    static constexpr unsigned size = 1u << half;
+    static_assert(primes.size() == 2 * half);
+    std::array<uint16_t, size> rank;
+    std::array<uint32_t, size + 1> offset{};
+
+    static std::array<uint32_t, size> products(unsigned start) {
+        std::array<uint32_t, size> result;
+        result[0] = 1;
+        for (unsigned bit = 0; bit < half; ++bit) {
+            unsigned step = 1u << bit;
+            for (unsigned m = 0; m < step; ++m) {
+                uint64_t product = uint64_t(result[m]) * primes[start + bit];
+                result[step + m] = std::min<uint64_t>(product, prime);
+            }
+        }
+        return result;
+    }
+
+    SignatureIndex() {
+        const auto low = products(0), high = products(half);
+        std::array<uint16_t, size> order;
+        for (unsigned m = 0; m < size; ++m) order[m] = m;
+        std::sort(order.begin(), order.end(),
+                  [&](unsigned a, unsigned b) { return low[a] < low[b]; });
+        std::array<uint32_t, size> sorted;
+        for (unsigned i = 0; i < size; ++i) {
+            rank[order[i]] = i;
+            sorted[i] = low[order[i]];
+        }
+        for (unsigned m = 0; m < size; ++m) {
+            const auto limit = (prime - 1) / high[m];
+            const auto end = std::upper_bound(sorted.begin(), sorted.end(), limit);
+            offset[m+1] = offset[m] + static_cast<uint32_t>(end - sorted.begin());
+        }
+    }
+
+    uint32_t operator()(uint32_t mask) const {
+        return offset[mask >> half] + rank[mask & (size-1)];
+    }
+};
+
 static bool square(uint32_t x) {
     uint64_t y=x;
     for (int i=0; i<30; ++i) y=y*y%prime;
     return y==x;
+}
+
+// Evaluate independent cubic labels in lanes. Keeping the square state at
+// 32 bits lets a vectorizing compiler widen just the products.
+constexpr size_t label_block = 32;
+static void cubic_labels(const Row* rows, size_t count,
+                         uint32_t (&rhs)[label_block], uint32_t (&state)[label_block]) {
+    for (size_t j = 0; j < count; ++j) {
+        const uint64_t x = rows[j].x;
+        rhs[j] = (x*x%prime*x + 2*x + 14) % prime;
+        state[j] = rhs[j];
+    }
+    for (unsigned step = 0; step < 30; ++step) {
+        for (size_t j = 0; j < count; ++j) {
+            const uint64_t product = uint64_t(state[j]) * state[j];
+            const uint32_t folded = (product & prime) + (product >> 31);
+            state[j] = folded >= prime ? folded - prime : folded;
+        }
+    }
 }
 
 static uint32_t orbit_key(uint32_t x) {
@@ -138,6 +203,34 @@ static int orbit_timing(const std::vector<Row>& rows,uint32_t nonsquare) {
     return 0;
 }
 
+// Directed integer edges x -> q^2*x. Both ends are in the enumerated
+// smooth domain. Their order in the sorted list allows a monotone join.
+static int square_edges(std::vector<Row>& rows) {
+    std::sort(rows.begin(), rows.end(), [](Row a, Row b){ return a.x < b.x; });
+    std::vector<uint8_t> labels(rows.size());
+    uint32_t rhs[label_block], state[label_block];
+    for (size_t base = 0; base < rows.size(); base += label_block) {
+        size_t count = std::min(label_block, rows.size() - base);
+        cubic_labels(rows.data() + base, count, rhs, state);
+        for (size_t j = 0; j < count; ++j) labels[base+j] = rhs[j] == state[j];
+    }
+    std::puts("prime,nonlift_nonlift,nonlift_lift,lift_nonlift,lift_lift");
+    for (uint32_t q : primes) {
+        std::array<uint32_t,4> counts{};
+        size_t dst = 0;
+        for (size_t src = 0; src < rows.size(); ++src) {
+            uint64_t x = uint64_t(q)*q*rows[src].x;
+            if (x >= prime) break;
+            while (dst < rows.size() && rows[dst].x < x) ++dst;
+            if (dst == rows.size() || rows[dst].x != x ||
+                rows[dst].parity != rows[src].parity) return 1;
+            ++counts[2*labels[src] + labels[dst]];
+        }
+        std::printf("%u,%u,%u,%u,%u\n", q, counts[0], counts[1], counts[2], counts[3]);
+    }
+    return 0;
+}
+
 int main(int argc,char **argv) {
     std::vector<Row> rows{{1,0}};
     uint32_t nonsquare = 0;
@@ -156,22 +249,43 @@ int main(int argc,char **argv) {
     }
     if (argc==2 && std::strcmp(argv[1],"orbits")==0) return orbit_census(rows,nonsquare);
     if (argc==2 && std::strcmp(argv[1],"timing")==0) return orbit_timing(rows,nonsquare);
-    if (argc!=1) return 1;
+    if (argc == 2 && std::strcmp(argv[1], "square-edges") == 0) return square_edges(rows);
+    const bool holdout = argc == 2 && std::strcmp(argv[1], "signature-holdout") == 0;
+    if (argc != 1 && !holdout) return 1;
     std::sort(rows.begin(),rows.end(),[](Row a,Row b){return a.x<b.x;});
-    std::vector<std::array<uint32_t,2>> buckets(1u<<primes.size());
+    // first[b] is the first row with (x >> 12) >= b. The last entry is
+    // rows.size(), including when the last bucket is empty.
+    constexpr unsigned shift = 12;
+    std::vector<uint32_t> first((prime >> shift) + 2);
+    size_t next = 0;
+    for (size_t b = 0; b < first.size(); ++b) {
+        while (next < rows.size() && (rows[next].x >> shift) < b) ++next;
+        first[b] = static_cast<uint32_t>(next);
+    }
+    SignatureIndex signature;
+    std::vector<std::array<uint32_t,2>> buckets(signature.offset.back());
     uint32_t lifts=0, overlap=0, overlap_lifts=0, errors=0, mixed=0, used=0, mixed_rows=0;
-    for (size_t i=0; i<rows.size(); ++i) {
-        auto [x,mask]=rows[i];
-        if (i && x==rows[i-1].x) return 1;
-        uint32_t rhs=(uint64_t(x)*x%prime*x+2ull*x+14)%prime;
-        bool label=square(rhs);
-        lifts+=label;
-        ++buckets[mask][label];
-        auto it=std::lower_bound(rows.begin(),rows.end(),rhs,[](Row a,uint32_t b){return a.x<b;});
-        if (it!=rows.end() && it->x==rhs) {
-            if (label != (__builtin_parity(it->parity & nonsquare)==0)) return 1;
-            ++overlap;
-            overlap_lifts+=label;
+    uint32_t residues[label_block], states[label_block];
+    for (size_t base = 0; base < rows.size(); base += label_block) {
+        const size_t count = std::min(label_block, rows.size() - base);
+        cubic_labels(rows.data() + base, count, residues, states);
+        for (size_t lane = 0; lane < count; ++lane) {
+            const size_t i = base + lane;
+            auto [x,mask] = rows[i];
+            if (i && x == rows[i-1].x) return 1;
+            const uint32_t rhs = residues[lane];
+            const bool label = states[lane] == rhs;
+            lifts+=label;
+            ++buckets[signature(mask)][label];
+            const auto bucket = rhs >> shift;
+            auto end = rows.begin() + first[bucket+1];
+            auto it = std::lower_bound(rows.begin() + first[bucket], end, rhs,
+                                       [](const Row& a, uint32_t b) { return a.x < b; });
+            if (it!=end && it->x==rhs) {
+                if (label != (__builtin_parity(it->parity & nonsquare)==0)) return 1;
+                ++overlap;
+                overlap_lifts+=label;
+            }
         }
     }
     uint32_t pure_negatives=0, pure_positives=0;
@@ -183,6 +297,19 @@ int main(int argc,char **argv) {
         errors+=std::min(b[0],b[1]);
     }
     if (rows.size()!=3846525 || lifts!=1924024) return 1;
+    if (holdout) {
+        // Sorting the counters after the full census discards the signature
+        // identity but preserves the group sizes and both label counts.
+        std::sort(buckets.begin(), buckets.end());
+        std::puts("nonlifts,lifts,signatures");
+        for (size_t i = 0; i < buckets.size();) {
+            size_t j = i + 1;
+            while (j < buckets.size() && buckets[j] == buckets[i]) ++j;
+            std::printf("%u,%u,%zu\n", buckets[i][0], buckets[i][1], j-i);
+            i = j;
+        }
+        return 0;
+    }
     std::puts("coordinates,lifts,signatures,mixed_signatures,coordinates_in_mixed,pure_negative_rows,pure_positive_rows,minimum_errors,smooth_rhs,smooth_rhs_lifts");
     std::printf("%zu,%u,%u,%u,%u,%u,%u,%u,%u,%u\n",rows.size(),lifts,used,mixed,mixed_rows,pure_negatives,pure_positives,errors,overlap,overlap_lifts);
 }
