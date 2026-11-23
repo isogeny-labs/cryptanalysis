@@ -43,6 +43,13 @@ def check(xs):
         assert int(row['upto_finite'])==len(union-{None})
         assert int(row['exact_has_infinity'])==(None in sums)
 
+    # Include the empty sum explicitly when translating a radius-four ball.
+    union.add(None)
+    shifted=union | {add(a,b) for a in signed[:2] for b in union}
+    raw=subprocess.check_output([sys.argv[1],"translate",str(xs[0])],
+        input="".join(f"{x}\n" for x in xs),text=True)
+    assert raw.splitlines()[-1]==f"translated_union_finite,{len(shifted-{None})}"
+
     counts = Counter(vectors.values())
     identity = counts.pop(None)
     histogram = Counter(counts.values())
