@@ -150,7 +150,7 @@ jobs:
         run: |
           set -euo pipefail
           timeout 3900 bash cryptanalysis/experiments/chained-transfer-public-target/ci_fixed_chain/check-02.sh crypto "$RUNNER_TEMP/n4-fixed-chain-output"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: always()
         with:
           name: fixed-chain-${{ github.event.pull_request.head.sha || github.sha }}
