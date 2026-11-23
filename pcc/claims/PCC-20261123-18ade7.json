@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T22:27:27Z",
+ "id": "PCC-20261123-18ade7",
+ "kind": "measurement",
+ "producer": {
+  "commit": "44c6fb429c0fa656db06154833c763114107835e",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/rust-phase-142-long.csv",
+    "sha256": "ddfd3c81e48fea95b159d19d2d716cd176be6558ae9478dc4021d57b1e6a3dca"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/rust-phase-142.csv",
+    "sha256": "7058fbb3994dc0925797c0a7cbec7bceb8a204913a2c715785fc6147907b4249"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/rust-batch-width.rs",
+    "sha256": "d677248f2223e389b68eac1e2be5439ba7cf8a5482621ecb39d40a213a920da6"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "For the 142-point miss-only arithmetic and membership benchmark on arm64, the longer balanced panel measured median paired speedups of 1.256x for batch arithmetic, 1.000x for lookup, and 1.165x combined."
+}

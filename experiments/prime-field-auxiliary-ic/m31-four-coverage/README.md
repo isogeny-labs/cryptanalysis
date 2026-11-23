@@ -180,3 +180,17 @@ MatchedEncoding.lean replays 15 pairs from the archived E1 panel. Each pair agre
 | Torus7 | 5 | 0 | 1.558 | 1.320–1.677 |
 
 The archived profiler brackets the entire decomposition call. Its attempted-query counter also includes points at infinity that skip decomposition. Across the direct records, median decomposition time per attempted query was 1,396 ns at width 112 (five records), 1,487 ns at width 116 (twelve), and 1,617 ns at width 142 (five). These denominators permit a throughput comparison. A breakdown between batch arithmetic, lookup and relation handling requires separate timing. The table summarizes an earlier source revision and predates the four-lane arithmetic change.
+
+### Arithmetic and sorted membership at width 142
+
+The local benchmark fills 142 slots with a single point, adds a table of 71 signed point pairs, then counts x-coordinates in a separate sorted table of 71 keys. The same 32 seeded inputs exercise both revisions. Scalar addition checks every batch before timing. All searches missed, so the lookup phase measures a full scan. Lookup alone reads precomputed sums. Combined timing searches fresh sums. The standalone arithmetic time includes the input fill.
+
+Compile as in the operand-shape panel. Run `phases alc 2048`, permuting the three phase letters (arithmetic, lookup, combined) in all six orders twice and reversing revision order on alternating rounds and cycles. Each timing covers 65,536 batches. The table gives launch medians in ns/batch and median paired ratios on the Apple M4 Pro. PCC-20261123-18ade7 records the timings. [pcc:unverified]
+
+| Phase | Fused parent | Four lanes | Paired parent / four lanes |
+|---|---:|---:|---:|
+| Arithmetic | 838.85 | 669.45 | 1.256 |
+| Sorted membership | 379.26 | 378.56 | 1.000 |
+| Combined | 1216.48 | 1049.32 | 1.165 |
+
+The combined phase improved in 12 of 12 longer rounds. Median within-round (arithmetic + lookup) / combined was 0.997 for the parent and 1.000 for four lanes. The initial 24-round screen used 128 repetitions, exhibited much wider timing variation, and gave a 1.385 median paired combined ratio. Both raw panels are retained separately. The independent keys, repeated warm inputs and full miss scans limit transfer to a live workload. These timings exclude hit handling, setup, and outer-loop work.

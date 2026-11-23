@@ -86,9 +86,76 @@ fn operand_shapes(curve: Curve<31>, state: &mut u64) {
     }
 }
 
+// Independent public keys isolate the cost of a full membership scan.
+fn count_hits(points: &[Option<Point>], keys: &[u64]) -> usize {
+    points
+        .iter()
+        .flatten()
+        .filter(|p| keys.binary_search(&p.x()).is_ok())
+        .count()
+}
+
+fn phases(curve: Curve<31>, state: &mut u64, order: &str) {
+    const WIDTH: usize = 142;
+    let reps: usize = std::env::args().nth(3).map_or(128, |s| s.parse().unwrap());
+    assert!(reps > 0);
+    let mut scratch = BatchScratch::default();
+    let mut keys: Vec<_> = (0..WIDTH / 2)
+        .map(|_| sample_point(curve, state).unwrap().x())
+        .collect();
+    keys.sort_unstable();
+    let mut right = Vec::new();
+    for _ in 0..WIDTH / 2 {
+        let p = sample_point(curve, state).unwrap();
+        right.extend([Some(p), Some(curve.negate(p).unwrap())]);
+    }
+    let mut cases = Vec::new();
+    let mut result = vec![None; WIDTH];
+    for _ in 0..32 {
+        let p = sample_point(curve, state);
+        let sums: Vec<_> = right.iter().map(|&q| curve.add(p, q).unwrap()).collect();
+        result.fill(p);
+        curve.batch_add_inner(&mut result, &right, &mut scratch);
+        assert_eq!(result, sums);
+        cases.push((p, sums));
+    }
+    let hits: usize = cases.iter().map(|(_, sums)| count_hits(sums, &keys)).sum();
+    for phase in order.chars() {
+        let start = Instant::now();
+        let mut found = 0;
+        for _ in 0..reps {
+            for (p, sums) in &cases {
+                match phase {
+                    'a' | 'c' => {
+                        result.fill(black_box(*p));
+                        curve.batch_add_inner(&mut result, black_box(&right), &mut scratch);
+                        let output = black_box(&result);
+                        if phase == 'c' {
+                            found += count_hits(output, black_box(&keys));
+                        }
+                    }
+                    'l' => found += count_hits(black_box(sums), black_box(&keys)),
+                    _ => panic!("unknown phase"),
+                }
+            }
+        }
+        let ns = start.elapsed().as_nanos() as f64 / (reps * cases.len()) as f64;
+        assert_eq!(found, if phase == 'a' { 0 } else { reps * hits });
+        println!("{phase},{hits},{ns:.3}");
+    }
+}
+
 fn main() {
     let curve = Curve::<31>::new(2, 14).unwrap();
     let mut state = 0x2718281828459045;
+    if std::env::args().nth(1).as_deref() == Some("phases") {
+        phases(
+            curve,
+            &mut state,
+            &std::env::args().nth(2).expect("phase order"),
+        );
+        return;
+    }
     if std::env::args().nth(1).as_deref() == Some("shapes") {
         operand_shapes(curve, &mut state);
         return;
