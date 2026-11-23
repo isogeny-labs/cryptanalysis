@@ -11,6 +11,14 @@ static uint32_t mul(uint32_t x, uint32_t y) {
     uint64_t v = (uint64_t)x*y;
     return add((uint32_t)(v>>31), (uint32_t)v & P);
 }
+static uint32_t inverse_power(uint32_t value) {
+    uint32_t inv=1;
+    for (uint32_t e=P-2;e;e>>=1) {
+        if (e&1) inv=mul(inv,value);
+        value=mul(value,value);
+    }
+    return inv;
+}
 /* Return the affine x of [2^count]H only when it is finite with y = 0.
    Input x is the abscissa of an on-curve H on y²=x³+a*x²+b*x. */
 uint32_t m31_kernel_x(uint32_t x, uint32_t a, uint32_t b, unsigned count) {
@@ -24,10 +32,40 @@ uint32_t m31_kernel_x(uint32_t x, uint32_t a, uint32_t b, unsigned count) {
     }
     if (x && add(add(mul(x,x),mul(a,mul(x,z))),mul(b,mul(z,z)))) return P;
     if (!x || z==1) return x;
-    uint32_t inv=1;
-    for (uint32_t e=P-2;e;e>>=1) {
-        if (e&1) inv=mul(inv,z);
-        z=mul(z,z);
+    return mul(x,inverse_power(z));
+}
+
+/* Extended Euclidean inverse on nonzero canonical inputs. All coefficients
+   are bounded in magnitude by P and intermediates use signed 64-bit words. */
+static uint32_t inverse_euclid(uint32_t value) {
+    uint32_t a = P, b = value;
+    int64_t u = 0, v = 1;
+    while (b) {
+        uint32_t q = a/b, rem = a-q*b;
+        int64_t next = u-(int64_t)q*v;
+        a=b; b=rem; u=v; v=next;
     }
-    return mul(x,inv);
+    return (uint32_t)(u<0 ? u+P : u);
+}
+
+static uint32_t affine(uint32_t x, uint32_t y, uint32_t a, uint32_t b,
+                       unsigned count, int euclid) {
+    for (unsigned i=0; i<count; ++i) {
+        if (!y) return P;
+        uint32_t xx=mul(x,x), ax=mul(a,x);
+        uint32_t numerator=add(add(xx,add(xx,xx)),add(b,add(ax,ax)));
+        uint32_t denominator=add(y,y);
+        uint32_t slope=mul(numerator,euclid ? inverse_euclid(denominator) : inverse_power(denominator));
+        uint32_t next=sub(sub(mul(slope,slope),a),add(x,x));
+        y=sub(mul(slope,sub(x,next)),y);
+        x=next;
+    }
+    return y ? P : x;
+}
+
+uint32_t m31_affine_power(uint32_t x, uint32_t y, uint32_t a, uint32_t b, unsigned count) {
+    return affine(x,y,a,b,count,0);
+}
+uint32_t m31_affine_euclid(uint32_t x, uint32_t y, uint32_t a, uint32_t b, unsigned count) {
+    return affine(x,y,a,b,count,1);
 }

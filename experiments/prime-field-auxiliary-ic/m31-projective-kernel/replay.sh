@@ -11,4 +11,8 @@ cc -O3 -shared -fPIC -DM31_LANES=16 m31-striped-inverse/stripes.c "$d/layer.o" "
 cc -O3 -flto -mcpu=native -shared -fPIC m31-packed-lift/compact.c m31-native-product/archived-lifts/lift.c m31-native-product/product.c -o "$d/lift.so"
 cc -O3 -shared -fPIC m31-packed-fiber/distinct.c m31-batched-fiber/fold.c m31-projective-kernel/kernel.c -o "$d/distinct.so"
 c++ -O3 -std=c++17 -shared -fPIC m31-batch-smooth/independent.cpp -o "$d/filter.so"
-uv run --isolated --with sympy --python 3.13 python m31-projective-kernel/panel.py "$d/lift.so" "$d/width16.so" "$d/width16.so" "$d/filter.so" "$d/distinct.so"
+case "${1:-panel}" in
+    panel|controls|stages) panel=${1:-panel} ;;
+    *) exit 2 ;;
+esac
+uv run --isolated --with sympy --python 3.13 python "m31-projective-kernel/$panel.py" "$d/lift.so" "$d/width16.so" "$d/width16.so" "$d/filter.so" "$d/distinct.so"
