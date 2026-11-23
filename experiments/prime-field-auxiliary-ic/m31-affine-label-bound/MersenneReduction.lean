@@ -81,4 +81,38 @@ theorem laneCorrect (x : UInt64) : (laneReduce x).toNat = x.toNat % p := by
     rfl
   · simp
 
+/-- Centered representatives lie between -radius and radius, inclusive. -/
+abbrev radius : ℤ := 1073741823
+abbrev pairBias : ℤ := 2147483647 * 1073741824
+
+/-- Both signs of the product attain this bound. -/
+private theorem centeredProductBound (a b : ℤ) (ha : |a| ≤ radius) (hb : |b| ≤ radius) :
+    |a*b| ≤ radius * radius := by
+  rw [abs_mul]
+  exact mul_le_mul ha hb (abs_nonneg b) (by decide)
+
+/-- A fixed multiple of p moves every two-product sum into the one-fold interval. -/
+theorem centeredPair (a b c d : ℤ) (ha : |a| ≤ radius) (hb : |b| ≤ radius)
+    (hc : |c| ≤ radius) (hd : |d| ≤ radius) :
+    let z := a*b + c*d + pairBias
+    0 ≤ z ∧ z < 2^62-1 ∧
+      (canonical (fold z.toNat) : ℤ) = (a*b + c*d) % (p : ℤ) := by
+  dsimp only
+  obtain ⟨lab, uab⟩ := abs_le.mp (centeredProductBound a b ha hb)
+  obtain ⟨lcd, ucd⟩ := abs_le.mp (centeredProductBound c d hc hd)
+  have lo : 0 ≤ a*b + c*d + pairBias := by unfold radius at *; unfold pairBias; omega
+  have hi : a*b + c*d + pairBias < 2^62-1 := by unfold radius at *; unfold pairBias; omega
+  refine ⟨lo, hi, ?_⟩
+  rw [oneFold _ (by omega), Int.natCast_mod, Int.toNat_of_nonneg lo]
+  change (a*b + c*d + 1073741824*(p : ℤ)) % (p : ℤ) = _
+  exact Int.add_mul_emod_self_right ..
+
+/-- Three centered products already span more than the whole one-fold interval.
+The two extrema are attained by choosing all factors equal to radius and
+negating the first factor in each product for the lower extremum. -/
+theorem threeCenteredExtrema (bias : ℤ) :
+    ¬ (0 ≤ bias - 3*radius^2 ∧ bias + 3*radius^2 < 2^62-1) := by
+  unfold radius
+  omega
+
 end M31Reduction
