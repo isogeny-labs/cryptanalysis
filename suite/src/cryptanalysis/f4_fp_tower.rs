@@ -2571,6 +2571,20 @@ mod tests {
     }
 
     #[test]
+    fn zero_dimensional_needs_a_pure_power_per_free_variable() {
+        let y0 = mono(0, [1, 0, 0, 0]);
+        let y1 = mono(0, [0, 1, 0, 0]);
+        assert!(zero_dimensional(&[y0, y1], 2));
+        assert!(zero_dimensional(&[], 0));
+        assert!(!zero_dimensional(&[y0], 2));
+        assert!(zero_dimensional(&[y0], 1));
+        assert!(
+            !zero_dimensional(&[mono(1, [0; MAX_FREE])], 1),
+            "a tower monomial is not a free power"
+        );
+    }
+
+    #[test]
     fn the_degree_bound_stops_and_reports() {
         use rand::SeedableRng;
         let mut rng = rand::rngs::StdRng::seed_from_u64(5);
