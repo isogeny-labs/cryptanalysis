@@ -12,6 +12,52 @@ struct Row { uint32_t x, parity; };
 constexpr std::array<uint32_t,24> primes = {2,3,5,7,11,13,17,19,23,29,31,37,
                                              41,43,47,53,59,61,67,71,73,79,83,89};
 
+// A parity mask is realizable iff the product of its selected primes is
+// below prime. For each upper half-mask, the allowed lower half-masks form
+// a prefix when ordered by product. Concatenate those prefixes.
+struct SignatureIndex {
+    static constexpr unsigned half = 12;
+    static constexpr unsigned size = 1u << half;
+    static_assert(primes.size() == 2 * half);
+    std::array<uint16_t, size> rank;
+    std::array<uint32_t, size + 1> offset{};
+
+    static std::array<uint32_t, size> products(unsigned start) {
+        std::array<uint32_t, size> result;
+        result[0] = 1;
+        for (unsigned bit = 0; bit < half; ++bit) {
+            unsigned step = 1u << bit;
+            for (unsigned m = 0; m < step; ++m) {
+                uint64_t product = uint64_t(result[m]) * primes[start + bit];
+                result[step + m] = std::min<uint64_t>(product, prime);
+            }
+        }
+        return result;
+    }
+
+    SignatureIndex() {
+        const auto low = products(0), high = products(half);
+        std::array<uint16_t, size> order;
+        for (unsigned m = 0; m < size; ++m) order[m] = m;
+        std::sort(order.begin(), order.end(),
+                  [&](unsigned a, unsigned b) { return low[a] < low[b]; });
+        std::array<uint32_t, size> sorted;
+        for (unsigned i = 0; i < size; ++i) {
+            rank[order[i]] = i;
+            sorted[i] = low[order[i]];
+        }
+        for (unsigned m = 0; m < size; ++m) {
+            const auto limit = (prime - 1) / high[m];
+            const auto end = std::upper_bound(sorted.begin(), sorted.end(), limit);
+            offset[m+1] = offset[m] + static_cast<uint32_t>(end - sorted.begin());
+        }
+    }
+
+    uint32_t operator()(uint32_t mask) const {
+        return offset[mask >> half] + rank[mask & (size-1)];
+    }
+};
+
 static bool square(uint32_t x) {
     uint64_t y=x;
     for (int i=0; i<30; ++i) y=y*y%prime;
@@ -186,7 +232,8 @@ int main(int argc,char **argv) {
         while (next < rows.size() && (rows[next].x >> shift) < b) ++next;
         first[b] = static_cast<uint32_t>(next);
     }
-    std::vector<std::array<uint32_t,2>> buckets(1u<<primes.size());
+    SignatureIndex signature;
+    std::vector<std::array<uint32_t,2>> buckets(signature.offset.back());
     uint32_t lifts=0, overlap=0, overlap_lifts=0, errors=0, mixed=0, used=0, mixed_rows=0;
     uint32_t residues[label_block], states[label_block];
     for (size_t base = 0; base < rows.size(); base += label_block) {
@@ -199,7 +246,7 @@ int main(int argc,char **argv) {
             const uint32_t rhs = residues[lane];
             const bool label = states[lane] == rhs;
             lifts+=label;
-            ++buckets[mask][label];
+            ++buckets[signature(mask)][label];
             const auto bucket = rhs >> shift;
             auto end = rows.begin() + first[bucket+1];
             auto it = std::lower_bound(rows.begin() + first[bucket], end, rhs,

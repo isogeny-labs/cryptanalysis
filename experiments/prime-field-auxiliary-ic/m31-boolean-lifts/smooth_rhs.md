@@ -33,3 +33,18 @@ On one Apple M4 Pro with Apple Clang 21.0.0, all six orders of the three builds 
 The median of the six within-block original/final wall-time ratios was 2.655. All 18 outputs matched smooth_rhs.csv byte for byte. A separate untimed cross-check compared each new label, lookup membership and matched row against the scalar square test and full-range binary search over all 3846525 coordinates. Run the default executable after compiling smooth_rhs.cpp with `clang++ -std=c++17 -O3 -mcpu=native`. The raw block and position data are in smooth_rhs_directory_timing.csv.
 
 Directory.lean checks the sorted bucket boundaries, membership equivalence and last offset index. The existing ../m31-field-ffi/Fold.lean checks the field product identity and word bounds. This measures the complete public smoothness census on one shared host. Collector runtime and other processor architectures are outside this measurement.
+
+## Packing the parity-signature counters
+
+A smooth integer x has a parity bit for each of the 24 primes in the census. Multiplying just the primes with odd exponents gives a squarefree divisor of x. Conversely, that squarefree product itself realizes the signature whenever it is below p. Exactly 266975 signatures meet this condition.
+
+The index splits each mask into two 12-bit halves. It ranks the low halves by squarefree product. For a given upper product h, all allowed low halves form the prefix with product at most floor((p−1)/h). Concatenating those prefixes gives a unique slot per realizable signature. The rank and offset arrays use 24580 bytes, and the counters use 2135800 bytes. The former direct array used 134217728 bytes. SignatureIndex.lean proves the prefix threshold, saturation property and injectivity of the offset-plus-rank construction.
+
+A fresh M4 Pro comparison used 30f4fdf81 as the control with the same directory lookup and batched arithmetic. Eight alternating-order pairs timed the full default census, including the new index construction. Both binaries used Apple Clang 21.0.0 with `-O3 -mcpu=native -std=c++17`. Wall time includes invocation through `/usr/bin/time -lp`; peak resident size and user/system CPU come from that utility. The in-process counters do not measure filesystem cache.
+
+| Complete process | Median wall (s) | Median CPU (s) | Median peak RSS (bytes) |
+|---|---:|---:|---:|
+| Direct signature array | 0.406533 | 0.39 | 200507392 |
+| Packed signature array | 0.381257 | 0.37 | 68526080 |
+
+All 16 outputs matched the archived CSV. The median within-pair speedup was 1.070×. A separate exhaustive check used unsigned 128-bit squarefree products to classify all 16777216 masks and checked the compiled index's feasibility boundary, absence of collisions, and use of every slot. An address/undefined-behavior sanitizer run reproduced the same CSV. The raw process measurements are in signature_index_timing.csv. These results apply to the public census.
