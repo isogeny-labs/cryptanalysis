@@ -1,0 +1,47 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T21:56:37Z",
+ "id": "PCC-20261123-4b7100",
+ "kind": "theorem",
+ "producer": {
+  "commit": "eed59fb1ba7da38724fd8c2b0bf69546cf0979b5",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "4b46975c99253eb9210851de4bd466f64d8014d479090b11e8c46ca06a3f836e",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/WalkFour.lean",
+   "theorem": "M31FourCoverage.Walk.spectral_loss"
+  },
+  {
+   "decl_sha256": "f387ad21ca70a8e9be7e97ab8306145f4ca8787531db5f96019fcb8f4cca0617",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/WalkFour.lean",
+   "theorem": "M31FourCoverage.Walk.tv_thresholds"
+  },
+  {
+   "decl_sha256": "dc6a4d3b33accd722e2118e43753289ace816559641c44e731944bb9287e6416",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/ArcBound.lean",
+   "theorem": "M31FourCoverage.ArcBound.loss"
+  },
+  {
+   "decl_sha256": "1990f576bf2f99f376e27aa7cf8de9411c8fe424cf5b0f7f1e49e0517e85688e",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/ArcBound.lean",
+   "theorem": "M31FourCoverage.ArcBound.layers"
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/walk-four.csv",
+    "sha256": "279bacae31008472d0b598caca2e57fcbb05050ae9a30269e9d424a97b5e0899"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "Conditional on the frozen four-step histogram, the 390-step-choice symmetric M31 graph has nontrivial eigenvalues of magnitude below 0.9641. The transitive-chain L2 bound implies total variation at most 1/100 by 142 steps."
+}

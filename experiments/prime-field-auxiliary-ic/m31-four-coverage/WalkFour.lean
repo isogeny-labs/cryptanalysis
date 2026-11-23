@@ -36,4 +36,32 @@ theorem histogram_totals :
     (bins.map (fun (k,n) => n*(k*order-paths))).sum = 31711602804266967032 := by
   decide +kernel
 
+-- Upper bound the mass in an arc by paying k per slot and charging all
+-- excess above k, even at points outside the arc.
+private def outside (j : Nat) : Nat :=
+  let cap := 1 + 2*((order*j-1)/128)
+  let k := if j ≤ 4 then 48 else if j ≤ 22 then 24 else if j = 23 then 12 else 0
+  paths - (cap*k + (bins.map (fun (m,n) => n*(m-k))).sum)
+
+private def price (j : Nat) : Nat :=
+  let u := 3*j
+  let den := 6*128^3
+  2000000*(6*128^2*u-u^3)^2 / den^2
+
+theorem spectral_loss :
+    ((List.range 24).map (fun j => (price (j+1) - price j)*outside (j+1))).sum =
+      3147515720318076 ∧
+    ((List.range 24).all (fun j => price j ≤ price (j+1))) = true := by
+  decide +kernel
+
+-- Integer comparisons after squaring the L2 to TV inequality twice.
+private def meets (steps denominator : Nat) : Bool :=
+  let moment := order * 2640817050634 - paths^2
+  moment^2 * 1665574523306827^(steps-4) * denominator^4 ≤
+    16 * paths^4 * 1927867500000000^(steps-4)
+
+theorem tv_thresholds :
+    meets 54 4 && meets 142 100 && meets 205 1000 && meets 394 1000000 := by
+  decide +kernel
+
 end M31FourCoverage.Walk
