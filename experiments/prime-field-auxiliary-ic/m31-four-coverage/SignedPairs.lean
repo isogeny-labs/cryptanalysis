@@ -76,4 +76,10 @@ theorem scan_spec (xs : List (Fin 4 × K)) (a : Lanes K) (ha : ∀ j, a j ≠ 0)
 
 end Scan
 
+/-- In the finite-input positive control, subtracting either of two distinct
+representatives from their sum returns the other one. -/
+theorem two_positive_slots {G : Type*} [AddCommGroup G] (a b : G) (h : a ≠ b) :
+    (a+b)+(-a) = b ∧ (a+b)+(-b) = a ∧ (a+b)+(-a) ≠ (a+b)+(-b) := by
+  simpa [add_assoc, add_left_comm, add_comm] using Ne.symm h
+
 end M31SignedPairs

@@ -253,8 +253,18 @@ fn coordinate_lookup(curve: Curve<31>, path: &str, round: u64) {
     run(round % 2 != 0);
 }
 
+include!("setup-batches.rs");
+
 fn main() {
     let curve = Curve::<31>::new(2, 14).unwrap();
+    if std::env::args().nth(1).as_deref() == Some("setup-batches") {
+        setup_panel(
+            curve,
+            &std::env::args().nth(2).unwrap(),
+            std::env::args().nth(3).unwrap().parse().unwrap(),
+        );
+        return;
+    }
     if std::env::args().nth(1).as_deref() == Some("coordinate-lookup")
         || (cfg!(signed_pairs) && std::env::args().nth(1).as_deref() == Some("signed-pairs"))
     {

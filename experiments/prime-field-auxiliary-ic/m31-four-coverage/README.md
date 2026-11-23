@@ -234,3 +234,20 @@ The original 663fc4fb5 arithmetic with sorted u32 lookup and the a82976381-based
 Compile the common harness with the native flags above against each indicated field.rs revision. Enable --cfg signed_pairs only on the newer build. For seeds 61 through 84, run coordinate-lookup on the original build and signed-pairs on the newer build, passing the same key file, seed and 2,048 repetitions. Switch build order after every two seeds and method order inside each build on each seed. PCC-20261123-e90f07 records the measurements. [pcc:unverified]
 
 SignedPairs.lean now proves the four-lane prefix and reverse passes as a recursive field-arithmetic model. Starting from any four nonzero lane products, one inversion recovers all four final reciprocals. For an arbitrary sequence of lane tags and denominators, the reverse traversal restores the reciprocals of the starting lanes and returns each nonzero denominator's reciprocal in input order, marking zeros for exceptional addition. The theorem includes arbitrarily interleaved, empty and unequal-length lanes. The Rust buffer implementation is checked against scalar addition in the harness.
+
+### Starting from the 71 abscissas and counting finite hits
+
+Each timed invocation lifts all 71 ordered Torus7 keys, prepares its tables, creates and drops working storage, and processes the indicated number of 142-point batches. Both builds begin with identical keys and pre-generated left operands. Key generation, program startup and the scalar oracle are outside the timer. Repeated invocations can reuse CPU caches and the allocator. In the positive mix the first and every eighth subsequent batch takes the sum of two distinct representatives as the left operand. SignedPairs.two_positive_slots proves why the two corresponding negative slots return those representatives. The benchmark checks the complete hit count against independent scalar additions.
+
+| Batches per setup | Median paired speedup, random | Median paired speedup, positive mix | Positive hits per invocation |
+|---:|---:|---:|---:|
+| 0 | 1.008 | 1.008 | 0 |
+| 1 | 1.149 | 1.156 | 2 |
+| 4 | 1.427 | 1.390 | 2 |
+| 16 | 1.971 | 1.704 | 4 |
+| 64 | 1.854 | 1.935 | 16 |
+| 256 | 2.007 | 1.943 | 64 |
+
+The positive mix favored specialization on 20 of 24 seeds at both one and 256 batches. At 256 positive-mix batches the interquartile range of paired ratios was 1.757–2.172. Random one-batch timings had wider dispersion (0.854–2.081). The smallest measured nonempty workload favors specialization by the median. Each scan counts all matching coordinates and always finishes the batch. Relation creation and early termination are outside the timed work.
+
+Use the two builds from the preceding anchor comparison in setup-batches mode, passing the reconstructed keys and seeds 109–132. Alternate build order by seed. Each build rotates the order of the six workload sizes by seed and times 4096/(batches+16) invocations using integer division. The earlier setup-checked-screen.csv uses seeds 85–108 and checked point negation during original table construction. The reported setup-batches.csv uses the internal negation used by the archived constructor. PCC-20261123-72ce02 records the measurement. [pcc:unverified]
