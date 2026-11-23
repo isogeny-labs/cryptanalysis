@@ -328,3 +328,17 @@ The optional arm64 path packs 71 ordinary denominators and one padding word. A z
 On the Apple M4 Pro the initial 24-round denominator-only panel measured scalar/vector ratios of 0.958 for four lanes and 0.997 for eight. A three-arm screen with the vector affine finish gave 1.004 for the full variant, with 12 wins in 24. A longer comparison on 16 new seeds measured median 648.41 ns for the scalar specialized path and 611.10 ns for the full vector variant per 142-point batch, paired ratio 1.054 and 15 wins. With table generation included, 24 fresh positive-control rounds gave ratios of 0.990 at one batch and 1.010 at 256 (15 wins at 256). At 256 random batches the ratio was 1.013 with 14 wins. All trace trials used the same eight-lane portable coordinate generator and counted full scans. The scalar signed-pair path remains the default.
 
 Compile the common harness with a82976381 field.rs, native flags and --cfg signed_pairs. Enable --cfg neon_products for four lanes, add --cfg neon_eight for eight, and add --cfg neon_finish for the packed affine finish. The first two panels use the six possible build orders four times with seeds 181–204 and 205–228, respectively. The longer confirmation alternates scalar/full order over seeds 229–244 with 4,096 repetitions. The trace-batches comparison alternates build order over seeds 245–268. PCC-20261123-954bfd records local timings. [pcc:unverified]
+
+### What smoothness predicts in the Torus7 fiber
+
+A trace coordinate x represents z through x = z + z⁻¹. Applying g(x) = x²−2 doubles the exponent of z. TorusOrder.lean proves that reaching −2 after n steps gives z exact order 2^(n+1) in any field of characteristic different from two. It also checks the archived terminal 340921998 reaches −2 after 23 more steps and specializes the result to the entire seven-step fiber. Hence every represented element has the same power-of-two order, including the elements behind all 71 base labels and all 57 twist labels.
+
+For integer smoothness, torus7-smooth.gp factors each canonical representative x between 0 and p−1. The panel uses the traces of powers 1,3,…,63 of the original torus element as seeds and applies g seven times to obtain 32 distinct terminals. All 4,096 roots passed the 30-step order test. A separate Python replay reconstructed each fiber by successive square roots and verified every count by trial division through the largest prime at each bound.
+
+| Largest allowed prime factor | Base lifts among smooth x, original fiber | Base lifts among smooth x, 31 other fibers | Base lifts among remaining x, 31 other fibers |
+|---:|---:|---:|---:|
+| 256 | 1/2 | 9/29 | 1983/3939 |
+| 1024 | 3/8 | 88/190 | 1904/3778 |
+| 4096 | 7/16 | 246/517 | 1746/3451 |
+
+None of the three bounds enriched base lifts on the additional fibers. The deterministic panel measures lift frequency. It supplies no relation-yield or runtime estimate. Run gp -fq torus7-smooth.gp to reproduce the per-fiber counts. PCC-20261123-e7071a records the census. [pcc:unverified]
