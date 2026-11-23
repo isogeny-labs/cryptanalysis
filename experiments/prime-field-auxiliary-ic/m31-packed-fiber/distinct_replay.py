@@ -7,6 +7,10 @@ import subprocess
 import sys
 from time import perf_counter_ns, process_time_ns
 
+if sys.argv[6:] not in ([], ["--anchor"]) or len(sys.argv) < 6:
+    raise SystemExit("usage: distinct_replay.py LIFT LAYER FIBER FILTER DISTINCT [--anchor]")
+anchor_panel = sys.argv[6:] == ["--anchor"]
+
 import replay
 
 if not __debug__:
@@ -52,14 +56,24 @@ maps = [dict(r=0, A=0, B=4)]
 assert replay.check_fiber(duplicate, maps, 4, replay.p)
 assert not distinct_fiber(duplicate, maps, 4, replay.p)
 
+def anchor_setup():
+    return replay.baseline["fixture"]["run"]("lift_trial")
+
+
+anchor_hooks = dict(_layer_walk=replay.fiber["ref"]["reference"],
+                    _append_reciprocals=replay.fiber["old_inv"],
+                    _check_sibling_fiber=replay.fiber["old_check"])
+reference_arm = (("anchor", control, anchor_hooks, anchor_setup) if anchor_panel
+                 else ("packed", control, replay.packed, replay.packed_setup))
+arms = [reference_arm, ("distinct", candidate, replay.packed, replay.packed_setup)]
 writer = csv.writer(sys.stdout, lineterminator="\n")
-writer.writerow(("block", "path", "cpu_ns", "wall_ns"))
-arms = [("packed", control), ("distinct", candidate)]
-for block in range(64):
-    for name, chain in (arms if block % 2 == 0 else reversed(arms)):
+writer.writerow(("block", "arm" if anchor_panel else "path", "cpu_ns", "wall_ns"))
+for block in range(32 if anchor_panel else 64):
+    for name, chain, hooks, setup in (arms if block % 2 == 0 else reversed(arms)):
+        replay.chain.update(hooks)
         replay.chain["chain"] = chain
         cpu, wall = process_time_ns(), perf_counter_ns()
-        points = replay.packed_setup()
+        points = setup()
         cpu, wall = process_time_ns() - cpu, perf_counter_ns() - wall
         assert points == replay.baseline["fixture"]["reference"]
         writer.writerow((block, name, cpu, wall))

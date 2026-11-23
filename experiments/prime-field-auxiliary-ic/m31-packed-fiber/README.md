@@ -15,3 +15,9 @@ uses a set to check distinctness. The candidate rejects equal siblings at each
 level of the fold. Fold.lean proves the sibling and indexing properties under
 the field hypotheses. Words.lean checks the word arithmetic. The benchmark
 begins after process startup and library loading.
+
+Append `--anchor` to the replay command for a direct comparison against the
+original layer walk, reciprocal completion, sibling checks, and lift-first
+trial division. This mode alternates order for 32 pairs and emits the same
+columns as `anchor-timings.csv`. The default compares the packed baseline
+with the distinct fold in 64 alternating pairs.
