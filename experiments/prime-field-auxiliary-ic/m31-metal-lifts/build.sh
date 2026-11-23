@@ -15,6 +15,9 @@ cd "$(dirname "$0")"
     else
       cat support.inc
     fi
+  elif [[ ${2:-} == stream ]]; then
+    sed '/^int main(/,$d' panel.inc
+    cat stream.inc
   elif [[ ${2:-} == emit ]]; then
     sed '/^int main(/,$d' panel.inc
     sed '/^int main(/,$d' storage.inc
