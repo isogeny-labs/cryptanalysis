@@ -36,4 +36,12 @@ theorem reflected_eligible {x : F} (hx : x ≠ 0) :
   classical
   simp only [eligible, flip hx, not_not, neg_sq]
 
+/-- Every reflected rotation of an eligible coordinate fails the first
+quadratic-character filter, regardless of its smoothness bound. -/
+theorem reflected_rotation_ineligible {x : F} (h : eligible x) (j : ℕ) :
+    ¬ eligible (2^j * (-x)) := by
+  have hx : x ≠ 0 := fun e => h.1 (e ▸ IsSquare.zero)
+  have two : IsSquare (2 : F) := ⟨65536, by decide⟩
+  exact fun hr => hr.1 ((two.pow j).mul ((flip hx).mpr h.1))
+
 end M31EligiblePair
