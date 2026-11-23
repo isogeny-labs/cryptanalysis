@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T21:43:35Z",
+ "id": "PCC-20261123-28506a",
+ "kind": "measurement",
+ "producer": {
+  "commit": "9d2bec897ffcc2487d01d259be268c2d02f03c58",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/simple-five-panel.csv",
+    "sha256": "5786e130aa7e82a3e5f76eff2460647e4674a8a789d692a24f39e00702d74139"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/matched.py",
+    "sha256": "ef5244ea0665caa73bae244340f69c5cee6dcb02292a7ca842ff57af7105a894"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/census.cpp",
+    "sha256": "896f4d6b2e3432e44f44430f757615634ed60a08c7a4211f55e6d4c74eadea1b"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "The frozen smooth M31 basis gave 20 distinct five-label zero-sum classes up to negation. Of 256 same-size controls drawn with seeds 0 through 255 from the frozen auxiliary pool, 47 exceeded 20 and 20 tied it. The reversed input order reproduced all 257 counts."
+}

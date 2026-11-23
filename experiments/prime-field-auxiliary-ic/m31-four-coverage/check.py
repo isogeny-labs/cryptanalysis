@@ -3,7 +3,7 @@ import csv
 import io
 from math import factorial, prod
 from collections import Counter
-from itertools import combinations_with_replacement
+from itertools import combinations, combinations_with_replacement, product
 from pathlib import Path
 import subprocess
 import sys
@@ -18,6 +18,24 @@ def add(a,b):
     slope = ((3*x*x+2)*pow(2*y,-1,p) if x==u else (y-v)*pow(x-u,-1,p))%p
     z = (slope*slope-x-u)%p
     return z,(slope*(x-z)-y)%p
+
+def check_simple(xs):
+    points=[]
+    for x in xs:
+        y=pow((x**3+2*x+14)%p,(p+1)//4,p)
+        points.append((x,y))
+    count=0
+    for five in combinations(points,5):
+        for signs in product((1,-1),repeat=4):
+            total=five[0]
+            for (x,y), sign in zip(five[1:],signs):
+                total=add(total,(x,sign*y%p))
+            count+=total is None
+    for arm in (xs,xs[::-1]):
+        raw=subprocess.check_output([sys.argv[1],"simple-five"],
+            input="".join(f"{x}\n" for x in arm),text=True)
+        assert int(raw)==count
+    return count
 
 def check(xs):
     signed = []
@@ -123,3 +141,11 @@ twice=add(P,P)
 check([P[0],twice[0],add(P,twice)[0]])
 check(basis[:9])
 check(basis[::23])
+
+# Ten equals one plus two plus three plus four in the cyclic subgroup.
+multiples=[P]
+for _ in range(9):
+    multiples.append(add(multiples[-1],P))
+assert check_simple([multiples[i-1][0] for i in (1,2,3,4,10)]) == 1
+check_simple([point[0] for point in multiples])
+check_simple(basis[:9])

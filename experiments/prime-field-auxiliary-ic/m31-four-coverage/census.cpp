@@ -107,6 +107,8 @@ void visit(Point a,unsigned start,unsigned left,Record& record,
             unsigned next_run=i==start ? run+1 : 1;
             unsigned permutations=ways*(used+1)/next_run;
             if(left>1) visit<reduced,true>(next,i,left-1,record,used+1,next_run,permutations,filter);
+            else if constexpr (std::is_invocable_v<Record,Word,unsigned,unsigned>)
+                record(next.x,permutations,i/2);
             else record(next.x,permutations);
         } else {
             if(left>1) visit<reduced>(next,i,left-1,record);
@@ -363,6 +365,7 @@ static void walk_histogram(const std::vector<Word>& xs, bool sample) {
 }
 
 // Count four-letter prefixes up to sign whose endpoint admits a fifth letter.
+template<bool simple=false>
 static void five_prefixes(std::vector<Word> xs) {
     load_basis(xs);
     std::sort(xs.begin(),xs.end());
@@ -371,9 +374,16 @@ static void five_prefixes(std::vector<Word> xs) {
     std::array<bool,65536> suffix{};
     for(Word x:xs) suffix[x & 65535]=true;
     std::array<std::uint64_t,25> hits{};
-    auto count=[&](Word x,unsigned ways) {
-        if(suffix[x & 65535] && std::binary_search(xs.begin(),xs.end(),x))
-            ++hits[ways];
+    std::unordered_map<Word,unsigned> index;
+    if constexpr (simple)
+        for(unsigned j=0;j<basis.size()/2;++j) index.emplace(basis[2*j].x,j);
+    auto count=[&](Word x,unsigned ways,unsigned largest) {
+        if(!suffix[x & 65535]) return;
+        if constexpr (simple) {
+            if(ways!=24) return;
+            auto it=index.find(x);
+            if(it!=index.end() && it->second>largest) ++hits[24];
+        } else if(std::binary_search(xs.begin(),xs.end(),x)) ++hits[ways];
     };
     // If T+b is a signed generator, T is the sum of two signed
     // generators. Hash abscissae only; collisions just keep extra nodes.
@@ -384,6 +394,7 @@ static void five_prefixes(std::vector<Word> xs) {
     auto possible=[&](Word x) {return (pairs[(x & mask)>>6]>>(x & 63)) & 1;};
     for(unsigned i=0;i<basis.size();i+=2)
         visit<true,true>(basis[i],i,3,count,1,1,1,&possible);
+    if constexpr (simple) { std::cout<<hits[24]<<'\n'; return; }
     std::cout<<"prefix_permutations,completable_prefixes_up_to_sign\n";
     for(unsigned ways:{1,4,6,12,24}) std::cout<<ways<<','<<hits[ways]<<'\n';
 }
@@ -392,9 +403,10 @@ int main(int argc,char** argv) {
     std::vector<Word> xs;
     Word x;
     while(std::cin>>x) xs.push_back(x);
-    if(argc==2 && std::string(argv[1])=="five-prefixes") {
+    if(argc==2 && (std::string(argv[1])=="five-prefixes" || std::string(argv[1])=="simple-five")) {
         if(xs.empty() || xs.size()>195) throw std::invalid_argument("invalid basis size");
-        five_prefixes(xs);
+        if(std::string(argv[1])=="simple-five") five_prefixes<true>(xs);
+        else five_prefixes(xs);
         return 0;
     }
     if(argc==2 && (std::string(argv[1])=="walk-four" || std::string(argv[1])=="walk-five-sample")) {
