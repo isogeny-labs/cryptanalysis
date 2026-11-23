@@ -7,22 +7,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define P UINT32_C(2147483647)
-
-static unsigned lifts(uint32_t x, const uint64_t *squares) {
-    uint64_t xx = (uint64_t)x * x % P;
-    uint32_t rhs = (xx * x + 2ULL * x + 14) % P;
-    return (unsigned)((squares[rhs / 64] >> (rhs % 64)) & 1);
-}
+#include "lift_table.h"
 
 int main(void) {
-    uint64_t *squares = calloc((size_t)P / 64 + 1, sizeof(*squares));
+    uint64_t *squares = square_table();
     if (!squares) return EXIT_FAILURE;
-    for (uint32_t y = 0; y <= P / 2; ++y) {
-        uint32_t square = (uint64_t)y * y % P;
-        squares[square / 64] |= UINT64_C(1) << (square % 64);
-    }
-
     uint32_t count = 0, checksum = 0, bit2_zero_count = 0;
     for (uint32_t x = 0; x < P; ++x) {
         if (lifts(x, squares)) {
