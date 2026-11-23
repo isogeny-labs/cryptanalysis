@@ -78,6 +78,20 @@ def check(xs):
     assert histogram == {int(row["multiplicity"]):int(row["finite_points"]) for row in rows}
     assert all(int(row["identity_vectors"])==identity for row in rows)
 
+    ordered = Counter({None: 1})
+    for _ in range(4):
+        ends = Counter()
+        for point, paths in ordered.items():
+            for step in signed:
+                ends[add(point,step)] += paths
+        ordered = ends
+    distribution = Counter(ordered.values())
+    distribution[0] = 2147505293-len(ordered)
+    raw = subprocess.check_output([sys.argv[1],"walk-four"],
+        input="".join(f"{x}\n" for x in xs),text=True)
+    assert distribution == {int(row["ordered_walks"]):int(row["group_points"])
+                            for row in csv.DictReader(io.StringIO(raw))}
+
 basis=list(map(int,(Path(__file__).resolve().parent.parent/'m31-basis-mask/coordinates.txt').read_text().splitlines()))
 P=(3,417540811)
 twice=add(P,P)

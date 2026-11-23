@@ -6,6 +6,8 @@
 #include <string>
 #include <stdexcept>
 #include <vector>
+#include <map>
+#include <unordered_map>
 
 using Word = std::uint32_t;
 constexpr Word p=2147483647;
@@ -27,8 +29,9 @@ using Bits=std::vector<std::uint64_t>;
 
 // Visit sorted signed multisets, including repeats and inverse cancellations.
 // Batch all additions at a node, replacing exceptional denominators with one.
-template<bool reduced, class Record>
-void visit(Point a,unsigned start,unsigned left,Record& record) {
+template<bool reduced, bool weighted=false, class Record>
+void visit(Point a,unsigned start,unsigned left,Record& record,
+           unsigned used=1,unsigned run=1,unsigned ways=1) {
     std::array<Word,390> prefix,den;
     Word prod=1;
     for(unsigned i=start;i<basis.size();++i) {
@@ -54,8 +57,15 @@ void visit(Point a,unsigned start,unsigned left,Record& record) {
         }
         // Sorted occurrences put opposite signs of one generator next to each other.
         if constexpr (reduced) if (i==(start^1U)) continue;
-        if(left>1) visit<reduced>(next,i,left-1,record);
-        else record(next.x);
+        if constexpr (weighted) {
+            unsigned next_run=i==start ? run+1 : 1;
+            unsigned permutations=ways*(used+1)/next_run;
+            if(left>1) visit<reduced,true>(next,i,left-1,record,used+1,next_run,permutations);
+            else record(next.x,permutations);
+        } else {
+            if(left>1) visit<reduced>(next,i,left-1,record);
+            else record(next.x);
+        }
     }
 }
 
@@ -197,10 +207,62 @@ static void five_cover(std::vector<Word> xs, bool reverse) {
     }
 }
 
+// Histogram of the number of ordered length-four walks ending at each
+// group point. Store one count per pair of opposite finite points.
+static void walk_histogram(const std::vector<Word>& xs) {
+    load_basis(xs);
+    unsigned m=xs.size();
+    std::uint64_t identity=12ULL*m*(m-1)+6ULL*m;
+    std::vector<std::uint8_t> counts(p);
+    std::unordered_map<Word,std::uint64_t> overflow;
+    auto record=[&](Word x,unsigned ways) {
+        if(x==p) { identity+=2ULL*ways; return; }
+        unsigned sum=counts[x]+ways;
+        counts[x]=std::min(sum,255U);
+        if(sum>255) overflow[x]+=sum-255;
+    };
+    // A reduced pair becomes a four-word multiset by inserting one neutral
+    // pair. A repeated signed letter and two distinct letters have different
+    // numbers of arrangements.
+    auto cancelled=[&](Word x,unsigned ways) {
+        record(x,ways==1 ? 12*m-8 : 24*(m-1));
+    };
+    for(unsigned i=0;i<basis.size();i+=2) {
+        visit<true,true>(basis[i],i,1,cancelled);
+        visit<true,true>(basis[i],i,3,record);
+    }
+    std::array<std::uint64_t,256> bins{};
+    for(auto k:counts) ++bins[k];
+    std::map<std::uint64_t,std::uint64_t> hist;
+    for(unsigned k=1;k<bins.size();++k)
+        if(bins[k]) hist[k]=2*bins[k];
+    for(auto entry:overflow) {
+        hist[255]-=2;
+        hist[255+entry.second]+=2;
+    }
+    ++hist[identity];
+    std::uint64_t covered=0, mass=0;
+    for(auto entry:hist) {
+        covered+=entry.second;
+        mass+=entry.first*entry.second;
+    }
+    std::uint64_t degree=2*m;
+    if(mass!=degree*degree*degree*degree) throw std::runtime_error("four-walk mass mismatch");
+    hist[0]=2147505293ULL-covered;
+    std::cout<<"ordered_walks,group_points"<<std::endl;
+    for(auto entry:hist)
+        if(entry.second) std::cout<<entry.first<<','<<entry.second<<'\n';
+}
+
 int main(int argc,char** argv) {
     std::vector<Word> xs;
     Word x;
     while(std::cin>>x) xs.push_back(x);
+    if(argc==2 && std::string(argv[1])=="walk-four") {
+        assert(!xs.empty() && xs.size()<=195);
+        walk_histogram(xs);
+        return 0;
+    }
     if(argc==2 && (std::string(argv[1])=="five" || std::string(argv[1])=="five-reverse")) {
         assert(!xs.empty() && xs.size()<=195);
         five_cover(xs, std::string(argv[1])=="five-reverse");
