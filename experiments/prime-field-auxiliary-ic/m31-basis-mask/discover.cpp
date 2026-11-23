@@ -5,20 +5,23 @@
 #include <cstdint>
 #include <fstream>
 #include <iostream>
+#include <string_view>
 #include <unordered_set>
 #include <vector>
 
 using Word = std::uint32_t;
 using Clock = std::chrono::steady_clock;
 
-static Word discover(const std::vector<Word>& basis) {
+static Word discover(const std::vector<Word>& basis, bool deduplicate) {
     std::vector<Word> pairs;
     pairs.reserve(basis.size() * (basis.size() - 1) / 2);
     for (std::size_t i = 0; i < basis.size(); ++i)
         for (std::size_t j = 0; j < i; ++j)
             pairs.push_back(basis[i] ^ basis[j]);
-    std::sort(pairs.begin(), pairs.end());
-    pairs.erase(std::unique(pairs.begin(), pairs.end()), pairs.end());
+    if (deduplicate) {
+        std::sort(pairs.begin(), pairs.end());
+        pairs.erase(std::unique(pairs.begin(), pairs.end()), pairs.end());
+    }
     Word mask = 0;
     while (!pairs.empty()) {
         std::array<unsigned,31> counts{};
@@ -54,7 +57,8 @@ struct Projection {
 };
 
 int main(int argc, char** argv) {
-    if (argc != 3) return 2;
+    const bool compare_pairs = argc == 4 && std::string_view(argv[3]) == "--compare-pairs";
+    if (argc != 3 && !compare_pairs) return 2;
     std::ifstream bf(argv[1]), qf(argv[2]);
     std::vector<Word> basis, queries;
     for (Word x; bf >> x;) basis.push_back(x);
@@ -65,8 +69,10 @@ int main(int argc, char** argv) {
     std::vector<unsigned char> expected, result(queries.size());
     for (Word x : queries) expected.push_back(std::binary_search(sorted.begin(), sorted.end(), x));
     std::cout << "block,scans,arm,discovery_ns,total_ns\n";
-    for (unsigned block = 0; block < 26; ++block) {
+    std::array<unsigned,3> arms = {0,1,2};
+    for (unsigned block = 0; block < (compare_pairs ? 66u : 26u); ++block) {
         for (unsigned scans : {1u, 8u, 16u, 32u}) {
+            if (compare_pairs && scans != 1) continue;
             auto scan = [&](auto contains) {
                 for (unsigned r = 0; r < scans; ++r) {
                     for (std::size_t i = 0; i < queries.size(); ++i)
@@ -74,8 +80,8 @@ int main(int argc, char** argv) {
                     std::atomic_signal_fence(std::memory_order_seq_cst);
                 }
             };
-            for (unsigned order = 0; order < 2; ++order) {
-                const unsigned arm = (order + block) % 2;
+            for (unsigned order = 0; order < (compare_pairs ? 3u : 2u); ++order) {
+                const unsigned arm = compare_pairs ? arms[order] : (order + block) % 2;
                 auto start = Clock::now();
                 long long discovery = 0;
                 if (arm == 0) {
@@ -84,7 +90,7 @@ int main(int argc, char** argv) {
                     table.insert(basis.begin(), basis.end());
                     scan([&](Word x) { return table.count(x) != 0; });
                 } else {
-                    Word mask = discover(basis);
+                    Word mask = discover(basis, arm == 1);
                     discovery = std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now()-start).count();
                     if (__builtin_popcount(mask) != 11) return 3;
                     Projection table(mask);
@@ -97,8 +103,10 @@ int main(int argc, char** argv) {
                 }
                 auto total = std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now()-start).count();
                 if (result != expected) return 4;
-                if (block >= 2) std::cout << block-2 << ',' << scans << ',' << arm << ',' << discovery << ',' << total << '\n';
+                const unsigned warmups = compare_pairs ? 6u : 2u;
+                if (block >= warmups) std::cout << block-warmups << ',' << scans << ',' << arm << ',' << discovery << ',' << total << '\n';
             }
         }
+        if (compare_pairs) std::next_permutation(arms.begin(), arms.end());
     }
 }
