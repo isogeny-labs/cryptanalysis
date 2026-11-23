@@ -27,7 +27,7 @@ fn half_fiber<const W: usize>(terminal: u64) -> [u64; 128] {
 }
 
 #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
-fn half_bench(rotation: usize, order: &str, holdout: bool) {
+fn half_bench(rotation: usize, order: &str, holdout: bool, single: bool) {
     let mut terminals: Vec<u64> = include_str!("fiber-masks.csv")
         .lines()
         .skip(1)
@@ -47,6 +47,9 @@ fn half_bench(rotation: usize, order: &str, holdout: bool) {
         }
     }
     terminals.rotate_left(rotation % 32);
+    if single {
+        terminals.truncate(1);
+    }
     let mut expected = Points::new();
     let curve = Curve::<31>::new(2, 14).unwrap();
     for &t in &terminals {
@@ -68,20 +71,24 @@ fn half_bench(rotation: usize, order: &str, holdout: bool) {
             out.clear();
             for &t in black_box(&terminals) {
                 let xs = match method {
+                    't' => inverse_tree::<false, false>(t, 0),
                     'f' => recurrence_fiber(t),
                     'h' => half_fiber::<1>(t),
-                    'q' | 'd' | 'p' | 'c' | 'w' | 's' => half_fiber::<4>(t),
+                    'q' | 'd' | 'p' | 'c' | 'w' | 's' | 'z' | 'n' => half_fiber::<4>(t),
                     'o' => half_fiber::<8>(t),
                     _ => panic!("unknown method"),
                 };
                 let start = out.len();
                 match method {
-                    'd' => neon_lift::paired_points::<false, false>(&xs, 14, &mut out),
-                    'p' | 'w' => neon_lift::paired_points::<true, false>(&xs, 14, &mut out),
-                    'c' => neon_lift::paired_points::<true, true>(&xs, 14, &mut out),
+                    't' => lift_list(&xs, &mut out),
+                    'd' => neon_lift::paired_points::<false, false, 0>(&xs, 14, &mut out),
+                    'p' | 'w' => neon_lift::paired_points::<true, false, 0>(&xs, 14, &mut out),
+                    'n' => neon_lift::paired_points::<true, false, 2>(&xs, 14, &mut out),
+                    'z' => neon_lift::paired_points::<true, false, 1>(&xs, 14, &mut out),
+                    'c' => neon_lift::paired_points::<true, true, 0>(&xs, 14, &mut out),
                     _ => out.extend(neon_lift::points::<8>(&xs, 14)),
                 }
-                if matches!(method, 'w' | 's') {
+                if matches!(method, 'w' | 's' | 'z' | 'n') {
                     neon_lift::sort_words(&mut out[start..]);
                 } else {
                     out[start..].sort_unstable();

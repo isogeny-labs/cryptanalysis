@@ -49,6 +49,7 @@ mod neon_lift {
         out
     }
 
+    include!("signed-square.rs");
     include!("paired-cubic.rs");
 
     pub(super) fn validate() {

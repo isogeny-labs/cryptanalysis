@@ -437,3 +437,23 @@ A second comparison crossed the original and paired lifts with tuple and packed 
 The combined method won all 48 matched rounds per panel against the original lift with tuple sorting. Median within-round ratios were 1.111 and 1.096. Each method checks the full ordered point output against scalar lifting over independently generated inverse trees. Use the fiber-half entry point and the preceding native flags. For paired-cubic.csv use rotations 0–47 and method permutations of qdpc. For paired-sort.csv use rotations 48–95 and permutations of qpsw. Both enumerate all 24 orders then reverse that schedule and alternate which terminal panel runs first. Rotations permute the same fixed terminals in each panel. Check the Lean module with Lean 4.34.1 and -DwarningAsError=true.
 
 PCC-20261123-1f8f24 [pcc:unverified]
+
+### Signed reduction in the 29-square ordinate kernel
+
+The signed NEON method subtracts p from the low 31 bits and adds the high part of the square. Each intermediate lies between −p and p−1. Only the last square needs conversion to a canonical field word. A second method subtracts the high part from the complement of the low 31 bits and restores the sign on exit. SignedSquare.lean proves the range of the fold, absence of saturation in doubled-high squaring, congruence through the chain for either sign and canonicalization of the result. Both native implementations matched scalar remainder arithmetic after 29 squares on 131,072 lanes, including values near powers of two and field boundaries.
+
+On Apple M4 Pro, the first matched panel gave median canonical/signed time ratios of 1.055 on the archived terminals and 1.057 on the holdout. A second panel tested all six method orders eight times. The canonical, signed and sign-reversed chain medians were 49.08, 45.72 and 46.82 µs on the archive, and 48.51, 45.78 and 46.37 µs on the holdout. Signed reduction beat canonical in 47/48 and 46/48 rounds respectively. Methods w, z and n select these three paths in the fiber-half command. Both panels include the four-lane half-period generator, shared cubic work, NEON ordinate lifting, point checks, packed sorting and output conversion.
+
+The single option restricts a run to one terminal after rotation. It rebuilds the table from that terminal on each timed invocation, retaining caller output capacity and warmed process state. It checks each full ordered table against scalar lifting over the independent inverse tree. Each of the 64 distinct terminals ran once in each of the six orders of methods t, w and z. Method t is the inverse-tree generator with eight-lane portable lifting and tuple sort. For each terminal take the median across its six rounds, then report the median across the 32 terminals in each group. For ratios take the within-round ratio before either median.
+
+| Method, one table | Archived median µs | Holdout median µs |
+|---|---:|---:|
+| Inverse tree and portable lift | 8.422 | 8.358 |
+| Previous packed-point recurrence | 1.486 | 1.508 |
+| Packed-point recurrence with signed squaring | 1.420 | 1.402 |
+
+The directly measured tree/signed ratios were 5.867 and 5.962. The previous packed-point implementation/signed ratios were 1.057 and 1.064. All 64 terminals had a median paired ratio above one for both comparisons. Each timing averaged 64 rebuilds. These are construction measurements for one table at a time in a warmed process. They exclude process startup, choosing a terminal and downstream use of the point table.
+
+Build torus7-build.rs with the native flags above and run validate-signed. Replay the CSV orders with fiber-half ROTATION ORDER, appending holdout for the second group and single for individual tables. For signed-single.csv the rotation is the terminal index. Replaying SignedSquare.lean under Lean 4.34.1 with warnings as errors reported only propext, Classical.choice and Quot.sound across the checked declarations.
+
+PCC-20261123-98f990 [pcc:unverified]

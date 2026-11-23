@@ -149,9 +149,19 @@ include!("fiber-half.rs");
 
 fn main() {
     #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+    if std::env::args().nth(1).as_deref() == Some("validate-signed") {
+        neon_lift::check_signed();
+        return;
+    }
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
     if std::env::args().nth(1).as_deref() == Some("fiber-half") {
         let args: Vec<_> = std::env::args().collect();
-        half_bench(args[2].parse().unwrap(), &args[3], args.get(4).is_some_and(|s| s == "holdout"));
+        half_bench(
+            args[2].parse().unwrap(),
+            &args[3],
+            args.iter().skip(4).any(|s| s == "holdout"),
+            args.iter().skip(4).any(|s| s == "single"),
+        );
         return;
     }
     if std::env::args().nth(1).as_deref() == Some("fiber-cache") {

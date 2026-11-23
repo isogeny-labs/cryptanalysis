@@ -1,5 +1,5 @@
 // Positions 64 apart in this input are negatives. Each batch takes 16 pairs.
-pub(super) fn paired_points<const SHARED: bool, const COMPACT: bool>(
+pub(super) fn paired_points<const SHARED: bool, const COMPACT: bool, const MODE: u8>(
     xs: &[u64; 128],
     b: u64,
     out: &mut Points,
@@ -19,7 +19,13 @@ pub(super) fn paired_points<const SHARED: bool, const COMPACT: bool>(
             rhs[i / 4][i % 4] = first as u32;
             rhs[4 + i / 4][i % 4] = second as u32;
         }
-        let roots = unsafe { chain(&rhs) };
+        let roots = if MODE == 2 {
+            unsafe { signed_chain::<8, true>(&rhs) }
+        } else if MODE == 1 {
+            unsafe { signed_chain::<8, false>(&rhs) }
+        } else {
+            unsafe { chain(&rhs) }
+        };
         for j in 0..8 {
             for k in 0..4 {
                 let y = u64::from(roots[j][k]);
