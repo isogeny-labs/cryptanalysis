@@ -539,6 +539,7 @@ impl<G: CountedGroup> DecompositionOracle<G> for MitmOracle {
             m: self.m,
             table: self.table.clone(),
             native_setup_ns: 0,
+            coset: self.coset.clone(),
         }))
     }
 }
@@ -548,7 +549,7 @@ impl<G: CountedGroup> DecompositionOracle<G> for MitmOracle {
 pub struct FrobeniusMitmOracle<'i> {
     m: u32,
     instance: &'i BinaryInstance,
-    table: Option<FrobeniusPairTable>,
+    table: Option<std::sync::Arc<FrobeniusPairTable>>,
     pub coset: CosetFilter,
 }
 
@@ -651,6 +652,7 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for FrobeniusMitmOracle<'_> {
             m: self.m,
             instance: self.instance,
             table: self.table.clone(),
+            coset: self.coset.clone(),
         }))
     }
 }
