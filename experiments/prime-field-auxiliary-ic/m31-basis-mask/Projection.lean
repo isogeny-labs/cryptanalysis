@@ -35,4 +35,32 @@ set_option maxHeartbeats 8000000 in
 theorem frozen_labels_distinct : (coordinates.map (fun x => x &&& mask)).Nodup := by
   decide +kernel
 
+/-- The high 13 bits of the C++ wrapping 32-bit product. -/
+def slot (x : BitVec 31) : BitVec 13 :=
+  (((x.setWidth 32) * (0x9e6002cb : BitVec 32)) >>> 19).setWidth 13
+
+set_option maxRecDepth 50000 in
+set_option maxHeartbeats 8000000 in
+theorem frozen_slots_distinct : (coordinates.map slot).Nodup := by decide +kernel
+
+/-- Contents of a slot initialized empty and populated by the given keys. -/
+def entry (keys : List (BitVec 31)) (i : BitVec 13) : Option (BitVec 31) :=
+  keys.find? (fun x => slot x == i)
+
+theorem entry_exact (keys : List (BitVec 31)) (distinct : (keys.map slot).Nodup)
+    (x : BitVec 31) : entry keys (slot x) = some x ↔ x ∈ keys := by
+  induction keys with
+  | nil => simp [entry]
+  | cons a tail ih =>
+    rw [List.map_cons, List.nodup_cons] at distinct
+    by_cases h : slot a = slot x
+    · have absent : x ∉ tail := fun hx => distinct.1 (List.mem_map.mpr ⟨x, hx, h.symm⟩)
+      simp [entry, h, absent, eq_comm]
+    · have neq : x ≠ a := fun e => h (congrArg slot e.symm)
+      simpa [entry, List.find?_cons, h, neq] using ih distinct.2
+
+theorem frozen_membership (x : BitVec 31) :
+    entry coordinates (slot x) = some x ↔ x ∈ coordinates :=
+  entry_exact coordinates frozen_slots_distinct x
+
 end M31Projection
