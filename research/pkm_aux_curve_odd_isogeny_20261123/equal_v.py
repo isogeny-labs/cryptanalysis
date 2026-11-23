@@ -25,7 +25,9 @@ def load(paths):
             r = json.loads(line)
             if "summary" in r or r.get("kind") != "isogeny" or r.get("control") != "tower":
                 continue
-            degs = tuple(sorted(set(r.get("iso_degrees") or [2])))
+            seq = r.get("iso_degrees") or [2]
+            # the cyclic pattern: (3,) for 3,3,3; (2, 3) and (3, 2) kept apart
+            degs = (seq[0],) if len(set(seq)) == 1 else tuple(seq[:2])
             if r["target"] != "random":
                 continue
             L = r.get("log2_V", r["t"])

@@ -19,7 +19,7 @@ chain of small Vélu x-maps. Three branches had not been tested:
 
 | branch | result |
 |:--|:--|
-| A | Odd degrees cut F4 work by a **constant factor** at equal `log2 |V|` (m = 2: degree 3, 1.4–2.5x wall and 1.3–2.0x widest matrix; degree 5, 3.3–5.7x wall and 1.1–2.5x widest matrix). The growth rate is unchanged and the frontier moves by about one bit of `|V|`. The lead-sweep gate, which pairs by `t` (not by `|V|`), reads **FAIL** for degree 3. |
+| A | Odd degrees cut F4 work by a **constant factor** at equal `log2 |V|` (m = 2: degree 3, 1.4–2.5x wall and 1.3–2.0x widest matrix; degree 5, 3.3–5.7x wall and 1.1–2.5x widest matrix). Mixed 2,3 / 3,2: no material effect (0.87–3.2x, both sides of 1). The growth rate is unchanged and the frontier moves by at most about one bit of `|V|`. The lead-sweep gate, which pairs by `t` (not by `|V|`), reads **FAIL** for degree 3. |
 | B | Under the 60 s per-system budget at p = 786433, every tower form (Kummer, Dickson, isogeny of any degree) stops at about `|V| = 2^8–2^9.5` for m = 2, `2^5` for m = 3, `2^3` for m = 4, and completes nothing at m ≥ 5 even at `|V| = 8`. |
 | C | Eliminating the tower by resultants (univariate solve with FLINT) costs the same **order** as enumerating the factor base: linear in `|V|` at m = 2 (to `|V| = 2^20`), quadratic at m = 3 (to `2^10`), 1–8x faster than pure-Python enumeration. Both Gröbner solvers on the tower system (the pilot's F4, and msolve 0.6.5) grow about 8–10x per doubling of `|V|` at m = 2 and 25–60x at m = 3. Every solver returned enumeration's exact solution set on every system. |
 
@@ -75,7 +75,42 @@ Equal-`|V|` reading (`equal_v.py`, random targets, the same rows plus
 `data/branch_a/`; reference = the baseline's degree-2 isogeny rows, log-linear
 interpolation between completed sizes, no extrapolation):
 
-EQUAL_V_TABLE
+| m | degrees | log2 V | lead ms | ref ms (interp) | ms ratio ref/lead | lead max_cols | ref max_cols (interp) | cols ratio |
+|--:|:--|--:|--:|--:|--:|--:|--:|--:|
+| 2 | 2,3 | 2.58 | 0.6 | 1 | 1.11 | 69 | 92 | 1.33 |
+| 2 | 2,3 | 3.58 | 2.0 | 4 | 2.16 | 155 | 234 | 1.51 |
+| 2 | 2,3 | 5.17 | 54.6 | 70 | 1.29 | 900 | 831 | 0.92 |
+| 2 | 2,3 | 6.17 | 227.6 | 729 | 3.20 | 1,607 | 3,648 | 2.27 |
+| 2 | 2,3 | 7.75 | 20,371.7 | 17,678 | 0.87 | 13,492 | 11,993 | 0.89 |
+| 2 | 3 | 1.58 | 0.1 | 0 | 1.63 | 15 | 24 | 1.60 |
+| 2 | 3 | 3.17 | 1.3 | 2 | 1.43 | 105 | 167 | 1.59 |
+| 2 | 3 | 4.75 | 12.7 | 32 | 2.54 | 409 | 538 | 1.31 |
+| 2 | 3 | 6.34 | 651.2 | 1,059 | 1.63 | 2,577 | 4,196 | 1.63 |
+| 2 | 3 | 7.92 | 14,013.3 | 24,036 | 1.72 | 6,892 | 13,442 | 1.95 |
+| 2 | 3,2 | 2.58 | 0.5 | 1 | 1.41 | 55 | 92 | 1.67 |
+| 2 | 3,2 | 4.17 | 11.8 | 13 | 1.13 | 372 | 366 | 0.98 |
+| 2 | 3,2 | 5.17 | 43.3 | 70 | 1.62 | 661 | 831 | 1.26 |
+| 2 | 3,2 | 6.75 | 2,453.1 | 2,635 | 1.07 | 6,520 | 5,905 | 0.91 |
+| 2 | 5 | 2.32 | 0.1 | 0 | 3.38 | 27 | 69 | 2.54 |
+| 2 | 5 | 4.64 | 8.4 | 27 | 3.26 | 452 | 500 | 1.11 |
+| 2 | 5 | 6.97 | 732.5 | 4,188 | 5.72 | 2,826 | 7,024 | 2.49 |
+| 3 | 2,3 | 2.58 | 68.6 | 157 | 2.29 | 839 | 1,431 | 1.71 |
+| 3 | 2,3 | 3.58 | 4,337.2 | 6,777 | 1.56 | 7,955 | 7,664 | 0.96 |
+| 3 | 3 | 3.17 | 1,001.6 | 1,492 | 1.49 | 2,506 | 4,433 | 1.77 |
+
+Frontier (smallest log2|V| at which a random-target refutation timed out):
+  m=2 degrees=2: 8.00
+  m=2 degrees=2,3: 8.75
+  m=2 degrees=3: 9.51
+  m=2 degrees=5: 9.29
+  m=3 degrees=2: 5.00
+  m=3 degrees=2,3: 5.17
+  m=3 degrees=3: 4.75
+  m=3 degrees=5: 4.64
+  m=4 degrees=2: 3.00
+  m=4 degrees=3: 3.17
+
+Mixed 2,3 and 3,2 (`data/branch_a/deg23_*`, `deg32_*`): ratios 0.87–3.2x (wall) and 0.89–2.3x (widest matrix), on both sides of 1 with no trend: no material effect. The order 2,3 vs 3,2 makes no consistent difference. (`deg32_m3` was still running when this was written; see `data/branch_a/` for whatever it completed.)
 
 Kummer and Dickson rows of the lead arm equal the baseline's (the flag touches
 the isogeny kind only). Planted solutions were found in every completed
@@ -115,7 +150,15 @@ msolve's basis is `{1}` exactly when enumeration finds nothing (36/36).
 | 243 (degree 3) | 21 s | 2.0 s | 1.9 ms | 0.7 ms |
 
 m = 3, msolve on the degree-2 isogeny systems (one planted, one random):
-MSOLVE_M3
+
+| `|V|` | planted | random | 
+|--:|--:|--:|
+| 4 | 0.009 s | 0.014 s |
+| 8 | 0.23 s | 0.22 s |
+| 16 | 13.4 s | 13.1 s |
+| 32 | – | **timeout at 1,800 s**, peak RSS 2.06 GiB |
+
+That is 25–60x per doubling. Enumeration solves the same m = 3 sizes in 2.5–7 ms (table below).
 
 Past the Gröbner frontier (`scaling_c.py`, random `V`, random curve and
 target; both methods ignore `V`'s structure, so a random set costs what a
