@@ -487,3 +487,20 @@ On the Apple M4 Pro, the median within-round B/J ratios were 1.090 and 1.087. Ea
 Use fiber-half TERMINAL ORDER single, appending holdout for the second group. The tables in fixed-step.csv and fixed-weights.csv give the method orders and terminal indices. The three-method comparison runs all six orders twice per terminal. In fixed-step-phases.csv D/E are instrumented/uninstrumented leaf-dependent controls and G/H use the shared coefficient with the dependent recurrence.
 
 PCC-20261123-3836ed [pcc:unverified]
+
+### Fusing the two products in a weighted coordinate
+
+The weighted generator computes u b − v a in M31. One candidate combines the two products in a signed 64-bit word and folds the signed difference twice. Another centers each operand in [−1073741823,1073741823] and adds p·2^30 to the product difference. The biased value is nonnegative and below p², so a single high/low fold followed by one conditional subtraction produces a canonical word. The centered coefficient array contains 64 signed 32-bit words computed at compile time. FusedWeights.lean proves the biased bound and the canonical residue for every choice of four canonical operands.
+
+The initial single-terminal experiment compared J (separately reduced products), K (two signed folds) and L (center operands in the loop) in all six orders twice per terminal. Within-round median J/K ratios were 0.997 on the archive and 0.994 on holdout. J/L gave 1.004 and 1.002. A second comparison precomputed the centered weights and timed 256 rebuilds per invocation. Methods 1/2 use separate products and 3/4 use the centered table. Methods 1 and 3 have phase clocks. For each terminal, eight rounds rotated and reversed the order of all four methods.
+
+| Median ns per single table | Archived separate | Archived centered | Holdout separate | Holdout centered |
+|---|---:|---:|---:|---:|
+| Generation, instrumented | 435.2 | 412.4 | 433.2 | 412.3 |
+| Lifting, instrumented | 519.0 | 524.4 | 517.5 | 526.0 |
+| Sorting, instrumented | 210.8 | 212.8 | 208.2 | 209.5 |
+| Full build, clocks disabled | 1133.1 | 1129.6 | 1136.6 | 1128.5 |
+
+Median paired uninstrumented ratios were 1.010 and 1.009. The centered version won on the median of 24/32 archived and 26/32 held-out terminals. The stage measurements support a modest generation saving on this machine. The change in total time is small. All candidate coordinate arrays matched the separate-product baseline slot by slot and each full table matched the scalar oracle. Use the fiber-half command with single and optional holdout as above. The CSV files record every method order. Build FusedWeights.lean with Lean 4.34.1 and warnings as errors.
+
+PCC-20261123-4435b4 [pcc:unverified]

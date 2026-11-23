@@ -28,6 +28,10 @@ fn table_phases<const PROFILE: bool, const ROOT: u8>(
     println!(
         "{},{},{total:.3},{roots:.3},{lift:.3},{sort:.3}",
         match (PROFILE, ROOT) {
+            (true, 4) => "1",
+            (false, 4) => "2",
+            (true, 7) => "3",
+            (false, 7) => "4",
             (true, 0) => "P",
             (false, 0) => "U",
             (true, 3) => "G",

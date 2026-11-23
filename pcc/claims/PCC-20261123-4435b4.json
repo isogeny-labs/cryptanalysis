@@ -1,0 +1,63 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T23:59:37Z",
+ "id": "PCC-20261123-4435b4",
+ "kind": "measurement",
+ "producer": {
+  "commit": "6d56c52ab0773716661376d9ac2dd96de704096a",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "0340558589e0e29cf124e40a730aa90d915a964aa28b8ced1dfbf73615d06185",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/FusedWeights.lean",
+   "theorem": "M31FusedWeights.biased_bounds"
+  },
+  {
+   "decl_sha256": "9b6618b90198c1b005964ad1fd076ad2f14ccc3f74dedc84eb205c1e9d68979a",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/FusedWeights.lean",
+   "theorem": "M31FusedWeights.exact"
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/FusedWeights.lean",
+    "sha256": "7382734acaaa0aa3d4ef085256b7c13ab80dc784416f41a250a4209546704486"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/fiber-half.rs",
+    "sha256": "8d238c0c291d486216181d321c37abc2d871dc7851104f17ac371e553efba95d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/table-phases.rs",
+    "sha256": "234f2e76c170160567ffeac5010fafdf857ea123622fed2cf15cff1fde6c2fa4"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/centered-weights.csv",
+    "sha256": "6d87f3298b7c26e48cb2b99203e4d970bdea4d6484f010f59369a554800d68f4"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/fused-weights.csv",
+    "sha256": "55b031d5fbb075d2aa0258f28638069163a7d33dec5528bafdfb863b901678e8"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "Precentered weights and one biased fold reduced instrumented M31 generation from 435.2 to 412.4 ns on archived and 433.2 to 412.3 ns on held-out terminals. Uninstrumented paired single-table ratios were 1.010 and 1.009 on the local Apple M4 Pro."
+}

@@ -12,6 +12,21 @@ const FIXED_WEIGHTS: [u32; 64] = {
     u
 };
 
+const CENTERED_WEIGHTS: [i32; 64] = {
+    let mut weights = [0; 64];
+    let mut i = 0;
+    while i < 64 {
+        let x = FIXED_WEIGHTS[i] as i32;
+        weights[i] = if x > (M::P / 2) as i32 {
+            x - M::P as i32
+        } else {
+            x
+        };
+        i += 1;
+    }
+    weights
+};
+
 #[inline(always)]
 fn terminal_root<const MODE: u8>(x: u64) -> u64 {
     match MODE {
@@ -23,7 +38,7 @@ fn terminal_root<const MODE: u8>(x: u64) -> u64 {
             }
             v
         }
-        2 | 3 | 4 => {
+        2..=7 => {
             let p = M::P as i64;
             let mut v = x as i64;
             for _ in 0..29 {
@@ -61,14 +76,52 @@ fn half_fiber_root<const W: usize, const ROOT: u8>(terminal: u64) -> [u64; 128] 
         M::add(M::mul(leaf, step), terminal_root::<ROOT>(delta)),
         1 << 30,
     );
-    if ROOT == 4 {
+    if ROOT >= 4 {
         let a = xs[0];
         let b = xs[1];
+        let centered = |x: u64| {
+            if x > M::P / 2 {
+                x as i64 - M::P as i64
+            } else {
+                x as i64
+            }
+        };
+        let ca = centered(a);
+        let cb = centered(b);
         for i in 2..64 {
-            xs[i] = M::sub(
-                M::mul(u64::from(FIXED_WEIGHTS[i]), b),
-                M::mul(u64::from(FIXED_WEIGHTS[i - 1]), a),
-            );
+            let u = u64::from(FIXED_WEIGHTS[i]);
+            let v = u64::from(FIXED_WEIGHTS[i - 1]);
+            xs[i] = if ROOT == 5 {
+                let z = (u * b) as i64 - (v * a) as i64;
+                let p = M::P as i64;
+                let f = (z >> 31) + (z & p);
+                let r = (f >> 31) + (f & p);
+                if r < 0 {
+                    (r + p) as u64
+                } else if r >= p {
+                    (r - p) as u64
+                } else {
+                    r as u64
+                }
+            } else if ROOT == 6 || ROOT == 7 {
+                let (cu, cv) = if ROOT == 7 {
+                    (
+                        i64::from(CENTERED_WEIGHTS[i]),
+                        i64::from(CENTERED_WEIGHTS[i - 1]),
+                    )
+                } else {
+                    (centered(u), centered(v))
+                };
+                let z = cu * cb - cv * ca + ((M::P as i64) << 30);
+                let f = ((z as u64) >> 31) + ((z as u64) & M::P);
+                if f >= M::P {
+                    f - M::P
+                } else {
+                    f
+                }
+            } else {
+                M::sub(M::mul(u, b), M::mul(v, a))
+            };
         }
     } else {
         for i in 2..2 * W {
@@ -123,6 +176,9 @@ fn half_bench(rotation: usize, order: &str, holdout: bool, single: bool) {
         let mut fixed = half_fiber_root::<4, 3>(t);
         let mut baseline = full;
         let mut weighted = half_fiber_root::<4, 4>(t);
+        assert_eq!(half_fiber_root::<4, 5>(t), weighted);
+        assert_eq!(half_fiber_root::<4, 6>(t), weighted);
+        assert_eq!(half_fiber_root::<4, 7>(t), weighted);
         weighted.sort_unstable();
         fixed.sort_unstable();
         baseline.sort_unstable();
@@ -138,9 +194,16 @@ fn half_bench(rotation: usize, order: &str, holdout: bool, single: bool) {
     }
     let mut out = Points::with_capacity(4096);
     for method in order.chars() {
-        if matches!(method, 'P' | 'U' | 'D' | 'E' | 'G' | 'H') {
+        if matches!(
+            method,
+            'P' | 'U' | 'D' | 'E' | 'G' | 'H' | '1' | '2' | '3' | '4'
+        ) {
             assert!(single, "phase profile requires one terminal");
             match method {
+                '1' => table_phases::<true, 4>(terminals[0], &expected, &mut out),
+                '2' => table_phases::<false, 4>(terminals[0], &expected, &mut out),
+                '3' => table_phases::<true, 7>(terminals[0], &expected, &mut out),
+                '4' => table_phases::<false, 7>(terminals[0], &expected, &mut out),
                 'P' => table_phases::<true, 0>(terminals[0], &expected, &mut out),
                 'U' => table_phases::<false, 0>(terminals[0], &expected, &mut out),
                 'D' => table_phases::<true, 2>(terminals[0], &expected, &mut out),
@@ -156,6 +219,8 @@ fn half_bench(rotation: usize, order: &str, holdout: bool, single: bool) {
             for &t in black_box(&terminals) {
                 let xs = match method {
                     'A' => half_fiber_root::<4, 1>(t),
+                    'K' => half_fiber_root::<4, 5>(t),
+                    'L' => half_fiber_root::<4, 6>(t),
                     'J' => half_fiber_root::<4, 4>(t),
                     'F' => half_fiber_root::<4, 3>(t),
                     'B' => half_fiber_root::<4, 2>(t),
@@ -172,13 +237,16 @@ fn half_bench(rotation: usize, order: &str, holdout: bool, single: bool) {
                     'd' => neon_lift::paired_points::<false, false, 0>(&xs, 14, &mut out),
                     'p' | 'w' => neon_lift::paired_points::<true, false, 0>(&xs, 14, &mut out),
                     'n' => neon_lift::paired_points::<true, false, 2>(&xs, 14, &mut out),
-                    'z' | 'A' | 'B' | 'F' | 'J' => {
+                    'z' | 'A' | 'B' | 'F' | 'J' | 'K' | 'L' => {
                         neon_lift::paired_points::<true, false, 1>(&xs, 14, &mut out)
                     }
                     'c' => neon_lift::paired_points::<true, true, 0>(&xs, 14, &mut out),
                     _ => out.extend(neon_lift::points::<8>(&xs, 14)),
                 }
-                if matches!(method, 'w' | 's' | 'z' | 'n' | 'A' | 'B' | 'F' | 'J') {
+                if matches!(
+                    method,
+                    'w' | 's' | 'z' | 'n' | 'A' | 'B' | 'F' | 'J' | 'K' | 'L'
+                ) {
                     neon_lift::sort_words(&mut out[start..]);
                 } else {
                     out[start..].sort_unstable();
