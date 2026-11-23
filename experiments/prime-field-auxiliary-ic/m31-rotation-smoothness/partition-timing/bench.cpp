@@ -1,3 +1,4 @@
+#include <string_view>
 #include <algorithm>
 #include <chrono>
 #include <cstdint>
@@ -118,7 +119,11 @@ Keys capped(U bound) {
     unique_sort(pairs);
     return pairs;
 }
-int main() {
+#include "filter_comparison.h"
+
+int main(int argc, char** argv) {
+    if (argc == 2 && std::string_view(argv[1]) == "--hash-filter") return compare_filters();
+    if (argc != 1) return EXIT_FAILURE;
     auto old=exhaustive(83), oldcap=capped(83);
     auto full=exhaustive(89), part=capped(89);
     auto subset=[](const Keys& a,const Keys& b) {
