@@ -158,7 +158,76 @@ fn build(width: usize, curve: Curve<31>) -> Vec<(u64, u64)> {
     }
 }
 
+#[path = "membership-bench.rs"]
+mod membership;
+
+fn branch_key(mut x: u64) -> u32 {
+    let mut bits = 0;
+    for j in 0..7 {
+        bits |= u32::from(x > M::P / 2) << j;
+        x = M::sub(M::sq(x), 2);
+    }
+    bits
+}
+
+fn branch_cost(seed: u64, order: &str) {
+    let mut xs = roots();
+    let curve = Curve::<31>::new(2, 14).unwrap();
+    let positive: Vec<_> = xs
+        .iter()
+        .filter(|&&x| curve.lift_x(x).unwrap().is_some())
+        .map(|&x| x as u32)
+        .collect();
+    let buckets = membership::build(&positive);
+    let mask = 0x5ec55aed5ec7a5051ebd2a65e6d923ee_u128;
+    let mut state = seed;
+    for i in (1..128).rev() {
+        state ^= state << 13;
+        state ^= state >> 7;
+        state ^= state << 17;
+        xs.swap(i, state as usize % (i + 1));
+    }
+    let keys = xs.map(branch_key);
+    for (&x, &key) in xs.iter().zip(&keys) {
+        assert_eq!(
+            membership::lookup(&buckets, &positive, x as u32),
+            (mask >> key) & 1 == 1
+        );
+    }
+    for method in order.chars() {
+        let start = Instant::now();
+        let mut hits = 0;
+        for _ in 0..16384 {
+            hits += match method {
+                'x' => black_box(&xs)
+                    .iter()
+                    .filter(|&&x| membership::lookup(&buckets, &positive, x as u32))
+                    .count(),
+                'g' => black_box(&xs)
+                    .iter()
+                    .filter(|&&x| (mask >> branch_key(x)) & 1 == 1)
+                    .count(),
+                'k' => black_box(&keys)
+                    .iter()
+                    .filter(|&&key| (mask >> key) & 1 == 1)
+                    .count(),
+                _ => panic!("bad method"),
+            };
+        }
+        let ns = start.elapsed().as_nanos() as f64 / 16384.;
+        assert_eq!(hits, 71 * 16384);
+        println!("{method},{ns:.3}");
+    }
+}
+
 fn main() {
+    if std::env::args().nth(1).as_deref() == Some("branch-cost") {
+        branch_cost(
+            std::env::args().nth(2).unwrap().parse().unwrap(),
+            &std::env::args().nth(3).unwrap(),
+        );
+        return;
+    }
     if std::env::args().nth(1).as_deref() == Some("twist") {
         twist_panel(&std::env::args().nth(2).unwrap());
         return;

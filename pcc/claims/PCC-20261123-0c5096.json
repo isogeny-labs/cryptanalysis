@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T22:56:08Z",
+ "id": "PCC-20261123-0c5096",
+ "kind": "measurement",
+ "producer": {
+  "commit": "db646a39b00c77ed5dc519e61474ef9456b9078e",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/branch-cost.csv",
+    "sha256": "716e03da84ee8f8f1c22a9ec7abe22046a79e00e761e850d087034b2b284db91"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/torus7-build.rs",
+    "sha256": "7e39fdfa9a2b9972ec1baa5b6399f0c8a121c706e8233530a7d50b81f0b14db6"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "On the fixed Torus7 fiber, native arm64 exact coordinate lookup versus packed lookup with pre-existing branch keys had a 2.290x median paired time ratio, while recomputing branch keys plus packed lookup took 6.852x the exact coordinate lookup time, across 24 balanced rounds."
+}
