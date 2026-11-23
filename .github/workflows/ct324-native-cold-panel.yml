@@ -1,0 +1,53 @@
+name: CT324 matched native cold rho-BSGS panel
+on:
+  pull_request:
+    paths:
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct324_cold_panel.py"
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct324_prime31_batched_rho.rs"
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct324_batch_inverse.rs"
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/CT324_MATCHED_COLD_PANEL_PROTOCOL.md"
+      - ".github/workflows/ct324-native-cold-panel.yml"
+permissions:
+  contents: read
+jobs:
+  panel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            experiments/chained-transfer-public-target/norm-point-reuse-01
+          sparse-checkout-cone-mode: false
+      - name: Compile unchanged baselines and candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          src=experiments/chained-transfer-public-target/norm-point-reuse-01
+          sha256sum "$src"/ct322_prime31_bsgs.rs "$src"/ct323_prime31_rho.rs "$src"/ct324_prime31_batched_rho.rs
+          rustc --edition=2021 -C opt-level=3 -C debuginfo=0 "$src"/ct322_prime31_bsgs.rs -o /tmp/ct322-bsgs
+          rustc --edition=2021 -C opt-level=3 -C debuginfo=0 "$src"/ct323_prime31_rho.rs -o /tmp/ct323-rho
+          rustc --edition=2021 -C opt-level=3 -C debuginfo=0 "$src"/ct324_prime31_batched_rho.rs -o /tmp/ct324-rho
+      - name: Execute 24 fresh-process public-target solves
+        shell: bash
+        run: |
+          set -euo pipefail
+          src=experiments/chained-transfer-public-target/norm-point-reuse-01
+          PYTHONPATH="$src" python3 "$src"/ct324_cold_panel.py --bsgs /tmp/ct322-bsgs --old /tmp/ct323-rho --new /tmp/ct324-rho > /tmp/ct324-panel.json
+          python3 - <<'PY'
+          import json
+          data=json.load(open('/tmp/ct324-panel.json'))
+          assert data['native_children']==24
+          assert data['correct_public_logs']==24
+          assert data['public_target_count']==4
+          for arm in ('bsgs','old','new'):
+              print(arm,json.dumps(data['statistics'][arm],sort_keys=True))
+          print('public challenge SHA256',data['public_challenge_sha256'])
+          PY
+      - name: Retain unsigned public raw counters
+        uses: actions/upload-artifact@v4
+        with:
+          name: ct324-public-raw-panel
+          path: /tmp/ct324-panel.json
+          retention-days: 30

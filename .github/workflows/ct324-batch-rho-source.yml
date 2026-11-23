@@ -1,0 +1,51 @@
+name: CT324 batched affine rho source correctness
+on:
+  pull_request:
+    paths:
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct324_batch_inverse.rs"
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct324_prime31_batched_rho.rs"
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/CT324_BATCH_INVERSION_RHO_PROTOCOL.md"
+      - ".github/workflows/ct324-batch-rho-source.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  exact-native-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            experiments/chained-transfer-public-target/norm-point-reuse-01
+          sparse-checkout-cone-mode: false
+      - name: Rust stdlib-only arithmetic checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          src=experiments/chained-transfer-public-target/norm-point-reuse-01/ct324_batch_inverse.rs
+          sha256sum "$src"
+          rustc --edition=2021 --test -C opt-level=0 "$src" -o /tmp/ct324-test
+          /tmp/ct324-test --nocapture
+          rustc --edition=2021 --test -C opt-level=3 "$src" -o /tmp/ct324-test-o3
+          /tmp/ct324-test-o3 --nocapture
+      - name: Native public-only toy and prime31 solve smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          src=experiments/chained-transfer-public-target/norm-point-reuse-01/ct324_prime31_batched_rho.rs
+          rustc --edition=2021 -C opt-level=3 "$src" -o /tmp/ct324-rho
+          /tmp/ct324-rho 97 2 3 5 3 6 80 10 > /tmp/ct324-toy.json
+          /tmp/ct324-rho 2147483647 847514846 2087444724 2147446831 625037715 2100627251 1923055775 307731458 > /tmp/ct324-prime31.json
+          python3 - <<'PY'
+          import json
+          for p in ('/tmp/ct324-toy.json','/tmp/ct324-prime31.json'):
+              x=json.load(open(p))
+              assert x['result_scalar']==2, x
+              assert x['field_inversions']<x['affine_adds'], x
+              if p.endswith('prime31.json'):
+                  assert x['batch_waves']>0, x
+              print(p, 'verified scalar', x['result_scalar'], 'walks', x['walk_steps'],
+                    'inversions',x['field_inversions'],'adds',x['affine_adds'])
+          PY
