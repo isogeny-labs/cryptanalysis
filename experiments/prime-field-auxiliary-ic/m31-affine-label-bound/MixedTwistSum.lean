@@ -33,4 +33,19 @@ theorem traceSum (σ : G →+ G) {P T : G} (hp : σ P = P) (ht : σ T = -T) :
   rw [map_add, hp, ht, two_nsmul]
   abel
 
+/-- The x-coordinate forgets the sign of the sum. Its second descent case
+occurs precisely when the fixed component is killed by two. -/
+theorem fixedX {K : Type*} [Field K] [DecidableEq K] {W : WeierstrassCurve.Affine K}
+    (σ : W.Point →+ W.Point) {P T : W.Point} (hp : σ P = P) (ht : σ T = -T) :
+    (σ (P + T)).xRep = (P + T).xRep ↔
+      (2 : ℕ) • T = 0 ∨ (2 : ℕ) • P = 0 := by
+  rw [WeierstrassCurve.Affine.Point.xRep_eq_xRep_iff, fixedSum σ hp ht]
+  apply or_congr_right
+  rw [map_add, hp, ht, neg_add, add_left_inj, two_nsmul]
+  constructor
+  · intro h
+    calc P + P = -P + P := congrArg (fun x => x + P) h
+         _ = 0 := neg_add_cancel P
+  · exact eq_neg_of_add_eq_zero_left
+
 end M31MixedTwistSum
