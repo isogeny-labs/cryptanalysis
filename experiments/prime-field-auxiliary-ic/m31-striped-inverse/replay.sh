@@ -14,6 +14,7 @@ variant() {
     cc -O3 -shared -fPIC "$@" m31-striped-inverse/stripes.c "$d/layer.o" "$d/fiber.o" -o "$d/$name.so"
 }
 case "${1:-phase}" in
+    anchor) variant width16 -DM31_LANES=16 ;;
     factorial)
         variant one-rem -DM31_LANES=1 -DM31_USE_REMAINDER
         variant one-fold -DM31_LANES=1
@@ -28,4 +29,8 @@ esac
 cc -O3 -flto -mcpu=native -shared -fPIC m31-native-product/archived-lifts/lift.c m31-native-product/product.c -o "$d/lift.so"
 cc -O3 -shared -fPIC m31-packed-fiber/distinct.c -o "$d/distinct.so"
 c++ -O3 -std=c++17 -shared -fPIC m31-batch-smooth/independent.cpp -o "$d/filter.so"
+if [ "${1:-}" = anchor ]; then
+    uv run --isolated --with sympy --python 3.13 python m31-packed-fiber/distinct_replay.py "$d/lift.so" "$d/width16.so" "$d/width16.so" "$d/filter.so" "$d/distinct.so" --anchor
+    exit
+fi
 uv run --isolated --with sympy --python 3.13 python m31-striped-inverse/compare.py "$d/lift.so" "$d/control.so" "$d/control.so" "$d/filter.so" "$d/distinct.so" "$@"
