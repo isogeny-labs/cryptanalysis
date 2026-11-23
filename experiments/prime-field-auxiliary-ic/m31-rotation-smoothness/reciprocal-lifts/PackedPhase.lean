@@ -43,4 +43,52 @@ theorem phaseDisplacements (i k j : Fin 31) :
   have := j.isLt
   omega
 
+/-- Add polynomial coefficients, extending the shorter list by zero. -/
+def addCoeffs : List ℕ → List ℕ → List ℕ
+  | [], ys => ys
+  | x :: xs, [] => x :: xs
+  | x :: xs, y :: ys => (x + y) :: addCoeffs xs ys
+
+theorem eval_addCoeffs (base : ℕ) (xs ys : List ℕ) :
+    Nat.ofDigits base (addCoeffs xs ys) = Nat.ofDigits base xs + Nat.ofDigits base ys := by
+  induction xs generalizing ys with
+  | nil => simp [addCoeffs]
+  | cons x xs ih =>
+    cases ys with
+    | nil => simp [addCoeffs]
+    | cons y ys =>
+      simp only [addCoeffs, Nat.ofDigits_cons, ih]
+      ring
+
+/-- Coefficients of the ordinary product, in increasing order of displacement. -/
+def maskConvolution : List ℕ → List ℕ → List ℕ
+  | [], _ => []
+  | x :: xs, ys => addCoeffs (ys.map (x * ·)) (0 :: maskConvolution xs ys)
+
+theorem packedProduct (base : ℕ) (xs ys : List ℕ) :
+    Nat.ofDigits base xs * Nat.ofDigits base ys =
+      Nat.ofDigits base (maskConvolution xs ys) := by
+  induction xs with
+  | nil => simp [maskConvolution]
+  | cons x xs ih =>
+    rw [maskConvolution, eval_addCoeffs, ← Nat.mul_ofDigits, Nat.ofDigits_cons,
+      Nat.ofDigits_cons, ← ih]
+    ring
+
+set_option exponentiation.threshold 512 in
+/-- Four expanded bytes, with the least significant byte first. -/
+theorem bytePacking (a b c d : List ℕ) (ha : a.length = 8) (hb : b.length = 8)
+    (hc : c.length = 8) :
+    Nat.ofDigits (2^17) (a ++ (b ++ (c ++ d))) =
+      Nat.ofDigits (2^17) a + (Nat.ofDigits (2^17) b <<< 136) +
+      (Nat.ofDigits (2^17) c <<< 272) + (Nat.ofDigits (2^17) d <<< 408) := by
+  simp only [Nat.ofDigits_append, ha, hb, hc, Nat.shiftLeft_eq]
+  ring
+
+theorem unpackMaskProduct (xs ys : List ℕ) (j : ℕ)
+    (bound : ∀ c ∈ maskConvolution xs ys, c ≤ 3302 * 31) :
+    (((Nat.ofDigits (2^17) xs * Nat.ofDigits (2^17) ys) >>> (17*j)) &&& (2^17-1)) =
+      ((maskConvolution xs ys).drop j).headD 0 := by
+  rw [packedProduct, unpackPhaseDigit _ _ bound]
+
 end ReciprocalLifts
