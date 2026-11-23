@@ -1,0 +1,248 @@
+{
+  "schema": "lead-testing.verdict/v1",
+  "lead_id": "LEAD-prime-batched-mitm-20261121",
+  "phase": 2,
+  "verdict": "PASS",
+  "reasons": [
+    "lower 95% bound of the paired speed-up above 1 on every instance of the phase at m in ['2', '3']"
+  ],
+  "carried_m": [
+    "2",
+    "3"
+  ],
+  "next": "promote: run phase 3",
+  "gated": "2026-11-23T05:13:40Z",
+  "registry_sha256": "312cd1dd6b49ea55276ef0195ad4290e176ffd6a812320a636b9998014374314",
+  "cells": [
+    {
+      "id": "bench-prime-20",
+      "by_m": {
+        "2": {
+          "status": "ok",
+          "pairs": 8,
+          "lead_s": {
+            "69066127048": 7.969755827913284,
+            "69066167551": 7.81922848516578,
+            "69066208054": 9.726499715628735,
+            "69066248557": 7.56435742463002,
+            "69066289060": 5.698843381685309,
+            "69066329563": 7.681814054117656,
+            "69066370066": 9.05020218634459,
+            "69066410569": 8.200849389697163
+          },
+          "speedup_geomean": 3.0380760332647436,
+          "speedup_ci": [
+            2.826994581187557,
+            3.3051810502110643
+          ],
+          "lead_s_over_rho": 5.903160237124545,
+          "peak_rss_gib": 0.0219,
+          "better": true
+        },
+        "3": {
+          "status": "ok",
+          "pairs": 8,
+          "lead_s": {
+            "69066127048": 9.20082511385677,
+            "69066167551": 9.847641912170877,
+            "69066208054": 8.591381603577531,
+            "69066248557": 8.488759005839778,
+            "69066289060": 9.309855709424866,
+            "69066329563": 8.837594989783476,
+            "69066370066": 8.240079855707643,
+            "69066410569": 7.657752952265234
+          },
+          "speedup_geomean": 2.737251976632243,
+          "speedup_ci": [
+            2.543221455364751,
+            2.933446182480999
+          ],
+          "lead_s_over_rho": 6.5019250175654975,
+          "peak_rss_gib": 0.0219,
+          "better": true
+        },
+        "4": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "5": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "6": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "7": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "8": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "9": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        }
+      },
+      "arms": {
+        "baseline": {
+          "status": "ok",
+          "wall_seconds": 0.123,
+          "peak_rss_gib": 0.0219,
+          "killed_by": null
+        },
+        "lead-m2": {
+          "status": "ok",
+          "wall_seconds": 0.082,
+          "peak_rss_gib": 0.0219,
+          "killed_by": null
+        },
+        "lead-m3": {
+          "status": "ok",
+          "wall_seconds": 0.081,
+          "peak_rss_gib": 0.0219,
+          "killed_by": null
+        }
+      },
+      "instance": "bench-20bit",
+      "rho_reference": {
+        "method": "negation-map r-adding walk: look-ahead, short-cycle escape by doubling, distinguished points, stride starts",
+        "automorphisms": 2,
+        "runs": 16,
+        "mean_s": 1.3490983622743553,
+        "min_s": 0.7075635182952023,
+        "max_s": 2.4481306813943116,
+        "all_verified": true
+      },
+      "baseline_s": {
+        "69066127048": 23.1559821138487,
+        "69066167551": 23.706867239744085,
+        "69066208054": 25.16587230724638,
+        "69066248557": 24.10894088823722,
+        "69066289060": 22.097235065351047,
+        "69066329563": 24.18328393426965,
+        "69066370066": 24.88878590957103,
+        "69066410569": 24.40674493239211
+      },
+      "baseline_s_over_rho": 17.76313330366279,
+      "status": "ok"
+    },
+    {
+      "id": "bench-prime-22",
+      "by_m": {
+        "2": {
+          "status": "ok",
+          "pairs": 8,
+          "lead_s": {
+            "69066127048": 7.801062795286749,
+            "69066167551": 9.244698627591397,
+            "69066208054": 7.37049297414391,
+            "69066248557": 8.503978912185811,
+            "69066289060": 8.263310358643995,
+            "69066329563": 9.231143638840232,
+            "69066370066": 9.317956952171473,
+            "69066410569": 9.916521578564211
+          },
+          "speedup_geomean": 3.718991824407848,
+          "speedup_ci": [
+            3.5207103778712487,
+            3.932596890245141
+          ],
+          "lead_s_over_rho": 6.786834740616964,
+          "peak_rss_gib": 0.0219,
+          "better": true
+        },
+        "3": {
+          "status": "ok",
+          "pairs": 8,
+          "lead_s": {
+            "69066127048": 9.740803006347827,
+            "69066167551": 9.189632573894595,
+            "69066208054": 8.90147233476506,
+            "69066248557": 8.225221826669888,
+            "69066289060": 8.454181831793775,
+            "69066329563": 8.9896003459286,
+            "69066370066": 8.412766399091204,
+            "69066410569": 9.414455071220617
+          },
+          "speedup_geomean": 3.6209792685670865,
+          "speedup_ci": [
+            3.476130387926736,
+            3.7669768045360352
+          ],
+          "lead_s_over_rho": 6.950438642762838,
+          "peak_rss_gib": 0.0219,
+          "better": true
+        },
+        "4": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "5": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "6": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "7": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "8": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "9": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        }
+      },
+      "arms": {
+        "baseline": {
+          "status": "ok",
+          "wall_seconds": 0.142,
+          "peak_rss_gib": 0.0219,
+          "killed_by": null
+        },
+        "lead-m2": {
+          "status": "ok",
+          "wall_seconds": 0.102,
+          "peak_rss_gib": 0.0219,
+          "killed_by": null
+        },
+        "lead-m3": {
+          "status": "ok",
+          "wall_seconds": 0.084,
+          "peak_rss_gib": 0.0219,
+          "killed_by": null
+        }
+      },
+      "instance": "generated-22bit-3211357",
+      "rho_reference": {
+        "method": "negation-map r-adding walk: look-ahead, short-cycle escape by doubling, distinguished points, stride starts",
+        "automorphisms": 2,
+        "runs": 16,
+        "mean_s": 1.2827991342672698,
+        "min_s": 0.40274210080324774,
+        "max_s": 2.1593001000129806,
+        "all_verified": true
+      },
+      "baseline_s": {
+        "69066127048": 31.594565858297788,
+        "69066167551": 32.27608663465816,
+        "69066208054": 31.343414512912116,
+        "69066248557": 32.24633478651233,
+        "69066289060": 32.08185620244439,
+        "69066329563": 32.98612581981369,
+        "69066370066": 32.41363705918415,
+        "69066410569": 32.97753369976323
+      },
+      "baseline_s_over_rho": 25.132496164423724,
+      "status": "ok"
+    }
+  ]
+}
