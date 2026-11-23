@@ -71,4 +71,49 @@ theorem acceptedCount [Finite E] :
     have bad := congrArg Prod.fst eq
     exact zero_ne_one (α := ZMod 2) bad
 
+
+section ArbitraryBuckets
+
+variable {V W : Type*} [AddCommGroup V] [AddCommGroup W]
+
+/-- Every attainable boundary erased by the bucket map has exactly as many
+preimages as the genuine zero boundary. -/
+private noncomputable def splitAccepted (d : E →+ V) (h : V →+ W) :
+    {x : E // h (d x) = 0} ≃
+    {v : V // v ∈ Set.range d ∧ h v = 0} × {x : E // d x = 0} := by
+  classical
+  let pick (v : {v : V // v ∈ Set.range d ∧ h v = 0}) := v.property.1.choose
+  have picked (v) : d (pick v) = v.val := v.property.1.choose_spec
+  let label (x : {x : E // h (d x) = 0}) :
+      {v : V // v ∈ Set.range d ∧ h v = 0} := ⟨d x, ⟨x, rfl⟩, x.property⟩
+  refine {
+    toFun := fun x => (label x, ⟨x.val - pick (label x), ?_⟩)
+    invFun := fun y => ⟨y.2.val + pick y.1, ?_⟩
+    left_inv := ?_
+    right_inv := ?_ }
+  · rw [map_sub, picked]
+    exact sub_self _
+  · rw [map_add, y.2.property, zero_add, picked]
+    exact y.1.property.2
+  · intro x
+    exact Subtype.ext (sub_add_cancel ..)
+  · rintro ⟨v, x⟩
+    have hl : label ⟨x.val + pick v, by simp [picked, x.property, v.property.2]⟩ = v := by
+      apply Subtype.ext
+      change d (x.val + pick v) = v.val
+      simp [picked, x.property]
+    apply Prod.ext
+    · exact hl
+    · apply Subtype.ext
+      change x.val + pick v - pick (label _) = x.val
+      rw [hl, add_sub_cancel_right]
+
+theorem bucketCount [Finite E] (d : E →+ V) (h : V →+ W) :
+    Nat.card {x : E // h (d x) = 0} =
+      Nat.card {v : V // v ∈ Set.range d ∧ h v = 0} *
+      Nat.card {x : E // d x = 0} := by
+  rw [Nat.card_congr (splitAccepted d h), Nat.card_prod]
+
+end ArbitraryBuckets
+
 end M31HashCollision
