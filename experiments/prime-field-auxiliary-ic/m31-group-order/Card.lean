@@ -226,6 +226,34 @@ theorem firstMixedTransfer {A : Type*} [AddGroup A] (n : ℕ)
     f (a, t) = f ((a, (0 : T)) + (0, t)) := by simp [Prod.mk_add_mk]
     _ = f (a, 0) := by rw [map_add, ht, add_zero]
 
+/-- Degree in the additive finite-difference sense. Degree zero means constant;
+each difference in an arbitrary direction must lower the bound by one. -/
+def differenceDegree {G H : Type*} [AddCommGroup G] [AddCommGroup H] :
+    ℕ → (G → H) → Prop
+  | 0, f => ∀ x, f x = f 0
+  | d+1, f => ∀ h, differenceDegree d (fun x => f (x+h) - f x)
+
+/-- A bounded-difference-degree map on a rational twist batch is constant.
+Other inputs may be fixed parameters while taking differences. -/
+theorem firstTwistPolynomialTransfer (n d : ℕ)
+    (f : (Fin n → (shortCurve (-14)).Point) → E.Point)
+    (hf : differenceDegree d f) : ∀ x, f x = f 0 := by
+  induction d generalizing f with
+  | zero => exact hf
+  | succ d ih =>
+    have step (x h) : f (x+h) - f x = f h - f 0 := by
+      simpa using ih _ (hf h) x
+    let linear : (Fin n → (shortCurve (-14)).Point) →+ E.Point :=
+      { toFun := fun x => f x - f 0
+        map_zero' := sub_self _
+        map_add' := fun x y => by
+          have h := sub_eq_iff_eq_add.mp (step x y)
+          rw [h]
+          abel }
+    intro x
+    have trivial := DFunLike.congr_fun (firstTwistBatchTransfer n linear) x
+    exact sub_eq_zero.mp trivial
+
 /-- A zero ordinate would supply a nonidentity rational point killed by two. -/
 theorem noZeroCubic (b : F) (smooth : (shortCurve b).Δ ≠ 0)
     (odd : Odd (Nat.card (shortCurve b).Point)) (x : F) : cubic b x ≠ 0 := by
