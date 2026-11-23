@@ -45,3 +45,17 @@ done
 ```
 
 The directory's replay.sh rebuilds the Lean certificate from a fresh temporary module directory using the mathlib environment documented in README.md.
+
+## Attribution to the archived complete run
+
+At revision `efb9330c1`, the archived `v2_batch` driver selects `chain_batch`. Its native input contains 17 factor-base points. The dictionary maps their x coordinates to 17 distinct column indices. The public lookup timed here accepts 32 structured coordinates and returns a lift bit for each of them. The 15 listed nonsquares are absent from the native dictionary. For all 17 members, the lookup returns the same positive status. The first two native columns have x coordinates 3 and 98625645. CoordinateLookup.lean proves that a decoder receiving only the lookup status cannot return both of those column indices correctly.
+
+In the archived native_v2.cpp, lines 266–274 evaluate the candidate condition. Lines 367–375 then probe the dictionary for each finite signed trial, returning on the first successful lookup. Lines 440–452 skip empty results and classify each success as a duplicate or a recorded row. Thus the number of successful dictionary probes is exactly the sum of those two recorded counters. A recorded row with first sign −1 also implies at least one unsuccessful probe on its earlier +1 trial. If that trial had skipped the probe at infinity, the signed second point in the recorded row would equal twice the first point. Direct doubling of all 17 public points shows that none has a doubled x coordinate in the factor base.
+
+| Seed | Outer queries | Successful probes | Proven minimum unsuccessful probes | Proven minimum total probes |
+|---:|---:|---:|---:|---:|
+| 0 | 34,771,537 | 15 | 7 | 22 |
+| 1 | 19,300,166 | 14 | 8 | 22 |
+| 2 | 45,496,514 | 9 | 4 | 13 |
+
+These three archived runs share a public target. Their timing records omit the number of other unsuccessful probes and the time spent in dictionary lookup. The candidate-only benchmark branch at lines 442–443 skips extraction entirely. Neither the outer query count nor the candidate-only timing supplies the missing measurements. The independent 4.04–4.13× lookup result therefore yields no measured full-run speedup or measured full-run ceiling. The attribution can be replayed with `python3 archive_lookup.py`. It verifies the archived native source digest against each record, checks the column ordering in chain.txt, and recomputes the lower bounds from the archived public rows.

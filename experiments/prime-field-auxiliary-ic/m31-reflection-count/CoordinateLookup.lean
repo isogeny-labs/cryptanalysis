@@ -67,3 +67,17 @@ theorem exact_lookup (layout : Layout) (x : Word) (b : Bool) :
     exact eq_of_beq (List.all_eq_true.mp complete (x,b) mem)
 
 end M31Reflection.CoordinateLookup
+
+namespace M31Reflection.CoordinateLookup
+
+/-- In the archived input, columns zero and one have different coordinates
+and both lift. A decoder of the returned status alone cannot recover both indices. -/
+theorem status_does_not_identify_column (layout : Layout) (decode : Option Bool → Option Nat) :
+    ¬ (decode (lookup layout 3) = some 0 ∧ decode (lookup layout 98625645) = some 1) := by
+  have left := (exact_lookup layout 3 true).mpr (by native_decide)
+  have right := (exact_lookup layout 98625645 true).mpr (by native_decide)
+  rw [left, right]
+  rintro ⟨h₀,h₁⟩
+  simp_all
+
+end M31Reflection.CoordinateLookup
