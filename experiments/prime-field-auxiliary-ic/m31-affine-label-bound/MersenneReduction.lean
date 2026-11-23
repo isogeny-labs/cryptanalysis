@@ -134,4 +134,33 @@ theorem doublingHighLane {a b : Nat} (ha : a < p) (hb : b < p) :
   unfold p
   split at hc <;> omega
 
+/-- Concatenate two all-one exponent blocks by squaring the first value k times. -/
+def joinPowers {G : Type*} [Monoid G] (k : ℕ) (a b : G) : G := a^(2^k) * b
+
+theorem characterChain {G : Type*} [Monoid G] (x : G) :
+    let x2 := joinPowers 1 x x
+    let x3 := joinPowers 1 x2 x
+    let x5 := joinPowers 2 x3 x2
+    let x10 := joinPowers 5 x5 x5
+    let x15 := joinPowers 5 x10 x5
+    joinPowers 15 x15 x15 = x^1073741823 := by
+  have step (k m n : ℕ) : joinPowers k (x^m) (x^n) = x^(m*2^k+n) := by
+    rw [joinPowers, ← pow_mul, ← pow_add]
+  have h2 : joinPowers 1 x x = x^3 := by simpa only [pow_one] using step 1 1 1
+  have h3 : joinPowers 1 (x^3) x = x^7 := by simpa only [pow_one] using step 1 3 1
+  dsimp only
+  simp only [h2, h3, step]
+  exact congrArg (x ^ ·) (by decide)
+
+/-- For a nonzero input the archived 30-square equality tests the Euler exponent. -/
+theorem squaresCharacter {F : Type*} [Field F] (y : F) (hy : y ≠ 0) :
+    y^1073741824 = y ↔ y^1073741823 = 1 := by
+  change y^(1073741823 + 1) = y ↔ _
+  rw [pow_succ]
+  constructor
+  · intro h
+    exact mul_right_cancel₀ hy (h.trans (one_mul y).symm)
+  · intro h
+    rw [h, one_mul]
+
 end M31Reduction
