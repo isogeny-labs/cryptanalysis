@@ -9,6 +9,8 @@ on:
       - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct321_blind_challenge.py"
       - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct322_prime31_bsgs.rs"
       - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct322_live_prime31_bsgs.py"
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct323_prime31_rho.rs"
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct323_matched_prime31_control.py"
       - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct304_execution_receipt_gate.py"
       - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct315_complete_cold_panel.py"
       - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct317_group_replay.py"
@@ -36,6 +38,7 @@ jobs:
           python3 -m py_compile experiments/chained-transfer-public-target/norm-point-reuse-01/ct320_distinct_public_targets.py
           python3 -m py_compile experiments/chained-transfer-public-target/norm-point-reuse-01/ct321_blind_challenge.py
           python3 -m py_compile experiments/chained-transfer-public-target/norm-point-reuse-01/ct322_live_prime31_bsgs.py
+          python3 -m py_compile experiments/chained-transfer-public-target/norm-point-reuse-01/ct323_matched_prime31_control.py
       - name: Exercise all four source-only gates (normal and optimized)
         run: |
           set -eu
@@ -62,3 +65,11 @@ jobs:
           python3 "$d/ct322_live_prime31_bsgs.py" --native "${RUNNER_TEMP}/ct322-prime31-bsgs"
           python3 -O "$d/ct322_live_prime31_bsgs.py" --native "${RUNNER_TEMP}/ct322-prime31-bsgs"
           echo CT322_NATIVE_PRIME31_BSGS_PUBLIC_ONLY_PASS
+      - name: CT323 live public-only same-CPU ABBA rho/BSGS (not transferred candidate)
+        run: |
+          set -euo pipefail
+          d=experiments/chained-transfer-public-target/norm-point-reuse-01
+          rustc --edition=2021 -C opt-level=3 -C debuginfo=0 "$d/ct323_prime31_rho.rs" -o "${RUNNER_TEMP}/ct323-prime31-rho"
+          python3 "$d/ct323_matched_prime31_control.py" --rho-native "${RUNNER_TEMP}/ct323-prime31-rho" --bsgs-native "${RUNNER_TEMP}/ct322-prime31-bsgs"
+          python3 -O "$d/ct323_matched_prime31_control.py" --rho-native "${RUNNER_TEMP}/ct323-prime31-rho" --bsgs-native "${RUNNER_TEMP}/ct322-prime31-bsgs"
+          echo CT323_NATIVE_PRIME31_MATCHED_PUBLIC_ONLY_PASS
