@@ -7,6 +7,8 @@ on:
       - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct319_receipt_cost_binding.py"
       - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct320_distinct_public_targets.py"
       - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct321_blind_challenge.py"
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct322_prime31_bsgs.rs"
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct322_live_prime31_bsgs.py"
       - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct304_execution_receipt_gate.py"
       - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct315_complete_cold_panel.py"
       - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct317_group_replay.py"
@@ -22,6 +24,8 @@ jobs:
     timeout-minutes: 4
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Compile six source auditors
         run: |
           python3 -m py_compile experiments/chained-transfer-public-target/norm-point-reuse-01/ct304_execution_receipt_gate.py
@@ -31,6 +35,7 @@ jobs:
           python3 -m py_compile experiments/chained-transfer-public-target/norm-point-reuse-01/ct319_receipt_cost_binding.py
           python3 -m py_compile experiments/chained-transfer-public-target/norm-point-reuse-01/ct320_distinct_public_targets.py
           python3 -m py_compile experiments/chained-transfer-public-target/norm-point-reuse-01/ct321_blind_challenge.py
+          python3 -m py_compile experiments/chained-transfer-public-target/norm-point-reuse-01/ct322_live_prime31_bsgs.py
       - name: Exercise all four source-only gates (normal and optimized)
         run: |
           set -eu
@@ -48,3 +53,12 @@ jobs:
           python3 -O "$d/ct320_distinct_public_targets.py" --self-test
           python3 -O "$d/ct321_blind_challenge.py" --self-test
           echo CT321_BLIND_CHALLENGE_SOURCE_ONLY_PASS
+      - name: Execute native Rust BSGS on exact prime31 public Q (no transferred-candidate claim)
+        run: |
+          set -euo pipefail
+          d=experiments/chained-transfer-public-target/norm-point-reuse-01
+          rustc --version
+          rustc --edition=2021 -C opt-level=3 -C debuginfo=0 "$d/ct322_prime31_bsgs.rs" -o "${RUNNER_TEMP}/ct322-prime31-bsgs"
+          python3 "$d/ct322_live_prime31_bsgs.py" --native "${RUNNER_TEMP}/ct322-prime31-bsgs"
+          python3 -O "$d/ct322_live_prime31_bsgs.py" --native "${RUNNER_TEMP}/ct322-prime31-bsgs"
+          echo CT322_NATIVE_PRIME31_BSGS_PUBLIC_ONLY_PASS
