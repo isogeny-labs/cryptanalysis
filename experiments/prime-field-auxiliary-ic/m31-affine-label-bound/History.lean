@@ -43,6 +43,15 @@ theorem bestScore : IsGreatest (Set.range score) 1074925959 := by
 
 theorem totalCount : (∑ h : Fin 4096, (count h false + count h true)) = 2147483647 := by native_decide
 
+/-- A batch of coordinatewise squarings preserves each lane's exponent. -/
+theorem batchPower {R I : Type*} [Monoid R] (input : I → R) (k : ℕ) (j : I) :
+    (((fun v : I → R => fun i => v i * v i)^[k]) input) j = (input j)^(2^k) := by
+  induction k with
+  | zero => simp
+  | succ k ih =>
+    rw [Function.iterate_succ_apply', pow_succ (2 : ℕ), pow_mul, pow_two]
+    exact congrArg₂ (· * ·) ih ih
+
 namespace Smooth47
 
 private def rows := (((include_str "smooth_history.csv").trimAscii.toString.splitOn "\n").drop 1).toArray

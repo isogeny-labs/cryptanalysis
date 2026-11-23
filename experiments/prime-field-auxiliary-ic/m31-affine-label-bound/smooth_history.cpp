@@ -1,4 +1,7 @@
 // Exact conditional distribution on the existing bound-47 smooth-orbit population.
+#ifdef BATCH_HISTORY
+#include "../m31-native-product/product.h"
+#endif
 #include <algorithm>
 #include <array>
 #include <cstdint>
@@ -32,9 +35,41 @@ bool square(Word x) {
 #endif
 }
 
-bool lift(Word x) {
-    return square(((x*x % p)*x + 2*x + 14) % p);
-}
+Word rhs(Word x) { return ((x*x % p)*x + 2*x + 14) % p; }
+
+using Counts = std::array<unsigned,2048>;
+#ifdef BATCH_HISTORY
+class Histories {
+    static constexpr size_t capacity = 32;
+    std::array<uint32_t, 11*capacity> inputs, powers;
+    size_t used = 0;
+
+public:
+    void append(Word x, Counts& counts) {
+        Word offset = (x+p-10) % p;
+        for (size_t j = 0; j < 11; ++j) {
+            inputs[11*used+j] = rhs(offset);
+            if (++offset == p) offset = 0;
+        }
+        if (++used == capacity) flush(counts);
+    }
+
+    void flush(Counts& counts) {
+        if (!used) return;
+        const size_t n = 11*used;
+        m31_products(inputs.data(), inputs.data(), powers.data(), n);
+        for (unsigned i = 1; i < 30; ++i)
+            m31_products(powers.data(), powers.data(), powers.data(), n);
+        for (size_t i = 0; i < n; i += 11) {
+            unsigned index = 0;
+            for (size_t j = i; j < i+11; ++j)
+                index = 2*index + (powers[j] == inputs[j]);
+            ++counts[index];
+        }
+        used = 0;
+    }
+};
+#endif
 
 int main() {
     std::vector<Word> smooth{1};
@@ -44,7 +79,10 @@ int main() {
             for (Word v = q*smooth[i]; v < p; v *= q) smooth.push_back(v);
     }
     std::unordered_set<Word> seen;
-    std::array<unsigned,2048> counts{};
+    Counts counts{};
+#ifdef BATCH_HISTORY
+    Histories histories;
+#endif
     for (Word v : smooth) {
         Word key = v;
         for (Word x = rotate(v); x != v; x = rotate(x)) key = std::min(key,x);
@@ -52,17 +90,24 @@ int main() {
         Word x = key;
         do {
             if (!square((x*x + 1) % p)) {
+#ifdef BATCH_HISTORY
+                histories.append(x, counts);
+#else
                 unsigned index = 0;
                 Word offset = (x+p-10) % p;
                 for (unsigned j = 0; j <= 10; ++j) {
-                    index = 2*index + lift(offset);
+                    index = 2*index + square(rhs(offset));
                     if (++offset == p) offset = 0;
                 }
                 ++counts[index];
+#endif
             }
             x = rotate(x);
         } while (x != key);
     }
+#ifdef BATCH_HISTORY
+    histories.flush(counts);
+#endif
     std::puts("history,successor,count");
     for (unsigned i = 0; i < counts.size(); ++i)
         std::printf("%u,%u,%u\n",i/2,i%2,counts[i]);

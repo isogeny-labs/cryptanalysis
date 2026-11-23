@@ -59,3 +59,30 @@ Restrict x to the existing bound-47 census: some binary rotation of its positive
 Across all 1852867 coordinates, 925398 lift. Every one of the 1024 histories has both possible successors, with at least 778 coordinates per history/successor pair. The maximum score over all deterministic ten-bit Boolean rules is 943323 (50.911533%). Always predicting the more common successor gives 927469 (50.055886%). In the full field the corresponding ten-bit optimum was 50.026682%. The conditioned optimum uses the majority of each cell in the complete population. It measures the information available from this fixed probe set; it charges neither acquiring the probe bits nor looking up the answer.
 
 Compile smooth_history.cpp with clang++ -O3 -std=c++17 and run the executable to reproduce smooth_history.csv. Rebuild with -DCHECK_JACOBI to replace repeated squaring with quadratic reciprocity. Both builds use the same population traversal and produce byte-identical tables; their total and lift marginal also match the existing smoothness census. History.lean checks the table layout, cell floor, marginals and optimal score.
+
+### Local timing of the complete bound-47 history census
+
+The batch build collects 32 eligible coordinates at a time. It lays out all eleven cubic values for each coordinate contiguously and passes the 352 values through thirty rounds of the existing M31 product kernel. The final batch contains three coordinates. Eligibility, population generation, history indexing and CSV output are shared with the scalar control.
+
+From this directory, build the two executables with:
+
+```sh
+clang++ -O3 -std=c++17 smooth_history.cpp -o scalar
+clang -O3 -c ../m31-native-product/product.c -o product.o
+clang++ -O3 -std=c++17 -DBATCH_HISTORY smooth_history.cpp product.o -o batch
+```
+
+The table reports elapsed time and child user plus system CPU time in seconds on one Apple M4 Pro, Apple clang 21.0.0. Each row starts a fresh process and captures the complete CSV through a pipe. Wall timing includes comparing the bytes against smooth_history.csv; compilation is outside the panel. Runs took place consecutively in the listed order.
+
+| Run | Build | Wall (s) | CPU (s) |
+|---:|---|---:|---:|
+| 1 | scalar | 1.287000 | 1.147059 |
+| 2 | batch | 0.470934 | 0.371684 |
+| 3 | batch | 0.373722 | 0.371325 |
+| 4 | scalar | 1.178437 | 1.163805 |
+| 5 | scalar | 1.168872 | 1.160698 |
+| 6 | batch | 0.373038 | 0.370603 |
+| 7 | batch | 0.376336 | 0.373462 |
+| 8 | scalar | 1.150439 | 1.146111 |
+
+The ratio of median times is 3.13 on wall time and 3.11 on CPU time. All eight outputs matched the saved table byte for byte. A batch build with M31_PORTABLE on product.c and a separate CHECK_JACOBI scalar build also reproduced it. History.lean proves the coordinatewise batch exponent by induction; ../m31-rotation-smoothness/SquareTest.lean identifies its thirtieth iterate with the field square test. Timings cover this complete public-coordinate census on this host.
