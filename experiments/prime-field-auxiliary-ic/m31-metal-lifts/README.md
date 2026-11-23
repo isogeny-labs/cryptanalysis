@@ -1,0 +1,5 @@
+# Complete bound-89 lift census on local Metal
+
+Compare the last frozen pruned NEON in-place arm with a Metal shader using identical host generation and a 32-bit ordered label per coordinate. In both arms count all returned labels before stopping the clock. Fresh shared buffer allocation, copying coordinates in, submitting, waiting, and copying labels back into the host vector are charged to Metal on every call. Fresh host allocation and generation are charged to both. Each device thread handles one coordinate. Use two independent processes with opposite first arm. Round zero includes first use of each arm and Metal device, shader-source read, runtime compilation, pipeline and queue creation; the OS shader cache may already be populated. Rounds 1 through 12 reuse the pipeline and alternate order. Keep all rows. Check complete label equality and the independent count in every process. Compare paired wall times per process, first-use totals separately, and command-buffer device time as diagnostic only.
+
+From this directory run bash build.sh /tmp/m31-metal-lifts, then /tmp/m31-metal-lifts 0 and /tmp/m31-metal-lifts 1. Each invocation writes a CSV stream.
