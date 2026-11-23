@@ -32,8 +32,7 @@ The finite replay in `tests/compact_chord_equivalence.rs` independently
 compares (1) with the repository's affine group law for all
 \(64^3=2^{18}=262144\) signed selections per fixture. Model counts
 are planted 1, natural 0, exact-UNSAT 0. This validates the algebraic
-predicate for these exact fixtures; the CNF gate compiler described
-below has not yet been implemented or exhaustively checked.
+predicate for these exact fixtures.
 
 ## Deterministic Tseitin expansion
 
@@ -75,20 +74,56 @@ schoolbook implementation therefore uses
 \(O(18\cdot20^2+3\cdot64\cdot20)\) Boolean gates and clauses,
 independent of the 4,096 first-pair combinations. This is a locality
 and construction-cost claim, **not** a lower clause count: a naive
-bit blast may be substantially larger than the existing 4,101-clause
-planted full-theory closure. Actual variable and clause counts must
-be recorded from an emitted DIMACS before any solver comparison.
+bit blast is substantially larger than the existing 4,101-clause
+planted full-theory closure. The emitted counts from
+`tools/m3_compact_cnf.py` are:
+
+| Archived IR | Variables | Clauses | DIMACS bytes | SHA-256 |
+| --- | ---: | ---: | ---: | --- |
+| planted | 61,735 | 207,958 | 3,834,601 | `5702fccfd7cc029d6b773087bd67a467b95a6e80064417edf18773ce87e4de65` |
+| natural | 61,732 | 207,923 | 3,833,531 | `ab2f0a3e4641f87f68dc8e7f997ea583708a54aedb300d39fef3ab4709a3140a` |
+| exact-UNSAT | 62,308 | 209,888 | 3,871,585 | `dd3e5ccf5e026f1fc98967cbb72b808e7149aab75aebab33116cf134e75a3253` |
+
+The differing counts arise from public target constants and Boolean
+constant propagation. Construction uses the fixed three 64-point
+tables and the circuit, not a first-pair lookup. DIMACS generation
+time and downstream solve time are separate costs; the counts alone
+establish no solver advantage.
+
+To reproduce one emitted file without overwriting an existing path:
+
+```sh
+python3 crates/prime-field-m3-cdclt/tools/m3_compact_cnf.py \
+  crates/prime-field-m3-cdclt/fixtures/s5/lead2b-s5-planted.ir \
+  /tmp/lead2b-s5-planted-compact.cnf
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover \
+  -s crates/prime-field-m3-cdclt/tests -p test_m3_compact_cnf.py
+CARGO_TARGET_DIR=/tmp/g33-compact-cargo-target cargo test \
+  --manifest-path crates/prime-field-m3-cdclt/Cargo.toml \
+  --test compact_chord_equivalence
+```
 
 ## Controls and unresolved validation
 
-An emitter must hash the exact canonical IR bytes, preserve the 18
-selector variables, record all auxiliary variables and construction
-time, and parse its DIMACS back independently. It must check that
-every gate-equivalence clause is emitted and that existential CNF
-models project exactly to the group models on all 262,144 selectors
-for the planted, natural, and exact-UNSAT fixtures. The null fixtures
-must stay null under projection. The Rust algebraic test does not
-substitute for that emitter check.
+The emitter hashes the exact canonical IR bytes and preserves the 18
+selector variables, followed by its auxiliary variables. The
+independent DIMACS parser in `tests/test_m3_compact_cnf.py` checks a
+complete satisfying auxiliary assignment for the planted fixture,
+checks that a changed selector fails at least one clause, and checks
+rejected sample assignments for both null fixtures. It also checks
+header counts, input digest, literal bounds, clause terminators and
+collision refusal. Focused tests cover all primitive-gate input truth
+tables and all 25 ordered input pairs for modular addition,
+subtraction and multiplication over \(\mathbb F_5\), including
+checks that flipping a result bit invalidates the generated witness.
+The gate equivalences and exact integer-width
+constraints give the semantic argument for existential projection;
+the Rust test exhaustively checks the underlying group predicate.
+There has **not** been an independent SAT-level enumeration of every
+selector's auxiliary completions, so the parser test alone must not
+be described as such a check. The natural and exact-UNSAT cases stay
+null under the algebraic predicate; their emitted CNFs have not been
+separately solved to completion.
 
 A later SP cohort needs matched SAT and UNSAT cases, identical
 encoding and solver settings, declared preprocessing, and setup
