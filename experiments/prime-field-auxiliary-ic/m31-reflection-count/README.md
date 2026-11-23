@@ -37,3 +37,5 @@ Shifted.lean proves smoothness and this cardinality identity for every center. I
 Run `python3 shifted_panel.py` for the counts at the 32 distinct structured roots from the pinned public fixture, plus the center-zero control. The script checks the formula by direct character sums for 724 small-field center and prime combinations. The fewest mixed pairs among the 32 occur at c = 1,431,655,765 (536,834,928), and the most at c = 1,900,239,952 (536,908,419). The C square-bitmap replay checks both extrema and center zero by scanning the full M31 field. The exact results are in shifted.csv. No collector timings were taken for this comparison.
 
 The [restricted-domain comparison](FIXTURE.md) checks lossless folding of the archived 32 coordinates under affine and projective involutions, an orientation correction by coordinate-bit parity, and native costs when the fixture slot is supplied.
+
+The [coordinate-only lookup comparison](COORDINATE_LOOKUP.md) measures exact fixture membership and lift status with arbitrary incoming coordinates. It includes runtime hash construction, paired batch timings and a Lean proof for all 32-bit input words.
