@@ -34,4 +34,35 @@ theorem m31ShortOrbit {G H : Type*} [AddCommGroup G] [AddCommGroup H]
   rw [targetCard]
   decide
 
+/-- Index a cycle starting just after its exceptional edge. If the ordinary
+edges have the prescribed increment, all 53 vertex values are forced. -/
+theorem oneBreakValues {H : Type*} [AddCommGroup H] (f : Fin 53 → H) (t : H)
+    (step : ∀ i : Fin 52, f i.succ = f i.castSucc + t) (i : Fin 53) :
+    f i = f 0 + i.val • t := by
+  induction i using Fin.induction with
+  | zero => simp
+  | succ i ih => rw [step, ih]; simp [succ_nsmul, add_assoc]
+
+/-- The affine labels give an extremizer for one step. At distance d the
+directed step fails precisely at starting indices that wrap around. -/
+theorem wrapFailure {H : Type*} [AddCommGroup H] (t : H) (nonzero : 53 • t ≠ 0)
+    (i d : Fin 53) :
+    ((i + d).val • t ≠ i.val • t + d.val • t) ↔ 53 ≤ i.val + d.val := by
+  rw [← add_nsmul]
+  change (((i.val + d.val) % 53) • t ≠ (i.val + d.val) • t) ↔ _
+  by_cases h : i.val + d.val < 53
+  · simp [Nat.mod_eq_of_lt h, Nat.not_le.mpr h]
+  · have eqn : i.val + d.val = (i.val + d.val) % 53 + 53 := by
+      have := i.isLt
+      have := d.isLt
+      omega
+    refine iff_of_true (fun heq => nonzero ?_) (by omega)
+    nth_rw 2 [eqn] at heq
+    rw [add_nsmul] at heq
+    exact add_left_cancel (a := ((i.val + d.val) % 53) • t) (by simpa using heq.symm)
+
+theorem wrapCount : ∀ d : Fin 53,
+    (Finset.univ.filter (fun i : Fin 53 => 53 ≤ i.val + d.val)).card = d.val := by
+  decide
+
 end M31Translation
