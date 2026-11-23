@@ -146,7 +146,7 @@ jobs:
           echo "Both native compilation graphs passed; no benchmark was run." | tee ct137-evidence/verdict.txt
       - name: Preserve source custody, compiler output and failures
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ct137-original-reuse-native-compile-evidence
           path: ct137-evidence/

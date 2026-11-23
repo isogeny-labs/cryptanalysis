@@ -1,0 +1,12 @@
+inline uint32_t corrected_reciprocal(uint32_t x) {
+    const uint32_t key = @KEY@;
+    const uint32_t left = key % @WIDTH@;
+    const uint32_t right = @WIDTH@ + ((key * @SALT@u) >> @SHIFT@);
+    return labels[left] ^ labels[right] ^ @SIGN@;
+}
+inline uint32x4_t corrected_reciprocal(uint32x4_t x) {
+    uint32_t lanes[4];
+    vst1q_u32(lanes, x);
+    for (auto &lane : lanes) lane = corrected_reciprocal(lane);
+    return vld1q_u32(lanes);
+}
