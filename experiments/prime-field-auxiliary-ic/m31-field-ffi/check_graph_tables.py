@@ -37,12 +37,17 @@ def generate(keys, width, salt):
 
 
 def certificate_labels(source, name):
-    assembly = re.search(rf"^def {name}Table : Array Nat := (.+)$", source, re.M)
-    chunks = []
-    for part in assembly[1].split(" ++ "):
-        match = re.search(rf"private def {re.escape(part)} : Array Nat := #\[([\d,\s]+)\]", source)
-        chunks.extend(int(value) for value in match[1].split(","))
-    return chunks
+    body = source.split(f"private def {name}Block : Nat → Nat\n", 1)[1].split("  | _ => 0", 1)[0]
+    labels = []
+    for expected, line in enumerate(body.splitlines()):
+        match = re.fullmatch(r"  \| (\d+) => (0x[0-9a-f]+)", line)
+        if match is None or int(match[1]) != expected:
+            raise ValueError(f"invalid {name} block {expected}")
+        packed = int(match[2], 16)
+        if packed.bit_length() > 32 * 64:
+            raise ValueError(f"oversized {name} block {expected}")
+        labels.extend((packed >> (32 * i)) & 0xffffffff for i in range(64))
+    return labels
 
 
 def main():
