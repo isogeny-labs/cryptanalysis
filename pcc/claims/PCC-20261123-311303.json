@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T02:40:43Z",
+ "id": "PCC-20261123-311303",
+ "kind": "measurement",
+ "producer": {
+  "commit": "fb57972cc3f26d04c67816dbec209f42c08a2429",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-metal-lifts/run0.csv",
+    "sha256": "06935d326569553c599f9c50cfd1deec92070840fd221bcd04f138605da8c468"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-metal-lifts/run1.csv",
+    "sha256": "361df684a929880155a019a6b9e2a541fbe6fea83f603581ff6606306af614c2"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "At smoothness bound 89, complete warm M31 lift census on Metal had paired wall ratios of 1.974 and 1.919 against the pruned in-place one-thread NEON path. First-use GPU totals were 239.78 and 67.94 ms. All outputs agreed."
+}
