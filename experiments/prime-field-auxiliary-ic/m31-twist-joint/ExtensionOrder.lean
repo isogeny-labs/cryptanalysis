@@ -54,4 +54,18 @@ theorem odd_count_residue (d : ℕ) (hd : Odd d) :
   · intro h
     simp [h]
 
+/-- Odd-degree point-count residue for the trace-zero auxiliary curve. -/
+theorem aux_odd (d : ℕ) (hd : Odd d) :
+    1 + (2147483647 : ZMod 2147505293)^d = 0 ↔ 536876323 ∣ d := by
+  rw [← root_returns]
+  change _ ↔ (-(2147483647 : ZMod 2147505293))^d = 1
+  rw [hd.neg_pow]
+  constructor <;> intro h <;> linear_combination -h
+
+/-- In degree 2k both Frobenius roots raised to 2k equal (-p)^k. -/
+theorem aux_even (k : ℕ) :
+    (1 - root^k)^2 = 0 ↔ 536876323 ∣ k := by
+  letI : Fact (Nat.Prime 2147505293) := ⟨by native_decide⟩
+  rw [← root_returns, sq, mul_eq_zero, or_self, sub_eq_zero, eq_comm]
+
 end M31TwistExtension
