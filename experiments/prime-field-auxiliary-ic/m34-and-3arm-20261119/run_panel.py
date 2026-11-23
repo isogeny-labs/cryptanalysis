@@ -204,24 +204,30 @@ def summarize_yield(report: dict) -> dict:
     }
 
 
+def replay_evidence(report: dict, input_path: Path, arm_flags: list[str]) -> dict:
+    public_input = json.loads(input_path.read_text())
+    public = public_input["public"]
+    for key in ("p", "a", "b", "n", "P", "Q"):
+        if key not in public or public[key] != report["public"][key]:
+            raise ValueError(f"missing or inconsistent public input field {key}")
+    return {
+        "input": public_input,
+        "public": report["public"],
+        "factor_base": report["factor_base"],
+        "arm_flags": arm_flags,
+        "configured_search": report["configured_search"],
+        "certificate": report["certificate"],
+    }
+
+
 def summarize_solve(report: dict, input_path: Path, arm_flags: list[str]) -> dict:
     fb = report["factor_base"]
     work = report["work"]
     phases = report["online_exclusive_phases"]["durations"]
     cli = report["cli_accounting"]
     scalar = verify_certificate_independently(report)
-    public_input = json.loads(input_path.read_text())
-    if any(report["public"][key] != value for key, value in public_input["public"].items()):
-        raise ValueError("certificate public parameters differ from the panel input")
     out = {
-        "replay_evidence": {
-            "input": public_input,
-            "public": report["public"],
-            "factor_base": fb,
-            "arm_flags": arm_flags,
-            "configured_search": report["configured_search"],
-            "certificate": report["certificate"],
-        },
+        "replay_evidence": replay_evidence(report, input_path, arm_flags),
         "status": report["status"],
         "summands": report["configured_search"]["summands"],
         "encoding": fb["encoding"]["kind"],
