@@ -213,6 +213,19 @@ theorem firstTwistBatchTransfer (n : ℕ)
   rw [Nat.card_fun, firstTwistCardinality, firstCardinality]
   exact (show Nat.Coprime 2147462003 2147505293 by decide).pow_left _
 
+/-- An additive map can use its auxiliary input, but changing any of the
+rational twist coordinates leaves the output on the first fixture unchanged. -/
+theorem firstMixedTransfer {A : Type*} [AddGroup A] (n : ℕ)
+    (f : A × (Fin n → (shortCurve (-14)).Point) →+ E.Point)
+    (a : A) (t : Fin n → (shortCurve (-14)).Point) : f (a, t) = f (a, 0) := by
+  let T := Fin n → (shortCurve (-14)).Point
+  have h := firstTwistBatchTransfer n (f.comp (AddMonoidHom.inr A T))
+  have ht : f (0, t) = 0 := by
+    exact DFunLike.congr_fun h t
+  calc
+    f (a, t) = f ((a, (0 : T)) + (0, t)) := by simp [Prod.mk_add_mk]
+    _ = f (a, 0) := by rw [map_add, ht, add_zero]
+
 /-- A zero ordinate would supply a nonidentity rational point killed by two. -/
 theorem noZeroCubic (b : F) (smooth : (shortCurve b).Δ ≠ 0)
     (odd : Odd (Nat.card (shortCurve b).Point)) (x : F) : cubic b x ≠ 0 := by
