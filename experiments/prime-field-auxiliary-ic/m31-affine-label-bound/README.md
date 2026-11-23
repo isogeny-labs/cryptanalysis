@@ -51,3 +51,11 @@ To see this, fix the offsets and a desired sign at each. Multiply each probe val
 Using √p < 46341, the total error is at most 46341 × (3 × 11 × 1024 − 2047) = 1471095045. Subtracting this from p, dividing by 2048, and rounding up gives the stated floor. AffinePair.lean checks pairwise coprimality and the counting argument from the individual character sum bounds. Weil's estimate is an external input.
 
 At a leaf of a deterministic adaptive rule, the observed signs fix its sequence of chosen offsets. After at most ten distinct probes, append any unseen offset with either sign. Pad to eleven distinct offsets if necessary. Each completion occurs on at least 330268 coordinates that follow the same path. Thus no such leaf can certify the new sign from the probe answers alone. This conclusion concerns exact decisions over the whole field. A smoothness-conditioned population or a rule that observes x itself requires a separate argument.
+
+## Ten preceding bits on the smooth-coordinate population
+
+Restrict x to the existing bound-47 census: some binary rotation of its positive representative is 47-smooth, and both x and x²+1 are quadratic nonsquares. Only x is subject to this restriction. Read the ten lift bits at x−10 through x−1 in field order and predict the bit at x. Each eligible coordinate has weight one.
+
+Across all 1852867 coordinates, 925398 lift. Every one of the 1024 histories has both possible successors, with at least 778 coordinates per history/successor pair. The maximum score over all deterministic ten-bit Boolean rules is 943323 (50.911533%). Always predicting the more common successor gives 927469 (50.055886%). In the full field the corresponding ten-bit optimum was 50.026682%. The conditioned optimum uses the majority of each cell in the complete population. It measures the information available from this fixed probe set; it charges neither acquiring the probe bits nor looking up the answer.
+
+Compile smooth_history.cpp with clang++ -O3 -std=c++17 and run the executable to reproduce smooth_history.csv. Rebuild with -DCHECK_JACOBI to replace repeated squaring with quadratic reciprocity. Both builds use the same population traversal and produce byte-identical tables; their total and lift marginal also match the existing smoothness census. History.lean checks the table layout, cell floor, marginals and optimal score.
