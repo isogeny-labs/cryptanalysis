@@ -146,6 +146,7 @@ include!("fiber-address.rs");
 include!("fiber-cache.rs");
 
 include!("fiber-half.rs");
+include!("table-phases.rs");
 
 fn main() {
     #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]

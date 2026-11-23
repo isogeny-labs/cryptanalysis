@@ -1,0 +1,71 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T23:52:18Z",
+ "id": "PCC-20261123-0a204c",
+ "kind": "measurement",
+ "producer": {
+  "commit": "a2efe7f61a1824fad5b5940038eeb67c1c63872b",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "f8c5c63e5c51c2b55fa68e1dad4cac3b786b4e0905ca01d659fe9f9b4c51eb01",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/TerminalRoot.lean",
+   "theorem": "M31SignedSquare.terminal_root_exact"
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/TerminalRoot.lean",
+    "sha256": "a051f077eadf99b9dd2d81136f00a02439b35384f70f776a12cc8424e0d72fc5"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/table-phases.rs",
+    "sha256": "0cbfef5b6422e5f729c3334ee4f3ef678b784688c8bb54fc49a3eea451442402"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/table-phases.csv",
+    "sha256": "04572d0169779c60b14d8e24f2328fda657d4f4e92093beed11b528ea823d194"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/terminal-root.csv",
+    "sha256": "b9ed20f22dca8c7e05858090ec6dce43bf87019bc17cc65d3d6ee7ac1915a44f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/terminal-phases-confirm.csv",
+    "sha256": "de2a02d29ae72d86069b2e1076ada5257b01bb297700630e126a5afdb0ba0c1b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/fiber-half.rs",
+    "sha256": "3b9f4da8b94a05bd214139d643ec86543933992efc8a477b51c5ba16416ec42e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/torus7-build.rs",
+    "sha256": "aa4b940616cb7575c70f9f46254cbdb1e0a9f825ca23b44094e1b1e38f64af6f"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "Signed fixed-length powering in the M31 terminal generator reduced confirmed single-table medians on M4 Pro from 1374.0 to 1238.4 ns on the archive and from 1379.8 to 1233.5 ns on holdout. All 64 terminals favored the change."
+}
