@@ -158,6 +158,8 @@ fn coordinate_lookup(curve: Curve<31>, path: &str, round: u64) {
         .collect();
     assert_eq!(keys.len(), 71);
     assert!(keys.windows(2).all(|w| w[0] < w[1]));
+    let repetitions: usize = std::env::args().nth(4).map_or(1024, |s| s.parse().unwrap());
+    assert!(repetitions > 0);
     let table = membership::build(&keys);
     let mut right = Vec::new();
     for &key in &keys {
@@ -196,8 +198,6 @@ fn coordinate_lookup(curve: Curve<31>, path: &str, round: u64) {
                 assert_eq!(got, curve.add(p, q).unwrap());
             }
         }
-        let repetitions: usize = std::env::args().nth(4).map_or(1024, |s| s.parse().unwrap());
-        assert!(repetitions > 0);
         for shared in [round % 2 == 0, round % 2 != 0] {
             let start = Instant::now();
             let mut found = 0;
@@ -227,7 +227,7 @@ fn coordinate_lookup(curve: Curve<31>, path: &str, round: u64) {
     let mut run = |bucket: bool| {
         let start = Instant::now();
         let mut found = 0;
-        for _ in 0..1024 {
+        for _ in 0..repetitions {
             for &p in &cases {
                 output.fill(black_box(p));
                 curve.batch_add_inner(&mut output, black_box(&right), &mut scratch);
@@ -245,8 +245,8 @@ fn coordinate_lookup(curve: Curve<31>, path: &str, round: u64) {
                 };
             }
         }
-        let ns = start.elapsed().as_nanos() as f64 / (1024 * cases.len()) as f64;
-        assert_eq!(found, hits * 1024);
+        let ns = start.elapsed().as_nanos() as f64 / (repetitions * cases.len()) as f64;
+        assert_eq!(found, hits * repetitions);
         println!("{round},{bucket},{hits},{ns:.3}");
     };
     run(round % 2 == 0);
