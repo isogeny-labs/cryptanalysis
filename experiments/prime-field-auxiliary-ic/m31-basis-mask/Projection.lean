@@ -63,4 +63,46 @@ theorem frozen_membership (x : BitVec 31) :
     entry coordinates (slot x) = some x ↔ x ∈ coordinates :=
   entry_exact coordinates frozen_slots_distinct x
 
+abbrev Table := BitVec 13 → BitVec 32
+
+def writeKey (t : Table) (a : BitVec 31) : Table :=
+  fun i => if i = slot a then a.setWidth 32 else t i
+
+private theorem untouched (keys : List (BitVec 31)) (t : Table) (i : BitVec 13)
+    (absent : i ∉ keys.map slot) : keys.foldl writeKey t i = t i := by
+  induction keys generalizing t with
+  | nil => rfl
+  | cons a tail ih =>
+    simp only [List.map_cons, List.mem_cons, not_or] at absent
+    rw [List.foldl_cons, ih _ absent.2]
+    simp [writeKey, absent.1]
+
+/-- Sequential writes refine the abstract slot contents for distinct labels. -/
+theorem writes_refine_entry (keys : List (BitVec 31)) (t : Table) (i : BitVec 13)
+    (distinct : (keys.map slot).Nodup) :
+    keys.foldl writeKey t i =
+      ((entry keys i).map (fun a => a.setWidth 32)).getD (t i) := by
+  induction keys generalizing t with
+  | nil => rfl
+  | cons a tail ih =>
+    rw [List.map_cons, List.nodup_cons] at distinct
+    by_cases h : slot a = i
+    · subst i
+      rw [List.foldl_cons, untouched tail _ _ distinct.1]
+      simp [writeKey, entry]
+    · rw [List.foldl_cons, ih _ distinct.2]
+      simp [entry, writeKey, h, Ne.symm h]
+
+theorem sentinel_membership (x : BitVec 31) :
+    coordinates.foldl writeKey (fun _ => 0xffffffff) (slot x) = x.setWidth 32 ↔
+      x ∈ coordinates := by
+  rw [writes_refine_entry _ _ _ frozen_slots_distinct, ← frozen_membership]
+  cases e : entry coordinates (slot x) with
+  | none =>
+    simp only [Option.map_none, Option.getD_none, reduceCtorEq, iff_false]
+    bv_decide
+  | some a =>
+    simp only [Option.map_some, Option.getD_some, Option.some.injEq]
+    bv_decide
+
 end M31Projection
