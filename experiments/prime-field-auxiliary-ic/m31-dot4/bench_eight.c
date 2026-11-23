@@ -49,6 +49,19 @@ __attribute__((noinline)) static void in(void)
         o[i] = reduce(s);
     }
 }
+__attribute__((noinline)) static void folded(void)
+{
+    for (int i = 0; i < N; i++) {
+        uint64_t s = 0, t = 0;
+        for (int j = 0; j < 4; j++) {
+            s += (uint64_t)a[i][j] * b[i][j];
+            t += (uint64_t)a[i][4 + j] * b[i][4 + j];
+        }
+        uint64_t u = (s & P) + (s >> 31) + (t & P) + (t >> 31);
+        u = (u & P) + (u >> 31);
+        o[i] = u >= P ? u - P : u;
+    }
+}
 static uint64_t ns(void)
 {
     struct timespec t;
@@ -89,29 +102,29 @@ int main(void)
         if (i >= 5 && i <= 7 && s != (((__uint128_t)1 << 64) - 1 + (i - 5))) return 1;
         ref[i] = s % P;
     }
-    void (*f[])(void) = {canonical, pre, in, carry};
-    const char *labels[] = {"two reductions", "precentered", "center on input", "carry correction"};
-    double ts[4][36];
-    for (int k = 0; k < 4; k++) {
+    void (*f[])(void) = {canonical, pre, in, carry, folded};
+    const char *labels[] = {"two reductions", "precentered", "center on input", "carry correction", "deferred fold"};
+    double ts[5][40];
+    for (int k = 0; k < 5; k++) {
         f[k]();
         for (int i = 0; i < N; i++)
             if (o[i] != ref[i]) return 1;
     }
-    int perms[4][4] = {{0, 1, 3, 2}, {1, 2, 0, 3}, {2, 3, 1, 0}, {3, 0, 2, 1}};
-    for (int t = 0; t < 40; t++)
-        for (int j = 0; j < 4; j++) {
-            int k = perms[t % 4][j];
+    // Cycle through both orientations to balance position and predecessor.
+    for (int t = 0; t < 50; t++)
+        for (int j = 0; j < 5; j++) {
+            int k = (t + (t / 5 % 2 ? 4 - j : j)) % 5;
             uint64_t st = ns();
             for (int n = 0; n < 512; n++) {
                 f[k]();
                 __asm__ volatile("" ::: "memory");
             }
             double v = (double)(ns() - st) / (N * 512);
-            if (t >= 4) ts[k][t - 4] = v;
+            if (t >= 10) ts[k][t - 10] = v;
         }
-    for (int k = 0; k < 4; k++) {
-        qsort(ts[k], 36, sizeof(double), cmp);
-        printf("%s: %.3f ns/dot\n", labels[k], (ts[k][17] + ts[k][18]) / 2);
+    for (int k = 0; k < 5; k++) {
+        qsort(ts[k], 40, sizeof(double), cmp);
+        printf("%s: %.3f ns/dot\n", labels[k], (ts[k][19] + ts[k][20]) / 2);
     }
     return 0;
 }

@@ -31,3 +31,13 @@ theorem word_carry_reduce (a b : UInt64) (h : a.toNat+b.toNat ≤ 8*2147483646^2
     simp only [if_neg carry, UInt64.toNat_mod, UInt64.toNat_add]
     change (((a.toNat+b.toNat)%2^64+0)%2^64)%2147483647 = _
     omega
+
+/-- Two full 64-bit partial sums fit after separate 31-bit folds.
+One more fold and one conditional subtraction yield the canonical residue. -/
+theorem deferred_fold (s t : ℕ) (hs : s < 2^64) (ht : t < 2^64) :
+    let u := s%2^31 + s/2^31 + t%2^31 + t/2^31
+    let v := u%2^31 + u/2^31
+    u < 2^35 ∧ v < 2*2147483647 ∧
+      (if v ≥ 2147483647 then v-2147483647 else v) = (s+t)%2147483647 := by
+  dsimp
+  split <;> omega
