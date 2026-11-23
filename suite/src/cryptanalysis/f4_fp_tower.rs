@@ -1992,10 +1992,7 @@ pub fn f4_tower(input: &[RPoly], ring: &TowerRing, opts: &TowerF4Options) -> Tow
         tr.ms = step_started.elapsed().as_secs_f64() * 1e3;
         rep.trace.push(tr);
 
-        if opts.stop_zero_dim
-            && ring.n_free > 0
-            && zero_dimensional(&s.active_lms(), ring.n_free)
-        {
+        if opts.stop_zero_dim && ring.n_free > 0 && zero_dimensional(&s.active_lms(), ring.n_free) {
             rep.stopped_zero_dim = true;
             break;
         }
