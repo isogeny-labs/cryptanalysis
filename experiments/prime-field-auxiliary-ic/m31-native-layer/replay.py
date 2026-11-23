@@ -33,20 +33,21 @@ def native(curve,start,generator,count):
         if n<count:stride=curve.add(stride,stride)
     return list(xs),curve.add((xs[-1],ys[-1]),generator)
 
-for depth in (8,10,12,15):
-    ns["_layer_walk"]=reference
-    expected=ns["chain"](2**31-1,depth)
-    ns["_layer_walk"]=native
-    assert ns["chain"](2**31-1,depth)==expected
+if __name__ == "__main__":
+    for depth in (8,10,12,15):
+        ns["_layer_walk"]=reference
+        expected=ns["chain"](2**31-1,depth)
+        ns["_layer_walk"]=native
+        assert ns["chain"](2**31-1,depth)==expected
 
-writer=csv.writer(sys.stdout,lineterminator="\n")
-writer.writerow(("block","arm","wall_ns","cpu_ns"))
-for block in range(32):
-    order=(("python",reference),("native",native))
-    for arm,fn in (order if block%2==0 else reversed(order)):
-        ns["_layer_walk"]=fn
-        wall,cpu=perf_counter_ns(),process_time_ns()
-        pts=fixture["run"]("filter_divisor")
-        ct,wt=process_time_ns()-cpu,perf_counter_ns()-wall
-        assert pts==fixture["reference"]
-        writer.writerow((block,arm,wt,ct))
+    writer=csv.writer(sys.stdout,lineterminator="\n")
+    writer.writerow(("block","arm","wall_ns","cpu_ns"))
+    for block in range(32):
+        order=(("python",reference),("native",native))
+        for arm,fn in (order if block%2==0 else reversed(order)):
+            ns["_layer_walk"]=fn
+            wall,cpu=perf_counter_ns(),process_time_ns()
+            pts=fixture["run"]("filter_divisor")
+            ct,wt=process_time_ns()-cpu,perf_counter_ns()-wall
+            assert pts==fixture["reference"]
+            writer.writerow((block,arm,wt,ct))
