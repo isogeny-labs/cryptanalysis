@@ -1,0 +1,53 @@
+name: CM19 complete packet and Core coefficients
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - research/chained_cm19_univariate_audit_20261123/**
+      - .github/workflows/chained-cm19-univariate-audit.yml
+permissions:
+  contents: read
+jobs:
+  certificate-and-coefficients:
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /AGENTS.md
+            /.artifacts/config.json
+            /.gitignore
+            /.gitattributes
+            /pcc/keyring.json
+            /pcc/claims/PCC-20261123-d60e2c.json
+            /pcc/claims/PCC-20261123-b17001.json
+            /pcc/claims/PCC-20261123-6e2253.json
+            /pcc/claims/PCC-20261123-f85757.json
+            /pcc/claims/PCC-20261123-ac68db.json
+            /pcc/claims/PCC-20261123-c1adb4.json
+            /research/chained_cm19_univariate_audit_20261123/
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.99.1
+          components: rustfmt, clippy
+      - name: Install exact standard Lean release
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 2 https://github.com/leanprover/lean4/releases/download/v4.35.0/lean-4.35.0-linux.tar.zst --output "$RUNNER_TEMP/lean-4.35.0-linux.tar.zst"
+          tar --zstd -xf "$RUNNER_TEMP/lean-4.35.0-linux.tar.zst" -C "$RUNNER_TEMP"
+          echo "LEAN_TOOLCHAIN_DIR=$RUNNER_TEMP/lean-4.35.0-linux" >> "$GITHUB_ENV"
+      - name: Verify frozen bytes and run bounded native and Core regressions
+        shell: bash
+        run: bash research/chained_cm19_univariate_audit_20261123/run_ci_C.sh "$RUNNER_TEMP/cm19-audit-ci"
+      - name: Retain complete original CI outputs and binaries
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cm19-complete-packet-core-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cm19-audit-ci
+          if-no-files-found: warn
+          retention-days: 14

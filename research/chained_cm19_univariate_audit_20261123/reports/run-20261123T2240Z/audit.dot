@@ -1,0 +1,12 @@
+digraph Audit {
+ graph [rankdir=LR,bgcolor="white",ranksep=0.45,nodesep=0.4];
+ node [shape=box,style="rounded,filled",fillcolor="#e7f0f5",color="#26465c",fontname="DejaVu Sans",fontsize=13,margin="0.13,0.12"];
+ edge [color="#38536e",fontname="DejaVu Sans",fontsize=11];
+ packet [label="Original full packet\n59325 bytes, 13 sections"];
+ arithmetic [label="New univariate F7^6\nJacobian chord formulas\ngeneric Miller, auxiliary 3T"];
+ decisions [label="Actual fibres and S/R maps\nfull J4 kernel and pairings\nall rational/scalar records",fillcolor="#e0f2e7"];
+ leaves [label="7 Core coefficient proofs\nactual geometric bridges open",fillcolor="#fff1d8"];
+ packet -> arithmetic [label="whole bytes\nstrict parser"];
+ arithmetic -> decisions [label="same full predicates\n6 mutations reject/restore"];
+ arithmetic -> leaves [label="separate kernel build\nnot a full Jacobian theorem"];
+}
