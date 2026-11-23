@@ -5,7 +5,18 @@ mod coordinate_source {
     include!("torus7-coordinates.rs");
 
     pub(super) fn generate(curve: Curve<31>) -> [(u64, u64); 71] {
-        let width = if cfg!(signed_pairs) { 8 } else { 0 };
+        let width = if cfg!(all(
+            neon_coordinates,
+            signed_pairs,
+            target_arch = "aarch64",
+            target_feature = "neon"
+        )) {
+            132
+        } else if cfg!(signed_pairs) {
+            8
+        } else {
+            0
+        };
         build(width, curve).try_into().unwrap()
     }
 }

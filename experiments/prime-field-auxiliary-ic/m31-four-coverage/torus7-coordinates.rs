@@ -1,3 +1,5 @@
+include!("neon-lift.rs");
+
 type M = F<31>;
 
 fn iterate(mut x: u64, n: usize) -> u64 {
@@ -77,6 +79,14 @@ fn build(width: usize, curve: Curve<31>) -> Vec<(u64, u64)> {
         8 => interleaved::<8>(&xs),
         16 => interleaved::<16>(&xs),
         32 => interleaved::<32>(&xs),
+        #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+        104 => neon_lift::points::<1>(&xs, 14),
+        #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+        108 => neon_lift::points::<2>(&xs, 14),
+        #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+        116 => neon_lift::points::<4>(&xs, 14),
+        #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+        132 => neon_lift::points::<8>(&xs, 14),
         _ => panic!("unsupported lane count"),
     }
 }

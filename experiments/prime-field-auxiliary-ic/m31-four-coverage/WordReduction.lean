@@ -76,4 +76,29 @@ theorem sub_borrow (a b : BitVec 32) (ha : a < 2147483647) (hb : b < 2147483647)
       (if a ≥ b then a-b else 2147483647-(b-a)) := by
   bv_decide
 
+/-- With canonical unsigned lanes interpreted as signed positive integers,
+SQDMULH cannot saturate. Its high half supplies exactly the Mersenne quotient. -/
+theorem doubled_square_high (x : ℕ) (hx : x < p) :
+    2*(x*x) < 2^63 ∧ 2*(x*x)/2^32 = x*x/radix := by
+  have h := accumulator_bound x x 0 hx hx (by decide)
+  simp only [Nat.add_zero] at h
+  constructor
+  · have hbound : (p-1)^2 + 2*p < 4611686018427387904 := by decide
+    omega
+  · change 2*(x*x)/4294967296 = x*x/2147483648
+    omega
+
+/-- Unsigned minimum selects the reduced value even when subtraction wraps. -/
+theorem wrapping_min (s : BitVec 32) :
+    (if s ≤ s-2147483647 then s else s-2147483647) = (if s ≥ 2147483647 then s-2147483647 else s) := by
+  bv_decide
+
+theorem neon_square (x : ℕ) (hx : x < p) :
+    let hi := 2*(x*x)/2^32
+    let lo := (x*x%2^32)%radix
+    (if hi+lo ≥ p then hi+lo-p else hi+lo) = x*x%p := by
+  dsimp only
+  rw [(doubled_square_high x hx).2, Nat.mod_mod_of_dvd _ (show radix ∣ 2^32 by decide)]
+  exact (fold_correct _ (accumulator_bound x x 0 hx hx (by decide))).2
+
 end M31FourCoverage.WordReduction

@@ -140,6 +140,11 @@ fn branch_cost(seed: u64, order: &str) {
 }
 
 fn main() {
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+    if std::env::args().nth(1).as_deref() == Some("validate-neon") {
+        neon_lift::validate();
+        return;
+    }
     if std::env::args().nth(1).as_deref() == Some("branch-cost") {
         branch_cost(
             std::env::args().nth(2).unwrap().parse().unwrap(),
