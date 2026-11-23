@@ -92,6 +92,16 @@ def check(xs):
     assert distribution == {int(row["ordered_walks"]):int(row["group_points"])
                             for row in csv.DictReader(io.StringIO(raw))}
 
+    five = Counter()
+    for point, paths in ordered.items():
+        for step in signed:
+            five[add(point,step)] += paths
+    raw = subprocess.check_output([sys.argv[1],"walk-five-sample"],
+        input="".join(f"{x}\n" for x in xs),text=True)
+    for row in csv.DictReader(io.StringIO(raw)):
+        assert int(row["five_return_paths"]) == five[None]
+        assert int(row["six_return_paths"]) == sum(five[step] for step in signed)
+
 basis=list(map(int,(Path(__file__).resolve().parent.parent/'m31-basis-mask/coordinates.txt').read_text().splitlines()))
 P=(3,417540811)
 twice=add(P,P)

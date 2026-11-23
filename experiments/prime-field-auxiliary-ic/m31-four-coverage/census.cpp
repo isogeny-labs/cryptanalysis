@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <vector>
 #include <map>
+#include <random>
 #include <unordered_map>
 
 using Word = std::uint32_t;
@@ -209,7 +210,65 @@ static void five_cover(std::vector<Word> xs, bool reverse) {
 
 // Histogram of the number of ordered length-four walks ending at each
 // group point. Store one count per pair of opposite finite points.
-static void walk_histogram(const std::vector<Word>& xs) {
+// Rejection from 32-bit encodings gives each affine point and the identity
+// one accepted encoding. The published curve has no affine point with y=0.
+static Point sample_group(std::mt19937& rng) {
+    for (;;) {
+        Word code=rng(), x=code>>1;
+        if(x==p) {
+            if(!(code&1)) return infinity;
+            continue;
+        }
+        Word rhs=add(add(mul(mul(x,x),x),add(x,x)),14);
+        Word y=power(rhs,(p+1u)/4);
+        if(mul(y,y)!=rhs || (!y && (code&1))) continue;
+        return {x,(code&1) ? sub(0,y) : y};
+    }
+}
+
+static void sample_walks(const std::vector<std::uint8_t>& counts,
+                         const std::unordered_map<Word,std::uint64_t>& overflow,
+                         std::uint64_t identity) {
+    constexpr std::uint64_t order=2147505293;
+    constexpr unsigned samples=65536;
+    const std::uint64_t degree=basis.size();
+    const auto paths4=degree*degree*degree*degree, paths5=degree*paths4;
+    auto paths_at=[&](Word x) -> std::uint64_t {
+        if(x==p) return identity;
+        if(counts[x]!=255) return counts[x];
+        auto it=overflow.find(x);
+        return 255+(it==overflow.end()?0:it->second);
+    };
+    auto five_at=[&](Point g) {
+        std::uint64_t sum=0;
+        auto accumulate=[&](Word x){sum+=paths_at(x);};
+        visit<false>(g,0,1,accumulate);
+        return sum;
+    };
+    const auto five_return=five_at(infinity);
+    std::uint64_t six_return=0;
+    for(Point step:basis) six_return+=five_at(step);
+    auto deficit=[](std::uint64_t paths,std::uint64_t k) {
+        // Test before multiplying so the product fits in 64 bits.
+        return k<=paths/order ? paths-k*order : UINT64_C(0);
+    };
+    std::cout<<"seed,samples,four_deficit_numerator,five_deficit_numerator,five_zero,five_return_paths,six_return_paths"<<std::endl;
+    for(Word seed : {31u,211u,390u,195u}) {
+        std::mt19937 rng(seed);
+        std::uint64_t four=0,five=0,zero=0;
+        for(unsigned j=0;j<samples;++j) {
+            Point g=sample_group(rng);
+            auto k4=paths_at(g.x);
+            auto k5=five_at(g);
+            four+=deficit(paths4,k4);
+            five+=deficit(paths5,k5);
+            zero+=k5==0;
+        }
+        std::cout<<seed<<','<<samples<<','<<four<<','<<five<<','<<zero<<','<<five_return<<','<<six_return<<std::endl;
+    }
+}
+
+static void walk_histogram(const std::vector<Word>& xs, bool sample) {
     load_basis(xs);
     unsigned m=xs.size();
     std::uint64_t identity=12ULL*m*(m-1)+6ULL*m;
@@ -248,6 +307,10 @@ static void walk_histogram(const std::vector<Word>& xs) {
     }
     std::uint64_t degree=2*m;
     if(mass!=degree*degree*degree*degree) throw std::runtime_error("four-walk mass mismatch");
+    if(sample) {
+        sample_walks(counts,overflow,identity);
+        return;
+    }
     hist[0]=2147505293ULL-covered;
     std::cout<<"ordered_walks,group_points"<<std::endl;
     for(auto entry:hist)
@@ -258,9 +321,9 @@ int main(int argc,char** argv) {
     std::vector<Word> xs;
     Word x;
     while(std::cin>>x) xs.push_back(x);
-    if(argc==2 && std::string(argv[1])=="walk-four") {
+    if(argc==2 && (std::string(argv[1])=="walk-four" || std::string(argv[1])=="walk-five-sample")) {
         assert(!xs.empty() && xs.size()<=195);
-        walk_histogram(xs);
+        walk_histogram(xs,std::string(argv[1])=="walk-five-sample");
         return 0;
     }
     if(argc==2 && (std::string(argv[1])=="five" || std::string(argv[1])=="five-reverse")) {
