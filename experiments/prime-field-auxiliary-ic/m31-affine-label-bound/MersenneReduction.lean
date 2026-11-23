@@ -179,4 +179,56 @@ theorem signedSquareInvariant {x : ℤ} (lo : -2147483647 ≤ x) (hi : x ≤ 214
   unfold signedSquare
   omega
 
+/-- Integer semantics of a signed input lane. MUL uses the unsigned lane bits;
+SQDMULH takes the saturated doubled square's high word. The final subtraction
+wraps to 32 bits before signed reinterpretation. -/
+def signedLaneStep (x : ℤ) : ℤ :=
+  let u := x % 2^32
+  let low := ((u*u) % 2^32) % 2^31
+  let high := min (2*(x*x)) (2^63-1) / 2^32
+  let bits := (high + low - 2147483647) % 2^32
+  if bits < 2^31 then bits else bits - 2^32
+
+theorem signedLaneStep_eq {x : ℤ} (lo : -2147483647 ≤ x) (hi : x ≤ 2147483647) :
+    signedLaneStep x = signedSquare x := by
+  obtain ⟨lower, upper, sat, _⟩ := signedSquareInvariant lo hi
+  have prod := Int.mul_emod x x ((2:ℤ)^32)
+  unfold signedLaneStep
+  dsimp only
+  rw [← prod, min_eq_left (by omega)]
+  unfold signedSquare at *
+  split <;> omega
+
+def signedLaneRounds (x : ℤ) : ℕ → ℤ
+  | 0 => x
+  | n+1 => signedLaneStep (signedLaneRounds x n)
+
+theorem signedLaneRounds_spec (x : ℤ) (n : ℕ) (lo : -2147483647 ≤ x)
+    (hi : x < 2147483647) :
+    -2147483647 ≤ signedLaneRounds x n ∧ signedLaneRounds x n < 2147483647 ∧
+    signedLaneRounds x n ≡ x^(2^n) [ZMOD 2147483647] := by
+  induction n with
+  | zero => simpa [signedLaneRounds] using And.intro lo hi
+  | succ n ih =>
+    obtain ⟨l, u, congr⟩ := ih
+    have h := signedSquareInvariant l u.le
+    rw [signedLaneRounds, signedLaneStep_eq l u.le]
+    refine ⟨h.1, h.2.1, ?_⟩
+    rw [pow_succ (2 : ℕ), pow_mul, pow_two]
+    exact (show signedSquare (signedLaneRounds x n) ≡
+      signedLaneRounds x n * signedLaneRounds x n [ZMOD 2147483647] from h.2.2.2).trans
+      (congr.mul congr)
+
+/-- A negative lane is normalized with one wrapping unsigned addition.
+This includes -p, a second representation of zero. -/
+theorem signedLaneOutput (x : ℤ) (n : ℕ) (lo : -2147483647 ≤ x) (hi : x < 2147483647) :
+    let r := signedLaneRounds x n
+    (r % 2^32 + (if r < 0 then 2147483647 else 0)) % 2^32 =
+      (x^(2^n)) % 2147483647 := by
+  obtain ⟨l,u,h⟩ := signedLaneRounds_spec x n lo hi
+  change signedLaneRounds x n % 2147483647 = _ at h
+  dsimp only
+  rw [← h]
+  split <;> omega
+
 end M31Reduction
