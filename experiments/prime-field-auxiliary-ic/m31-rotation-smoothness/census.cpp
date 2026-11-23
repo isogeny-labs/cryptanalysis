@@ -71,9 +71,14 @@ int main() {
         keys.reserve(values.size());
         for (size_t i = firstNew; i < values.size(); ++i) {
             const auto entry = values[i];
-            U key = entry.value;
-            for (U x = rotate(key); x != entry.value; x = rotate(x))
-                key = std::min(key, x);
+            // Each 31-bit window is one rotation, independent of the previous window.
+            const U doubled = (U(entry.value) << 31) | entry.value;
+            uint32_t key = entry.value;
+#ifdef __clang__
+#pragma clang loop vectorize(enable)
+#endif
+            for (unsigned shift = 1; shift < 31; ++shift)
+                key = std::min(key, static_cast<uint32_t>((doubled >> shift) & p));
             // Equal rotations have the same character. Sorting puts the earliest bound first.
             // The minimum rotation starts with zero and ends in one.
             const uint32_t middle = static_cast<uint32_t>(key >> 1);
