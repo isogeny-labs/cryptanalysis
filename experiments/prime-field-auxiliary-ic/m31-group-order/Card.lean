@@ -224,7 +224,7 @@ theorem noZeroCubic (b : F) (smooth : (shortCurve b).Δ ≠ 0)
   have twice : (2 : ℕ) • A = 0 := by
     rw [two_nsmul]
     apply WeierstrassCurve.Affine.Point.add_self_of_Y_eq
-    simp [WeierstrassCurve.Affine.negY, shortCurve] <;> decide
+    simp +decide [WeierstrassCurve.Affine.negY, shortCurve]
   have hd := Nat.dvd_gcd (addOrderOf_dvd_natCard A)
     (addOrderOf_dvd_iff_nsmul_eq_zero.mpr twice)
   rw [odd.coprime_two_right.gcd_eq_one] at hd
