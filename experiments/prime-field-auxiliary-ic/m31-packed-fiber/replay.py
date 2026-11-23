@@ -71,14 +71,15 @@ def packed_setup():
     return baseline["fixture"]["lift"](values[:size])
 
 
-writer = csv.writer(sys.stdout, lineterminator="\n")
-writer.writerow(("block", "path", "cpu_ns", "wall_ns"))
-arms = [("baseline", original, baseline["candidate"]), ("packed", packed, packed_setup)]
-for block in range(48):
-    for name, hooks, setup in (arms if block % 2 == 0 else reversed(arms)):
-        chain.update(hooks)
-        cpu, wall = process_time_ns(), perf_counter_ns()
-        points = setup()
-        cpu, wall = process_time_ns() - cpu, perf_counter_ns() - wall
-        assert points == baseline["fixture"]["reference"]
-        writer.writerow((block, name, cpu, wall))
+if __name__ == "__main__":
+    writer = csv.writer(sys.stdout, lineterminator="\n")
+    writer.writerow(("block", "path", "cpu_ns", "wall_ns"))
+    arms = [("baseline", original, baseline["candidate"]), ("packed", packed, packed_setup)]
+    for block in range(48):
+        for name, hooks, setup in (arms if block % 2 == 0 else reversed(arms)):
+            chain.update(hooks)
+            cpu, wall = process_time_ns(), perf_counter_ns()
+            points = setup()
+            cpu, wall = process_time_ns() - cpu, perf_counter_ns() - wall
+            assert points == baseline["fixture"]["reference"]
+            writer.writerow((block, name, cpu, wall))
