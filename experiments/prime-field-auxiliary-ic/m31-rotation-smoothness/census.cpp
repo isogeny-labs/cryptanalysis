@@ -1,6 +1,8 @@
 #ifdef M31_EXPLICIT_CENSUS
 #include <arm_neon.h>
 #endif
+#ifdef M31_ORBIT_SIMD
+#include "orbit-simd/orbit.hpp"
 #ifdef M31_BATCH_CENSUS
 #include "../m31-native-product/product.h"
 #endif
@@ -78,7 +80,44 @@ int main() {
                 // Quadratic characters multiply on these nonzero residues.
                 nonsquare ^= primeNonsquare;
                 values.push_back({static_cast<uint32_t>(x), nonsquare});
+        for (size_t i=0; i<previous; ++i)
+            for (U x=values[i]*prime; x<p; x*=prime) values.push_back(x);
+        if (prime!=7 && prime!=13 && prime!=23 && prime!=47) continue;
+        for (U v : values) {
+            U key=v, x=rotate(v);
+            while (x!=v) {key=std::min(key,x); x=rotate(x);}
+            if (!seen.insert(key).second || square(key)) continue;
+            // Two is a square modulo p, so the whole orbit has the same character.
+#if defined(M31_ORBIT_SIMD)
+            orbit_simd::classify<(M31_ORBIT_SIMD != 0)>(x,eligible,lifts);
+#elif defined(M31_BATCH_CENSUS)
+            // Every nonzero orbit has 31 elements. Pad each predicate to 32 lanes.
+            uint32_t inputs[64] = {}, powers[64];
+            for (unsigned j = 0; j < 31; ++j) {
+                const U xx = x * x % p;
+                inputs[j] = (xx + 1) % p;
+                inputs[32 + j] = (xx * x + 2 * x + 14) % p;
+                x = rotate(x);
             }
+            std::copy_n(inputs, 64, powers);
+            for (unsigned step = 0; step < 30; ++step)
+                m31_products(powers, powers, powers, 64);
+            for (unsigned j = 0; j < 31; ++j) {
+                const bool qualifies = inputs[j] != powers[j];
+                const bool lift = inputs[32 + j] == powers[32 + j];
+                eligible += qualifies;
+                lifts += qualifies && lift;
+            }
+#else
+            do {
+                U xx=x*x%p;
+                if (!square((xx+1)%p)) {
+                    ++eligible;
+                    lifts+=square((xx*x+2*x+14)%p);
+                }
+                x=rotate(x);
+            } while (x!=v);
+#endif
         }
         if (prime != bounds[stage]) continue;
         keys.reserve(values.size());
@@ -135,7 +174,6 @@ int main() {
         // Unrolling turns every window offset into a constant shift.
 #ifdef __clang__
 #pragma clang loop unroll(full)
-#endif
         for (unsigned j = 0; j < 31; ++j) {
             const U x = (xWindow >> (31 - j)) & p;
             const U xx = (squareWindow >> (31 - (2*j % 31))) & p;
@@ -143,20 +181,16 @@ int main() {
             inputs[j] = (xx + 1) % p;
             inputs[32 + j] = (xxx + 2*x + 14) % p;
         }
-#ifdef M31_PROJECTED_CENSUS
         uint32_t powers[32];
         project(inputs, powers);
         unsigned count = used[band];
-        for (unsigned j = 0; j < 31; ++j) {
             pending[band][count] = inputs[32 + j];
             count += !table.isSquare(inputs[j], powers[j]);
-        }
         eligible = count - used[band];
         if (count >= batch) {
             countLifts(band, batch);
             count -= batch;
             std::copy_n(pending[band] + batch, count, pending[band]);
-        }
         used[band] = count;
 #else
         uint32_t powers[64];
@@ -173,39 +207,27 @@ int main() {
                 const auto sum = vaddq_u32(high, low);
                 lane = vminq_u32(sum, vsubq_u32(sum, modulus));
             }
-        }
-        for (unsigned j = 0; j < 16; ++j)
             vst1q_u32(powers + 4*j, lanes[j]);
-#else
         std::copy_n(inputs, 64, powers);
         for (unsigned step = 0; step < 30; ++step)
             m31_products(powers, powers, powers, 64);
-#endif
-        for (unsigned j = 0; j < 31; ++j) {
             const bool qualifies = inputs[j] != powers[j];
             const bool lift = inputs[32 + j] == powers[32 + j];
             eligible += qualifies;
             lifts += qualifies && lift;
-        }
-#endif
-#else
         U x = v;
         do {
             U xx=x*x%p;
             if (!square((xx+1)%p)) {
                 ++eligible;
                 lifts+=square((xx*x+2*x+14)%p);
-            }
             x=rotate(x);
         } while (x!=v);
-#endif
         eligibleCounts[band] += eligible;
         liftCounts[band] += lifts;
     }
-#ifdef M31_PROJECTED_CENSUS
     for (unsigned band = 0; band < 4; ++band)
         if (used[band]) countLifts(band, used[band]);
-#endif
     U orbits = 0, eligible = 0, lifts = 0;
     for (unsigned band = 0; band < 4; ++band) {
         orbits += orbitCounts[band];
@@ -213,5 +235,4 @@ int main() {
         lifts += liftCounts[band];
         std::printf("%u %llu %llu %llu\n", bounds[band], (unsigned long long)orbits,
             (unsigned long long)eligible, (unsigned long long)lifts);
-    }
 }
