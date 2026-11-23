@@ -11,11 +11,14 @@ constexpr Word prime = 2147483647;
 constexpr Word N = 1 << 17;
 // Each subgroup element imposes one XOR equation between two table entries.
 struct Tables {
-  std::vector<uint8_t> label = std::vector<uint8_t>(2 * N);
+  std::vector<uint64_t> labels = std::vector<uint64_t>(2 * N / 64);
   Word salt = 0;
   Word left(Word x) const { return x & (N - 1); }
   Word right(Word x) const { return N + ((x * salt) >> (32 - 17)); }
-  unsigned get(Word x) const { return label[left(x)] ^ label[right(x)]; }
+  unsigned labelBit(Word vertex) const {
+    return (labels[vertex / 64] >> (vertex % 64)) & 1;
+  }
+  unsigned get(Word x) const { return labelBit(left(x)) ^ labelBit(right(x)); }
   bool isSquare(Word input, Word projected) const { return input == 0 || get(projected); }
   Tables() {
     for (salt = 2654435761u;; salt += 2) {
@@ -55,7 +58,7 @@ struct Tables {
       if (!ok)
         continue;
       for (Word j = 0; j < 2 * N; ++j)
-        label[j] = root(j).second;
+        labels[j / 64] |= uint64_t(root(j).second) << (j % 64);
       break;
     }
   }
