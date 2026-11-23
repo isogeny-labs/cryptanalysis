@@ -41,4 +41,44 @@ theorem accumulatorCapacity :
 theorem twoProductsNeedSecondFold :
     canonical (fold (2*(p-1)^2)) = p+2 ∧ (2*(p-1)^2) % p = 2 := by decide
 
+def wordFold (x : UInt64) : UInt64 := (x &&& (2147483647 : UInt64)) + (x >>> (31 : UInt64))
+
+private theorem wordParts (x : UInt64) :
+    wordFold x = x % 2147483648 + x / 2147483648 := by
+  unfold wordFold
+  bv_decide
+
+theorem wordFoldNat (x : UInt64) : (wordFold x).toNat = fold x.toNat := by
+  rw [wordParts, UInt64.toNat_add, UInt64.toNat_mod, UInt64.toNat_div]
+  change (fold x.toNat) % 2^64 = fold x.toNat
+  apply Nat.mod_eq_of_lt
+  have limit := x.toNat_lt
+  unfold fold
+  omega
+
+/-- The AVX2 lane predicate is signed greater-than p-1 after the two folds. -/
+theorem signedTest (x : UInt64) :
+    ((wordFold (wordFold x)).toInt64 > 2147483646) ↔
+      (2147483647 : UInt64) ≤ wordFold (wordFold x) := by
+  unfold wordFold
+  bv_decide
+
+def laneReduce (x : UInt64) : UInt64 :=
+  let s := wordFold (wordFold x)
+  s - (if s.toInt64 > 2147483646 then 2147483647 else 0)
+
+theorem laneCorrect (x : UInt64) : (laneReduce x).toNat = x.toNat % p := by
+  rw [← twoFolds x, ← wordFoldNat x, ← wordFoldNat (wordFold x)]
+  unfold laneReduce canonical
+  simp only [signedTest, UInt64.le_iff_toNat_le]
+  change ((wordFold (wordFold x)) -
+    (if p ≤ (wordFold (wordFold x)).toNat then 2147483647 else 0)).toNat = _
+  split <;> rename_i h
+  · have le : (2147483647 : UInt64) ≤ wordFold (wordFold x) := by
+      apply UInt64.le_iff_toNat_le.mpr
+      exact h
+    rw [UInt64.toNat_sub_of_le _ _ le]
+    rfl
+  · simp
+
 end M31Reduction
