@@ -158,6 +158,15 @@ int main(int argc,char **argv) {
     if (argc==2 && std::strcmp(argv[1],"timing")==0) return orbit_timing(rows,nonsquare);
     if (argc!=1) return 1;
     std::sort(rows.begin(),rows.end(),[](Row a,Row b){return a.x<b.x;});
+    // first[b] is the first row with (x >> 12) >= b. The last entry is
+    // rows.size(), including when the last bucket is empty.
+    constexpr unsigned shift = 12;
+    std::vector<uint32_t> first((prime >> shift) + 2);
+    size_t next = 0;
+    for (size_t b = 0; b < first.size(); ++b) {
+        while (next < rows.size() && (rows[next].x >> shift) < b) ++next;
+        first[b] = static_cast<uint32_t>(next);
+    }
     std::vector<std::array<uint32_t,2>> buckets(1u<<primes.size());
     uint32_t lifts=0, overlap=0, overlap_lifts=0, errors=0, mixed=0, used=0, mixed_rows=0;
     for (size_t i=0; i<rows.size(); ++i) {
@@ -167,8 +176,11 @@ int main(int argc,char **argv) {
         bool label=square(rhs);
         lifts+=label;
         ++buckets[mask][label];
-        auto it=std::lower_bound(rows.begin(),rows.end(),rhs,[](Row a,uint32_t b){return a.x<b;});
-        if (it!=rows.end() && it->x==rhs) {
+        const auto bucket = rhs >> shift;
+        auto end = rows.begin() + first[bucket+1];
+        auto it = std::lower_bound(rows.begin() + first[bucket], end, rhs,
+                                   [](const Row& a, uint32_t b) { return a.x < b; });
+        if (it!=end && it->x==rhs) {
             if (label != (__builtin_parity(it->parity & nonsquare)==0)) return 1;
             ++overlap;
             overlap_lifts+=label;
