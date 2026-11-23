@@ -153,3 +153,18 @@ On arm64 the M31 affine batch routine now uses four independent denominator prod
 The initial one-, four- and eight-lane comparison favored four lanes from size 32 on the ordinary and one-in-eight exceptional inputs (rust-width-screen.csv). A confirmation of the four-lane path alone exposed a slowdown on some all-exception inputs (rust-width-confirm.csv). The final comparison added shared tangent inverses. At 64 points, the parent/selected median paired ratios were 1.142× for ordinary additions, 1.492× for one exceptional slot per eight, and 3.693× when every slot was exceptional. At 256 points the ratios were 1.268×, 1.639× and 4.645×. Identity on the left, identity on the right, doubling and inverse pairs occur equally in the all-exception mix. The ratios describe these constructed inputs. The solver's distribution of exceptional slots and its end-to-end speedup remain unmeasured. PCC-20261123-27b383 records the measurements. [pcc:unverified]
 
 In rust-tangent-confirm.csv, parent is 57065b59c, candidate uses four lanes above the threshold with the original exceptional fallback, and tangent is the published path. The panel runs all six launch orders twice on an Apple M4 Pro. Ratios are medians of within-round ratios. Set M31_FIELD_RS to an absolute field.rs path and compile rust-batch-width.rs with rustc 1.93.1, edition 2021, opt-level=3 and target-cpu=native. Each invocation regenerates and checks the same seeded points. Timings cover the internal batch call, input slice copy, and output barrier. Point generation and scalar-reference comparisons occur outside the timed loop. PairInversion.lean proves the product partition, reciprocal step and tangent denominator identities. The field tests also exercise scratch reuse across changing sizes and doubling a rational point of order two.
+
+### Batch sizes exercised by the archived M31 workload
+
+The archived protocol pins revision 6805d56f and 64 walk lanes. Its walk selects right operands from a 32-entry table. The direct two-summand routine repeats one left operand across twice the factor-base width. The archived two-summand panel includes widths 56, 58 and 71. The local arithmetic benchmark uses independently generated curve points with these operand patterns. It omits point selection, relation processing, setup and verification from the timed loop.
+
+All six revision orders ran four times on the Apple M4 Pro with the preceding compiler flags. Each cell below gives median nanoseconds per batch across 24 rounds. The last column gives the median of ratios paired by round, which can differ from the ratio of the two column medians. Pass `shapes` to the benchmark to select these inputs. PCC-20261123-57ad5b records the local measurements. [pcc:unverified]
+
+| Operand pattern | Width | Original 663fc4fb5 | Fused 57065b59c | Four lanes a82976381 | Fused / four lanes, paired |
+|---|---:|---:|---:|---:|---:|
+| Reused right table | 64 | 470.02 | 444.09 | 429.67 | 1.072× |
+| Repeated left, signed right | 112 | 770.83 | 737.29 | 615.70 | 1.187× |
+| Repeated left, signed right | 116 | 801.43 | 756.60 | 623.92 | 1.208× |
+| Repeated left, signed right | 142 | 967.05 | 900.95 | 737.54 | 1.228× |
+
+WalkShare.lean reads the archived E1 JSON and checks the walk fraction against the observed total, allowing 50 microseconds upward error for each printed walk time and 50 microseconds downward error for each total. For the 37 two-summand, five three-summand and four four-summand records, respectively, the upper bounds are 1.1705%, 0.0188% and 0.0009%. With all other elapsed work held fixed, these also bound the saving from eliminating the entire walk. Direct decomposition calls the batch kernel separately. Its share of decomposition time remains unmeasured.
