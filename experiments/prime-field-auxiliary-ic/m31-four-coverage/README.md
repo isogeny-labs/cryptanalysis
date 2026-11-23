@@ -391,3 +391,13 @@ FiberOrbit.lean proves that for a nonzero field element z of order 2^31, the 128
 The theorem generated_exact applies to the second-order recurrence itself. Either sign of a square root of the initializer discriminant selects a neighboring trace, and reversing the step permutes the slots. For terminal 340921998, archived_generated_exact derives the order from the earlier TorusOrder theorem and identifies the fiber directly by that terminal coordinate. Its inputs still include a nonzero trace representative for the starting leaf and the two initializer equations. The proof covers the algebraic recurrence. Timing and the Rust arithmetic implementation have separate evidence. PCC-20261123-e9f019 [pcc:unverified]
 
 To replay with the Lean 4.34.1 mathlib environment, enter this experiment directory under lake env, create a fresh temporary directory for compiled modules, and prepend it to LEAN_PATH. Compile FiberRecurrence.lean, TorusOrder.lean and FiberOrbit.lean in that order with lean -DwarningAsError=true and -o pointing to the corresponding module name in the temporary directory. The axiom report for M31FiberRecurrence.archived_generated_exact lists propext, Classical.choice and Quot.sound.
+
+### From terminal coordinates to exact fiber coverage
+
+PanelInitializer.lean reads the terminal column of fiber-masks.csv and checks the 32 distinct terminals by kernel reduction in ZMod 2147483647. It checks every inverse edge in the seven-step descent, the 23 further doublings to −2, and the discriminant and neighboring-trace equations using the generator's exponent and inverse of two.
+
+PanelCoverage.lean proves panel_exact. For each listed terminal, run the second-order recurrence in the base field starting from the computed leaf and neighbor. Its 128 outputs, mapped into any algebraically closed extension, are distinct and exhaust the geometric roots of the seven-step doubling polynomial over that terminal. The proof constructs a nonzero trace representative in the extension, derives its order from the terminal, and applies the orbit theorem. Only membership in the archived panel is required of the supplied terminal. The proof models modular arithmetic and the recurrence. The machine-code implementation and elapsed time are assessed by separate native comparisons.
+
+Replay in the Lean 4.34.1 mathlib environment with the procedure above, adding PanelInitializer.lean and PanelCoverage.lean after FiberOrbit.lean. Supply absolute source paths to lean so include_str can locate the adjacent CSV. Inspect M31PanelInitializer.panel_exact with #print axioms. Its dependencies are propext, Classical.choice and Quot.sound.
+
+PCC-20261123-74a855 [pcc:unverified]
