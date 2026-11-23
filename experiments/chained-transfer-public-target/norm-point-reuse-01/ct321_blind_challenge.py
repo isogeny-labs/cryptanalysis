@@ -295,8 +295,10 @@ def self_test():
             else:
                 raise AssertionError("admitted corruption " + name)
         outpub, outpriv = root/"issue.json", root/"secret.json"
+        issued_draws = iter(range(4))
         x = publish(c, 4, outpub, outpriv,
-                    iter(range(4)).__next__, lambda n: secrets.token_hex(n))
+                    lambda n: next(issued_draws),
+                    lambda n: secrets.token_hex(n))
         if x["target_count"] != 4 or stat.S_IMODE(outpriv.stat().st_mode) != 0o600:
             raise AssertionError("private issue/file mode mismatch")
         if audit(outpub.read_bytes(), outpriv.read_bytes())["target_count"] != 4:
