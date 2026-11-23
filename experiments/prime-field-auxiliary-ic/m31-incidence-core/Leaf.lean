@@ -16,4 +16,20 @@ theorem leafWeight {F I : Type*} [Field F] [DecidableEq I]
     exact mul_eq_zero.mpr (outside i hi hne)
   exact (mul_eq_zero.mp (h.symm.trans dependency)).resolve_right hn
 
+/-- If the preceding rows admit only the zero relation, every nonzero
+dependence after adding one row must use that row. -/
+theorem lastWeight {F I V : Type*} [Field F] [AddCommGroup V] [Module F V]
+    [DecidableEq I] (prior : Finset I) (last : I) (fresh : last ∉ prior)
+    (rows : I → V) (w : I → F)
+    (independent : ∀ c : I → F, ∑ i ∈ prior, c i • rows i = 0 →
+      ∀ i ∈ prior, c i = 0)
+    (dependency : ∑ i ∈ insert last prior, w i • rows i = 0)
+    (nonzero : ∃ i ∈ insert last prior, w i ≠ 0) : w last ≠ 0 := by
+  intro hz
+  rw [Finset.sum_insert fresh, hz, zero_smul, zero_add] at dependency
+  obtain ⟨i, hi, hn⟩ := nonzero
+  rcases Finset.mem_insert.mp hi with rfl | hi
+  · exact hn hz
+  · exact hn (independent w dependency i hi)
+
 end ArchivedIncidence
