@@ -58,4 +58,19 @@ theorem linearModels (a : Fˣ) : ∃ r : Fin 2, ∃ C : VariableChange F,
   obtain ⟨r,u,rfl⟩ := quartic a
   exact ⟨r, _, by simpa [seven] using scale u (7 ^ r.val) 0⟩
 
+def fixtureScale : Fˣ := Units.mk0 771888343 (by decide)
+
+/-- Coordinate scaling to linear coefficient -3 on the two public fixtures. -/
+theorem firstMinusThree :
+    (VariableChange.mk fixtureScale⁻¹ 0 0 0) • shortCurve 2 14 =
+      shortCurve (-3) 378293461 := by
+  rw [scale]
+  congr 1
+
+theorem secondMinusThree :
+    (VariableChange.mk fixtureScale⁻¹ 0 0 0) • shortCurve 2 36 =
+      shortCurve (-3) 972754614 := by
+  rw [scale]
+  congr 1
+
 end M31CoefficientClasses
