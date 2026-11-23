@@ -1,6 +1,7 @@
 import argparse
 import csv
 import sys
+import subprocess
 
 P = 2**31-1
 PRIMES = (3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89)
@@ -74,14 +75,23 @@ def reciprocal(x):
     return pow(x, -1, P)
 
 
-def main(lifts=euler_lift, invert_word=reciprocal):
+def pair_representatives(invert_word):
     groups = representatives()
-    products = [0] * 5
-    pairs = 0
     for key, x in groups.items():
         inverse = invert_word(key)
-        if key >= inverse or inverse not in groups:
-            continue
+        if key < inverse and inverse in groups:
+            yield x
+
+
+def main(lifts=euler_lift, invert_word=reciprocal, pair_generator=None):
+    if pair_generator is None:
+        selected = pair_representatives(invert_word)
+    else:
+        output = subprocess.check_output([pair_generator], text=True)
+        selected = map(int, output.splitlines())
+    products = [0] * 5
+    pairs = 0
+    for x in selected:
         pairs += 1
         a = lift_masks(x, 2, lifts=lifts)
         # Transport.lean proves that inverse coordinates have the same auxiliary lift.
@@ -104,7 +114,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Count affine lifts over M31.")
     parser.add_argument("--gmp", action="store_true",
                         help="use gmpy2 for lift tests and field inversion")
-    if parser.parse_args().gmp:
+    parser.add_argument("--pair-generator", help="path to the compiled native-pairs/pairs.cpp helper")
+    args = parser.parse_args()
+    if args.gmp:
         try:
             from gmpy2 import invert, jacobi
         except ImportError as error:
@@ -116,6 +128,6 @@ if __name__ == '__main__':
         def gmp_reciprocal(x):
             return int(invert(x, P))
 
-        main(gmp_lift, gmp_reciprocal)
+        main(gmp_lift, gmp_reciprocal, args.pair_generator)
     else:
-        main()
+        main(pair_generator=args.pair_generator)
