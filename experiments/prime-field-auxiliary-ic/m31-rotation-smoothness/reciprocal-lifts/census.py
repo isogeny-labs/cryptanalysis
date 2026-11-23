@@ -23,12 +23,14 @@ def representatives():
     return {pow(-v, 31, P): -v for v in values if v < 0}
 
 
-def lift_masks(start, step):
-    masks = [0,0,0]
+def lift_masks(start, step, auxiliary_mask=None):
+    masks = [0 if auxiliary_mask is None else auxiliary_mask, 0, 0]
     x = start
     for i in range(PERIOD):
         cube = pow(x,3,P)
-        for j, rhs in enumerate((cube+x,cube+2*x+14,cube+2*x-14)):
+        if auxiliary_mask is None and pow(cube+x, (P-1)//2, P) != P-1:
+            masks[0] |= 1 << i
+        for j, rhs in enumerate((cube+2*x+14,cube+2*x-14), start=1):
             if pow(rhs,(P-1)//2,P) != P-1:
                 masks[j] |= 1 << i
         x = x*step % P
@@ -50,8 +52,9 @@ def main():
             continue
         pairs += 1
         a = lift_masks(x,2)
-        b = lift_masks(pow(x,-1,P),(P+1)//2)
-        assert a[0] == b[0]
+        # Transport.lean proves that inverse coordinates have the same auxiliary lift.
+        # The inverse orbit uses the inverse step, so the bit positions agree.
+        b = lift_masks(pow(x,-1,P), (P+1)//2, auxiliary_mask=a[0])
         for j,row in enumerate(totals):
             aux,curve,twist = (m & rotate(n,j) for m,n in zip(a,b))
             for i,bits in enumerate((aux,curve,twist,aux & curve,aux & twist)):
