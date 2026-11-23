@@ -9,6 +9,8 @@ pub enum Error {
 pub type Result<T> = std::result::Result<T, Error>;
 mod field {
     include!(env!("M31_FIELD_RS"));
+    #[cfg(signed_pairs)]
+    include!("signed-pairs.rs");
 }
 use field::{BatchScratch, Curve, Point};
 
@@ -184,6 +186,42 @@ fn coordinate_lookup(curve: Curve<31>, path: &str, round: u64) {
             }
         }
     }
+    #[cfg(signed_pairs)]
+    if std::env::args().nth(1).as_deref() == Some("signed-pairs") {
+        let reps: [Point; 71] = std::array::from_fn(|i| right[2 * i].unwrap());
+        let mut paired = vec![None; right.len()];
+        for &p in cases.iter().chain(&right).chain([None].iter()) {
+            field::signed_batch(curve, p, &reps, &mut paired);
+            for (&got, &q) in paired.iter().zip(&right) {
+                assert_eq!(got, curve.add(p, q).unwrap());
+            }
+        }
+        let repetitions: usize = std::env::args().nth(4).map_or(1024, |s| s.parse().unwrap());
+        assert!(repetitions > 0);
+        for shared in [round % 2 == 0, round % 2 != 0] {
+            let start = Instant::now();
+            let mut found = 0;
+            for _ in 0..repetitions {
+                for &p in &cases {
+                    if shared {
+                        field::signed_batch(curve, black_box(p), black_box(&reps), &mut output);
+                    } else {
+                        output.fill(black_box(p));
+                        curve.batch_add_inner(&mut output, black_box(&right), &mut scratch);
+                    }
+                    found += black_box(&output)
+                        .iter()
+                        .flatten()
+                        .filter(|p| membership::lookup(&table, &keys, p.x() as u32))
+                        .count();
+                }
+            }
+            let ns = start.elapsed().as_nanos() as f64 / (repetitions * cases.len()) as f64;
+            assert_eq!(found, hits * repetitions);
+            println!("{round},{shared},{hits},{ns:.3}");
+        }
+        return;
+    }
     let keys = black_box(keys.as_slice());
     let table = black_box(&table);
     let mut run = |bucket: bool| {
@@ -217,7 +255,9 @@ fn coordinate_lookup(curve: Curve<31>, path: &str, round: u64) {
 
 fn main() {
     let curve = Curve::<31>::new(2, 14).unwrap();
-    if std::env::args().nth(1).as_deref() == Some("coordinate-lookup") {
+    if std::env::args().nth(1).as_deref() == Some("coordinate-lookup")
+        || (cfg!(signed_pairs) && std::env::args().nth(1).as_deref() == Some("signed-pairs"))
+    {
         coordinate_lookup(
             curve,
             &std::env::args().nth(2).unwrap(),
