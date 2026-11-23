@@ -80,5 +80,25 @@ theorem optimum : IsGreatest (Set.range (fun f : Fin 1024 → Bool => ∑ h, n h
   have total : (∑ h, max (n h false) (n h true)) = 943323 := by native_decide
   exact total ▸ bestBinaryScore n
 
+/-- Rows give the b=14 lift flag and columns the b=36 flag. The four
+counts come from the native census in smooth_joint_labels.cpp. -/
+def joint : Bool → Bool → ℕ
+  | false, false => 463594
+  | false, true => 463875
+  | true, false => 461794
+  | true, true => 463604
+
+theorem forwardJointOptimum :
+    IsGreatest (Set.range (fun f : Bool → Bool => ∑ a, joint a (f a)))
+      (∑ a, joint a true) := by
+  have total : (∑ a, max (joint a false) (joint a true)) = ∑ a, joint a true := by decide
+  exact total ▸ bestBinaryScore joint
+
+theorem reverseJointOptimum :
+    IsGreatest (Set.range (fun f : Bool → Bool => ∑ b, joint (f b) b))
+      (∑ b, joint false b) := by
+  have total : (∑ b, max (joint false b) (joint true b)) = ∑ b, joint false b := by decide
+  exact total ▸ bestBinaryScore (fun b a => joint a b)
+
 end Smooth47
 end M31LiftHistory
