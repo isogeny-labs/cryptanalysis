@@ -145,8 +145,86 @@ fn phases(curve: Curve<31>, state: &mut u64, order: &str) {
     }
 }
 
+#[path = "membership-bench.rs"]
+mod membership;
+
+fn coordinate_lookup(curve: Curve<31>, path: &str, round: u64) {
+    let keys: Vec<u32> = std::fs::read_to_string(path)
+        .unwrap()
+        .lines()
+        .map(|s| s.parse().unwrap())
+        .collect();
+    assert_eq!(keys.len(), 71);
+    assert!(keys.windows(2).all(|w| w[0] < w[1]));
+    let table = membership::build(&keys);
+    let mut right = Vec::new();
+    for &key in &keys {
+        let p = curve.lift_x(u64::from(key)).unwrap().unwrap();
+        right.extend([Some(p), Some(curve.negate(p).unwrap())]);
+    }
+    let mut state = 0x2718281828459045 ^ round;
+    let cases: Vec<_> = (0..64).map(|_| sample_point(curve, &mut state)).collect();
+    let mut output = vec![None; right.len()];
+    let mut scratch = BatchScratch::default();
+    let mut hits = 0;
+    for &p in cases.iter().chain([None].iter()) {
+        output.fill(p);
+        curve.batch_add_inner(&mut output, &right, &mut scratch);
+        for (&sum, &q) in output.iter().zip(&right) {
+            assert_eq!(sum, curve.add(p, q).unwrap());
+            if let Some(point) = sum {
+                let x = point.x() as u32;
+                let present = keys.binary_search(&x).is_ok();
+                assert_eq!(present, membership::lookup(&table, &keys, x));
+                if p.is_some() {
+                    hits += usize::from(present);
+                } else {
+                    assert!(present);
+                }
+            }
+        }
+    }
+    let keys = black_box(keys.as_slice());
+    let table = black_box(&table);
+    let mut run = |bucket: bool| {
+        let start = Instant::now();
+        let mut found = 0;
+        for _ in 0..1024 {
+            for &p in &cases {
+                output.fill(black_box(p));
+                curve.batch_add_inner(&mut output, black_box(&right), &mut scratch);
+                let sums = black_box(output.as_slice());
+                found += if bucket {
+                    sums.iter()
+                        .flatten()
+                        .filter(|p| membership::lookup(table, keys, p.x() as u32))
+                        .count()
+                } else {
+                    sums.iter()
+                        .flatten()
+                        .filter(|p| keys.binary_search(&(p.x() as u32)).is_ok())
+                        .count()
+                };
+            }
+        }
+        let ns = start.elapsed().as_nanos() as f64 / (1024 * cases.len()) as f64;
+        assert_eq!(found, hits * 1024);
+        println!("{round},{bucket},{hits},{ns:.3}");
+    };
+    run(round % 2 == 0);
+    run(round % 2 != 0);
+}
+
 fn main() {
     let curve = Curve::<31>::new(2, 14).unwrap();
+    if std::env::args().nth(1).as_deref() == Some("coordinate-lookup") {
+        coordinate_lookup(
+            curve,
+            &std::env::args().nth(2).unwrap(),
+            std::env::args().nth(3).unwrap().parse().unwrap(),
+        );
+        return;
+    }
     let mut state = 0x2718281828459045;
     if std::env::args().nth(1).as_deref() == Some("phases") {
         phases(

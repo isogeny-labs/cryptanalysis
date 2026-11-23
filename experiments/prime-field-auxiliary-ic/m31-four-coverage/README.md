@@ -210,3 +210,11 @@ The standalone membership-bench.rs compares lookup on the same keys in the same 
 There were 4–12 crowded slots per table. Directory construction from sorted keys took a median 46.85 ns over repeated builds. Adding each seed's measured build cost to one warm batch still favored the directory for all 72 seed/mix pairs. That calculation models setup amortization and does not measure a cold cache. Timings cover integer membership alone. The fraction of real inputs sent to fallback and the full arithmetic-plus-lookup effect depend on the key distribution. Compile with rustc --edition=2021 -C opt-level=3 -C target-cpu=native and pass round numbers 1 through 24.
 
 PCC-20261123-301308 records the local measurement. [pcc:unverified]
+
+### Combined arithmetic and exact lookup on the archived Torus7 columns
+
+torus7_keys.py independently enumerates the depth-seven inverse tree, lifts and sorts the points, then reproduces the ordered signed-column BLAKE3 digest from both Torus7 arms on all five archived E1 targets. The 71 abscissas occupy 51 singleton slots and ten double-occupancy slots in the 256-entry directory. The other 195 slots are empty.
+
+On the M4 Pro, median combined times per 142-point batch were 1048.45 ns with binary search and 831.50 ns with the exact bucket directory. The within-round ratio favored the directory in 24 of 24 rounds, with median 1.261 and interquartile range 1.243–1.272. Both variants use the a82976381 four-lane arithmetic and the same u32 keys. Every timed scan examines all finite results. A separate identity-point control exercises all 142 signed hits. Each round also checks scalar addition and both lookup answers on every input before timing.
+
+Generate the keys with python3 torus7_keys.py (requires the blake3 module). Compile rust-batch-width.rs with the previous native flags and pass coordinate-lookup, the generated key file, and the round number from 1 through 24. Each round alternates method order, uses 64 seeded public points, then repeats their batches 1,024 times. The 218,112 coordinate slots across the distinct panels produced zero membership hits. Table construction, relation handling and the outer solver are outside the measurement. PCC-20261123-600ba9 records the local result. [pcc:unverified]

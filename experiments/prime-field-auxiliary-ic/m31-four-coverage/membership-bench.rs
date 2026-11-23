@@ -9,7 +9,7 @@ fn slot(key: u32) -> usize {
     (key.wrapping_mul(2654435761) >> 24) as usize
 }
 
-fn build(keys: &[u32]) -> [u32; 256] {
+pub(crate) fn build(keys: &[u32]) -> [u32; 256] {
     let mut table = [EMPTY; 256];
     for &key in keys {
         let cell = &mut table[slot(key)];
@@ -22,7 +22,7 @@ fn build(keys: &[u32]) -> [u32; 256] {
     table
 }
 
-fn lookup(table: &[u32; 256], keys: &[u32], key: u32) -> bool {
+pub(crate) fn lookup(table: &[u32; 256], keys: &[u32], key: u32) -> bool {
     let entry = table[slot(key)];
     entry == key || (entry == MULTIPLE && keys.binary_search(&key).is_ok())
 }
