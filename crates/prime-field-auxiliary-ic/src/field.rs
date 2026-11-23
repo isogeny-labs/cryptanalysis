@@ -456,32 +456,66 @@ impl<const B: u32> Curve<B> {
         steps: &[Option<Point>],
         scratch: &mut BatchScratch,
     ) {
+        if cfg!(target_arch = "aarch64") && B == 31 && points.len() >= 32 {
+            self.batch_add_lanes::<4>(points, steps, scratch);
+        } else {
+            self.batch_add_lanes::<1>(points, steps, scratch);
+        }
+    }
+    fn batch_add_lanes<const W: usize>(
+        self,
+        points: &mut [Option<Point>],
+        steps: &[Option<Point>],
+        scratch: &mut BatchScratch,
+    ) {
         scratch.prefix.resize(points.len(), 0);
         scratch.denominators.resize(points.len(), 0);
-        let mut product = 1;
+        let mut products = [1; W];
         for i in 0..points.len() {
-            scratch.prefix[i] = product;
+            scratch.prefix[i] = products[i % W];
             let den = match (points[i], steps[i]) {
                 (Some(a), Some(b)) if a.x != b.x => F::<B>::sub(b.x, a.x),
+                (Some(a), Some(b)) if W > 1 && a == b => F::<B>::add(a.y, a.y),
                 _ => 0,
             };
             scratch.denominators[i] = den;
             if den != 0 {
-                product = F::<B>::mul(product, den);
+                products[i % W] = F::<B>::mul(products[i % W], den);
             }
         }
-        let mut inverse = F::<B>::inv(product);
+        if W == 1 {
+            products[0] = F::<B>::inv(products[0]);
+        } else {
+            // Invert all lane products with one field inversion.
+            let mut previous = [1; W];
+            let mut total = 1;
+            for (j, &product) in products.iter().enumerate() {
+                previous[j] = total;
+                total = F::<B>::mul(total, product);
+            }
+            let mut carry = F::<B>::inv(total);
+            for j in (0..W).rev() {
+                let product = products[j];
+                products[j] = F::<B>::mul(carry, previous[j]);
+                carry = F::<B>::mul(carry, product);
+            }
+        }
         for i in (0..points.len()).rev() {
             let den = scratch.denominators[i];
             if den == 0 {
                 points[i] = self.add_inner(points[i], steps[i]);
                 continue;
             }
-            let inv = F::<B>::mul(inverse, scratch.prefix[i]);
-            inverse = F::<B>::mul(inverse, den);
+            let inv = F::<B>::mul(products[i % W], scratch.prefix[i]);
+            products[i % W] = F::<B>::mul(products[i % W], den);
             let a = points[i].expect("generic batch point");
             let b = steps[i].expect("generic batch step");
-            points[i] = Some(self.finish_add(a, b, F::<B>::mul(F::<B>::sub(b.y, a.y), inv)));
+            let numerator = if W > 1 && a.x == b.x {
+                F::<B>::add(F::<B>::mul(3, F::<B>::sq(a.x)), self.a)
+            } else {
+                F::<B>::sub(b.y, a.y)
+            };
+            points[i] = Some(self.finish_add(a, b, F::<B>::mul(numerator, inv)));
         }
     }
 }
@@ -817,6 +851,35 @@ mod tests {
             .batch_add(&mut points, &steps[..63], &mut BatchScratch::default())
             .is_err());
     }
+    #[test]
+    fn striped_batches_share_tangents_and_handle_partial_lanes() {
+        let curve = Curve::<31>::new(1, 0).unwrap();
+        let torsion = curve.point(0, 0).unwrap();
+        let g = (1..).find_map(|x| curve.lift_x(x).unwrap()).unwrap();
+        let h = curve.add(Some(g), Some(g)).unwrap();
+        let pairs = [
+            (Some(g), h),
+            (Some(g), Some(g)),
+            (Some(g), Some(curve.negate(g).unwrap())),
+            (Some(torsion), Some(torsion)),
+            (None, Some(g)),
+            (Some(g), None),
+            (None, None),
+        ];
+        let mut scratch = BatchScratch::default();
+        for len in [65, 0, 1, 31, 32, 33, 128, 63] {
+            let (mut points, steps): (Vec<_>, Vec<_>) =
+                pairs.iter().copied().cycle().take(len).unzip();
+            let expected: Vec<_> = points
+                .iter()
+                .zip(&steps)
+                .map(|(&a, &b)| curve.add(a, b).unwrap())
+                .collect();
+            curve.batch_add_lanes::<4>(&mut points, &steps, &mut scratch);
+            assert_eq!(points, expected);
+        }
+    }
+
     #[test]
     fn primality_handles_small_values_and_pseudoprimes() {
         for n in [0, 1, 4, 108, 341, 561, 3215031751, 3825123056546413051] {
