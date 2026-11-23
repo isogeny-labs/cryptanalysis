@@ -86,3 +86,20 @@ The table reports elapsed time and child user plus system CPU time in seconds on
 | 8 | scalar | 1.150439 | 1.146111 |
 
 The ratio of median times is 3.13 on wall time and 3.11 on CPU time. All eight outputs matched the saved table byte for byte. A batch build with M31_PORTABLE on product.c and a separate CHECK_JACOBI scalar build also reproduced it. History.lean proves the coordinatewise batch exponent by induction; ../m31-rotation-smoothness/SquareTest.lean identifies its thirtieth iterate with the field square test. Timings cover this complete public-coordinate census on this host.
+
+### Batching orbit eligibility
+
+The timings immediately above used the batch build at dd6b3aec8. The current batch build also groups the eligibility tests for the 31 coordinates in each orbit, using one zero padding lane. Starting at the square of the orbit representative, two binary rotations give the next squared coordinate. History.lean proves the recurrence for every orbit position. Rotate.lean proves the M31 word rotation formula.
+
+The local comparison used the same M4 Pro, compiler and flags. Each wall interval runs from process launch through collecting stdout; CPU is child user plus system time. In the eligibility panel, replacing the history append with an increment of counts[0] retains the generation, traversal, eligibility test and output. Both builds counted 1852867. Median elapsed time fell from 190.2 ms to 71.7 ms over six runs per build. This is a separately compiled workload, so the difference is not an additive phase timing.
+
+In the complete comparison (six runs per build), the medians were 374.3 ms and 178.1 ms. A separate four-build comparison tested which change accounted for the improvement. The direct variant advances x through the orbit and computes (x²+1) modulo p independently for each batch lane. The candidate uses the two rotations. Every complete run reproduced smooth_history.csv byte for byte.
+
+| Four-build comparison | Median wall (ms) | Median CPU (ms) |
+|---|---:|---:|
+| Scalar for eligibility and history | 1153.4 | 1143.4 |
+| Batched history only at dd6b3aec8 | 372.4 | 370.0 |
+| Batched history and eligibility, direct squares | 176.4 | 174.1 |
+| Batched history and eligibility, rotated squares | 174.1 | 172.2 |
+
+Batching eligibility accounts for most of the additional gain. The four observations per arm give limited precision for comparing the two square-generation methods. The ratio of scalar to candidate median wall times is 6.63 on the entire public-coordinate census. Raw observations in execution order are in orbit_panel.csv.

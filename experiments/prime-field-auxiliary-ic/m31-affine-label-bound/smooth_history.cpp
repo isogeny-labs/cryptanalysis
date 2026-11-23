@@ -39,6 +39,12 @@ Word rhs(Word x) { return ((x*x % p)*x + 2*x + 14) % p; }
 
 using Counts = std::array<unsigned,2048>;
 #ifdef BATCH_HISTORY
+void squarePowers(const uint32_t* inputs, uint32_t* powers, size_t n) {
+    m31_products(inputs, inputs, powers, n);
+    for (unsigned i = 1; i < 30; ++i)
+        m31_products(powers, powers, powers, n);
+}
+
 class Histories {
     static constexpr size_t capacity = 32;
     std::array<uint32_t, 11*capacity> inputs, powers;
@@ -57,9 +63,7 @@ public:
     void flush(Counts& counts) {
         if (!used) return;
         const size_t n = 11*used;
-        m31_products(inputs.data(), inputs.data(), powers.data(), n);
-        for (unsigned i = 1; i < 30; ++i)
-            m31_products(powers.data(), powers.data(), powers.data(), n);
+        squarePowers(inputs.data(), powers.data(), n);
         for (size_t i = 0; i < n; i += 11) {
             unsigned index = 0;
             for (size_t j = i; j < i+11; ++j)
@@ -87,12 +91,25 @@ int main() {
         Word key = v;
         for (Word x = rotate(v); x != v; x = rotate(x)) key = std::min(key,x);
         if (!seen.insert(key).second || square(key)) continue;
+#ifdef BATCH_HISTORY
+        // Doubling is a permutation of order 31 on these nonzero coordinates.
+        // Rotating the square twice tracks (2x)^2 with no new multiplication.
+        std::array<uint32_t,32> inputs{}, powers;
+        Word xx = key*key % p;
+        for (unsigned j = 0; j < 31; ++j) {
+            inputs[j] = xx+1 == p ? 0 : xx+1;
+            xx = rotate(rotate(xx));
+        }
+        squarePowers(inputs.data(), powers.data(), inputs.size());
+        Word x = key;
+        for (unsigned j = 0; j < 31; ++j) {
+            if (inputs[j] != powers[j]) histories.append(x, counts);
+            x = rotate(x);
+        }
+#else
         Word x = key;
         do {
             if (!square((x*x + 1) % p)) {
-#ifdef BATCH_HISTORY
-                histories.append(x, counts);
-#else
                 unsigned index = 0;
                 Word offset = (x+p-10) % p;
                 for (unsigned j = 0; j <= 10; ++j) {
@@ -100,10 +117,10 @@ int main() {
                     if (++offset == p) offset = 0;
                 }
                 ++counts[index];
-#endif
             }
             x = rotate(x);
         } while (x != key);
+#endif
     }
 #ifdef BATCH_HISTORY
     histories.flush(counts);

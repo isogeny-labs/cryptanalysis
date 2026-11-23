@@ -52,6 +52,16 @@ theorem batchPower {R I : Type*} [Monoid R] (input : I → R) (k : ℕ) (j : I) 
     rw [Function.iterate_succ_apply', pow_succ (2 : ℕ), pow_mul, pow_two]
     exact congrArg₂ (· * ·) ih ih
 
+/-- Rotating a coordinate once and its square twice preserves the
+eligibility input at every position of the orbit. -/
+theorem orbitSquare (x : ZMod 2147483647) (j : ℕ) :
+    ((fun u => 2*(2*u))^[j]) (x^2) = (((fun u => 2*u)^[j]) x)^2 := by
+  induction j with
+  | zero => rfl
+  | succ j ih =>
+    simp only [Function.iterate_succ_apply', ih]
+    ring
+
 namespace Smooth47
 
 private def rows := (((include_str "smooth_history.csv").trimAscii.toString.splitOn "\n").drop 1).toArray
