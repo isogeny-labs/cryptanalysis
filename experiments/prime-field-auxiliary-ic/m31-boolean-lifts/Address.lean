@@ -24,4 +24,37 @@ theorem six_bit_address :
     separates m = true ∧ ((base ++ other).map (fun x => x &&& m)).eraseDups.length = 32 := by
   native_decide
 
+
+private def bit (x : UInt32) (i : UInt32) : UInt32 := (x >>> i) &&& 1
+
+/-- Two wires and three three-input parities give a fixture permutation. -/
+def sparseAddress (x : UInt32) : UInt32 :=
+  bit x 1 ||| (bit x 2 <<< 1) |||
+  ((bit x 0 ^^^ bit x 3 ^^^ bit x 22) <<< 2) |||
+  ((bit x 0 ^^^ bit x 10 ^^^ bit x 27) <<< 3) |||
+  ((bit x 7 ^^^ bit x 10 ^^^ bit x 26) <<< 4)
+
+theorem sparseAddress_fixture :
+    ((base ++ other).map sparseAddress).mergeSort = (List.range 32).map Nat.toUInt32 := by
+  native_decide
+
+private def parity (x : UInt32) : UInt32 :=
+  let a := x ^^^ (x >>> 16)
+  let b := a ^^^ (a >>> 8)
+  let c := b ^^^ (b >>> 4)
+  let d := c ^^^ (c >>> 2)
+  (d ^^^ (d >>> 1)) &&& 1
+
+/-- The high input bit is a constant affine offset for canonical 31-bit x. -/
+def groupedAddress (x : UInt32) : UInt32 :=
+  let v := x ||| 0x80000000
+  parity (v &&& 2627573428) ||| (parity (v &&& 1248798149) <<< 1) |||
+    (parity (v &&& 2467489457) <<< 2) ||| (parity (v &&& 1987044356) <<< 3) |||
+    (parity (v &&& 731358120) <<< 4)
+
+theorem groupedAddress_fixture :
+    (base.map groupedAddress).mergeSort = (List.range 17).map Nat.toUInt32 ∧
+    (other.map groupedAddress).mergeSort = ((List.range 15).map (fun i => (17+i).toUInt32)) := by
+  native_decide
+
 end M31FixtureAddress
