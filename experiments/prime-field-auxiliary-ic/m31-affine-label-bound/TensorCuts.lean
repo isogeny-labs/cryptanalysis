@@ -122,4 +122,29 @@ theorem bondLower (s : Bool) (m : Fin 256) (hm : balanced m) {d : Nat}
   rw [h] at lower
   exact lower.trans ((Matrix.rank_mul_le_left L R).trans L.rank_le_width)
 
+/-- Count each discordant XOR pair once, using its smaller index. -/
+def splitPairs (s : Bool) (d : Fin 256) : Nat :=
+  ((List.range 256).filter fun i =>
+    let j := i ^^^ d.val
+    i < j && (labels s).testBit i != (labels s).testBit j).length
+
+theorem minSplitPairs : ∀ s : Bool,
+    (∀ d : Fin 256, d ≠ 0 → (if s then 48 else 50) ≤ splitPairs s d) ∧
+    ∃ d : Fin 256, d ≠ 0 ∧ splitPairs s d = (if s then 48 else 50) := by
+  native_decide
+
+/-- A decoder receiving a key invariant under a nonzero XOR displacement
+cannot agree everywhere, regardless of the key type or decoder size. -/
+theorem noInvariantKey {K : Type*} (s : Bool) (d : Fin 256) (hd : d ≠ 0)
+    (key : Nat → K) (decode : K → Bool)
+    (invariant : ∀ i < 256, key i = key (i ^^^ d.val)) :
+    ¬ ∀ i < 256, decode (key i) = (labels s).testBit i := by
+  have witnesses : ∀ t : Bool, ∀ e : Fin 256, e ≠ 0 →
+      ∃ i : Fin 256, (i.val ^^^ e.val) < 256 ∧
+        (labels t).testBit i.val ≠ (labels t).testBit (i.val ^^^ e.val) := by native_decide
+  obtain ⟨i, bound, ne⟩ := witnesses s d hd
+  intro exactDecode
+  apply ne
+  rw [← exactDecode i.val i.isLt, ← exactDecode _ bound, invariant i.val i.isLt]
+
 end M31TensorCuts
