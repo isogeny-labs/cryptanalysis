@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <iostream>
 #include <string>
+#include <type_traits>
+#include <cstddef>
 #include <stdexcept>
 #include <vector>
 #include <map>
@@ -48,9 +50,12 @@ using Bits=std::vector<std::uint64_t>;
 
 // Visit sorted signed multisets, including repeats and inverse cancellations.
 // Batch all additions at a node, replacing exceptional denominators with one.
-template<bool reduced, bool weighted=false, class Record>
+template<bool reduced, bool weighted=false, class Record, class Filter=std::nullptr_t>
 void visit(Point a,unsigned start,unsigned left,Record& record,
-           unsigned used=1,unsigned run=1,unsigned ways=1) {
+           unsigned used=1,unsigned run=1,unsigned ways=1,Filter filter=nullptr) {
+    if constexpr (!std::is_same_v<Filter,std::nullptr_t>) {
+        if(left==1 && !(*filter)(a.x)) return;
+    }
     // Opposite signs share an abscissa. Invert one denominator per pair.
     constexpr unsigned lanes=4;
     static_assert(lanes && !(lanes & (lanes-1)));
@@ -101,7 +106,7 @@ void visit(Point a,unsigned start,unsigned left,Record& record,
         if constexpr (weighted) {
             unsigned next_run=i==start ? run+1 : 1;
             unsigned permutations=ways*(used+1)/next_run;
-            if(left>1) visit<reduced,true>(next,i,left-1,record,used+1,next_run,permutations);
+            if(left>1) visit<reduced,true>(next,i,left-1,record,used+1,next_run,permutations,filter);
             else record(next.x,permutations);
         } else {
             if(left>1) visit<reduced>(next,i,left-1,record);
@@ -370,7 +375,15 @@ static void five_prefixes(std::vector<Word> xs) {
         if(suffix[x & 65535] && std::binary_search(xs.begin(),xs.end(),x))
             ++hits[ways];
     };
-    for(unsigned i=0;i<basis.size();i+=2) visit<true,true>(basis[i],i,3,count);
+    // If T+b is a signed generator, T is the sum of two signed
+    // generators. Hash abscissae only; collisions just keep extra nodes.
+    constexpr Word mask=(1u<<22)-1;
+    Bits pairs((mask+1)/64);
+    auto insert=[&](Word x) {pairs[(x & mask)>>6] |= UINT64_C(1)<<(x & 63);};
+    for(unsigned i=0;i<basis.size();i+=2) visit<false>(basis[i],i,1,insert);
+    auto possible=[&](Word x) {return (pairs[(x & mask)>>6]>>(x & 63)) & 1;};
+    for(unsigned i=0;i<basis.size();i+=2)
+        visit<true,true>(basis[i],i,3,count,1,1,1,&possible);
     std::cout<<"prefix_permutations,completable_prefixes_up_to_sign\n";
     for(unsigned ways:{1,4,6,12,24}) std::cout<<ways<<','<<hits[ways]<<'\n';
 }
