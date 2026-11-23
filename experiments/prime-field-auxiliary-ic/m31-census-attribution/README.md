@@ -1,0 +1,7 @@
+# Attribution of the bound-89 census to the archived M31 comparison
+
+Scope is the retrospective depth-five field31_s5_base0 v2_batch record in the optimized snapshot. The three rows use the same public target and base with different search seeds. The archive's benchmark-record index marks them unqualified. The script reads a pinned Git revision, reconstructs the signed-point columns from the supplied roots, evaluates both ordinary and rotation-closed smooth membership and checks the timing identity in each row.
+
+In the archived benchmark.py, prepare_folder obtains V from the depth-five auxiliary chain. For each of its supplied coordinates it tests the cubic and records a canonical ordinate. It checks the resulting points and roots against the manifest. The native process is timed separately and the recorded basis cost is added back. The Metal experiment instead enumerates every positive 89-smooth integer below p and returns a label per coordinate. Matching the modulus and cubic is insufficient to equate these workloads.
+
+The reported ceiling divides the archived end-to-end time by the process wall time, holding all other costs fixed and hypothetically setting the entire basis charge to zero. It does not substitute timings from another host or estimate a different curve, factor base or algorithm. The floor on new basis time for this calculation is zero. Replay with python3 replay.py.
