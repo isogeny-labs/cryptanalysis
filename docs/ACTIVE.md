@@ -11,6 +11,8 @@
 
 - [x] Document the matched single-large-prime control for `ca-ic prime` (Codex, started 2026-11-20, branch codex/document-prime-large-prime-control, PR #1925)
 
+- [x] PKM auxiliary-curve (isogeny) factor base (workspace PROTOCOL.md lead sweep + direct pilot runs): `pkm_tower_pilot --iso-degrees` (odd/mixed Vélu levels, x-only, tested on the guide's F_61 example); odd degrees are constant factors at equal |V| (m = 2: degree 3 1.4-2.5x, degree 5 3.3-5.7x wall; mixed no effect), lead-sweep pkm-iso-deg3 phase 1 FAIL (t-paired gate); frontier |V| ~2^8-2^9.5 (m = 2), 2^5 (m = 3), 2^3 (m = 4), none at m >= 5; univariate elimination = enumeration's order, F4 and msolve far worse (`research/pkm_aux_curve_odd_isogeny_20261123/README.md`; Claude Code, completed 2026-11-23, branch claude/pkm-aux-curve-odd-isogeny-20261123, PR #1927; workspace PR #86; built at 9824fb08 + this PR's pilot because main does not build) [pcc:unverified]
+
 - [ ] hashed-tensor lead sweep (workspace PROTOCOL.md, m = 2..9, prime regime): plug-in spec, phase 1 vs prime-abscissa+mitm; calibrate contraction steps and fix the `root_u` floor if the oracle cannot run (Claude Code, started 2026-11-22, branch claude/hashed-tensor-lead-sweep-20261122, PR #1915; built at 80c9f4dd9 + this PR's pricing commit because main does not build) [pcc:unverified]
 
 - [ ] CT317 independent prime-field cold-target group replay (ChatGPT, started 2026-11-22, existing draft PR #1912, branch research/ct302-full-native-log-admission-20261121): source-only bound exact raw solver stdout/receipt to verified Q=[k]P on short-Weierstrass <=31-bit prime curves; independent subgroup and curve validation, toy sabotages; native 695/701 and authenticated custody still blocked. [pcc:unverified]
