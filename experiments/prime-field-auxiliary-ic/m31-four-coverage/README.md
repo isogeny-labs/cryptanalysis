@@ -401,3 +401,20 @@ PanelCoverage.lean proves panel_exact. For each listed terminal, run the second-
 Replay in the Lean 4.34.1 mathlib environment with the procedure above, adding PanelInitializer.lean and PanelCoverage.lean after FiberOrbit.lean. Supply absolute source paths to lean so include_str can locate the adjacent CSV. Inspect M31PanelInitializer.panel_exact with #print axioms. Its dependencies are propext, Classical.choice and Quot.sound.
 
 PCC-20261123-74a855 [pcc:unverified]
+
+### Half-period symmetry and independent recurrence lanes
+
+On the archived fibers, slot i+64 is the field negative of slot i. The first 64 entries therefore suffice. If a recurrence spaced by h uses coefficient s, the recurrence spaced by 2h uses s²−2. HalfOrbit.lean proves that identity for every input sequence satisfying the recurrence. For the archived and held-out steps, applying this coefficient transformation five times yields zero, giving the half-period sign change. This also justifies splitting the first half into four or eight independent residue classes after seeding the first two entries in each class.
+
+The local Apple M4 Pro comparison starts from each terminal, constructs the full array of 128 coordinates, lifts through the same 32-wide NEON code and sorts points per fiber. All candidate arrays matched the full recurrence slot by slot. Independently generated inverse trees and scalar curve lifts matched the resulting sorted points. A second panel uses the traces of odd powers 65 through 127 of the element represented by the first archived terminal. Its 32 terminals are distinct and outside the archived panel. Preparing the terminal inputs and oracle comparisons precedes timing. Each arm rebuilds the panels 64 times per timing. Each panel runs all 24 orders twice (the second cycle reverses the sequence of orders).
+
+| Method | Archived median µs | Holdout median µs | Paired speedup archived | Paired speedup holdout |
+|---|---:|---:|---:|---:|
+| Full recurrence, NEON lift | 61.02 | 61.36 | 1 | 1 |
+| Half recurrence plus negation | 56.26 | 55.95 | 1.079 | 1.097 |
+| Four independent lanes in first half | 53.10 | 53.37 | 1.151 | 1.145 |
+| Eight independent lanes in first half | 53.24 | 52.87 | 1.149 | 1.155 |
+
+Widths four and eight each beat the full recurrence in all 48 rounds on each panel. The measurements concern rebuilding sorted point tables on this host. To reproduce, build torus7-build.rs with the native flags above and invoke fiber-half ROTATION ORDER, adding holdout for the second panel. The method codes in table order are f,h,q,o. Rotations 0–23 enumerate permutations in input order fhqo and 24–47 traverse that list in reverse.
+
+PCC-20261123-962b7b [pcc:unverified]
