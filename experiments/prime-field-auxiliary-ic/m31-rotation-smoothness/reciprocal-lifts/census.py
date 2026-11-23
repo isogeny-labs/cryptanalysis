@@ -47,19 +47,23 @@ def rotate(m, j):
     return ((m << j) & MASK) | (m >> (PERIOD-j))
 
 
-def main(lifts=euler_lift):
+def reciprocal(x):
+    return pow(x, -1, P)
+
+
+def main(lifts=euler_lift, invert_word=reciprocal):
     groups = representatives()
     totals = [[0]*5 for _ in range(PERIOD)]
     pairs = 0
     for key, x in groups.items():
-        inverse = pow(key,-1,P)
+        inverse = invert_word(key)
         if key >= inverse or inverse not in groups:
             continue
         pairs += 1
         a = lift_masks(x, 2, lifts=lifts)
         # Transport.lean proves that inverse coordinates have the same auxiliary lift.
         # The inverse orbit uses the inverse step, so the bit positions agree.
-        b = lift_masks(pow(x,-1,P), (P+1)//2, auxiliary_mask=a[0], lifts=lifts)
+        b = lift_masks(invert_word(x), (P+1)//2, auxiliary_mask=a[0], lifts=lifts)
         for j,row in enumerate(totals):
             aux,curve,twist = (m & rotate(n,j) for m,n in zip(a,b))
             for i,bits in enumerate((aux,curve,twist,aux & curve,aux & twist)):
@@ -75,16 +79,19 @@ def main(lifts=euler_lift):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Count affine lifts over M31.")
     parser.add_argument("--gmp", action="store_true",
-                        help="use the optional gmpy2 Jacobi symbol for lift tests")
+                        help="use gmpy2 for lift tests and field inversion")
     if parser.parse_args().gmp:
         try:
-            from gmpy2 import jacobi
+            from gmpy2 import invert, jacobi
         except ImportError as error:
             parser.exit(2, f"--gmp requires gmpy2: {error}\n")
 
         def gmp_lift(rhs):
             return jacobi(rhs, P) >= 0
 
-        main(gmp_lift)
+        def gmp_reciprocal(x):
+            return int(invert(x, P))
+
+        main(gmp_lift, gmp_reciprocal)
     else:
         main()
