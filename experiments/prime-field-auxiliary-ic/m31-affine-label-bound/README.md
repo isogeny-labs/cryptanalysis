@@ -165,3 +165,21 @@ For all three seeds, every displacement at lags 1, 2 and 3 has zero overlap. Thu
 Seed 1 thus has the same exclusion across five consecutive positions of each lane. This structural difference from independent queries is small on the scale of the archived run. Under independent uniform queries, the probability of *any* pair of hits separated by one to four same-lane steps, in the fixed first 19300166 processed queries, is at most 4 × 19300166 × (578/2147505293)² < 0.0000056. This union bound does not condition on the archived stopping event. It measures how rarely the independent reference violates this particular constraint. Longer lags and pairs from different lanes are outside the enumeration.
 
 LagOverlap.lean checks the group-theoretic difference criterion, the at-most-one-hit implication for a separated window, and the rational inequality. The Python/C++ replay supplies the finite histogram and the seed-specific displacement counts.
+
+### Where did the archived rows arrive?
+
+The C++ receipt checker in archived_positions.cpp regenerates the two public coefficient labels attached to each query and tests them against the saved labels. The archived batched loop advances the 64 lanes in ascending order and consumes one RNG output per lane. Advancing each lane just before comparing its labels uses the same draws for all processed positions, including the final partial batch. This replay only localizes saved rows; its output does not inventory rejected queries or discarded duplicate rows.
+
+Run `python3 archived_positions.py` to regenerate archived_positions.csv. Every one of the 78 saved label pairs occurs exactly once in its own processed stream, in receipt order. The final row agrees with the recorded stopping query in all six runs. All 235 million-query progress messages also agree with the reconstructed counts just before processing the stated query.
+
+The last whole-million checkpoint common to all runs was 19 million. Comparing equal processed-query counts removes the difference in run length from the descriptive comparison:
+
+| Seed | Chain rows through 19M | Batched rows through 19M |
+|---:|---:|---:|
+| 0 | 3 | 9 |
+| 1 | 3 | 13 |
+| 2 | 7 | 2 |
+
+Seed 1's batched run produced 14 rows across 13 distinct lanes by query 19300166. Lane 5 appears twice; the other twelve contributing lanes each appear once. Three rows arrived by five million, five by ten million and ten by fifteen million. A single lane or batch cannot account for the excess on that run. At the common checkpoint batching produced more rows on seeds 0 and 1 and fewer on seed 2. This checkpoint was selected after inspecting the stopping horizons. All six records concern one public target.
+
+Positions.lean checks the common-prefix counts, seed-one lane spread and final query against the saved CSV.
