@@ -84,3 +84,47 @@ fixed or report it alongside the bit size.
 - No 64-bit point; `p < 2^64` is the implementation's field limit.
 - No comparison against the repo's published IC bounds; that is a separate
   adjudication.
+
+## Large-prime graph structure (2026-11-22)
+
+`build_graph_matrix` treats relations with one or two large primes as edges and
+solves each connected component with a spanning-tree propagation plus one
+auxiliary column per cyclic component. Instrumented with
+`CA_IC_GRAPH_DEBUG=1` (prints nodes / components / cyclic / trees / edges):
+
+| p bits | large-prime nodes | components | cyclic | tree | edges | emitted columns |
+|---:|---:|---:|---:|---:|---:|---:|
+| 40 | 951 | 1 | 1 | 0 | 1355 | 144 (143 fb + 1) |
+| 44 | 1601 | 1 | 1 | 0 | 2259 | 223 (222 fb + 1) |
+| 48 | 2551 | 1 | 1 | 0 | 3180 | 343 (342 fb + 1) |
+
+**The graph is a single giant component at every size tested**, so:
+
+1. Tree components do not arise in this regime; a "skip tree components" change
+   is a correctness/cleanliness improvement (committed, verified by
+   `test_indexcalc`: 859,159 checks) but **measurably a no-op here**.
+2. The auxiliary-column count is 1, so the matrix is essentially
+   `nfb + 1` columns — the large-prime step is not inflating the linear algebra.
+3. The propagation cost is `O(nodes x nfb)` (an expression vector per node):
+   ~20 MB and ~5M int operations at 56 bits. Small next to the Lanczos solve.
+
+Conclusion: **do not optimize the graph step for speed in this engine.** The
+cost is the sparse solve over the largest factor of `p-1`. If a regime with
+many small components is ever wanted (fewer relations per large prime), the
+tree-skip and the per-component parallelism are already in place conceptually;
+neither would help the current workload.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
