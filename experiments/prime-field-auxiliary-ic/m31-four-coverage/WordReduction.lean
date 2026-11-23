@@ -50,6 +50,19 @@ theorem ordinate_offset (t y : ℕ) (hy : y < p) :
 
 theorem accumulator_fits_uint64 : (p-1)^2+2*p < 2^64 := by decide
 
+/-- The Rust M31 affine fast path agrees with reducing the square and
+then subtracting each canonical coordinate separately. -/
+theorem rust_abscissa (s x y : ℕ) (hs : s < p) (hx : x < p) (hy : y < p) :
+    let t := s*s+(2*p-x-y)
+    let q := t/radix+t%radix
+    (if q ≥ p then q-p else q) = ((s*s%p + (p-x))%p + (p-y))%p := by
+  dsimp only
+  have bound := accumulator_bound s s (2*p-x-y) hs hs (by omega)
+  rw [(fold_correct _ bound).2]
+  rw [Nat.mod_add_mod, Nat.add_assoc, Nat.mod_add_mod]
+  congr 1
+  omega
+
 /-- Both variants operate on actual wrapping 32-bit words. -/
 theorem add_carry (a b : BitVec 32) (ha : a < 2147483647) (hb : b ≤ 2147483647) :
     let s := a+b

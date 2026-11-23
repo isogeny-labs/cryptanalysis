@@ -343,7 +343,14 @@ impl<const B: u32> Curve<B> {
         Some(self.finish_add(left, right, slope))
     }
     fn finish_add(self, left: Point, right: Point, slope: u64) -> Point {
-        let x = F::<B>::sub(F::<B>::sub(F::<B>::sq(slope), left.x), right.x);
+        let x = if B == 31 {
+            let p = F::<B>::P;
+            // Canonical coordinates keep the offset nonnegative and the accumulator below 2^62.
+            let accumulator = slope * slope + (2 * p - left.x - right.x);
+            F::<B>::add(accumulator >> 31, accumulator & p)
+        } else {
+            F::<B>::sub(F::<B>::sub(F::<B>::sq(slope), left.x), right.x)
+        };
         Point {
             x,
             y: F::<B>::sub(F::<B>::mul(slope, F::<B>::sub(left.x, x)), left.y),
@@ -759,6 +766,28 @@ mod tests {
         field_case::<31>();
         field_case::<61>();
     }
+    #[test]
+    fn m31_affine_coordinates_match_wide_remainders() {
+        let curve = Curve::<31>::new(2, 14).unwrap();
+        let p = u128::from(curve.modulus());
+        let edges = [0, 1, 2, (p / 2) as u64, (p - 2) as u64, (p - 1) as u64];
+        // finish_add is a polynomial once the slope is supplied. Testing
+        // arbitrary canonical inputs includes rare edge cases of the fold.
+        for slope in edges {
+            for x1 in edges {
+                for x2 in edges {
+                    let left = Point { x: x1, y: x2 };
+                    let right = Point { x: x2, y: x1 };
+                    let got = curve.finish_add(left, right, slope);
+                    let s = u128::from(slope);
+                    let x = (s * s + 2 * p - u128::from(x1) - u128::from(x2)) % p;
+                    let y = (s * (u128::from(x1) + p - x) + p - u128::from(left.y)) % p;
+                    assert_eq!(got.coordinates(), (x as u64, y as u64));
+                }
+            }
+        }
+    }
+
     #[test]
     fn batched_exceptions_match_individual_additions() {
         let curve = Curve::<7>::new(2, 51).unwrap();
