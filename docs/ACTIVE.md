@@ -2,7 +2,7 @@
 
 ## Active items
 
-- [ ] PKM auxiliary-curve (isogeny) factor base, untested branches (workspace PROTOCOL.md lead sweep): (A) odd/mixed Vélu degrees 3, 5, 2·3 as a `pkm_tower_pilot` flag; (B) m = 2..9 frontier and larger fields; (C) solvers that eliminate the intermediate tower variables (resultant / chain root finding) vs F4 and enumeration (Claude Code, started 2026-11-23, branch claude/pkm-aux-curve-odd-isogeny-20261123, PR #TBD; workspace PR #86) [pcc:unverified]
+- [ ] PKM auxiliary-curve (isogeny) factor base, untested branches (workspace PROTOCOL.md lead sweep): (A) odd/mixed Vélu degrees 3, 5, 2·3 as a `pkm_tower_pilot` flag; (B) m = 2..9 frontier and larger fields; (C) solvers that eliminate the intermediate tower variables (resultant / chain root finding) vs F4 and enumeration (Claude Code, started 2026-11-23, branch claude/pkm-aux-curve-odd-isogeny-20261123, PR #1927; workspace PR #86) [pcc:unverified]
 
 - [ ] hashed-tensor lead sweep (workspace PROTOCOL.md, m = 2..9, prime regime): plug-in spec, phase 1 vs prime-abscissa+mitm; calibrate contraction steps and fix the `root_u` floor if the oracle cannot run (Claude Code, started 2026-11-22, branch claude/hashed-tensor-lead-sweep-20261122, PR #1915; built at 80c9f4dd9 + this PR's pricing commit because main does not build) [pcc:unverified]
 
