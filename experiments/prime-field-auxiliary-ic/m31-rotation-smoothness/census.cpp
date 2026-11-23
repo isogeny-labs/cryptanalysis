@@ -24,10 +24,27 @@ struct SmoothValue {
     bool nonsquare;
 };
 
+// Each stable pass orders one more byte, from least to most significant.
+void sortKeys(std::vector<uint32_t>& keys) {
+    std::vector<uint32_t> scratch(keys.size());
+    for (unsigned shift = 0; shift < 32; shift += 8) {
+        size_t offsets[256]{};
+        for (uint32_t key : keys) ++offsets[(key >> shift) & 255];
+        size_t next = 0;
+        for (auto& offset : offsets) {
+            const size_t count = offset;
+            offset = next;
+            next += count;
+        }
+        for (uint32_t key : keys) scratch[offsets[(key >> shift) & 255]++] = key;
+        keys.swap(scratch);
+    }
+}
+
 int main() {
     std::vector<SmoothValue> values{{1, false}};
     constexpr unsigned bounds[] = {7, 13, 23, 47};
-    std::vector<U> keys;
+    std::vector<uint32_t> keys;
     size_t firstNew = 0;
     unsigned stage = 0;
     for (U prime : {3,5,7,11,13,17,19,23,29,31,37,41,43,47}) {
@@ -49,16 +66,18 @@ int main() {
             for (U x = rotate(key); x != entry.value; x = rotate(x))
                 key = std::min(key, x);
             // Equal rotations have the same character. Sorting puts the earliest bound first.
-            keys.push_back((key << 3) | (U(entry.nonsquare) << 2) | stage);
+            // The minimum rotation starts with zero and ends in one.
+            const uint32_t middle = static_cast<uint32_t>(key >> 1);
+            keys.push_back((middle << 3) | (uint32_t(entry.nonsquare) << 2) | stage);
         }
         firstNew = values.size();
         ++stage;
     }
-    std::sort(keys.begin(), keys.end());
+    sortKeys(keys);
     U orbitCounts[4]{}, eligibleCounts[4]{}, liftCounts[4]{};
     U previousKey = 0;
     for (const U packed : keys) {
-        const U v = packed >> 3;
+        const U v = 2 * (packed >> 3) + 1;
         if (v == previousKey) continue;
         previousKey = v;
         const unsigned band = packed & 3;

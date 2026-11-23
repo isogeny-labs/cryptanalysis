@@ -36,4 +36,26 @@ theorem cumulative (keys : Finset ℕ) (bands : ℕ → Finset ℕ)
   · rintro ⟨hk, j, hj, hc⟩
     exact ⟨hk, Nat.lt_succ_of_le (le_trans ((bands k).min'_le j hj) hc)⟩
 
+/-- A positive minimum rotation is no greater than either adjacent rotation. -/
+theorem minimumBits (k : ℕ) (pos : 0 < k) (bound : k < 2147483647)
+    (forward : k ≤ (2*k)%2147483647)
+    (backward : k ≤ k/2 + (k%2)*2^30) :
+    k < 2^30 ∧ k%2 = 1 := by
+  constructor
+  · by_contra h
+    rw [Nat.mod_eq_sub_mod (by omega : 2147483647 ≤ 2*k),
+      Nat.mod_eq_of_lt (by omega : 2*k-2147483647 < 2147483647)] at forward
+    omega
+  · by_contra h
+    have e : k%2 = 0 := by omega
+    rw [e] at backward
+    omega
+
+theorem compactDecode (k sign band : ℕ) (small : k < 2^30) (odd : k%2 = 1)
+    (hs : sign < 2) (hb : band < 4) :
+    let word := packed (k/2) sign band
+    word < 2^32 ∧ 2*(word/8)+1 = k ∧ (word/4)%2 = sign ∧ word%4 = band := by
+  dsimp [packed]
+  omega
+
 end M31FirstBound
