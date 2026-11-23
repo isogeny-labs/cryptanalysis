@@ -18,10 +18,11 @@ struct Point { Word x,y; };
 constexpr Point infinity{p,p};
 Word add(Word a,Word b) { Word s=a+b; return s>=p?s-p:s; }
 Word sub(Word a,Word b) { return a>=b?a-b:p-(b-a); }
-Word mul(Word a,Word b) {
-    std::uint64_t prod=std::uint64_t(a)*b;
-    return add(prod>>31, Word(prod)&p);
+// Canonical operands permit a product plus up to 2p in one 64-bit accumulator.
+Word fold(std::uint64_t accumulator) {
+    return add(Word(accumulator >> 31), Word(accumulator) & p);
 }
+Word mul(Word a,Word b) { return fold(std::uint64_t(a)*b); }
 Word power(Word a,Word e) {
     Word r=1;
     for (;e;e>>=1,a=mul(a,a)) if(e&1) r=mul(r,a);
@@ -96,8 +97,7 @@ void visit(Point a,unsigned start,unsigned left,Record& record,
             if(a.x!=b.x) numer=sub(b.y,a.y);
             else {Word xx=mul(a.x,a.x); numer=add(add(xx,add(xx,xx)),2);}
             slope=mul(numer,inverse[i/2]);
-            next.x=sub(sub(mul(slope,slope),a.x),b.x);
-
+            next.x=fold(std::uint64_t(slope)*slope + (2*p - a.x - b.x));
         }
         // Sorted occurrences put opposite signs of one generator next to each other.
         if constexpr (reduced) if (i==(start^1U)) continue;
