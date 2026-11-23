@@ -7,6 +7,9 @@
 #include "linalg.h"
 #include "ca_internal.h"
 #include "ic_trial.h"
+#include "ic_rational.h"
+#include "ic_trial32.h"
+#include <limits.h>
 
 #include <math.h>
 #include <pthread.h>
@@ -17,6 +20,16 @@
 #define IC_SMALL_Q (1ULL << 24)   /* prime factors of p-1 up to this: Pohlig-Hellman */
 #define IC_MAX_REL_COLS 96
 #define IC_STEP_POWERS 4096
+#define IC_STEP_POWERS  4096
+
+/* Exact division by an odd factor-base prime q without a divide
+ * instruction: with inv = q^{-1} mod 2^64 and lim = floor((2^64 - 1) / q),
+ * q divides v iff v * inv <= lim (mod 2^64), and then v / q = v * inv.
+ * The multiples of q are exactly the preimages of 0..lim under the
+ * bijection v -> v * inv.  Unused for q = 2, which is a shift. */
+typedef struct ic_fbdiv {
+    uint64_t inv, lim;
+} ic_fbdiv;
 
 struct ca_ic_ctx {
     uint64_t p, zeta;             /* modulus and internal primitive root */
@@ -27,6 +40,10 @@ struct ca_ic_ctx {
     uint32_t *fb;                 /* factor base primes */
     ca_ic_divisor *fb_div;         /* fixed-divisor smoothness arithmetic */
     uint64_t *step_power;         /* reusable zeta^s, Montgomery form */
+    ic_fbdiv *fb_div;             /* their exact-division constants */
+    uint64_t *step_power;         /* reusable zeta^s in Montgomery form */
+    uint32_t *fb_inv32, *fb_lim32; /* optional bounded-integer scan */
+    ca_ic_scan32_fn scan32;
     uint64_t *fb_log;             /* logs mod p-1 */
     uint8_t *fb_known;
     ca_ic_params params;
@@ -149,6 +166,129 @@ static int trial_factor(uint64_t v, const uint32_t *fb, const ca_ic_divisor *div
             rel->val[n] = e;
             n++;
         }
+        i = 1;
+    }
+    uint32_t stop = v > 1 ? tf_square_bound(fb, i, nfb, v) : i;
+    while (v > 1) {
+        /* eight primes a step, one branch for the eight tests; a hit is
+         * located by the scalar loop below */
+        for (; i + 8 <= stop; i += 8) {
+            const ic_fbdiv *d = div + i;
+            const unsigned h0 = v * d[0].inv <= d[0].lim, h1 = v * d[1].inv <= d[1].lim;
+            const unsigned h2 = v * d[2].inv <= d[2].lim, h3 = v * d[3].inv <= d[3].lim;
+            const unsigned h4 = v * d[4].inv <= d[4].lim, h5 = v * d[5].inv <= d[5].lim;
+            const unsigned h6 = v * d[6].inv <= d[6].lim, h7 = v * d[7].inv <= d[7].lim;
+            if (h0 | h1 | h2 | h3 | h4 | h5 | h6 | h7) break;
+        }
+        for (; i + 4 <= stop; i += 4) {
+            const ic_fbdiv *d = div + i;
+            const unsigned h0 = v * d[0].inv <= d[0].lim, h1 = v * d[1].inv <= d[1].lim;
+            const unsigned h2 = v * d[2].inv <= d[2].lim, h3 = v * d[3].inv <= d[3].lim;
+            if (h0 | h1 | h2 | h3) break;
+        }
+        for (; i < stop; i++)
+            if (v * div[i].inv <= div[i].lim) break;
+        if (i == stop) break;
+        const uint64_t inv = div[i].inv, lim = div[i].lim;
+        int32_t e = 0;
+        while (v * inv <= lim) {
+            v *= inv;
+            e++;
+        }
+        if (n >= IC_MAX_REL_COLS) return 0;
+        rel->col[n] = col0 + i;
+        rel->val[n] = e;
+        n++;
+        i++;
+        stop = v > 1 ? tf_square_bound(fb, i, stop, v) : i;
+    }
+    if (v > 1 && i < nfb) {
+        /* fb[i]^2 > v: v is prime, in the base iff <= fb[nfb-1] */
+        if (v <= fb[nfb - 1]) {
+            uint32_t lo = i, hi = nfb;
+            while (lo < hi) {
+                uint32_t mid = (lo + hi) / 2;
+                if (fb[mid] < v)
+                    lo = mid + 1;
+                else
+                    hi = mid;
+            }
+            if (lo < nfb && fb[lo] == v) {
+                if (n >= IC_MAX_REL_COLS) return 0;
+                rel->col[n] = col0 + lo;
+                rel->val[n] = 1;
+                n++;
+                *cnt = n;
+                return 1;
+            }
+        }
+        *cnt = n;
+        return 0;
+    }
+    *cnt = n;
+    return v == 1;
+}
+
+/* Same output contract for rational trial integers bounded by UINT32_MAX. */
+static int trial_factor32(uint32_t v, const ca_ic_ctx *ctx, uint32_t col0, relation *rel,
+                          uint32_t *cnt)
+{
+    const uint32_t *fb = ctx->fb;
+    const uint32_t *inverse = ctx->fb_inv32, *limit = ctx->fb_lim32;
+    const uint32_t nfb = ctx->nfb;
+    uint32_t n = *cnt;
+    uint32_t i = 0;
+    if (v > 1 && nfb > 0 && fb[0] == 2 && (uint64_t)4 <= v) {
+        /* q = 2, a shift; the only even prime, so fb[0] if present */
+        int32_t e = __builtin_ctz(v);
+        v >>= e;
+        if (e) {
+            if (n >= IC_MAX_REL_COLS) return 0;
+            rel->col[n] = col0;
+            rel->val[n] = e;
+            n++;
+        }
+        i = 1;
+    }
+    uint32_t stop = v > 1 ? tf_square_bound(fb, i, nfb, v) : i;
+    while (v > 1) {
+        i = ctx->scan32(v, inverse, limit, i, stop);
+        if (i == stop) break;
+        const uint32_t inv = inverse[i], lim = limit[i];
+        int32_t e = 0;
+        while (v * inv <= lim) {
+            v *= inv;
+            e++;
+        }
+        if (n >= IC_MAX_REL_COLS) return 0;
+        rel->col[n] = col0 + i;
+        rel->val[n] = e;
+        n++;
+        i++;
+        stop = v > 1 ? tf_square_bound(fb, i, stop, v) : i;
+    }
+    if (v > 1 && i < nfb) {
+        /* fb[i]^2 > v: v is prime, in the base iff <= fb[nfb-1] */
+        if (v <= fb[nfb - 1]) {
+            uint32_t lo = i, hi = nfb;
+            while (lo < hi) {
+                uint32_t mid = (lo + hi) / 2;
+                if (fb[mid] < v)
+                    lo = mid + 1;
+                else
+                    hi = mid;
+            }
+            if (lo < nfb && fb[lo] == v) {
+                if (n >= IC_MAX_REL_COLS) return 0;
+                rel->col[n] = col0 + lo;
+                rel->val[n] = 1;
+                n++;
+                *cnt = n;
+                return 1;
+            }
+        }
+        *cnt = n;
+        return 0;
     }
     *cnt = n;
     return v == 1;
@@ -156,11 +296,76 @@ static int trial_factor(uint64_t v, const uint32_t *fb, const ca_ic_divisor *div
 
 /* ---- linear sieve ------------------------------------------------------- */
 
+/* Barrett / Lemire residue for x < 2^64 using mu = floor((2^64 - 1) / q)
+ * (the same constant stored in ic_fbdiv.lim).  Exact for every q > 1. */
+static inline uint64_t ic_mod_u64(uint64_t x, uint64_t q, uint64_t mu)
+{
+    if (x < q) return x;
+    uint64_t quo = (uint64_t)(((ca_u128)x * mu) >> 64);
+    uint64_t r = x - quo * q;
+    return r >= q ? r - q : r;
+}
+
+/* Canonical x mod q for a signed sieve coordinate. */
+static inline uint64_t ic_mod_i64(int64_t x, uint64_t q, uint64_t mu)
+{
+    if (x >= 0) return ic_mod_u64((uint64_t)x, q, mu);
+    uint64_t r = ic_mod_u64((uint64_t)(-x), q, mu);
+    return r ? q - r : 0;
+}
+
+/* a^{-1} mod q for an odd factor-base prime q < 2^32 and 0 < a < q.
+ * Same value as ca_invmod(a, q): a 32-bit binary almost-inverse (no 64-bit
+ * division, no u128 Newton cleanup) because every fb prime fits in 32 bits
+ * and the sieve's root setup is one inversion per prime per unit. */
+static inline uint32_t ic_invmod_fb(uint32_t a, uint32_t q)
+{
+    uint32_t ninv = (q * 3u) ^ 2u;
+    ninv *= 2u - q * ninv;
+    ninv *= 2u - q * ninv;
+    ninv *= 2u - q * ninv;
+    ninv *= 2u - q * ninv; /* q^{-1} mod 2^32 */
+    const uint32_t neg_ninv = 0u - ninv;
+
+    uint32_t u = q, v = a, s = 1, r = 0, flip = 0;
+    unsigned k = (unsigned)__builtin_ctz(v);
+    v >>= k;
+    for (;;) {
+        const uint32_t d = u - v;
+        if (d == 0) break;
+        const int lt = u < v;
+        const uint32_t sw = 0u - (uint32_t)lt;
+        const unsigned z = (unsigned)__builtin_ctz(d);
+        const uint32_t big = lt ? (v - u) : d;
+        const uint32_t small = lt ? u : v;
+        const uint32_t cb = (s & ~sw) | (r & sw);
+        const uint32_t cs = (r & ~sw) | (s & sw);
+        u = big >> z;
+        v = small;
+        s = cb << z;
+        r = cs + cb;
+        flip ^= sw;
+        k += z;
+    }
+    if (u != 1) return 0;
+    uint32_t x = flip ? r : s;
+    while (k) {
+        const unsigned j = k > 31 ? 31 : k;
+        const uint32_t t = (x * neg_ninv) & ((1u << j) - 1u);
+        uint64_t xx = ((uint64_t)t * q + x) >> j;
+        if (xx >= q) xx -= q;
+        x = (uint32_t)xx;
+        k -= j;
+    }
+    return x;
+}
+
 typedef struct sieve_shared {
     uint64_t p, H, J;             /* H = ceil(sqrt p), J = H^2 - p */
     uint32_t B, C;
     const uint32_t *fb;
     const ca_ic_divisor *fb_div;
+    const ic_fbdiv *fb_div;
     uint32_t nfb;
     const uint8_t *fb_log2;       /* rounded log2 of each prime */
     uint32_t col_prime0, col_h0;  /* column layout: factor base, then H+c */
@@ -216,28 +421,35 @@ static void *sieve_thread(void *arg)
         memset(arr, 0, n);
         for (uint32_t i = 0; i < nfb; i++) {
             uint64_t q = s->fb[i];
+            uint64_t mu = s->fb_div[i].lim; /* floor((2^64-1)/q) */
             /* a = (H + c1) mod q, b = (J + c1 H) mod q ; root: c2 = -b / a */
-            uint64_t c1m = (uint64_t)(((c1 % (int64_t)q) + (int64_t)q) % (int64_t)q);
-            uint64_t a = (hmod[i] + c1m) % q;
+            uint64_t c1m = ic_mod_i64(c1, q, mu);
+            uint64_t a = hmod[i] + c1m;
+            if (a >= q) a -= q;
             if (a == 0) continue;
-            uint64_t b = (jmod[i] + c1m * hmod[i]) % q;
-            uint64_t inv = ca_invmod(a, q);
-            uint64_t root = (q - ca_mulmod(b, inv, q)) % q; /* c2 == root (mod q) */
+            /* c1m,hmod < q ⇒ product + jmod < q^2; Barrett closes it. */
+            uint64_t b = ic_mod_u64(jmod[i] + c1m * hmod[i], q, mu);
+            /* Factor-base primes are uint32_t; 32-bit inv matches ca_invmod.
+             * q = 2 is even: a is 1 and its inverse is 1. */
+            uint64_t inv = q == 2 ? 1 : ic_invmod_fb((uint32_t)a, (uint32_t)q);
+            uint64_t prod = ic_mod_u64(b * inv, q, mu);
+            uint64_t root = prod ? q - prod : 0; /* c2 == root (mod q) */
             /* first c2 >= c2lo with c2 == root mod q */
-            int64_t c2lo_m = ((c2lo % (int64_t)q) + (int64_t)q) % (int64_t)q;
-            int64_t start = c2lo + (int64_t)((root + q - (uint64_t)c2lo_m) % q);
+            uint64_t c2lo_m = ic_mod_i64(c2lo, q, mu);
+            uint64_t gap = root >= c2lo_m ? root - c2lo_m : root + q - c2lo_m;
+            int64_t start = c2lo + (int64_t)gap;
             uint8_t lg = s->fb_log2[i];
             for (int64_t c2 = start; c2 <= c2hi; c2 += (int64_t)q) arr[c2 - c2lo] += lg;
         }
-        /* scan candidates */
+        /* scan candidates: reject by log-sieve surplus without bitlen —
+         * av >= 2^lim ⇒ bitlen(av) > lim = arr[k]+6, same filter as before. */
         for (size_t k = 0; k < n; k++) {
+            unsigned lim = (unsigned)arr[k] + 6;
             int64_t c2 = c2lo + (int64_t)k;
             ca_i128 v = sieve_value(s, c1, c2);
             uint64_t av = v < 0 ? (uint64_t)(-v) : (uint64_t)v;
             if (av == 0) continue;
-            unsigned bl = bitlen(av);
-            /* allow ~ the largest prime unaccounted (prime powers) */
-            if ((unsigned)arr[k] + 6 < bl) continue;
+            if (lim < 64 && (av >> lim)) continue;
             cand_count++;
             relation rel;
             memset(&rel, 0, sizeof(rel));
@@ -288,6 +500,7 @@ typedef struct rexp_shared {
     const uint64_t *step_power;
     const uint32_t *fb;
     const ca_ic_divisor *fb_div;
+    const ic_fbdiv *fb_div;
     uint32_t nfb;
     uint32_t col_prime0;
     uint32_t target_rels;
@@ -435,8 +648,8 @@ static ca_status build_graph_matrix(const rel_list *rels, uint32_t ncols,
     int32_t *vals = malloc(((size_t)nfb + 1) * sizeof(*vals));
     uint64_t *rhs = calloc(rels->n ? rels->n : 1, sizeof(*rhs));
     int initialized = 0;
-    if (!u || !v || !head || !next || !queue || !component || !vcount || !ecount ||
-        !comp_col || !sign || !expr || !constant || !row || !cols || !vals || !rhs) goto done;
+    if (!u || !v || !head || !next || !queue || !component || !sign || !expr ||
+        !constant || !row || !cols || !vals || !rhs) goto done;
     for (uint32_t j = 0; j < nv; ++j) head[j] = none;
     for (uint32_t i = 0; i < rels->n; ++i) {
         const relation *r = &rels->r[i];
@@ -490,28 +703,11 @@ static ca_status build_graph_matrix(const rel_list *rels, uint32_t ncols,
                     int64_t value = (int64_t)dst[j] - r->val[k];
                     if (value <= INT32_MIN || value > INT32_MAX) { rc = CA_ERR_INVALID; goto done; }
                     dst[j] = (int32_t)value;
-                }
                 queue[end++] = child;
             }
-        }
-    }
-    uint32_t n_cyclic = 0;
-    for (uint32_t c = 0; c < nc; ++c) {
-        /* connected component with at least as many edges as vertices: cycle
-         * rank >= 1. A tree component's relations are all spanning-tree
-         * equations, i.e. 0 = 0, and could never reference a column. */
-        if (ecount[c] / 2 >= vcount[c]) comp_col[c] = n_cyclic++;
-        else comp_col[c] = UINT32_MAX;
-    }
-    if (getenv("CA_IC_GRAPH_DEBUG"))
-        fprintf(stderr,
-                "[ic-graph] nodes=%u components=%u cyclic=%u trees=%u edges=%zu\n",
-                nv, nc, n_cyclic, nc - n_cyclic, rels->n);
-    rc = ca_spmat_init(A, nfb + n_cyclic, rels->n, rels->n * 16);
+    rc = ca_spmat_init(A, nfb + nc, rels->n, rels->n * 16);
     if (rc != CA_OK) goto done;
     initialized = 1;
-    for (uint32_t i = 0; i < rels->n; ++i) {
-        const relation *r = &rels->r[i];
         memset(row, 0, (size_t)nfb * sizeof(*row));
         uint64_t b = r->rhs % modulus;
         int root_coef = 0;
@@ -521,7 +717,6 @@ static ca_status build_graph_matrix(const rel_list *rels, uint32_t ncols,
             for (uint32_t j = 0; j < nfb; ++j) row[j] = (int64_t)eu[j] + ev[j];
             root_coef = sign[u[i]] + sign[v[i]];
             b = ca_submod(ca_submod(b, constant[u[i]], modulus), constant[v[i]], modulus);
-        }
         for (uint32_t k = 0; k < r->n; ++k)
             if (r->col[k] < nfb) row[r->col[k]] += r->val[k];
         uint32_t count = 0;
@@ -529,32 +724,90 @@ static ca_status build_graph_matrix(const rel_list *rels, uint32_t ncols,
             if (!row[j]) continue;
             if (row[j] <= INT32_MIN || row[j] > INT32_MAX) { rc = CA_ERR_INVALID; goto done; }
             cols[count] = j; vals[count++] = (int32_t)row[j];
-        }
         if (root_coef) {
-            uint32_t cr = component[u[i]];
-            if (comp_col[cr] == UINT32_MAX) {
-                /* tree component: the row must be exactly 0 = 0 */
-                if (count || b) { rc = CA_ERR_INVALID; goto done; }
-            } else {
-                cols[count] = nfb + comp_col[cr];
-                vals[count++] = root_coef;
-            }
-        }
+            cols[count] = nfb + component[u[i]];
+            vals[count++] = root_coef;
         if (!count && !b) continue; /* spanning-tree equations become 0=0 */
         rhs[A->rows] = b;
         rc = ca_spmat_add_row(A, cols, vals, count);
         if (rc != CA_OK) goto done;
-    }
     *b_out = rhs;
     rhs = NULL;
     rc = CA_OK;
 done:
     if (rc != CA_OK && initialized) ca_spmat_free(A);
     free(u); free(v); free(head); free(next); free(queue); free(component);
-    free(vcount); free(ecount); free(comp_col);
     free(sign); free(expr); free(constant); free(row); free(cols); free(vals); free(rhs);
     return rc;
 }
+
+
+static ca_status build_graph_matrix(const rel_list *rels, uint32_t ncols, uint32_t nfb,
+                                    uint64_t modulus, ca_spmat *A, uint64_t **b_out)
+    if (!nv || !nfb || (size_t)nv > ((size_t)64 * 1024 * 1024) / sizeof(int32_t) / nfb ||
+        rels->n > UINT32_MAX / 2)
+        return CA_ERR_INVALID;
+    if (!u || !v || !head || !next || !queue || !component || !sign || !expr || !constant || !row ||
+        !cols || !vals || !rhs)
+        goto done;
+        const uint32_t len = rel_len(rels, i);
+        const uint32_t *rcol = rel_cols(rels, i);
+        const int32_t *rval = rel_vals(rels, i);
+        for (uint32_t k = 0; k < len; ++k) {
+            if (rcol[k] < nfb) continue;
+            if (rcol[k] >= ncols || ++count > 2) {
+                rc = CA_ERR_INVALID;
+                goto done;
+            uint32_t node = rcol[k] - nfb;
+            if (rval[k] == 2 && count == 1)
+                u[i] = v[i] = node;
+            else if (rval[k] == 1) {
+                if (count == 1)
+                    u[i] = node;
+                else if (v[i] == none)
+                    v[i] = node;
+                else {
+                    rc = CA_ERR_INVALID;
+                    goto done;
+            } else {
+        if (u[i] == none || v[i] == none) {
+            rc = CA_ERR_INVALID;
+            goto done;
+        next[(size_t)2 * i] = head[u[i]];
+        head[u[i]] = 2 * i;
+        next[(size_t)2 * i + 1] = head[v[i]];
+        head[v[i]] = 2 * i + 1;
+                constant[child] = ca_submod(rels->rhs[i] % modulus, constant[parent], modulus);
+                    if (src[j] == INT32_MIN) {
+                        rc = CA_ERR_INVALID;
+                        goto done;
+                    }
+                const uint32_t len = rel_len(rels, i);
+                const uint32_t *rcol = rel_cols(rels, i);
+                const int32_t *rval = rel_vals(rels, i);
+                for (uint32_t k = 0; k < len; ++k) {
+                    uint32_t j = rcol[k];
+                    int64_t value = (int64_t)dst[j] - rval[k];
+                    if (value <= INT32_MIN || value > INT32_MAX) {
+        uint64_t b = rels->rhs[i] % modulus;
+        for (uint32_t k = 0; k < len; ++k)
+            if (rcol[k] < nfb) row[rcol[k]] += rval[k];
+            if (row[j] <= INT32_MIN || row[j] > INT32_MAX) {
+            cols[count] = j;
+            vals[count++] = (int32_t)row[j];
+    free(u);
+    free(v);
+    free(head);
+    free(next);
+    free(queue);
+    free(component);
+    free(sign);
+    free(expr);
+    free(constant);
+    free(row);
+    free(cols);
+    free(vals);
+    free(rhs);
 
 /* Solve the matrix modulo q^e for a large prime q: Lanczos mod q + Hensel. */
 static ca_status large_part_logs(const ca_spmat *A, const uint64_t *b, uint64_t q, unsigned e,
@@ -891,6 +1144,10 @@ void ca_ic_free(ca_ic_ctx *ctx)
 {
     if (!ctx) return;
     free(ctx->fb);
+    free(ctx->fb_div);
+    free(ctx->step_power);
+    free(ctx->fb_log);
+    free(ctx->fb_known);
     free(ctx->fb_div);
     free(ctx->step_power);
     free(ctx->fb_log);

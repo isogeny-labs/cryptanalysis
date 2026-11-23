@@ -1,0 +1,239 @@
+{
+ "schema": "validator-report/lead-sweep-recompute/v1",
+ "status": "pass",
+ "what": "baseline/lead S ratios paired by planted seed, geometric mean and 95% percentile bootstrap (10,000 resamples, seed 20261119) recomputed from the raw ic bench arm JSONs by an independent script; every row verified [d]G = Q by the runner",
+ "raw_data": [
+  {
+   "path": "20261122T000939Z-phase1/cells/bench-prime-16/baseline.json",
+   "sha256": "4c2fb52f859a6c674002edb040e7edf6d9ade2ea5614742aad9656282ab47e76"
+  },
+  {
+   "path": "20261122T000939Z-phase1/cells/bench-prime-16/lead-m2.json",
+   "sha256": "0b15da3c1d4d7ba9951698a0b69cab2a371e5e05c8b81910337552ae60f78323"
+  },
+  {
+   "path": "20261122T000939Z-phase1/cells/bench-prime-16/lead-m3.json",
+   "sha256": "0b5104917775b81b208040f90d87382cee08c84d11c0491d7356bb8604891ea3"
+  },
+  {
+   "path": "20261122T000939Z-phase1/cells/bench-prime-18/baseline.json",
+   "sha256": "7933d5c49fc7449642885c4cc8061a42d9c4cb0c2cf0aa870dca8684aa65f7f9"
+  },
+  {
+   "path": "20261122T000939Z-phase1/cells/bench-prime-18/lead-m2.json",
+   "sha256": "b7ade60e5798a983a746fd54facb8ab3f261c15580482f0c81f7407134fdbc19"
+  },
+  {
+   "path": "20261122T000939Z-phase1/cells/bench-prime-18/lead-m3.json",
+   "sha256": "7f53c90102c48ce3cddaa52356f33587bdab007b86ef0ab48cfde97f8f94abd5"
+  },
+  {
+   "path": "20261122T000940Z-phase2/cells/bench-prime-20/baseline.json",
+   "sha256": "7344b8c4b5a44f00a3e004ddc3b4d176af609da8b6eefbb1158902f6123f5202"
+  },
+  {
+   "path": "20261122T000940Z-phase2/cells/bench-prime-20/lead-m2.json",
+   "sha256": "5acf058a3891758b7ba84b3f45faa9908c3c4aea082068c13e4402e29ca1a057"
+  },
+  {
+   "path": "20261122T000940Z-phase2/cells/bench-prime-20/lead-m3.json",
+   "sha256": "492c785054103d74e09f17eb8ef47a0b84e142645e197431ab27f8d29686a926"
+  },
+  {
+   "path": "20261122T000940Z-phase2/cells/bench-prime-22/baseline.json",
+   "sha256": "4de179272d3726db1e8c29ee7e6127356d9fd666b4000fe7a5301483633b4583"
+  },
+  {
+   "path": "20261122T000940Z-phase2/cells/bench-prime-22/lead-m2.json",
+   "sha256": "308718f7d89af61c3c00cf1632e95ae6882d46a933608994f868d29c91fd3a67"
+  },
+  {
+   "path": "20261122T000940Z-phase2/cells/bench-prime-22/lead-m3.json",
+   "sha256": "a03bdeec04f675eedd966b533200c63f2a695c6543e5a597d87a1f60fa9565f2"
+  },
+  {
+   "path": "20261122T000951Z-phase3/cells/bench-prime-24/baseline.json",
+   "sha256": "6f93b9584e75c10a1e262975ff841370132a0dfcae673e7b02ab9c9bb27e2273"
+  },
+  {
+   "path": "20261122T000951Z-phase3/cells/bench-prime-24/lead-m2.json",
+   "sha256": "ad97e37671570eccedeb1a6b87b95adbfadca97ff3083b92ab337ba308f7f8b2"
+  },
+  {
+   "path": "20261122T000951Z-phase3/cells/bench-prime-24/lead-m3.json",
+   "sha256": "ef89aadacf5e9f38d04308e4b36b9a9b5f6b008c14253198107a142b1058cc97"
+  }
+ ],
+ "headline": [
+  {
+   "name": "phase1/bench-prime-16/m2/speedup_geomean",
+   "claimed": 1.9827865172820498,
+   "recomputed": 1.9827865172820498
+  },
+  {
+   "name": "phase1/bench-prime-16/m2/speedup_ci_low",
+   "claimed": 1.8649021984824896,
+   "recomputed": 1.8649021984824896,
+   "rel_tol": 0.05
+  },
+  {
+   "name": "phase1/bench-prime-16/m2/speedup_ci_high",
+   "claimed": 2.0922597328918124,
+   "recomputed": 2.0922597328918124,
+   "rel_tol": 0.05
+  },
+  {
+   "name": "phase1/bench-prime-16/m3/speedup_geomean",
+   "claimed": 1.6686402181719777,
+   "recomputed": 1.6686402181719777
+  },
+  {
+   "name": "phase1/bench-prime-16/m3/speedup_ci_low",
+   "claimed": 1.5619786294986033,
+   "recomputed": 1.5619786294986033,
+   "rel_tol": 0.05
+  },
+  {
+   "name": "phase1/bench-prime-16/m3/speedup_ci_high",
+   "claimed": 1.7756815084948876,
+   "recomputed": 1.7756815084948876,
+   "rel_tol": 0.05
+  },
+  {
+   "name": "phase1/bench-prime-18/m2/speedup_geomean",
+   "claimed": 2.9587235795149627,
+   "recomputed": 2.9587235795149627
+  },
+  {
+   "name": "phase1/bench-prime-18/m2/speedup_ci_low",
+   "claimed": 2.6774130133491454,
+   "recomputed": 2.6774130133491454,
+   "rel_tol": 0.05
+  },
+  {
+   "name": "phase1/bench-prime-18/m2/speedup_ci_high",
+   "claimed": 3.2567902009887058,
+   "recomputed": 3.2567902009887058,
+   "rel_tol": 0.05
+  },
+  {
+   "name": "phase1/bench-prime-18/m3/speedup_geomean",
+   "claimed": 2.1354105570523148,
+   "recomputed": 2.1354105570523148
+  },
+  {
+   "name": "phase1/bench-prime-18/m3/speedup_ci_low",
+   "claimed": 2.0128663456875033,
+   "recomputed": 2.013407692434098,
+   "rel_tol": 0.05
+  },
+  {
+   "name": "phase1/bench-prime-18/m3/speedup_ci_high",
+   "claimed": 2.234522183378396,
+   "recomputed": 2.234522183378396,
+   "rel_tol": 0.05
+  },
+  {
+   "name": "phase2/bench-prime-20/m2/speedup_geomean",
+   "claimed": 2.9104451636368154,
+   "recomputed": 2.9104451636368154
+  },
+  {
+   "name": "phase2/bench-prime-20/m2/speedup_ci_low",
+   "claimed": 2.7640964291385304,
+   "recomputed": 2.7640964291385304,
+   "rel_tol": 0.05
+  },
+  {
+   "name": "phase2/bench-prime-20/m2/speedup_ci_high",
+   "claimed": 3.0833036645483296,
+   "recomputed": 3.0833036645483296,
+   "rel_tol": 0.05
+  },
+  {
+   "name": "phase2/bench-prime-20/m3/speedup_geomean",
+   "claimed": 2.67716885819561,
+   "recomputed": 2.67716885819561
+  },
+  {
+   "name": "phase2/bench-prime-20/m3/speedup_ci_low",
+   "claimed": 2.5705780803079668,
+   "recomputed": 2.5706398911544697,
+   "rel_tol": 0.05
+  },
+  {
+   "name": "phase2/bench-prime-20/m3/speedup_ci_high",
+   "claimed": 2.7752196481223805,
+   "recomputed": 2.7752196481223805,
+   "rel_tol": 0.05
+  },
+  {
+   "name": "phase2/bench-prime-22/m2/speedup_geomean",
+   "claimed": 3.7084512819147695,
+   "recomputed": 3.7084512819147695
+  },
+  {
+   "name": "phase2/bench-prime-22/m2/speedup_ci_low",
+   "claimed": 3.539937108991565,
+   "recomputed": 3.540117299548362,
+   "rel_tol": 0.05
+  },
+  {
+   "name": "phase2/bench-prime-22/m2/speedup_ci_high",
+   "claimed": 3.8981763715924354,
+   "recomputed": 3.8980687872315327,
+   "rel_tol": 0.05
+  },
+  {
+   "name": "phase2/bench-prime-22/m3/speedup_geomean",
+   "claimed": 3.675639853922202,
+   "recomputed": 3.675639853922202
+  },
+  {
+   "name": "phase2/bench-prime-22/m3/speedup_ci_low",
+   "claimed": 3.48183601857711,
+   "recomputed": 3.48183601857711,
+   "rel_tol": 0.05
+  },
+  {
+   "name": "phase2/bench-prime-22/m3/speedup_ci_high",
+   "claimed": 3.8533982868195253,
+   "recomputed": 3.8533982868195253,
+   "rel_tol": 0.05
+  },
+  {
+   "name": "phase3/bench-prime-24/m2/speedup_geomean",
+   "claimed": 4.85863033130961,
+   "recomputed": 4.85863033130961
+  },
+  {
+   "name": "phase3/bench-prime-24/m2/speedup_ci_low",
+   "claimed": 4.376222420586321,
+   "recomputed": 4.376618910431921,
+   "rel_tol": 0.05
+  },
+  {
+   "name": "phase3/bench-prime-24/m2/speedup_ci_high",
+   "claimed": 5.379901829017033,
+   "recomputed": 5.379831420221178,
+   "rel_tol": 0.05
+  },
+  {
+   "name": "phase3/bench-prime-24/m3/speedup_geomean",
+   "claimed": 4.650485309846974,
+   "recomputed": 4.650485309846974
+  },
+  {
+   "name": "phase3/bench-prime-24/m3/speedup_ci_low",
+   "claimed": 4.437437405937294,
+   "recomputed": 4.437487246877867,
+   "rel_tol": 0.05
+  },
+  {
+   "name": "phase3/bench-prime-24/m3/speedup_ci_high",
+   "claimed": 4.837901044495736,
+   "recomputed": 4.837726952939147,
+   "rel_tol": 0.05
+  }
+ ]
+}

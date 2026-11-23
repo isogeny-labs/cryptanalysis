@@ -1,0 +1,106 @@
+{
+  "candidate_id": null,
+  "elapsed_ns": 2669713708,
+  "holdout_rows": 2954,
+  "offset_zero_rows": 14781,
+  "peak_rss_bytes": 162152448,
+  "proposal_id": "Q20261011213500",
+  "protocol_sha256": "e1bf0ec23f138a4ad65be9df623c180d73718de08d15d55d63c87d4aad00098a",
+  "results": {
+    "translation_0": {
+      "arms": {
+        "after_one_free_pair": {
+          "hits": 1196,
+          "paired_vs_conditional_frequency": {
+            "baseline_only": 451,
+            "difference": -0.05044008124576845,
+            "mcnemar_two_sided_p": 6.287563447408325e-08,
+            "model_only": 302,
+            "normal95": [
+              -0.06855892208689954,
+              -0.03232124040463737
+            ]
+          }
+        },
+        "after_two_free_pairs": {
+          "hits": 1156,
+          "paired_vs_conditional_frequency": {
+            "baseline_only": 463,
+            "difference": -0.06398104265402843,
+            "mcnemar_two_sided_p": 3.337425547651263e-12,
+            "model_only": 274,
+            "normal95": [
+              -0.08184807581364884,
+              -0.046114009494408026
+            ]
+          }
+        },
+        "public": {
+          "hits": 1164,
+          "paired_vs_conditional_frequency": {
+            "baseline_only": 502,
+            "difference": -0.06127285037237644,
+            "mcnemar_two_sided_p": 2.9916114595056216e-10,
+            "model_only": 321,
+            "normal95": [
+              -0.08018169372773484,
+              -0.04236400701701803
+            ]
+          }
+        }
+      },
+      "conditional_frequency_hits": 1345,
+      "holdout_labels_sha256": "b83d88e9b907c13f6d2f56b34d1d4b4c9b9c83d19093ebd567c6df705f0aa3e3"
+    },
+    "translation_1": {
+      "arms": {
+        "after_one_free_pair": {
+          "hits": 1106,
+          "paired_vs_conditional_frequency": {
+            "baseline_only": 509,
+            "difference": -0.06905890318212593,
+            "mcnemar_two_sided_p": 8.544097564027998e-13,
+            "model_only": 305,
+            "normal95": [
+              -0.08782751809088943,
+              -0.050290288273362425
+            ]
+          }
+        },
+        "after_two_free_pairs": {
+          "hits": 1139,
+          "paired_vs_conditional_frequency": {
+            "baseline_only": 486,
+            "difference": -0.05788761002031144,
+            "mcnemar_two_sided_p": 1.6503729260290367e-09,
+            "model_only": 315,
+            "normal95": [
+              -0.07655257368515477,
+              -0.03922264635546811
+            ]
+          }
+        },
+        "public": {
+          "hits": 1120,
+          "paired_vs_conditional_frequency": {
+            "baseline_only": 502,
+            "difference": -0.06431956668923494,
+            "mcnemar_two_sided_p": 2.8501849529593562e-11,
+            "model_only": 312,
+            "normal95": [
+              -0.08311007536847419,
+              -0.045529058009995696
+            ]
+          }
+        }
+      },
+      "conditional_frequency_hits": 1310,
+      "holdout_labels_sha256": "0e8af0a9cdfa4e8fa0d381d3aa353c7f02bec78ee9bd102cc6a3592ecdf3c7ba"
+    }
+  },
+  "source_rows": 100000,
+  "source_sha256": "2a6ced5627f65e651dafe6a85c643184f44f0b16ef1ef192c6bba3358383a7ca",
+  "status": "COMPLETE_HELDOUT_TRANSLATION_SELECTOR",
+  "train_rows": 11827,
+  "translation_policy": "min(u,u XOR seed) per corresponding pair"
+}

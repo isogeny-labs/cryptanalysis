@@ -1,0 +1,18 @@
+digraph hecdlp {
+  graph [rankdir=LR, bgcolor="white", fontname="DejaVu Sans", pad="0.15", nodesep="0.5", ranksep="0.75"];
+  node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=10, color="#334155", fillcolor="#f8fafc", margin="0.12,0.08"];
+  edge [fontname="DejaVu Sans", fontsize=9, color="#475569", arrowsize=0.75];
+
+  e [label="E[n] / F_q\noriginal ECDLP subgroup", fillcolor="#dbeafe"];
+  jh [label="f*E[n] ⊂ J_H(F_q)\ngenus-3 hyperelliptic", fillcolor="#ede9fe"];
+  jc [label="J_C(F_q)\nplane quartic", fillcolor="#dcfce7"];
+  diem [label="Diem relation pipeline\nmodeled Õ(q)", fillcolor="#dcfce7"];
+  measured [label="Measured toy pipeline\n7 J_H, q=17..101\n20 targets each", fillcolor="#fef3c7"];
+  nist [label="NIST same-field route\nq=p ⇒ Õ(p) vs rho Õ(√p)", fillcolor="#fee2e2", color="#b91c1c"];
+
+  e -> jh [label="cover pullback f*\nf*f* = [d]"];
+  jh -> jc [label="Smith (2,2,2)\nconstruction not implemented", style=dashed];
+  jc -> diem [label="nonhyperelliptic IC"];
+  jh -> measured [label="Cantor + relations + LA\n+ descent + same-group rho"];
+  diem -> nist [label="same prime field", color="#b91c1c"];
+}

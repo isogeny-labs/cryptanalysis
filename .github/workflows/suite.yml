@@ -208,6 +208,22 @@ jobs:
         working-directory: suite
     steps:
       - uses: actions/checkout@v7
+      - name: Check out the paired crypto source revision
+        uses: actions/checkout@v7
+        with:
+          repository: isogeny-labs/crypto
+          ref: 333c0f0a2390c57f245730ab9294e7ee905d9cd3
+          fetch-depth: 1
+          path: crypto-source
+      - name: Fetch every retained hyperelliptic source revision
+        working-directory: crypto-source
+        run: |
+          jq -r '.files[].source_commit' \
+            ../experiments/hyperelliptic-cover-infrastructure/source-parity.json \
+            | sort -u \
+            | while read -r revision; do
+                git fetch --no-tags --depth=1 origin "$revision"
+              done
       - name: Pull store data this workflow reads (tools/artifacts)
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.ARTIFACTS_AWS_ACCESS_KEY_ID }}
@@ -233,7 +249,7 @@ jobs:
             exit 1
           fi
       - name: Hyperelliptic mirror parity
-        run: cargo run --locked --bin hyperelliptic-source-parity --
+        run: cargo run --locked --bin hyperelliptic-source-parity -- --crypto-root ../crypto-source
       - name: Check
         run: cargo check --all-targets
       - name: Test

@@ -61,7 +61,7 @@
 /// bit `i` of `Z_SIMON[j]` is `z_j(i)`.
 ///
 /// Extract via `(Z_SIMON[j] >> (i % 62)) & 1`.
-const Z_SIMON: [u64; 5] = [
+pub(crate) const Z_SIMON: [u64; 5] = [
     0x19C3522FB386A45F, // z_0
     0x2D0C9F715A193F71, // z_1
     0x3369F885192C0EF5, // z_2

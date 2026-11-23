@@ -1,0 +1,98 @@
+⚠ [9038/9046] Replayed AdaptivePublicRelationReduction
+warning: AdaptivePublicRelationReduction.lean: imports `Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: AdaptivePublicRelationReduction.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: AdaptivePublicRelationReduction.lean:235:0: 'XedniAdaptivePublicRelationReduction.relation_certificate_verifies' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AdaptivePublicRelationReduction.lean:236:0: 'XedniAdaptivePublicRelationReduction.relation_certificate_recovers' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AdaptivePublicRelationReduction.lean:237:0: 'XedniAdaptivePublicRelationReduction.known_scalar_gives_relation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AdaptivePublicRelationReduction.lean:238:0: 'XedniAdaptivePublicRelationReduction.relation_certificate_iff_span' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AdaptivePublicRelationReduction.lean:239:0: 'XedniAdaptivePublicRelationReduction.integer_relation_recovers_scalar' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AdaptivePublicRelationReduction.lean:240:0: 'XedniAdaptivePublicRelationReduction.integer_relation_for_subgroup' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AdaptivePublicRelationReduction.lean:241:0: 'XedniAdaptivePublicRelationReduction.elliptic_relation_for_subgroup' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AdaptivePublicRelationReduction.lean:242:0: 'XedniAdaptivePublicRelationReduction.extractScalar_iff_valid' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AdaptivePublicRelationReduction.lean:243:0: 'XedniAdaptivePublicRelationReduction.validRelationOutput_iff' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AdaptivePublicRelationReduction.lean:244:0: 'XedniAdaptivePublicRelationReduction.extractor_success_set_eq' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AdaptivePublicRelationReduction.lean:245:0: 'XedniAdaptivePublicRelationReduction.selected_lift_relation_recovers_scalar' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: AdaptivePublicRelationReduction.lean:246:0: 'XedniAdaptivePublicRelationReduction.selected_lift_family_recovers_scalar' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+⚠ [9040/9046] Replayed AffineReductionBridge
+warning: AffineReductionBridge.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: AffineReductionBridge.lean:70:0: 'XedniAffineReductionBridge.map_regularSlope' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AffineReductionBridge.lean:71:0: 'XedniAffineReductionBridge.map_addX' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AffineReductionBridge.lean:72:0: 'XedniAffineReductionBridge.map_addY' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AffineReductionBridge.lean:73:0: 'XedniAffineReductionBridge.regular_chord_reduction' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AffineReductionBridge.lean:74:0: 'XedniAffineReductionBridge.regular_tangent_reduction' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [9041/9046] Replayed RegularChainReduction
+info: RegularChainReduction.lean:104:0: 'XedniRegularChainReduction.mapPoint' depends on axioms: [propext, Quot.sound]
+info: RegularChainReduction.lean:105:0: 'XedniRegularChainReduction.map_regularStep' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RegularChainReduction.lean:106:0: 'XedniRegularChainReduction.map_regularChain' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9042/9046] Replayed RegularGroupLaw
+warning: RegularGroupLaw.lean:16:0: automatically included section variable(s) unused in theorem `XedniRegularGroupLaw.short_equation`:
+  [DecidableEq F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: RegularGroupLaw.lean:25:8: automatically included section variable(s) unused in theorem `_private.RegularGroupLaw.0.XedniRegularGroupLaw.short_addX`:
+  [DecidableEq F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+warning: RegularGroupLaw.lean:29:8: automatically included section variable(s) unused in theorem `_private.RegularGroupLaw.0.XedniRegularGroupLaw.short_addY`:
+  [DecidableEq F]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq F] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+info: RegularGroupLaw.lean:98:0: 'XedniRegularGroupLaw.short_equation' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RegularGroupLaw.lean:99:0: 'XedniRegularGroupLaw.fieldStep_group_add' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RegularGroupLaw.lean:100:0: 'XedniRegularGroupLaw.fieldChain_group_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RegularGroupLaw.lean:101:0: 'XedniRegularGroupLaw.reduced_regularChain_group_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9043/9046] Replayed RegularSumReduction
+warning: RegularSumReduction.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: RegularSumReduction.lean:53:0: 'XedniRegularSumReduction.reduce_regularSum' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: RegularSumReduction.lean:54:0: 'XedniRegularSumReduction.equal_regularSums' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9044/9046] Replayed ExceptionalSumReduction
+warning: ExceptionalSumReduction.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: ExceptionalSumReduction.lean:94:0: 'XedniExceptionalSumReduction.image_neg' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExceptionalSumReduction.lean:95:0: 'XedniExceptionalSumReduction.reduce_certifiedStep' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExceptionalSumReduction.lean:96:0: 'XedniExceptionalSumReduction.reduce_certifiedSum' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ExceptionalSumReduction.lean:97:0: 'XedniExceptionalSumReduction.equal_certifiedSums' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9045/9046] Replayed CertifiedRelationExtraction
+warning: CertifiedRelationExtraction.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: CertifiedRelationExtraction.lean:88:0: 'XedniCertifiedRelationExtraction.certified_sum_public_relation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: CertifiedRelationExtraction.lean:89:0: 'XedniCertifiedRelationExtraction.certified_sum_recovers_scalar' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+Build completed successfully (9046 jobs).
+'XedniCertifiedRelationExtraction.certified_sum_public_relation' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'XedniCertifiedRelationExtraction.certified_sum_recovers_scalar' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

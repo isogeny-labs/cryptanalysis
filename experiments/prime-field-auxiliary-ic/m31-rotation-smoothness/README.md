@@ -1,0 +1,9 @@
+# Smoothness under cyclic digit rotation at M31
+
+A coordinate passes bound B when some element of its multiplicative orbit under 2 has a positive integer representative with no prime factor greater than B. Rotate.lean verifies the modular rotation formula and order 31. Removing factors of two from a smooth representative preserves its orbit, so both enumerators start from odd smooth integers.
+
+The native population census visits all distinct smooth orbits through each bound. Two has quadratic character +1, hence an orbit containing a square has no eligible coordinates. On all other orbits the census tests x²+1 for nonsquareness, the remaining full-order auxiliary-coordinate condition, and x³+2x+14 for target lifting. The columns in population.txt are bound, distinct orbits, eligible coordinates and target lifts. Run clang++ -O3 -std=c++17 census.cpp -o census and then ./census.
+
+The independent sample uses PARI group additions on 8192 distinct fibers, split in generation order into 4096 selection and 4096 holdout fibers. Python builds the smooth orbit table separately. The selection criterion is the largest observed target-lift fraction among bounds 7, 13, 23 and 47 with at least one selected coordinate. The initial analysis attempted division on an empty bound-7 cell; the corrected rule omits empty cells and retains their counts. Run python3 evaluate.py to reproduce result.txt.
+
+The chosen bound 47 had 225 lifts among 441 selection coordinates and 218 among 456 holdout coordinates. The exact population contains 925398 lifts among 1852867 qualifying coordinates (49.944114%). For all eligible coordinates the earlier exhaustive census in ../m31-lift-census gives 268414441/536870912 (49.996086%). This predicate selects 0.345123% of eligible coordinates and slightly reduces their lift rate. Counts concern individual coordinates, with no inference about the distribution of relation arrivals or runtime.

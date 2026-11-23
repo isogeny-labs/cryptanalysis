@@ -402,6 +402,31 @@ impl<const B: u32> Curve<B> {
         .add_affine(sum.1, self);
         result.equals::<B>(expected)
     }
+    // Simultaneously compute aG+bQ and compare with an m-term signed base sum
+    // in Jacobian coordinates without affine normalization or field inversion.
+    pub(crate) fn matches_multi_linear_combination(
+        self,
+        left: (Point, u64),
+        right: (Point, u64),
+        summands: &[Point],
+    ) -> bool {
+        let ((g, a), (q, b)) = (left, right);
+        let mut result = Jacobian::IDENTITY;
+        for bit in (0..(u64::BITS - (a | b).leading_zeros())).rev() {
+            result = result.double(self);
+            if a & (1u64 << bit) != 0 {
+                result = result.add_affine(g, self);
+            }
+            if b & (1u64 << bit) != 0 {
+                result = result.add_affine(q, self);
+            }
+        }
+        let mut expected = Jacobian::IDENTITY;
+        for &point in summands {
+            expected = expected.add_affine(point, self);
+        }
+        result.equals::<B>(expected)
+    }
     /// Advance independent points with one shared inversion and checked exceptions.
     pub fn batch_add(
         self,

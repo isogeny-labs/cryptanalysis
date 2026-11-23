@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""List storage-backed documentation files directly named by PCC claims."""
+"""List storage-backed files directly named by PCC claims."""
 
 from __future__ import annotations
 
@@ -22,11 +22,11 @@ def claim_artifact_paths(root: Path) -> list[str]:
     out: set[str] = set()
     for claim in sorted((root / "pcc/claims").glob("*.json")):
         for name in strings(json.loads(claim.read_text(encoding="utf-8"))):
-            if not name.startswith("docs/"):
+            if not name.startswith(("docs/", "experiments/")):
                 continue
             rel = PurePosixPath(name)
             if ".." in rel.parts or rel.is_absolute():
-                raise ValueError(f"claim names an invalid docs path: {name}")
+                raise ValueError(f"claim names an invalid artifact path: {name}")
             manifest = root / rel.parent / ".artifacts.json"
             if not manifest.is_file():
                 continue

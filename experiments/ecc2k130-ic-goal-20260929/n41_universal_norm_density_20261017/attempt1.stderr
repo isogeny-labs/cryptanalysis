@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_universal_norm_density_20261017/norm_density.py", line 136, in <module>
+    main()
+    ~~~~^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_universal_norm_density_20261017/norm_density.py", line 121, in main
+    'witness_evaluation': int(evaluated.integer_representation()),
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "sage/structure/element.pyx", line 494, in sage.structure.element.Element.__getattr__
+    return self.getattr_from_category(name)
+  File "sage/structure/element.pyx", line 507, in sage.structure.element.Element.getattr_from_category
+    return getattr_from_other_class(self, cls, name)
+  File "sage/cpython/getattr.pyx", line 362, in sage.cpython.getattr.getattr_from_other_class
+    raise AttributeError(dummy_error_message)
+AttributeError: 'sage.rings.finite_rings.element_ntl_gf2e.FiniteField_ntl_gf2eElement' object has no attribute 'integer_representation'

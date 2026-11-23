@@ -1114,4 +1114,103 @@ mod tests {
         assert!(cshake.contains("function name (hex): `46`"));
         assert!(cshake.contains("customization (hex): `43`"));
     }
+
+    // ── The same attacks against IR-described compression functions ──────
+    //
+    // `sym_techniques::hash::md_adaptor::IrMdHash` wraps a `sym_ir`
+    // `Primitive`; the hand-written impls above are untouched and serve as
+    // the reference.
+
+    use crate::cryptanalysis::sym_techniques::hash::md_adaptor::IrMdHash;
+
+    #[test]
+    fn ir_adaptor_digests_match_hand_written_impls() {
+        let msgs: [&[u8]; 6] = [
+            b"",
+            b"abc",
+            &[0x5au8; 55],
+            &[0xa5u8; 56],
+            &[7u8; 64],
+            &[9u8; 300],
+        ];
+        for m in msgs {
+            assert_eq!(
+                IrMdHash::sha256().hash(m),
+                Sha256.hash(m),
+                "sha256 len {}",
+                m.len()
+            );
+            assert_eq!(IrMdHash::md5().hash(m), Md5.hash(m), "md5 len {}", m.len());
+            assert_eq!(
+                IrMdHash::sha512().hash(m),
+                Sha512.hash(m),
+                "sha512 len {}",
+                m.len()
+            );
+        }
+        assert_eq!(IrMdHash::sha256().block_bytes(), 64);
+        assert_eq!(IrMdHash::sha512().block_bytes(), 128);
+        assert_eq!(IrMdHash::sha512().output_bytes(), 64);
+    }
+
+    fn length_extension_roundtrip<H: MerkleDamgardHash, R: MerkleDamgardHash>(
+        h: &H,
+        reference: &R,
+    ) {
+        let combined = [&b"key"[..], &b"&user=bob"[..]].concat();
+        let target = h.hash(&combined);
+        let (forged, glue) = length_extension_attack(h, &target, combined.len(), b"&admin=true");
+        let mut actual = combined.clone();
+        actual.extend_from_slice(&glue);
+        actual.extend_from_slice(b"&admin=true");
+        assert_eq!(h.hash(&actual), forged);
+        // identical to the hand-written implementation's forgery
+        assert_eq!(
+            length_extension_attack(reference, &target, combined.len(), b"&admin=true"),
+            (forged, glue)
+        );
+    }
+
+    #[test]
+    fn length_extension_against_ir_sha256_sha512_md5() {
+        length_extension_roundtrip(&IrMdHash::sha256(), &Sha256);
+        length_extension_roundtrip(&IrMdHash::sha512(), &Sha512);
+        length_extension_roundtrip(&IrMdHash::md5(), &Md5);
+    }
+
+    #[test]
+    fn birthday_against_ir_md5_equals_hand_written_run() {
+        let ir = IrMdHash::md5();
+        let got = birthday_collision_search(&ir, 24, 200_000, 42).expect("24-bit collision");
+        assert_ne!(got.0, got.1);
+        assert_eq!(ir.hash(&got.0)[..3], got.2[..3]);
+        assert_eq!(ir.hash(&got.1)[..3], got.2[..3]);
+        assert_eq!(Some(got), birthday_collision_search(&Md5, 24, 200_000, 42));
+    }
+
+    #[test]
+    fn joux_against_ir_md5_and_sha256_merges_every_branch() {
+        for ir in [IrMdHash::md5(), IrMdHash::sha256()] {
+            let chain =
+                joux_multicollision(&ir, 16, 3, 200_000, 7).expect("3-chain on 16-bit state");
+            assert_eq!(chain.len(), 3);
+            let mut finals = Vec::new();
+            for choices in 0..(1 << chain.len()) {
+                let mut state = ir.hash(&[])[..ir.state_bytes()].to_vec();
+                truncate_compression_state(&mut state, 16);
+                for (index, (a, b)) in chain.iter().enumerate() {
+                    assert_ne!(a, b);
+                    ir.compress(&mut state, if choices & (1 << index) == 0 { a } else { b });
+                    truncate_compression_state(&mut state, 16);
+                }
+                finals.push(state);
+            }
+            assert!(finals.iter().all(|s| s == &finals[0]), "{}", ir.name());
+        }
+        // same chain as the hand-written MD5 under the same seed
+        assert_eq!(
+            joux_multicollision(&IrMdHash::md5(), 16, 3, 100_000, 7),
+            joux_multicollision(&Md5, 16, 3, 100_000, 7)
+        );
+    }
 }

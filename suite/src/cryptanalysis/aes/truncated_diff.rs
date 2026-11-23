@@ -37,6 +37,79 @@
 //!   a trail across rounds.
 
 use super::visualize::{format_round_bars, format_trail};
+use crate::cryptanalysis::sym_ir::primitives::aes128;
+use crate::cryptanalysis::sym_ir::Layer;
+use crate::cryptanalysis::sym_techniques::impossible::{components, pattern_count};
+use std::sync::OnceLock;
+
+/// ShiftRows as a cell map, read from the Permute layer of the IR
+/// description of AES: `SR_SRC[o]` is the input byte that lands in byte `o`.
+fn ir_shift_rows_source() -> &'static [usize; 16] {
+    static SR_SRC: OnceLock<[usize; 16]> = OnceLock::new();
+    SR_SRC.get_or_init(|| {
+        let p = aes128::reduced(1, true);
+        let perm = p.rounds[0]
+            .layers
+            .iter()
+            .find_map(|l| match l {
+                Layer::Permute { perm } => Some(perm.clone()),
+                _ => None,
+            })
+            .expect("AES IR has a ShiftRows Permute layer");
+        std::array::from_fn(|o| perm[8 * o] / 8)
+    })
+}
+
+/// For each number of active input bytes `a` in one MixColumns column, the
+/// output active-byte counts that some input of exactly that activity can
+/// reach, derived from the IR's MixColumns matrix by exact counting
+/// (inclusion-exclusion over its GF(2) sub-blocks), not hard-coded.
+fn ir_mix_columns_options() -> &'static [Vec<u32>; 5] {
+    static OPTS: OnceLock<[Vec<u32>; 5]> = OnceLock::new();
+    OPTS.get_or_init(|| {
+        let p = aes128::reduced(1, true);
+        let m = p.rounds[0]
+            .layers
+            .iter()
+            .find_map(|l| match l {
+                Layer::LinearGf2 { matrix } => Some(matrix.clone()),
+                _ => None,
+            })
+            .expect("AES IR has a MixColumns layer");
+        let comp = components(&m, 8)
+            .into_iter()
+            .find(|c| c.ins.contains(&0))
+            .expect("column of byte 0");
+        let n = comp.ins.len();
+        let mut opts: [Vec<u32>; 5] = Default::default();
+        opts[0] = vec![0];
+        for (a, slot) in opts.iter_mut().enumerate().skip(1) {
+            for q in 0u32..(1 << n) {
+                let qs: Vec<usize> = (0..n)
+                    .filter(|i| q >> i & 1 == 1)
+                    .map(|i| comp.outs[i])
+                    .collect();
+                let reachable = (0u32..(1 << n))
+                    .filter(|p| p.count_ones() as usize == a)
+                    .any(|pm| {
+                        let ps: Vec<usize> = (0..n)
+                            .filter(|i| pm >> i & 1 == 1)
+                            .map(|i| comp.ins[i])
+                            .collect();
+                        pattern_count(&m, 8, &ps, &qs, &comp.outs) > 0
+                    });
+                if reachable {
+                    let c = q.count_ones();
+                    if !slot.contains(&c) {
+                        slot.push(c);
+                    }
+                }
+            }
+            slot.sort_unstable();
+        }
+        opts
+    })
+}
 
 /// Active-byte pattern in a 4×4 AES state.  Bit `4·c + r` is set iff
 /// byte (column `c`, row `r`) is active.
@@ -75,15 +148,13 @@ impl TruncatedPattern {
 /// **ShiftRows** applied to a truncated pattern.  Permutes active-
 /// byte positions according to AES's row-rotation schedule.
 pub fn shift_rows_truncated(p: TruncatedPattern) -> TruncatedPattern {
+    // The byte map is read from the IR's ShiftRows layer
+    // (`sym_ir::primitives::aes128`), not hard-coded here.
+    let src = ir_shift_rows_source();
     let mut out = 0u16;
-    for c in 0..4 {
-        for r in 0..4 {
-            let in_col = (c + r) % 4; // ShiftRows: row r shifts left by r columns
-            let in_idx = 4 * in_col + r;
-            if (p.0 >> in_idx) & 1 == 1 {
-                let out_idx = 4 * c + r;
-                out |= 1 << out_idx;
-            }
+    for (o, &in_idx) in src.iter().enumerate() {
+        if (p.0 >> in_idx) & 1 == 1 {
+            out |= 1 << o;
         }
     }
     TruncatedPattern(out)
@@ -103,11 +174,9 @@ pub fn shift_rows_truncated(p: TruncatedPattern) -> TruncatedPattern {
 ///
 /// Returns the set of legal output-active-byte counts.
 pub fn mix_columns_branch_options(input_active: u32) -> Vec<u32> {
-    if input_active == 0 {
-        return vec![0];
-    }
-    let min_out = 5u32.saturating_sub(input_active);
-    (min_out.max(1)..=4).collect()
+    // Derived from the IR's MixColumns matrix; for the AES MDS matrix this
+    // is `{max(1, 5 - in) ..= 4}` (branch number 5).
+    ir_mix_columns_options()[(input_active as usize).min(4)].clone()
 }
 
 /// Result of propagating one round of a truncated differential

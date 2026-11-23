@@ -1,0 +1,109 @@
+{
+  "schema": "lead-testing.verdict/v1",
+  "lead_id": "LEAD-prime-batched-mitm-20261121",
+  "phase": 3,
+  "verdict": "PASS",
+  "reasons": [
+    "lower 95% bound of the paired speed-up above 1 on every instance of the phase at m in ['2', '3']"
+  ],
+  "carried_m": [
+    "2",
+    "3"
+  ],
+  "next": "candidate for the baseline ratchet: freeze a protocol in cryptanalysis (docs/ic/BASELINES.md rules, Tier 1, pcc claim); this harness does not write rows",
+  "gated": "2026-11-22T00:11:33Z",
+  "registry_sha256": "e840213ad5cfcc8c9d676204ee68ff3b9050f34bc91f73940a8327131d38bee2",
+  "cells": [
+    {
+      "id": "bench-prime-24",
+      "by_m": {
+        "2": {
+          "status": "ok",
+          "pairs": 8,
+          "lead_s": {
+            "20261104": 12.038234951600215,
+            "20301607": 11.906499896375244,
+            "20342110": 11.348808673186584,
+            "20382613": 8.835967807459225,
+            "20423116": 7.654957591358171,
+            "20463619": 10.005043110376713,
+            "20504122": 7.987951046759367,
+            "20544625": 9.379815760864366
+          },
+          "speedup_geomean": 4.85863033130961,
+          "speedup_ci": [
+            4.376222420586321,
+            5.379901829017033
+          ],
+          "lead_s_over_rho": 11.140020245164758,
+          "peak_rss_gib": 0.0219,
+          "better": true
+        },
+        "3": {
+          "status": "ok",
+          "pairs": 8,
+          "lead_s": {
+            "20261104": 11.46492010201805,
+            "20301607": 11.22904013725527,
+            "20342110": 10.12052165108394,
+            "20382613": 10.184121809709728,
+            "20423116": 9.510571841675738,
+            "20463619": 9.767592916925825,
+            "20504122": 9.496402983167203,
+            "20544625": 10.001703066966002
+          },
+          "speedup_geomean": 4.650485309846974,
+          "speedup_ci": [
+            4.437437405937294,
+            4.837901044495736
+          ],
+          "lead_s_over_rho": 11.508401639708353,
+          "peak_rss_gib": 0.0219,
+          "better": true
+        }
+      },
+      "arms": {
+        "baseline": {
+          "status": "ok",
+          "wall_seconds": 33.576,
+          "peak_rss_gib": 0.0219,
+          "killed_by": null
+        },
+        "lead-m2": {
+          "status": "ok",
+          "wall_seconds": 33.575,
+          "peak_rss_gib": 0.0219,
+          "killed_by": null
+        },
+        "lead-m3": {
+          "status": "ok",
+          "wall_seconds": 34.328,
+          "peak_rss_gib": 0.0219,
+          "killed_by": null
+        }
+      },
+      "instance": "generated-24bit-8973967",
+      "rho_reference": {
+        "method": "negation-map r-adding walk: look-ahead, short-cycle escape by doubling, distinguished points, stride starts",
+        "automorphisms": 2,
+        "runs": 16,
+        "mean_s": 0.8882084266446633,
+        "min_s": 0.25208650221712603,
+        "max_s": 1.7165254409248276,
+        "all_verified": true
+      },
+      "baseline_s": {
+        "20261104": 47.50776611110436,
+        "20301607": 47.70020389794659,
+        "20342110": 49.21032452513667,
+        "20382613": 47.096141055227335,
+        "20423116": 46.0015284687291,
+        "20463619": 48.16777963906468,
+        "20504122": 46.19647524677016,
+        "20544625": 47.64194811689084
+      },
+      "baseline_s_over_rho": 53.41119208001803,
+      "status": "ok"
+    }
+  ]
+}

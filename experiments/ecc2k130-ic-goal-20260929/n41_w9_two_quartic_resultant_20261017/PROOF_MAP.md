@@ -1,0 +1,13 @@
+# Proof map
+
+| Mathematical statement | Lean declaration | Exact scope and status |
+| --- | --- | --- |
+| The shared-root product vanishes exactly when the split quartic and the preceding quartic have a common field root | `SharedQuartic.gate_zero_iff_common_root` | Arbitrary field; arbitrary `R3 : F → F → F`; `R4` factors as `c∏(w-r_i)` for four listed roots and `c≠0`. Checked. This is the structural soundness/completeness theorem for the fixed-code gate. |
+| A split quartic's field roots are exactly its four listed roots | `SharedQuartic.split_quartic_roots` | Same explicit factorization and nonzero leading scalar; repeated roots allowed. Checked. |
+| The quartic leading coefficient is a square in characteristic two | `SharedQuartic.quartic_lead_square` | Arbitrary commutative ring with explicit `x+x=0`; proves the field expression used by the all-code census. Checked. |
+| The specialized reciprocal pair resultant has the stated quartic formula | `FinalPairResultant.resultant_linearized` in the predecessor module | Already checked in Lean 4.34.1; linked source and retained proof output in `n41_w9_code_linear_tower_20261017`. |
+| The specialized final-pair quartics factor into the four signed source coordinates for all 71 codes | Open concrete bridge | The frozen independent Sage root audit `n41_w9_target_w_bdd_20261017/audit_result.json` checks every code and the present `run_sage.py` independently rechecks all 71. Full concrete finite-field/curve/source formalization is unfinished. |
+| The root product equals the Sylvester resultant with the appropriate power of the nonzero leading coefficient | Open polynomial bridge | Standard split-root resultant formula is used in the written argument; this module proves its exact zero criterion after factorization. A Lean polynomial resultant definition and equality proof remain open. |
+| The displayed expression is the coefficient of `z^4` in `R3(z,w,p)` | Open coefficient-extraction bridge | The written expansion in `RESULT.md` gives all five coefficients. Lean proves the characteristic-two square identity for that coefficient; a formal polynomial coefficient extraction from `R3` remains open. |
+
+Build: from this directory, `lean SharedQuartic.lean > lean_check.log`. Toolchain `leanprover/lean4:v4.34.1`, commit `5045d0056413266e57c625dcd7c365b10e377c52`. `#print axioms` reports `propext`, `Classical.choice`, and `Quot.sound` only. The available environment has no `lean4checker`, so a separate fresh-checker run is not reported. No `sorry`, `admit`, `sorryAx`, custom claim axiom or native evaluation occurs in the checked module.

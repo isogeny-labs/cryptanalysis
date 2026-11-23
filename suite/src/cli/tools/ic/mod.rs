@@ -630,19 +630,102 @@ fn display(report: &Value) {
             );
         }
         Some("error") => {
-            eprintln!(
-                "ic: {}",
-                report["message"].as_str().unwrap_or("operation failed")
-            );
+            let message = report["message"].as_str().unwrap_or("operation failed");
+            eprintln!("ic: {}", message.strip_prefix("usage: ").unwrap_or(message));
         }
         Some("list") => {
             for name in params::NAMES {
                 println!("{name}");
             }
         }
+        // The table and every skip reason already went to stderr while the
+        // run went; the JSON is for --json and --out.
+        Some("bench") => {
+            let skipped = report["configurations_skipped"]
+                .as_array()
+                .map_or(0, |v| v.len());
+            println!(
+                "{} configuration(s) run, {} skipped; all verified: {}{}",
+                report["configurations_run"],
+                skipped,
+                if report["all_verified"] == true {
+                    "yes"
+                } else {
+                    "no"
+                },
+                if skipped > 0 { " (reasons above)" } else { "" }
+            );
+        }
+        Some("bench-list") => display_bench_list(&report["registry"]),
         _ => println!("{}", serde_json::to_string_pretty(report).unwrap()),
     }
 }
+/// `ic bench --list` for a person: one block per stage, one line per
+/// plug-in with the regimes it runs on and its summands, then its
+/// parameters.  `--json` keeps the full catalogue.
+fn display_bench_list(registry: &Value) {
+    for stage in registry["stages"].as_array().into_iter().flatten() {
+        println!(
+            "{} ({}): {}",
+            stage["stage"].as_str().unwrap_or("?"),
+            stage["trait"].as_str().unwrap_or("?"),
+            stage["what_it_chooses"].as_str().unwrap_or("")
+        );
+        for p in stage["plugins"].as_array().into_iter().flatten() {
+            let mut tags = Vec::new();
+            if let Some(r) = p["regimes"].as_array() {
+                tags.push(
+                    r.iter()
+                        .filter_map(|x| x.as_str())
+                        .collect::<Vec<_>>()
+                        .join("/"),
+                );
+            }
+            if !p["summands"].is_null() {
+                let m = p["summands"]
+                    .as_str()
+                    .map(str::to_string)
+                    .unwrap_or_else(|| p["summands"].to_string());
+                tags.push(format!("m = {m}"));
+            }
+            let tags = if tags.is_empty() {
+                String::new()
+            } else {
+                format!("  [{}]", tags.join("; "))
+            };
+            let what = p["means"]
+                .as_str()
+                .or(p["describes"].as_str())
+                .unwrap_or("");
+            println!(
+                "  {}{}{}",
+                p["name"].as_str().unwrap_or("?"),
+                tags,
+                if what.is_empty() {
+                    String::new()
+                } else {
+                    format!(" — {what}")
+                }
+            );
+            for q in p["parameters"].as_array().into_iter().flatten() {
+                println!(
+                    "      {}: {}",
+                    q["name"].as_str().unwrap_or("?"),
+                    q["means"].as_str().unwrap_or("")
+                );
+            }
+            if let Some(n) = p["needs"].as_str() {
+                println!("      needs: {n}");
+            }
+        }
+        println!();
+    }
+    println!(
+        "Plug-ins take parameters as NAME:k=v,k=v (for example mitm:m=3,negation_folded=1). {}",
+        registry["how_to_add_one"].as_str().unwrap_or("")
+    );
+}
+
 /// Run the `ca-ic` command line on `args` (the first item is the program
 /// name, as in `std::env::args_os`).
 pub fn run_from<I, T>(args: I) -> ExitCode
@@ -700,8 +783,17 @@ where
             println!("Report saved: {}", path.display());
         }
     }
+    // A command that never started because it was asked for something that
+    // does not exist exits 2, as argument errors do; a run that started and
+    // did not verify exits 1.
+    let usage = report["status"] == "error"
+        && report["message"]
+            .as_str()
+            .is_some_and(|m| m.starts_with("usage: "));
     if success {
         ExitCode::SUCCESS
+    } else if usage {
+        ExitCode::from(2)
     } else {
         ExitCode::FAILURE
     }

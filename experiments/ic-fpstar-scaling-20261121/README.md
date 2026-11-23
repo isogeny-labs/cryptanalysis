@@ -113,3 +113,18 @@ cost is the sparse solve over the largest factor of `p-1`. If a regime with
 many small components is ever wanted (fewer relations per large prime), the
 tree-skip and the per-component parallelism are already in place conceptually;
 neither would help the current workload.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

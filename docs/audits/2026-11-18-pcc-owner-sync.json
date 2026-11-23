@@ -1,0 +1,42 @@
+{
+  "schema": "pcc.consumer-sync-audit/v1",
+  "standing": "unverified",
+  "consumer": "cryptanalysis",
+  "base_commit": "6b64ee6ca07f92db014cf24d277439730ac31f4b",
+  "owner_repository": "isogeny-labs/crypto",
+  "owner_commit": "ad2a014c0022cf000845014499a9649b6c2cef2d",
+  "tests": [
+    {
+      "repo": "cryptanalysis",
+      "phase": "baseline",
+      "returncode": 1,
+      "expected_returncode": 1,
+      "at": "2026-11-18T07:33:15.742298+00:00"
+    },
+    {
+      "repo": "cryptanalysis",
+      "phase": "candidate",
+      "returncode": 0,
+      "expected_returncode": 0,
+      "at": "2026-11-18T07:33:30.066923+00:00"
+    }
+  ],
+  "source_sha256": {
+    "tools/pcc/pcc.py": "a4e5ce5076e2551896e453f554d63ac24a650fa700e242e3e7bcac209ff3f50e",
+    "tools/pcc/test_pcc.py": "0dec048df8813dad5e6fbb76979cfa95729252324aa91787478ddeaa7f6ef173"
+  },
+  "frozen_artifacts": "No claims, ledger, keyring, proofs, benchmarks or original receipts are changed. No rejection manifest is copied from the owner.",
+  "ci_scope": "New independent unit/parity job supplements existing artifact, claim and ledger gates; all remain required.",
+  "sources": [
+    "docs/SABOTAGE_RESISTANCE.md",
+    "docs/lab-contract.md#7-shared-code",
+    "https://github.com/isogeny-labs/crypto/pull/4621",
+    "https://github.com/isogeny-labs/crypto/blob/ad2a014c0022cf000845014499a9649b6c2cef2d/tools/pcc/pcc.py",
+    "VAULT.md (crypto-autoresearcher)",
+    "docs/security/git-vault.md (crypto-autoresearcher)"
+  ],
+  "shared_parity": {
+    "returncode": 0,
+    "materialized_applicable_paths": 17
+  }
+}

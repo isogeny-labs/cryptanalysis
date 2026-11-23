@@ -1,22 +1,29 @@
-# Xedni affine-CVP checkpoint access
+# Xedni experiment checkpoint access
 
-- **Status:** open (p=67 toy run completed 2026-11-12 under owner waiver; credentials still missing)
+- **Status:** open (two prior toy panels completed under narrow owner waivers; credentials still missing)
 - **Kind:** access/tool limit
-- **Affected work:** [frozen xedni affine-lift protocol](../research/xedni_lift_optimizer_20261101/PROTOCOL.md)
+- **Affected work:** [frozen xedni affine-lift protocol](../research/xedni_lift_optimizer_20261101/PROTOCOL.md), [fresh target-bearing selector protocol](../research/xedni_target_relation_20261118/PROTOCOL.md), [target-origin-pencil protocol](../research/xedni_origin_pencil_20261118/PROTOCOL.md), [fixed-coordinate dedup protocol](../research/xedni_origin_dedup_20261118/PROTOCOL.md), [rank-decay falsification protocol](../research/xedni_rank_decay_20261118/PROTOCOL.md), draft PR #1768
 - **Next action owner:** environment operator for checkpoint credentials; research agent for the frozen run
-- **Last updated:** 2026-11-12
+- **Last updated:** 2026-11-19
 
 ## Problem
 
-The frozen one-coset p=67 diagnostic for the xedni affine-CVP optimizer cannot
-run because the required pre-run S3 resume checkpoint cannot be uploaded from
-this managed environment.
+New frozen Xedni experiments cannot run because the required pre-run S3 resume
+checkpoint cannot be uploaded from this managed environment.  Prior narrow
+owner waivers applied only to their exact toy commands and do not authorize a
+modified fresh-seed panel. [pcc:unverified]
 
-The exact workload is the four-radius deterministic search in the linked
-protocol, using four balanced lifts on `y^2=x^3+28` over `F_67`.  The
-repository requires `scripts/checkpoint.sh gate` to pass before any evaluation
-run.  An uncheckpointed local run would violate that acceptance criterion and
-would not discharge the user's requested algorithm investigation.
+The current blocked workloads are the 1,600-row paired target-bearing selector
+and the separately frozen 1,600-row target-origin-pencil comparison in the
+linked November 18 protocols: four primes, two curve families, two lift
+policies, ranks 6 through 9, and 25 trials per cell under distinct fresh master
+seeds. The repository requires `scripts/checkpoint.sh gate` to pass before any
+natural row is generated. [pcc:unverified]
+
+The separately frozen rank-decay program is also an unwaived natural run. Its
+controls and tool adapters may be tested without an outcome row, but its
+calibration, sentinel, discovery, and replication stages must pass the same
+gate. [pcc:unverified]
 
 ## Evidence and uncertainty
 
@@ -43,6 +50,26 @@ would not discharge the user's requested algorithm investigation.
   frozen evaluator again was not launched.  This transient transport error
   does not supersede the independently observed HTTP 403 and `AccessDenied`
   authorization failures.
+- **Observed on 2026-11-18:** after the target-selector protocol, runner,
+  analyzer, and `FREEZE.json` were committed and pushed at `10a28313a6`, a
+  complete `.resume/RESUME.md` passed its content check.  `checkpoint.sh`
+  then reported no permitted `ecc-challenges-new` profile, no
+  `CHECKPOINT_UPLOAD_TOKEN`, and no token file.  Installing AWS CLI 1.46.3
+  enabled the documented ambient-key fallback, but S3 rejected the exact
+  checkpoint `PutObject` with `AllAccessDisabled`; the push and gate remained
+  nonzero.  No fresh natural row was generated. [pcc:unverified]
+- **Observed later on 2026-11-18:** the target-origin-pencil implementation
+  was committed at `b31c01eb`, frozen and pushed at `422ea24b`, and all six
+  frozen source hashes plus release-binary hash rechecked clean. A complete
+  `.resume/RESUME.md` passed the content check, but `checkpoint.sh gate`
+  reported no permitted `ecc-challenges-new` profile, no
+  `CHECKPOINT_UPLOAD_TOKEN`, and no token file. It exited nonzero before any
+  natural row was generated. [pcc:unverified]
+- **Observed after the dedup successor freeze:** implementation `ffc1af2a` and
+  freeze `9673f3fa` were pushed, all seven source hashes and the binary hash
+  rechecked, and the updated resume capsule passed its content check. The gate
+  again exited nonzero for the same missing profile/token/token-file condition.
+  No natural dedup row was generated. [pcc:unverified]
 - **Derived or proved:** No mathematical conclusion follows from the access
   failure.  The code-level invariant checks and synthetic positive/negative
   controls establish only their tested cases.
@@ -53,19 +80,19 @@ would not discharge the user's requested algorithm investigation.
 - **Missing capability:** A valid repository checkpoint upload token or AWS
   profile authorized for
   `s3://setec-astronomy-artifacts/checkpoints/cryptanalysis/`.
-- **What this evidence does not establish:** Whether LLL/Babai is stable on
-  the frozen skew Smith basis, whether the exact neighborhood improves on
-  Babai, whether the method improves the 2000 HMM-HNF implementation, or any
-  dependence/ECDLP result.
+- **What this evidence does not establish:** whether target-bearing ordering
+  or the larger target-origin pencil improves recovery on fresh lifts, whether
+  either changes complete work favorably, or any end-to-end ECDLP result.
+  [pcc:unverified]
 
 ## What would unblock it
 
 - [ ] `scripts/checkpoint.sh push` uploads the current branch state under the
   xedni branch key and `scripts/checkpoint.sh gate` exits zero without a gate
   bypass.
-- [ ] The four frozen rows run once, retain all raw JSON, and satisfy every
-  exact incidence, congruence, nonsingularity, and candidate-cap check in the
-  protocol.
+- [ ] The current frozen panel runs once, retains all rows, and satisfies every
+  exact relation, shifted-source, paired-selection, and analyzer invariant in
+  its protocol.
 
 The first condition is necessary to start.  The second completes only the
 one-coset algorithmic diagnostic; it still cannot establish ECDLP success or
@@ -73,18 +100,21 @@ transfer to binary/Koblitz curves.
 
 ## Next discriminating step
 
-- **Action or proof obligation:** Provision the scoped checkpoint transport,
-  push the current checkpoint, then run the exact reproduction command in the
-  protocol without changing the fixture, radii, or caps.
-- **Inputs and controls:** Frozen p=67 fixture, raw exact solution, Babai
-  control, exact-discriminant candidate, synthetic known-short positive
-  control, and invalid-direction negative controls.
-- **Execution limits and stop condition:** Four rows at radii 0, 1, 2, and 4;
-  caps 1, 27, 125, and 729.  Stop and retain evidence on any invariant failure.
-- **Outcomes and next actions:** A smaller exact discriminant than Babai is a
-  one-coset stage improvement; equality is a bounded null result; invariant
-  failure returns to implementation repair; another checkpoint failure keeps
-  this access record open.
+- **Action or proof obligation:** Provision scoped checkpoint transport, push
+  the current checkpoint, then run one exact frozen November 18 panel at a
+  time without changing its seed, grid, or cap.
+- **Inputs and controls:** for the origin-pencil panel, fresh fixed seed,
+  identical source/lift per paired row, complete baseline-origin box, complete
+  target-origin pencil, fixed nine-point control, exact group certificates,
+  source replay, and baseline candidate-set digest equality.
+- **Execution limits and stop condition:** 1,600 sequential paired rows under
+  the origin-pencil protocol's frozen 7,200-second cap; stop and retain
+  evidence on any certificate or invariant failure.
+- **Outcomes and next actions:** pencil-only recoveries with no baseline loss
+  establish the specified stage improvement; equality is a bounded null; a
+  gain still needs duplicate-aware full-work accounting and independent
+  replay; certificate failure returns to implementation repair; another
+  credential failure updates this record without running. [pcc:unverified]
 - **Recheck trigger:** A valid token/profile is attached to a managed session.
 
 A planned step is not a completed experiment.  The required gate remains in
@@ -113,3 +143,28 @@ specified, with the checkpoint gate not run; result and amendment are in the
 protocol's "Amendment 2026-11-12" and `runs/run-20261112/`.  The credential
 blocker itself is not resolved, so this record stays open for runs that are
 not toy-size.
+
+2026-11-18: the owner separately waived the gate only for the exact frozen
+November 17 1,600-row panel.  That panel completed, but its waiver explicitly
+excluded larger or modified panels.  The fresh target-selector checkpoint
+push and gate failed for absent transport before any natural row.  Unresolved.
+[pcc:unverified]
+
+2026-11-18: the separately frozen target-origin-pencil panel reached the same
+mandatory gate at pushed head `422ea24b`. The resume capsule was complete, but
+no supported upload transport existed; the gate exited nonzero and no natural
+row was generated. Unresolved. [pcc:unverified]
+
+2026-11-18: the separately frozen first-representative dedup panel also reached
+the same gate at pushed head `9673f3fa`; no supported transport existed, and no
+natural row was generated. Unresolved. [pcc:unverified]
+
+2026-11-19: the Xedni rank-decay control harness, non-authorizing freeze,
+report, PCC control record, and resume capsule were pushed at head
+`cd0e9e91c`. Status reported zero unpushed commits and a complete resume
+capsule. `checkpoint.sh push` exited 1; `checkpoint.sh gate` then exited 1
+because there was no `ecc-challenges-new` profile, no
+`CHECKPOINT_UPLOAD_TOKEN`, and no token file. No bypass and no natural
+rank-decay row were used. The exact transcript is retained in
+[`CHECKPOINT_GATE.md`](../research/xedni_rank_decay_20261118/CHECKPOINT_GATE.md).
+Unresolved. [pcc:unverified]

@@ -25,7 +25,8 @@ use num_traits::{One, Zero};
 
 // ── ChaCha20 ─────────────────────────────────────────────────────────────────
 
-const SIGMA: [u32; 4] = [0x61707865, 0x3320646e, 0x79622d32, 0x6b206574];
+/// The four ChaCha constant words ("expand 32-byte k"), little-endian.
+pub(crate) const SIGMA: [u32; 4] = [0x61707865, 0x3320646e, 0x79622d32, 0x6b206574];
 
 /// Apply one ChaCha20 quarter round to four words.
 macro_rules! qr {
