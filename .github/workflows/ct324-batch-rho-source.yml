@@ -1,0 +1,28 @@
+name: CT324 batched affine rho source correctness
+on:
+  pull_request:
+    paths:
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/ct324_batch_inverse.rs"
+      - "experiments/chained-transfer-public-target/norm-point-reuse-01/CT324_BATCH_INVERSION_RHO_PROTOCOL.md"
+      - ".github/workflows/ct324-batch-rho-source.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  exact-native-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Rust stdlib-only arithmetic checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          src=experiments/chained-transfer-public-target/norm-point-reuse-01/ct324_batch_inverse.rs
+          sha256sum "$src"
+          rustc --edition=2021 --test -C opt-level=0 "$src" -o /tmp/ct324-test
+          /tmp/ct324-test --nocapture
+          rustc --edition=2021 --test -C opt-level=3 "$src" -o /tmp/ct324-test-o3
+          /tmp/ct324-test-o3 --nocapture
