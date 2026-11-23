@@ -56,6 +56,17 @@ maps = [dict(r=0, A=0, B=4)]
 assert replay.check_fiber(duplicate, maps, 4, replay.p)
 assert not distinct_fiber(duplicate, maps, 4, replay.p)
 
+# Equal field elements with different word encodings must be rejected.
+p = replay.p
+assert not distinct_fiber(array("I", [p + 1, 1]), [dict(r=0, A=0, B=1)], 2, p)
+assert not distinct_fiber(array("I", [p]), [], p, p)
+assert distinct_fiber(array("I", [0]), [], 0, p)
+for key in ("r", "A", "B"):
+    step = dict(r=0, A=0, B=2)
+    step[key] += p
+    assert not distinct_fiber(array("I", [1, 2]), [step], 3, p)
+
+
 def anchor_setup():
     return replay.baseline["fixture"]["run"]("lift_trial")
 
