@@ -53,6 +53,14 @@ class Curve:
             k >>= 1
         return R
 
+    def double_n(self, point, count):
+        """Apply exactly count successive doublings, stopping at infinity."""
+        for _ in range(count):
+            if point is None:
+                break
+            point = self.add(point, point)
+        return point
+
     def point(self, start=0):
         for x in range(start, self.p):
             rhs = (x**3 + self.a2*x*x + self.a4*x + self.a6) % self.p
@@ -83,24 +91,25 @@ def _check_sibling_fiber(roots, maps, terminal, p):
 
 def chain(p, s, enumerate_all=False, root_limit=None):
     k = (p+1).bit_length()-1
-    assert isprime(p) and p+1 == 2**k and s < k-1
+    assert isprime(p) and p+1 == 2**k and 1 <= s < k-1
     E = Curve(p, a4=1)
     # For p == 3 (mod 4), the character sum cancels under x -> -x,
     # so #E=p+1. Exactly one nonidentity rational 2-torsion point
     # makes this 2-group cyclic.
     for x in range(1, 100):
         T = E.point(x)
-        if E.mul(2**(k-1), T) is not None:
+        G = E.double_n(T, k-s)
+        half = E.double_n(G, s-1)
+        if half is not None:
             break
     else:
         raise RuntimeError('No auxiliary generator found')
-    assert E.mul(2**k, T) is None
-    G = E.mul(2**(k-s), T)
-    assert E.mul(2**s, G) is None and E.mul(2**(s-1), G) is not None
+    # half = [2^(s-1)]G = [2^(k-1)]T. One final doubling checks both orders.
+    assert E.add(half, half) is None
     current, H, image = E, G, T
     maps = []
     for j in range(s):
-        K = current.mul(2**(s-j-1), H)
+        K = current.double_n(H, s-j-1)
         assert K is not None and K[1] == 0
         r = K[0]
         A = (3*r + current.a2) % p
