@@ -111,4 +111,98 @@ theorem secondCardinality : Nat.card secondCurve.Point = 2147506201 := by
   rw [secondPointOrder] at hd
   omega
 
+def shortCurve (b : F) : WeierstrassCurve.Affine F := ⟨0,0,0,2,b⟩
+def cubic (b x : F) := x^3 + 2*x + b
+
+private theorem shortEquation (b x y : F) :
+    (shortCurve b).Equation x y ↔ y^2 = cubic b x := by
+  simp [WeierstrassCurve.Affine.equation_iff, shortCurve, cubic]
+
+private def fiberEquiv (b : F) (smooth : (shortCurve b).Δ ≠ 0) :
+    (shortCurve b).Point ≃ Option ((x : F) × {y : F // y^2 = cubic b x}) where
+  toFun
+    | .zero => none
+    | .some x y h => some ⟨x,y,(shortEquation b x y).mp h.1⟩
+  invFun
+    | none => .zero
+    | some ⟨x,y,h⟩ => .some x y (((shortCurve b).equation_iff_nonsingular_of_Δ_ne_zero smooth).mp
+        ((shortEquation b x y).mpr h))
+  left_inv P := by cases P <;> rfl
+  right_inv z := by rcases z with _ | ⟨x,y,h⟩ <;> rfl
+
+private noncomputable def roots (a : F) := ({y : F | y^2 = a} : Set F).toFinset.card
+
+private theorem countShort (b : F) (smooth : (shortCurve b).Δ ≠ 0) :
+    Nat.card (shortCurve b).Point = (∑ x : F, roots (cubic b x)) + 1 := by
+  classical
+  rw [Nat.card_congr (fiberEquiv b smooth)]
+  simp [Nat.card_eq_fintype_card, roots, Fintype.card_subtype]
+
+private theorem rootPair (a : F) : roots a + roots (-a) = 2 := by
+  have char_ne : ringChar F ≠ 2 := by rw [ZMod.ringChar_zmod_n]; decide
+  have minus : quadraticChar F (-1) = -1 := by
+    apply (quadraticChar_neg_one char_ne).trans
+    rw [show Fintype.card F = 2147483647 from ZMod.card _]
+    decide
+  have h := quadraticChar_card_sqrts char_ne a
+  have negProd {K : Type} [Ring K] (v : K) : (-1 : K)*v = -v := neg_one_mul v
+  have c : quadraticChar F (-a) = -quadraticChar F a := calc
+    _ = quadraticChar F ((-1)*a) := congrArg _ (negProd a).symm
+    _ = quadraticChar F (-1) * quadraticChar F a := map_mul _ _ _
+    _ = -quadraticChar F a := by rw [minus]; exact neg_one_mul _
+  have j := quadraticChar_card_sqrts char_ne (-a)
+  rw [c] at j
+  unfold roots
+  omega
+
+/-- The -1 twist has coefficients (2,-b). Pair the fibers at x and -x,
+including their zero ordinates, and count both points at infinity. -/
+theorem twistPair (b : F) (h : (shortCurve b).Δ ≠ 0) (ht : (shortCurve (-b)).Δ ≠ 0) :
+    Nat.card (shortCurve b).Point + Nat.card (shortCurve (-b)).Point = 4294967296 := by
+  rw [countShort _ h, countShort _ ht]
+  have reflect := (Equiv.neg F).sum_comp Finset.univ (fun x => roots (cubic (-b) x)) (by simp)
+  simp only [Equiv.neg_apply] at reflect
+  have negPoly {K : Type} [CommRing K] (u v : K) :
+      (-u)^3 + 2*(-u) + (-v) = -(u^3 + 2*u + v) := by ring
+  have replacement : (∑ x : F, roots (cubic (-b) x)) = ∑ x : F, roots (-(cubic b x)) := by
+    refine reflect.symm.trans (Finset.sum_congr rfl fun x _ => ?_)
+    exact congrArg roots (negPoly x b)
+  rw [replacement]
+  have pair : (∑ x : F, roots (cubic b x)) + (∑ x : F, roots (-(cubic b x))) =
+      2 * Fintype.card F := by
+    rw [← Finset.sum_add_distrib]
+    simp [rootPair, Nat.mul_comm]
+  rw [show Fintype.card F = 2147483647 from ZMod.card _] at pair
+  omega
+
+theorem firstTwistCardinality : Nat.card (shortCurve (-14)).Point = 2147462003 := by
+  have h := twistPair 14 (by native_decide) (by native_decide)
+  change Nat.card E.Point + Nat.card (shortCurve (-14)).Point = _ at h
+  rw [firstCardinality] at h
+  omega
+
+theorem secondTwistCardinality : Nat.card (shortCurve (-36)).Point = 2147461095 := by
+  have h := twistPair 36 (by native_decide) (by native_decide)
+  change Nat.card secondCurve.Point + Nat.card (shortCurve (-36)).Point = _ at h
+  rw [secondCardinality] at h
+  omega
+
+private theorem zeroOfCoprime {G H : Type*} [AddGroup G] [AddGroup H]
+    (h : Nat.Coprime (Nat.card G) (Nat.card H)) (f : G →+ H) : f = 0 := by
+  ext x
+  apply AddMonoid.addOrderOf_eq_one_iff.mp
+  exact Nat.dvd_one.mp (h ▸ Nat.dvd_gcd
+    ((addOrderOf_map_dvd f x).trans (addOrderOf_dvd_natCard x))
+    (addOrderOf_dvd_natCard (f x)))
+
+theorem firstTwistTransfer (f : E.Point →+ (shortCurve (-14)).Point) : f = 0 := by
+  apply zeroOfCoprime _ f
+  rw [firstCardinality, firstTwistCardinality]
+  decide
+
+theorem secondTwistTransfer (f : secondCurve.Point →+ (shortCurve (-36)).Point) : f = 0 := by
+  apply zeroOfCoprime _ f
+  rw [secondCardinality, secondTwistCardinality]
+  decide
+
 end M31Card
