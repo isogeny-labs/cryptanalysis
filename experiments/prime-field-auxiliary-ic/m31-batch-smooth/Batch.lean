@@ -73,4 +73,29 @@ theorem insert_full_lane (mask lane probe : BitVec 32) (hit : Bool)
        else mask &&& ((1 : BitVec 32) <<< probe)) := by
   bv_decide
 
+private abbrev modulus : BitVec 32 := 2147483647
+
+/-- Word operations used to choose the smaller signed representative. -/
+def magnitude (x : BitVec 32) : BitVec 32 := if x ≤ modulus - x then x else modulus - x
+
+/-- The zero sentinel also initializes the inactive tail lanes. -/
+def oddPart (t : BitVec 32) : BitVec 32 :=
+  if t = 0 then 1 else t >>> t.ctz
+
+theorem magnitude_bounds (x : BitVec 32) (canonical : x ≤ modulus) :
+    magnitude x ≤ 1073741823 ∧
+    (magnitude x = 0 ↔ x = 0 ∨ x = modulus) := by
+  unfold magnitude
+  bv_decide
+
+/-- Shifting back reconstructs the positive input even in a widened
+word, so the identity cannot hold merely through 32-bit truncation. -/
+theorem oddPart_exact (t : BitVec 32) (positive : t ≠ 0) :
+    t.ctz < 32 ∧ (oddPart t &&& 1) = 1 ∧
+    ((oddPart t).setWidth 64 <<< t.ctz) = t.setWidth 64 := by
+  unfold oddPart
+  bv_decide
+
+theorem zero_sentinel : oddPart 0 = 1 := by decide
+
 end BatchSmooth
