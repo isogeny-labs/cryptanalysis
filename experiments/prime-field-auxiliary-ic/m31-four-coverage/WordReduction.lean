@@ -101,4 +101,30 @@ theorem neon_square (x : ℕ) (hx : x < p) :
   rw [(doubled_square_high x hx).2, Nat.mod_mod_of_dvd _ (show radix ∣ 2^32 by decide)]
   exact (fold_correct _ (accumulator_bound x x 0 hx hx (by decide))).2
 
+/-- The vector multiply used in the prefix/reverse scan permits unequal
+canonical operands. Doubling the signed product stays in range. -/
+theorem neon_product (x y : ℕ) (hx : x < p) (hy : y < p) :
+    let hi := (2*(x*y))/2^32
+    let lo := (x*y%2^32)%radix
+    2*(x*y) < 2^63 ∧ hi+lo < 2^32 ∧
+      (if hi+lo ≥ p then hi+lo-p else hi+lo) = x*y%p := by
+  dsimp only
+  have h := accumulator_bound x y 0 hx hy (by decide)
+  simp only [Nat.add_zero] at h
+  have hb : (p-1)^2 + 2*p < 4611686018427387904 := by decide
+  refine ⟨by omega, ?_⟩
+  have high : 2*(x*y)/2^32 = x*y/radix := by
+    change 2*(x*y)/4294967296 = x*y/2147483648
+    omega
+  rw [high, Nat.mod_mod_of_dvd _ (show radix ∣ 2^32 by decide)]
+  exact fold_correct _ h
+
+/-- Modular difference in the vector finish uses wrapping addition of p
+to the unsigned difference and takes the smaller word. -/
+theorem neon_difference (a b : BitVec 32) (ha : a < 2147483647) (hb : b < 2147483647) :
+    let d := a-b
+    (if d ≤ d+2147483647 then d else d+2147483647) =
+      (if a ≥ b then a-b else a+2147483647-b) := by
+  bv_decide
+
 end M31FourCoverage.WordReduction

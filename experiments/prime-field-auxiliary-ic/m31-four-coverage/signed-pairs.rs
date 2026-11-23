@@ -13,27 +13,56 @@ pub(super) fn signed_batch(
         }
         return;
     };
-    let mut prefix = [0; 71];
-    let mut products = [1; 4];
-    for (i, q) in reps.iter().enumerate() {
-        let d = Field::sub(q.x, p.x);
-        prefix[i] = products[i % 4];
-        if d != 0 {
-            products[i % 4] = Field::mul(products[i % 4], d);
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon", neon_products))]
+    let inverses = {
+        let mut den = [0u32; 72];
+        for (slot, q) in den.iter_mut().zip(reps) {
+            *slot = Field::sub(q.x, p.x) as u32;
         }
-    }
-    let mut prior = [1; 4];
-    let mut total = 1;
-    for i in 0..4 {
-        prior[i] = total;
-        total = Field::mul(total, products[i]);
-    }
-    let mut carry = Field::inv(total);
-    for i in (0..4).rev() {
-        let prod = products[i];
-        products[i] = Field::mul(carry, prior[i]);
-        carry = Field::mul(carry, prod);
-    }
+        #[cfg(neon_eight)]
+        const V: usize = 2;
+        #[cfg(not(neon_eight))]
+        const V: usize = 1;
+        neon_products_kernel::reciprocals::<V>(&den)
+    };
+    #[cfg(not(all(target_arch = "aarch64", target_feature = "neon", neon_products)))]
+    let (mut products, prefix) = {
+        let mut prefix = [0; 71];
+        let mut products = [1; 4];
+        for (i, q) in reps.iter().enumerate() {
+            let d = Field::sub(q.x, p.x);
+            prefix[i] = products[i % 4];
+            if d != 0 {
+                products[i % 4] = Field::mul(products[i % 4], d);
+            }
+        }
+        let mut prior = [1; 4];
+        let mut total = 1;
+        for i in 0..4 {
+            prior[i] = total;
+            total = Field::mul(total, products[i]);
+        }
+        let mut carry = Field::inv(total);
+        for i in (0..4).rev() {
+            let prod = products[i];
+            products[i] = Field::mul(carry, prior[i]);
+            carry = Field::mul(carry, prod);
+        }
+        (products, prefix)
+    };
+    #[cfg(all(
+        target_arch = "aarch64",
+        target_feature = "neon",
+        neon_products,
+        neon_finish
+    ))]
+    neon_products_kernel::finish(curve, p, reps, &inverses, out);
+    #[cfg(not(all(
+        target_arch = "aarch64",
+        target_feature = "neon",
+        neon_products,
+        neon_finish
+    )))]
     for (i, (pair, &q)) in out.chunks_exact_mut(2).zip(reps).enumerate().rev() {
         let neg = curve.neg_inner(q);
         let d = Field::sub(q.x, p.x);
@@ -41,8 +70,14 @@ pub(super) fn signed_batch(
             pair[0] = curve.add_inner(left, Some(q));
             pair[1] = curve.add_inner(left, Some(neg));
         } else {
-            let reciprocal = Field::mul(products[i % 4], prefix[i]);
-            products[i % 4] = Field::mul(products[i % 4], d);
+            #[cfg(all(target_arch = "aarch64", target_feature = "neon", neon_products))]
+            let reciprocal = u64::from(inverses[i]);
+            #[cfg(not(all(target_arch = "aarch64", target_feature = "neon", neon_products)))]
+            let reciprocal = {
+                let r = Field::mul(products[i % 4], prefix[i]);
+                products[i % 4] = Field::mul(products[i % 4], d);
+                r
+            };
             for (slot, r) in pair.iter_mut().zip([q, neg]) {
                 let slope = Field::mul(Field::sub(r.y, p.y), reciprocal);
                 *slot = Some(curve.finish_add(p, r, slope));
@@ -50,3 +85,5 @@ pub(super) fn signed_batch(
         }
     }
 }
+
+include!("neon-products.rs");
