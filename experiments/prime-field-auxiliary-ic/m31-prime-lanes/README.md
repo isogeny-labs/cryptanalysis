@@ -1,0 +1,7 @@
+# NEON prime-lane smoothness filter
+
+The candidate tests sixteen odd primes for each signed odd coordinate in three groups covering the primes through 211. A wrapped 32-bit inverse product tests divisibility and supplies the quotient during stripping. The last two physical lanes are inactive. Mask.lean verifies that the four horizontal lane contributions add to the intended bitwise union. The existing coordinate-lane control forms one divisibility mask for 32 coordinates at a time.
+
+On the local M4 Pro run `sh replay.sh`. Filtering starts with an input buffer copied outside the timer. Setup regenerates the auxiliary chain with the projective kernel, checks the entire public fiber, filters the roots and lifts the target points. Every filter result matches the 392 reference coordinates in order and every complete setup matches the 195 reference points. The candidate also passes trial-division comparisons on small inputs, pseudorandom coordinates, near prime powers and their reflections.
+
+For 96 alternating pairs per scope after eight warmup pairs, the median within-pair candidate/control wall ratios were 1.246 and 1.533 on filtering, 1.160 and 1.130 on complete setup (first build and rebuild). Values above one mean the candidate took longer. The candidate combines a change of SIMD layout with inverse multiplication during stripping and early acceptance; the experiment evaluates that implementation as a whole.
