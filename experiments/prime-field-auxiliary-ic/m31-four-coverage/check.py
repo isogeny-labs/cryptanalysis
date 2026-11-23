@@ -50,6 +50,25 @@ def check(xs):
         input="".join(f"{x}\n" for x in xs),text=True)
     assert raw.splitlines()[-1]==f"translated_union_finite,{len(shifted-{None})}"
 
+    # Count the cumulative translates in both native enumeration orders.
+    cover=union.copy()
+    expected=[]
+    for idx,x in enumerate(xs):
+        for b in signed[2*idx:2*idx+2]:
+            cover.update(add(a,b) for a in union)
+        expected.append(f"{idx+1},{x},{len(cover-{None})}")
+    explicit={None}
+    for n in range(1,6):
+        for combo in combinations_with_replacement(signed,n):
+            point=None
+            for term in combo: point=add(point,term)
+            explicit.add(point)
+    assert cover==explicit
+    for mode in ("five","five-reverse"):
+        raw=subprocess.check_output([sys.argv[1],mode],
+            input="".join(f"{x}\n" for x in xs),text=True)
+        assert raw.splitlines()[5:]==expected
+
     counts = Counter(vectors.values())
     identity = counts.pop(None)
     histogram = Counter(counts.values())

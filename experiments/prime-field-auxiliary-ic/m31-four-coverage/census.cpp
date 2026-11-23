@@ -141,8 +141,7 @@ static void multiplicities(const std::vector<Word>& xs) {
 // The starting point is a fixed generator. The additional sorted multiset
 // may use every sign. Taking both ordinates of a visited x also covers
 // the negative starting point because the unshifted ball is symmetric.
-static void translated(const std::vector<Word>& xs, Word anchor) {
-    Bits total=census(xs,-1,{});
+static std::uint64_t extend_ball(Bits& total, Word anchor) {
     auto it=std::find_if(basis.begin(),basis.end(),[&](Point a){return a.x==anchor;});
     assert(it!=basis.end());
     auto record=[&](Word x) {
@@ -152,13 +151,61 @@ static void translated(const std::vector<Word>& xs, Word anchor) {
     for(unsigned n=1;n<=4;++n) visit<false>(*it,0,n,record);
     std::uint64_t finite=0;
     for(auto word:total) finite+=2ULL*__builtin_popcountll(word);
-    std::cout<<"translated_union_finite,"<<finite<<std::endl;
+    return finite;
+}
+
+static void translated(const std::vector<Word>& xs, Word anchor) {
+    Bits total=census(xs,-1,{});
+    std::cout<<"translated_union_finite,"<<extend_ball(total,anchor)<<std::endl;
+}
+
+// Independently classify all canonical abscissae by quadratic residuosity.
+// Build squares by first differences, then evaluate the cubic by third
+// differences; this check uses no elliptic-curve addition or inversion.
+static void check_full_curve(const Bits& total) {
+    Bits squares(total.size());
+    Word square=0, delta=1;
+    for(Word y=0;y<=p/2;++y) {
+        squares[square>>6]|=UINT64_C(1)<<(square&63);
+        square=add(square,delta);
+        delta=add(delta,2);
+    }
+    Word rhs=14, diff=3, second=6;
+    for(Word x=0;x<p;++x) {
+        bool covered=(total[x>>6]>>(x&63))&1;
+        bool lifts=(squares[rhs>>6]>>(rhs&63))&1;
+        if(covered!=lifts) throw std::runtime_error("curve support mismatch");
+        rhs=add(rhs,diff);
+        diff=add(diff,second);
+        second=add(second,6);
+    }
+}
+
+static void five_cover(std::vector<Word> xs, bool reverse) {
+    const auto anchors=xs;
+    if(reverse) std::reverse(xs.begin(),xs.end());
+    Bits total=census(xs,-1,{});
+    std::cout<<"anchor_ordinal,anchor_x,finite_points"<<std::endl;
+    for (std::size_t i=0;i<anchors.size();++i) {
+        auto finite=extend_ball(total,anchors[i]);
+        std::cout<<i+1<<','<<anchors[i]<<','<<finite<<std::endl;
+        if (finite==UINT64_C(2147505292)) {
+            check_full_curve(total);
+            std::cerr<<"Verified all "<<p<<" abscissae against the curve cubic."<<std::endl;
+            break;
+        }
+    }
 }
 
 int main(int argc,char** argv) {
     std::vector<Word> xs;
     Word x;
     while(std::cin>>x) xs.push_back(x);
+    if(argc==2 && (std::string(argv[1])=="five" || std::string(argv[1])=="five-reverse")) {
+        assert(!xs.empty() && xs.size()<=195);
+        five_cover(xs, std::string(argv[1])=="five-reverse");
+        return 0;
+    }
     if(argc==3 && std::string(argv[1])=="translate") {
         assert(!xs.empty() && xs.size()<=195);
         translated(xs,static_cast<Word>(std::stoul(argv[2])));
