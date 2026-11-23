@@ -222,7 +222,9 @@ class Circuit:
         chosen = []
         for coordinate in range(2):
             row = [self.constant(pt[coordinate]) for pt in table]
-            for selector in [6 * w + 6] + [6 * w + i + 1 for i in range(5)]:
+            # Match CompactBinarySelector: three five-bit indices first,
+            # followed by the three sign variables (all one-based here).
+            for selector in [16 + w] + [5 * w + i + 1 for i in range(5)]:
                 row = [
                     [self.mux(selector, x, y) for x, y in zip(row[i], row[i + 1])]
                     for i in range(0, len(row), 2)

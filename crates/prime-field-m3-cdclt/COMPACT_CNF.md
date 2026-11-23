@@ -39,7 +39,10 @@ predicate for these exact fixtures.
 Use a 20-bit unsigned word for each canonical residue, since
 \(p=884981<2^{20}\). Build two 64-entry multiplexer trees per window,
 one for each coordinate. The six selector bits address the 64
-precomputed signed rational points. A binary 2:1 mux uses four
+precomputed signed rational points. Their DIMACS variable order
+matches `CompactBinarySelector`: window index bits occupy variables
+1–5, 6–10 and 11–15, followed by window sign bits 16–18.
+A binary 2:1 mux uses four
 three-literal clauses for `z = (not s and a) or (s and b)`;
 constant propagation may simplify them. The unsimplified selection
 network has \(3\cdot2\cdot20\cdot63=7560\) bit muxes. It reads
@@ -80,9 +83,9 @@ planted full-theory closure. The emitted counts from
 
 | Archived IR | Variables | Clauses | DIMACS bytes | SHA-256 |
 | --- | ---: | ---: | ---: | --- |
-| planted | 61,735 | 207,958 | 3,834,601 | `5702fccfd7cc029d6b773087bd67a467b95a6e80064417edf18773ce87e4de65` |
-| natural | 61,732 | 207,923 | 3,833,531 | `ab2f0a3e4641f87f68dc8e7f997ea583708a54aedb300d39fef3ab4709a3140a` |
-| exact-UNSAT | 62,308 | 209,888 | 3,871,585 | `dd3e5ccf5e026f1fc98967cbb72b808e7149aab75aebab33116cf134e75a3253` |
+| planted | 61,735 | 207,958 | 3,834,601 | `ef323feecb049a41c71e13c8e515e31242cf8eb3a81e775ce5d21b55db8d49e5` |
+| natural | 61,732 | 207,923 | 3,833,531 | `89407cdd6ef3ae16bf9759984201ee438c76e3eea36e01e731103a7d9baae083` |
+| exact-UNSAT | 62,308 | 209,888 | 3,871,585 | `a823382f02271c9ff25f46a51da40f329f5f431a6dc06e2634854b30d5e1ada8` |
 
 The differing counts arise from public target constants and Boolean
 constant propagation. Construction uses the fixed three 64-point

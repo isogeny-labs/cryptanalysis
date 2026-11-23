@@ -58,8 +58,8 @@ def planted_selector(data):
     bits = 0
     for w, slot in enumerate(found[0]):
         index, sign = divmod(slot, 2)
-        bits |= index << (6 * w)
-        bits |= sign << (6 * w + 5)
+        bits |= index << (5 * w)
+        bits |= sign << (15 + w)
     return bits
 
 
@@ -139,6 +139,7 @@ class CompactCnfTest(unittest.TestCase):
         data = (FIXTURES / "lead2b-s5-planted.ir").read_bytes()
         self.assertEqual(hashlib.sha256(data).hexdigest(), HASHES["lead2b-s5-planted.ir"])
         selected = planted_selector(data)
+        self.assertEqual(selected, 0x2EDDF)  # indices (31,14,27), signs (1,0,1)
         circuit = MOD.build(data, selected)
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "compact.cnf"
