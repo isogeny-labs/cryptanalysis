@@ -8,16 +8,19 @@ MASK = (1 << PERIOD)-1
 
 
 def representatives():
+    # Store chi(v) * v. Multiplicativity lets every power of q inherit
+    # its character using just one Euler-criterion evaluation per prime.
     values = [1]
     for q in PRIMES:
+        signed_q = -q if pow(q, (P-1)//2, P) == P-1 else q
         extra = []
         for v in values:
-            v *= q
-            while v < P:
-                extra.append(v)
-                v *= q
+            product = v * signed_q
+            while -P < product < P:
+                extra.append(product)
+                product *= signed_q
         values.extend(extra)
-    return {pow(x,31,P): x for x in values if pow(x,(P-1)//2,P) == P-1}
+    return {pow(-v, 31, P): -v for v in values if v < 0}
 
 
 def lift_masks(start, step):
