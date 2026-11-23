@@ -115,4 +115,23 @@ theorem threeCenteredExtrema (bias : ℤ) :
   unfold radius
   omega
 
+/-- Arithmetic of four independent nonnegative SQDMULH lanes. The low word
+comes from ordinary multiplication; unsigned MIN chooses the canonical residue
+from the folded sum and its wrapping subtraction. -/
+theorem doublingHighLane {a b : Nat} (ha : a < p) (hb : b < p) :
+    let x := a*b
+    let hi := min (2*x) (2^63-1) / 2^32
+    let lo := x % 2^32 % 2^31
+    let s := (hi+lo) % 2^32
+    min s ((s + 2^32 - p) % 2^32) = x % p := by
+  have bound := Nat.mul_le_mul (Nat.le_pred_of_lt ha) (Nat.le_pred_of_lt hb)
+  change a*b ≤ 2147483646*2147483646 at bound
+  have unclamped : 2*(a*b) ≤ 2^63-1 := by omega
+  have hc := singleProduct ha hb
+  dsimp only
+  rw [min_eq_left unclamped]
+  unfold canonical fold p at hc
+  unfold p
+  split at hc <;> omega
+
 end M31Reduction
