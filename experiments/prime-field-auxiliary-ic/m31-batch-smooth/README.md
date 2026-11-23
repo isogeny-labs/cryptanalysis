@@ -31,3 +31,19 @@ cycling through all 32 possible tail lengths. It accepted 22,819,080
 coordinates in exact agreement with independent smooth-product enumeration.
 Batch.lean verifies the full-word mask operations. Timings cover basis
 preparation after library loading.
+
+## Independent prime masks
+
+independent.cpp forms each prime's divisibility mask from a saved copy of
+the odd lane values and applies exact division to the current residuals.
+The fresh_prime_mask theorem in the adjacent m31-native-smooth-filter/Strip.lean
+proves that removing powers of earlier distinct primes preserves this test.
+
+Build with the same flags as b32.cpp. Link independent.cpp with exhaustive.cpp
+to replay the domain check. The local arm64 build matched independent
+smooth-product enumeration on all 2,147,483,647 canonical coordinates,
+including the order of all 22,819,080 accepted entries across 32,776 blocks.
+The adjacent independent-filter.csv and independent-setup.csv give wall
+nanoseconds for 100 alternating pairs after four warmups, comparing b32.cpp
+with independent.cpp. The median paired speedups were 1.452× for filtering
+and 1.086× for complete depth-15 public basis preparation.
