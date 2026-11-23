@@ -329,7 +329,7 @@ def self_test():
         panel, witness, fixture = cold_gate.make_fixture(
             child, 700, (1, 2, 3, 4),
             [t["target_id"] for t in pub["witness"]["targets"]])
-        if witness["curve_id"] != "synthetic-prime97":
+        if witness["curve_id"] != "synthetic-F97":
             raise AssertionError("unexpected upstream synthetic curve fixture")
         # This is the same *arithmetic* curve as the CT320 fixture but its
         # source-curve identifier must be equal across panel and witness.
