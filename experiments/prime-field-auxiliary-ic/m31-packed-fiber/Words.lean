@@ -58,4 +58,43 @@ theorem mul_spec (x y : BitVec 32) :
   change (_ % p) % 4294967296 = _
   exact Nat.mod_eq_of_lt (Nat.lt_trans (Nat.mod_lt _ (by decide : 0 < p)) (by decide))
 
+/-- One iteration of the unsigned maximum scan in distinct.c. -/
+def scanStep (acc x : BitVec 32) := if x > acc then x else acc
+
+theorem scanStep_lt (acc x : BitVec 32) :
+    scanStep acc x < w ↔ acc < w ∧ x < w := by
+  unfold scanStep
+  split <;> bv_decide
+
+/-- Characterize the loop from any incoming accumulator, including SIMD chunks. -/
+theorem scan_lt (xs : List (BitVec 32)) (acc : BitVec 32) :
+    xs.foldl scanStep acc < w ↔ acc < w ∧ ∀ x ∈ xs, x < w := by
+  induction xs generalizing acc with
+  | nil => simp
+  | cons x xs ih =>
+    simp only [List.foldl_cons, ih, scanStep_lt, List.mem_cons]
+    constructor
+    · rintro ⟨⟨ha, hx⟩, ht⟩
+      exact ⟨ha, fun y hy => hy.elim (fun e => e ▸ hx) (ht y)⟩
+    · rintro ⟨ha, hall⟩
+      exact ⟨⟨ha, hall x (Or.inl rfl)⟩, fun y hy => hall y (Or.inr hy)⟩
+
+theorem canonical_scan (xs : List (BitVec 32)) :
+    xs.foldl scanStep 0 < w ↔ ∀ x ∈ xs, x.toNat < p := by
+  rw [scan_lt, and_iff_right (by decide : (0 : BitVec 32) < w)]
+  rfl
+
+/-- Reducing each lane separately preserves the same acceptance predicate. -/
+theorem canonical_chunks (chunks : List (List (BitVec 32))) :
+    (chunks.map (fun xs => xs.foldl scanStep 0)).foldl scanStep 0 < w ↔
+    chunks.flatten.foldl scanStep 0 < w := by
+  simp only [canonical_scan, List.forall_mem_map, List.mem_flatten]
+  change (∀ xs ∈ chunks, xs.foldl scanStep 0 < w) ↔ _
+  constructor
+  · intro h x hx
+    obtain ⟨xs, hxs, hx⟩ := hx
+    exact (canonical_scan xs).mp (h xs hxs) x hx
+  · intro h xs hxs
+    exact (canonical_scan xs).mpr (fun x hx => h x ⟨xs, hxs, hx⟩)
+
 end M31PackedFiber.Words
