@@ -48,9 +48,24 @@ T ones(T x) {
 
 template<typename T>
 inline T inverse(T x) {
+#ifdef M31_USE_NEON
+    // The low bits contribute x^5. Four seven-bit blocks cover bits 3..30.
+    // The accumulated result is independent of the next block's squarings.
+    const T square = multiply(x, x);
+    T result = multiply(multiply(square, square), x);
+    T block = ones<7>(x);
+    for (unsigned j = 0; j < 3; ++j) block = multiply(block, block);
+    result = multiply(result, block);
+    for (unsigned k = 1; k < 4; ++k) {
+        for (unsigned j = 0; j < 7; ++j) block = multiply(block, block);
+        result = multiply(result, block);
+    }
+    return result;
+#else
     T t = ones<29>(x);
     t = multiply(t, t);
     return multiply(multiply(t, t), x);
+#endif
 }
 
 template<typename T>
