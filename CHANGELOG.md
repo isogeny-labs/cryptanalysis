@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.18](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.17...cryptanalysis-v0.1.18) (2026-11-23)
+
+
+### Bug Fixes
+
+* **build:** repair main C/Rust merge artifacts so cryptanalysis-sys and ca-ic build ([24de683](https://github.com/isogeny-labs/cryptanalysis/commit/24de6836afbae8fb1adc8cc42a096a7f45694fbb))
+* **build:** repair the C and Rust merge artifacts on main ([4b9ebd1](https://github.com/isogeny-labs/cryptanalysis/commit/4b9ebd163648dbf1b3112e196e7cbdcd7edfc96f))
+
 ## [0.1.17](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.16...cryptanalysis-v0.1.17) (2026-11-23)
 
 
