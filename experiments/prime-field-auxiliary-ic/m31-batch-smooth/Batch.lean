@@ -56,4 +56,21 @@ theorem insert_lane (mask lane probe : BitVec 32) (hit : Bool)
        else mask &&& ((1 : BitVec 32) <<< probe)) := by
   bv_decide
 
+/-- The full-word implementation can select lane 31, and every selected
+lane is within its 32-element scratch array. -/
+theorem lane_in_full_batch (mask : BitVec 32) (live : mask ≠ 0) :
+    mask.ctz < 32 := by
+  bv_decide
+
+/-- Setting the flag for a fresh lane in a full word updates its
+divisibility predicate without changing any other lane's flag. -/
+theorem insert_full_lane (mask lane probe : BitVec 32) (hit : Bool)
+    (index : lane < 32) (clear : mask &&& ((1 : BitVec 32) <<< lane) = 0) :
+    let flag := (1 : BitVec 32) <<< lane
+    let next := mask ||| (if hit then flag else 0)
+    flag ≠ 0 ∧ (next &&& ((1 : BitVec 32) <<< probe)) =
+      (if probe = lane then (if hit then flag else 0)
+       else mask &&& ((1 : BitVec 32) <<< probe)) := by
+  bv_decide
+
 end BatchSmooth

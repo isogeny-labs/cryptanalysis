@@ -39,7 +39,7 @@ int main() {
     std::uint64_t accepted = 0;
     unsigned block = 0;
     for (unsigned start = 0; start < modulus; ++block) {
-        const unsigned count = std::min(65536u - block % 16, modulus - start);
+        const unsigned count = std::min(65536u - block % 32, modulus - start);
         expected.clear();
         for (unsigned i = 0; i < count; ++i) {
             const unsigned x = start + i;
