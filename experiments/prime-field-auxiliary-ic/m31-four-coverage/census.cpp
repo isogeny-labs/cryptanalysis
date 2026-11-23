@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <iostream>
 #include <string>
+#include <stdexcept>
 #include <vector>
 
 using Word = std::uint32_t;
@@ -26,7 +27,8 @@ using Bits=std::vector<std::uint64_t>;
 
 // Visit sorted signed multisets, including repeats and inverse cancellations.
 // Batch all additions at a node, replacing exceptional denominators with one.
-void visit(Point a,unsigned start,unsigned left,Bits& support,bool& has_infinity) {
+template<bool reduced, class Record>
+void visit(Point a,unsigned start,unsigned left,Record& record) {
     std::array<Word,390> prefix,den;
     Word prod=1;
     for(unsigned i=start;i<basis.size();++i) {
@@ -50,13 +52,14 @@ void visit(Point a,unsigned start,unsigned left,Bits& support,bool& has_infinity
             next.x=sub(sub(mul(slope,slope),a.x),b.x);
             if(left>1) next.y=sub(mul(slope,sub(a.x,next.x)),a.y);
         }
-        if(left>1) visit(next,i,left-1,support,has_infinity);
-        else if(next.x==p) has_infinity=true;
-        else support[next.x>>6]|=UINT64_C(1)<<(next.x&63);
+        // Sorted occurrences put opposite signs of one generator next to each other.
+        if constexpr (reduced) if (i==(start^1U)) continue;
+        if(left>1) visit<reduced>(next,i,left-1,record);
+        else record(next.x);
     }
 }
 
-static Bits census(const std::vector<Word>& xs, int arm, const Bits& reference) {
+static void load_basis(const std::vector<Word>& xs) {
     basis.clear();
     for(Word u:xs) {
         assert(u<p);
@@ -67,15 +70,23 @@ static Bits census(const std::vector<Word>& xs, int arm, const Bits& reference) 
         basis.push_back({u,y});
         basis.push_back({u,p-y});
     }
+}
+
+static Bits census(const std::vector<Word>& xs, int arm, const Bits& reference) {
+    load_basis(xs);
     Bits total((std::size_t(p)+63)/64), shell(total.size());
     for(unsigned n=1;n<=4;++n) {
         std::fill(shell.begin(),shell.end(),0);
         bool has_infinity=false;
+        auto record = [&](Word x) {
+            if(x==p) has_infinity=true;
+            else shell[x>>6]|=UINT64_C(1)<<(x&63);
+        };
         // Global negation preserves x. An orientation with a positive
         // occurrence of the smallest generator always exists.
         for(unsigned i=0;i<basis.size();i+=2) {
             if(n==1) shell[basis[i].x>>6]|=UINT64_C(1)<<(basis[i].x&63);
-            else visit(basis[i],i,n-1,shell,has_infinity);
+            else visit<false>(basis[i],i,n-1,record);
         }
         std::uint64_t exact=0, upto=0;
         for(std::size_t j=0;j<total.size();++j) {
@@ -98,10 +109,44 @@ static Bits census(const std::vector<Word>& xs, int arm, const Bits& reference) 
     return total;
 }
 
+// Count one coefficient vector per orientation, merging global signs only.
+// Retain aggregate multiplicities, including any nonempty vectors evaluating to zero.
+static void multiplicities(const std::vector<Word>& xs) {
+    load_basis(xs);
+    std::vector<std::uint8_t> packed((std::size_t(p)+1)/2);
+    std::uint64_t zero_vectors=1;
+    auto record = [&](Word x) {
+        if(x==p) { zero_vectors+=2; return; }
+        auto& byte=packed[x/2];
+        unsigned shift=4*(x%2);
+        if(((byte>>shift)&15)==15) throw std::overflow_error("multiplicity exceeds nibble");
+        byte+=1U<<shift;
+    };
+    for(unsigned n=1;n<=4;++n) {
+        for(unsigned i=0;i<basis.size();i+=2) {
+            if(n==1) record(basis[i].x);
+            else visit<true>(basis[i],i,n-1,record);
+        }
+    }
+    std::array<std::uint64_t,16> bins{};
+    for(auto byte:packed) {
+        ++bins[byte&15];
+        ++bins[byte>>4];
+    }
+    std::cout<<"multiplicity,finite_points,identity_vectors\n";
+    for(unsigned k=1;k<bins.size();++k)
+        if(bins[k]) std::cout<<k<<','<<2*bins[k]<<','<<zero_vectors<<'\n';
+}
+
 int main(int argc,char** argv) {
     std::vector<Word> xs;
     Word x;
     while(std::cin>>x) xs.push_back(x);
+    if(argc==2 && std::string(argv[1])=="multiplicity") {
+        assert(!xs.empty() && xs.size()<=195);
+        multiplicities(xs);
+        return 0;
+    }
     if(argc==2 && std::string(argv[1])=="matched") {
         assert(xs.size()==4*195);
         std::cout<<"arm,arity,exact_finite,upto_finite,exact_has_infinity,common_with_smooth\n";

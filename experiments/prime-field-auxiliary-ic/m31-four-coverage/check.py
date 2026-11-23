@@ -1,6 +1,7 @@
 """Check the native aggregate counter against independent full affine-point sets."""
 import csv
 import io
+from collections import Counter
 from itertools import combinations_with_replacement
 from pathlib import Path
 import subprocess
@@ -26,16 +27,30 @@ def check(xs):
         signed.extend([(x,y),(x,-y%p)])
     output=subprocess.check_output([sys.argv[1]],input=''.join(f'{x}\n' for x in xs),text=True)
     union=set()
+    vectors = {(0,)*len(xs): None}
     for n,row in enumerate(csv.DictReader(io.StringIO(output)),1):
         sums=set()
-        for combo in combinations_with_replacement(signed,n):
+        for combo in combinations_with_replacement(range(len(signed)),n):
             point=None
-            for term in combo: point=add(point,term)
+            coeff = [0]*len(xs)
+            for idx in combo:
+                point=add(point,signed[idx])
+                coeff[idx//2] += 1 if idx%2==0 else -1
+            assert vectors.setdefault(tuple(coeff),point) == point
             sums.add(point)
         union.update(sums)
         assert int(row['exact_finite'])==len(sums-{None})
         assert int(row['upto_finite'])==len(union-{None})
         assert int(row['exact_has_infinity'])==(None in sums)
+
+    counts = Counter(vectors.values())
+    identity = counts.pop(None)
+    histogram = Counter(counts.values())
+    raw = subprocess.check_output([sys.argv[1],"multiplicity"],
+        input="".join(f"{x}\n" for x in xs),text=True)
+    rows = list(csv.DictReader(io.StringIO(raw)))
+    assert histogram == {int(row["multiplicity"]):int(row["finite_points"]) for row in rows}
+    assert all(int(row["identity_vectors"])==identity for row in rows)
 
 basis=list(map(int,(Path(__file__).resolve().parent.parent/'m31-basis-mask/coordinates.txt').read_text().splitlines()))
 P=(3,417540811)

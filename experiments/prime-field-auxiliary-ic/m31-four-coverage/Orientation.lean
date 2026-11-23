@@ -34,3 +34,27 @@ theorem translate_overlap_sum (a b : Finset G) :
     _ = _ := by simp
 
 end M31FourCoverage
+
+namespace M31FourCoverage
+
+/-- A negation-stable coefficient domain has equal representation counts at
+opposite outputs whenever evaluation commutes with negation. -/
+theorem opposite_multiplicities {V G : Type*} [AddGroup V] [AddGroup G]
+    [DecidableEq V] [DecidableEq G] (s : Finset V) (eval : V → G)
+    (closed : ∀ v ∈ s, -v ∈ s) (odd : ∀ v, eval (-v) = -eval v) (g : G) :
+    (s.filter (fun v => eval v = g)).card = (s.filter (fun v => eval v = -g)).card := by
+  have h : (s.filter (fun v => eval v = g)).image (fun v => -v) =
+      s.filter (fun v => eval v = -g) := by
+    ext x
+    constructor
+    · intro hx
+      obtain ⟨v,hv,rfl⟩ := Finset.mem_image.mp hx
+      obtain ⟨hs,he⟩ := Finset.mem_filter.mp hv
+      exact Finset.mem_filter.mpr ⟨closed v hs, by rw [odd, he]⟩
+    · intro hx
+      obtain ⟨hs,he⟩ := Finset.mem_filter.mp hx
+      exact Finset.mem_image.mpr ⟨-x, Finset.mem_filter.mpr
+        ⟨closed x hs, by rw [odd, he, neg_neg]⟩, neg_neg x⟩
+  rw [← h, Finset.card_image_of_injective _ neg_injective]
+
+end M31FourCoverage
