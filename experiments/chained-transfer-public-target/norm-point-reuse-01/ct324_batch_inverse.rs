@@ -102,4 +102,3 @@ fn batch_add(pairs:&[(Point,Point)],p:u64,a:u64,c:&mut Counts)->Vec<Point>{
   assert_eq!(bat.inversions,1);
  }
 }
-fn main(){}
