@@ -1,3 +1,4 @@
+import argparse
 import csv
 import sys
 
@@ -23,15 +24,19 @@ def representatives():
     return {pow(-v, 31, P): -v for v in values if v < 0}
 
 
-def lift_masks(start, step, auxiliary_mask=None):
+def euler_lift(rhs):
+    return pow(rhs, (P-1)//2, P) != P-1
+
+
+def lift_masks(start, step, auxiliary_mask=None, lifts=euler_lift):
     masks = [0 if auxiliary_mask is None else auxiliary_mask, 0, 0]
     x = start
     for i in range(PERIOD):
         cube = pow(x,3,P)
-        if auxiliary_mask is None and pow(cube+x, (P-1)//2, P) != P-1:
+        if auxiliary_mask is None and lifts(cube+x):
             masks[0] |= 1 << i
         for j, rhs in enumerate((cube+2*x+14,cube+2*x-14), start=1):
-            if pow(rhs,(P-1)//2,P) != P-1:
+            if lifts(rhs):
                 masks[j] |= 1 << i
         x = x*step % P
     assert x == start
@@ -42,7 +47,7 @@ def rotate(m, j):
     return ((m << j) & MASK) | (m >> (PERIOD-j))
 
 
-def main():
+def main(lifts=euler_lift):
     groups = representatives()
     totals = [[0]*5 for _ in range(PERIOD)]
     pairs = 0
@@ -51,10 +56,10 @@ def main():
         if key >= inverse or inverse not in groups:
             continue
         pairs += 1
-        a = lift_masks(x,2)
+        a = lift_masks(x, 2, lifts=lifts)
         # Transport.lean proves that inverse coordinates have the same auxiliary lift.
         # The inverse orbit uses the inverse step, so the bit positions agree.
-        b = lift_masks(pow(x,-1,P), (P+1)//2, auxiliary_mask=a[0])
+        b = lift_masks(pow(x,-1,P), (P+1)//2, auxiliary_mask=a[0], lifts=lifts)
         for j,row in enumerate(totals):
             aux,curve,twist = (m & rotate(n,j) for m,n in zip(a,b))
             for i,bits in enumerate((aux,curve,twist,aux & curve,aux & twist)):
@@ -68,4 +73,18 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description="Count affine lifts over M31.")
+    parser.add_argument("--gmp", action="store_true",
+                        help="use the optional gmpy2 Jacobi symbol for lift tests")
+    if parser.parse_args().gmp:
+        try:
+            from gmpy2 import jacobi
+        except ImportError as error:
+            parser.exit(2, f"--gmp requires gmpy2: {error}\n")
+
+        def gmp_lift(rhs):
+            return jacobi(rhs, P) >= 0
+
+        main(gmp_lift)
+    else:
+        main()
