@@ -1,4 +1,4 @@
-//! Static full-theory CNF for one exported Lead 2B s=5 instance.
+//! Static full-theory CNF for exported Lead 2B s=5 instances.
 //! This is a model-equivalent closure, not the dynamic CDCL(Fp) clause graph.
 
 use prime_field_m3_cdclt::field::{is_prime_u64, sha256_hex};
@@ -212,17 +212,12 @@ fn main() {
 mod tests {
     use super::*;
 
-    #[test]
-    fn all_18_bit_assignments_match_exact_group_models() {
-        let ir = include_str!("../../fixtures/s5/lead2b-s5-planted.ir");
-        assert_eq!(
-            sha256_hex(ir.as_bytes()),
-            "1dd4ef93b48499871e822f38e693f7d4d18a8c5cf4942e9345d3d866f8705a36"
-        );
-        let inst = parse_ir(ir).expect("archived planted IR");
+    fn check_case(ir: &str, expected_hash: &str, expected_model_count: usize) {
+        assert_eq!(sha256_hex(ir.as_bytes()), expected_hash);
+        let inst = parse_ir(ir).expect("archived s=5 IR");
         let cnf = build(&inst);
-        assert_eq!(cnf.present_pairs, 1);
-        assert_eq!(cnf.clauses.len(), 4101);
+        assert_eq!(cnf.present_pairs, expected_model_count);
+        assert_eq!(cnf.clauses.len(), 4096 + 5 * expected_model_count);
         let mut accepted = vec![true; 1 << 18];
         for clause in &cnf.clauses {
             assert!(clause.len() == 12 || clause.len() == 13);
@@ -273,9 +268,9 @@ mod tests {
             assert_eq!(cnf_value, expected, "assignment {assignment}");
             model_count += usize::from(expected);
         }
-        assert_eq!(model_count, 1);
+        assert_eq!(model_count, expected_model_count);
         let output = dimacs(&cnf, ir);
-        assert!(output.contains("p cnf 18 4101\n"));
+        assert!(output.contains(&format!("p cnf 18 {}\n", cnf.clauses.len())));
         let emitted: Vec<Vec<Lit>> = output
             .lines()
             .filter(|line| !line.starts_with('c') && !line.starts_with('p'))
@@ -289,5 +284,24 @@ mod tests {
             })
             .collect();
         assert_eq!(emitted, cnf.clauses);
+    }
+
+    #[test]
+    fn all_18_bit_assignments_match_exact_group_models() {
+        check_case(
+            include_str!("../../fixtures/s5/lead2b-s5-planted.ir"),
+            "1dd4ef93b48499871e822f38e693f7d4d18a8c5cf4942e9345d3d866f8705a36",
+            1,
+        );
+        check_case(
+            include_str!("../../fixtures/s5/lead2b-s5-natural.ir"),
+            "701972399e5849cabebcb35df5538990e335038e32a068a9185cdb89e7f45216",
+            0,
+        );
+        check_case(
+            include_str!("../../fixtures/s5/lead2b-s5-exact-unsat.ir"),
+            "53fa0069d6b5a4f5bee30f001904d31b7d96f05c76e6da3834fc29a935d1552f",
+            0,
+        );
     }
 }
