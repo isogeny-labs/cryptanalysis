@@ -13,16 +13,18 @@ import time
 
 
 HERE = Path(__file__).resolve().parent
-MODES = ("scalar", "batch", "batch_lto")
+MODES = ("scalar", "batch", "batch_lto", "explicit_lto")
 
 
 def compile_census(directory, mode):
     binary = directory / mode
     flags = ["-O3", "-mcpu=native"]
-    if mode == "batch_lto":
+    if mode in ("batch_lto", "explicit_lto"):
         flags.append("-flto")
     objects = []
-    if mode != "scalar":
+    if mode == "explicit_lto":
+        flags.append("-DM31_EXPLICIT_CENSUS")
+    elif mode != "scalar":
         product = directory / (mode + ".o")
         subprocess.run(["clang", *flags, "-c", HERE.parent / "m31-native-product/product.c",
                         "-o", product], check=True)
@@ -50,13 +52,13 @@ def main():
         binaries = {mode: compile_census(Path(directory), mode) for mode in MODES}
         for binary in binaries.values():
             measure(binary, expected)
-        print("round,order,scalar_ns,batch_ns,batch_lto_ns")
+        print("round", "order", *(m + "_ns" for m in MODES), sep=",")
         rows = []
         for number, order in enumerate(itertools.permutations(MODES), start=1):
             row = {mode: measure(binaries[mode], expected) for mode in order}
             rows.append(row)
             print(number, "/".join(order), *(row[m] for m in MODES), sep=",")
-        for mode in MODES[:-1]:
+        for mode in ("scalar", "batch", "explicit_lto"):
             ratio = median(row[mode] / row["batch_lto"] for row in rows)
             print(f"Median paired {mode}/batch_lto wall time = {ratio:.4f}")
 

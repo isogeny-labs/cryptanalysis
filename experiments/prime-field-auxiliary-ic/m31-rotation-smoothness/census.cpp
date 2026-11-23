@@ -1,3 +1,6 @@
+#ifdef M31_EXPLICIT_CENSUS
+#include <arm_neon.h>
+#endif
 #ifdef M31_BATCH_CENSUS
 #include "../m31-native-product/product.h"
 #endif
@@ -31,7 +34,7 @@ int main() {
             while (x!=v) {key=std::min(key,x); x=rotate(x);}
             if (!seen.insert(key).second || square(key)) continue;
             // Two is a square modulo p, so the whole orbit has the same character.
-#ifdef M31_BATCH_CENSUS
+#if defined(M31_BATCH_CENSUS) || defined(M31_EXPLICIT_CENSUS)
             // Every nonzero orbit has 31 elements. Pad each predicate to 32 lanes.
             uint32_t inputs[64] = {}, powers[64];
             for (unsigned j = 0; j < 31; ++j) {
@@ -40,9 +43,27 @@ int main() {
                 inputs[32 + j] = (xx * x + 2 * x + 14) % p;
                 x = rotate(x);
             }
+#ifdef M31_EXPLICIT_CENSUS
+            uint32x4_t lanes[16];
+            const uint32x4_t modulus = vdupq_n_u32(p);
+            for (unsigned j = 0; j < 16; ++j)
+                lanes[j] = vld1q_u32(inputs + 4*j);
+            for (unsigned step = 0; step < 30; ++step) {
+                for (auto& lane : lanes) {
+                    const auto xSigned = vreinterpretq_s32_u32(lane);
+                    const auto high = vreinterpretq_u32_s32(vqdmulhq_s32(xSigned, xSigned));
+                    const auto low = vandq_u32(vmulq_u32(lane, lane), modulus);
+                    const auto sum = vaddq_u32(high, low);
+                    lane = vminq_u32(sum, vsubq_u32(sum, modulus));
+                }
+            }
+            for (unsigned j = 0; j < 16; ++j)
+                vst1q_u32(powers + 4*j, lanes[j]);
+#else
             std::copy_n(inputs, 64, powers);
             for (unsigned step = 0; step < 30; ++step)
                 m31_products(powers, powers, powers, 64);
+#endif
             for (unsigned j = 0; j < 31; ++j) {
                 const bool qualifies = inputs[j] != powers[j];
                 const bool lift = inputs[32 + j] == powers[32 + j];
