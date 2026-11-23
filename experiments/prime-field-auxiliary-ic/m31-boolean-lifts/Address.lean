@@ -57,4 +57,10 @@ theorem groupedAddress_fixture :
     (other.map groupedAddress).mergeSort = ((List.range 15).map (fun i => (17+i).toUInt32)) := by
   native_decide
 
+/-- One parity suffices when the required output is only the fixture label. -/
+theorem parity_label_fixture :
+    base.all (fun x => parity (x &&& 0x50a779d6) == 1) = true ∧
+    other.all (fun x => parity (x &&& 0x50a779d6) == 0) = true := by
+  native_decide
+
 end M31FixtureAddress
