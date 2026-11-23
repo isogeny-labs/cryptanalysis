@@ -98,15 +98,25 @@ int main() {
         ++orbitCounts[band];
         if (!(packed & 4)) continue;
         U eligible = 0, lifts = 0;
-        U x = v;
 #if defined(M31_BATCH_CENSUS) || defined(M31_EXPLICIT_CENSUS)
         // Every nonzero orbit has 31 elements. Pad each predicate to 32 lanes.
         uint32_t inputs[64] = {}, powers[64];
+        const U square = v * v % p;
+        const U cube = square * v % p;
+        const U xWindow = (v << 31) | v;
+        const U squareWindow = (square << 31) | square;
+        const U cubeWindow = (cube << 31) | cube;
+        // At lane j the three powers rotate by j, 2j, and 3j modulo 31.
+        // Unrolling turns every window offset into a constant shift.
+#ifdef __clang__
+#pragma clang loop unroll(full)
+#endif
         for (unsigned j = 0; j < 31; ++j) {
-            const U xx = x * x % p;
+            const U x = (xWindow >> (31 - j)) & p;
+            const U xx = (squareWindow >> (31 - (2*j % 31))) & p;
+            const U xxx = (cubeWindow >> (31 - (3*j % 31))) & p;
             inputs[j] = (xx + 1) % p;
-            inputs[32 + j] = (xx * x + 2 * x + 14) % p;
-            x = rotate(x);
+            inputs[32 + j] = (xxx + 2*x + 14) % p;
         }
 #ifdef M31_EXPLICIT_CENSUS
         uint32x4_t lanes[16];
@@ -149,6 +159,7 @@ int main() {
             lifts += qualifies && lift;
         }
 #else
+        U x = v;
         do {
             U xx=x*x%p;
             if (!square((xx+1)%p)) {
