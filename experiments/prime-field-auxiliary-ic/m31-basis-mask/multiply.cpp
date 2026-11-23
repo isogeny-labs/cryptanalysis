@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <fstream>
 #include <iostream>
+#include <string_view>
 #include <vector>
 
 using Word = std::uint32_t;
@@ -56,7 +57,8 @@ static unsigned run(bool perfect, const std::vector<Word>& keys,
 }
 
 int main(int argc, char** argv) {
-    if (argc != 3) return 2;
+    const bool only13 = argc == 4 && std::string_view(argv[3]) == "--only13";
+    if (argc != 3 && !only13) return 2;
     std::ifstream bf(argv[1]), qf(argv[2]);
     std::vector<Word> keys, queries;
     for (Word x; bf >> x;) keys.push_back(x);
@@ -70,6 +72,7 @@ int main(int argc, char** argv) {
     for (unsigned b = 0; b < 50; ++b) {
         for (unsigned j = 0; j < 3; ++j) {
             unsigned bits = 11 + (b+j)%3;
+            if (only13 && bits != 13) continue;
             for (unsigned k = 0; k < 2; ++k) {
                 bool perfect = (k+b)%2;
                 auto start = Clock::now();
