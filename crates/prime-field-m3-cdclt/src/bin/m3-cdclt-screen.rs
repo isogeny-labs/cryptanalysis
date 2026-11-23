@@ -5,7 +5,9 @@
 //! exact-UNSAT targets with independent SAT group replay and UNSAT DRAT(T)
 //! verification. Where |W|^2 is small enough, also require exact projected
 //! model-set agreement with the two-window reference enumerator.
+//! Set LEAD2B_EXPORT_IR_DIR to preserve canonical IR sidecars for verified s=5 rows.
 
+use prime_field_m3_cdclt::field::sha256_hex;
 use prime_field_m3_cdclt::{
     canonical_ir, canonical_ir_sha256, generate_instance_for_class, generate_rung_curve_and_windows,
     sizing_comparison_row, validate_instance, verify_signed_group_replay, verify_unsat_transcript,
@@ -13,6 +15,9 @@ use prime_field_m3_cdclt::{
     PreparedChainedS3Setup, PreparedTwoWindow, TargetClass, TranscriptProofSink,
 };
 use std::env;
+use std::fs::{self, OpenOptions};
+use std::io::{ErrorKind, Write};
+use std::path::{Path, PathBuf};
 use std::time::Instant;
 
 #[derive(Clone, Debug)]
@@ -35,6 +40,31 @@ struct Row {
     ir_sha256: String,
 }
 
+fn export_s5_ir(dir: Option<&Path>, s: u32, instance_id: &str, ir: &str, digest: &str) {
+    let Some(dir) = dir.filter(|_| s == 5) else {
+        return;
+    };
+    assert_eq!(
+        sha256_hex(ir.as_bytes()),
+        digest,
+        "canonical IR digest mismatch"
+    );
+    fs::create_dir_all(dir)
+        .unwrap_or_else(|e| panic!("create IR directory {}: {e}", dir.display()));
+    let path = dir.join(format!("{instance_id}.ir"));
+    match OpenOptions::new().write(true).create_new(true).open(&path) {
+        Ok(mut file) => file
+            .write_all(ir.as_bytes())
+            .unwrap_or_else(|e| panic!("write IR {}: {e}", path.display())),
+        Err(e) if e.kind() == ErrorKind::AlreadyExists => {
+            let existing =
+                fs::read(&path).unwrap_or_else(|e| panic!("read IR {}: {e}", path.display()));
+            assert_eq!(existing, ir.as_bytes(), "existing IR differs: {}", path.display());
+        }
+        Err(e) => panic!("create IR {}: {e}", path.display()),
+    }
+}
+
 fn solve_one(
     s: u32,
     class: TargetClass,
@@ -43,6 +73,7 @@ fn solve_one(
     group_order: u64,
     seed_label: &str,
     enum_budget: u64,
+    export_ir_dir: Option<&Path>,
 ) -> Row {
     let mut rng = DeterministicRng::from_label(seed_label);
     let instance_id = format!("lead2b-s{s}-{}", class.as_str());
@@ -110,7 +141,7 @@ fn solve_one(
         }
     };
     let verify_ms = tv0.elapsed().as_secs_f64() * 1e3;
-    let _ = ir;
+    export_s5_ir(export_ir_dir, s, &instance_id, &ir, &ir_sha256);
 
     Row {
         s,
@@ -165,6 +196,7 @@ fn main() {
         .ok()
         .and_then(|v| v.parse().ok())
         .unwrap_or(1u64 << 20); // skip full enum-ref agreement above ~2^20 pair scans
+    let export_ir_dir = env::var_os("LEAD2B_EXPORT_IR_DIR").map(PathBuf::from);
 
     println!("# Lead 2B m=3 compact-binary CDCL(Fp) scaling screen");
     println!("# max_s={max_s} enum_budget={enum_budget}");
@@ -222,6 +254,7 @@ fn main() {
                 order,
                 &format!("lead2b-screen-20261120:s={s}:{seed_tag}"),
                 enum_budget,
+                export_ir_dir.as_deref(),
             );
             println!(
                 "{},{},{},{},{},{},{},{},{},{},{:.3},{:.3},{},{:.6},{},{}",
@@ -267,4 +300,99 @@ fn main() {
         a_hat.map(|a| a < 1.5).unwrap_or(false),
         rows.len()
     );
+}
+
+#[cfg(test)]
+mod export_tests {
+    use super::*;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    #[test]
+    fn s5_ir_sidecar_preserves_bytes_and_refuses_collision() {
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("clock before epoch")
+            .as_nanos();
+        let dir = env::temp_dir().join(format!("lead2b-ir-test-{}-{nonce}", std::process::id()));
+        let ir = "prime-field-m3-ir/v2\ninstance_id=synthetic\n";
+        let digest = "fac7eab8708f4f1908865a41044ab92e8b4c273c44105deb5925bf7666b8285b";
+        assert_eq!(sha256_hex(ir.as_bytes()), digest);
+
+        export_s5_ir(Some(&dir), 6, "synthetic", ir, digest);
+        assert!(!dir.exists(), "only s=5 is exported");
+        export_s5_ir(Some(&dir), 5, "synthetic", ir, digest);
+        let path = dir.join("synthetic.ir");
+        assert_eq!(fs::read(&path).expect("read sidecar"), ir.as_bytes());
+        export_s5_ir(Some(&dir), 5, "synthetic", ir, digest);
+        assert_eq!(fs::read(&path).expect("read repeated sidecar"), ir.as_bytes());
+
+        let changed = "prime-field-m3-ir/v2\ninstance_id=changed\n";
+        let changed_digest = sha256_hex(changed.as_bytes());
+        assert!(std::panic::catch_unwind(|| {
+            export_s5_ir(Some(&dir), 5, "synthetic", changed, &changed_digest);
+        })
+        .is_err());
+        assert_eq!(fs::read(&path).expect("read preserved sidecar"), ir.as_bytes());
+        fs::remove_dir_all(&dir).expect("remove test sidecar directory");
+    }
+
+    #[test]
+    fn archived_s5_ir_hashes_and_group_models_replay() {
+        let (curve, order, windows) =
+            generate_rung_curve_and_windows("lead2b-screen-20261120", 5);
+        let prepared = PreparedTwoWindow::prepare(curve, windows);
+        let cases = [
+            (
+                TargetClass::Planted,
+                "planted",
+                "1dd4ef93b48499871e822f38e693f7d4d18a8c5cf4942e9345d3d866f8705a36",
+                1,
+            ),
+            (
+                TargetClass::Natural,
+                "natural",
+                "701972399e5849cabebcb35df5538990e335038e32a068a9185cdb89e7f45216",
+                0,
+            ),
+            (
+                TargetClass::ExactUnsat,
+                "exact-unsat",
+                "53fa0069d6b5a4f5bee30f001904d31b7d96f05c76e6da3834fc29a935d1552f",
+                0,
+            ),
+        ];
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("clock before epoch")
+            .as_nanos();
+        let dir =
+            env::temp_dir().join(format!("lead2b-s5-fixtures-{}-{nonce}", std::process::id()));
+        let checked_in_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("fixtures/s5");
+        for (class, tag, expected_hash, expected_count) in cases {
+            let mut rng =
+                DeterministicRng::from_label(&format!("lead2b-screen-20261120:s=5:{tag}"));
+            let id = format!("lead2b-s5-{}", class.as_str());
+            let mut inst = generate_instance_for_class(id.clone(), 5, &prepared, class, &mut rng);
+            inst.group_order = order;
+            validate_instance(&inst, false).expect("valid archived instance");
+            let ir = canonical_ir(&inst);
+            let digest = canonical_ir_sha256(&inst);
+            assert_eq!(digest, expected_hash, "archived digest for {tag}");
+            export_s5_ir(Some(&dir), 5, &id, &ir, &digest);
+            let bytes = fs::read(dir.join(format!("{id}.ir"))).expect("read exported IR");
+            assert_eq!(bytes, ir.as_bytes(), "exact archived IR bytes for {tag}");
+            assert_eq!(sha256_hex(&bytes), expected_hash, "sidecar digest for {tag}");
+            if checked_in_dir.exists() {
+                assert_eq!(
+                    fs::read(checked_in_dir.join(format!("{id}.ir")))
+                        .expect("read checked-in IR"),
+                    bytes,
+                    "checked-in sidecar for {tag}"
+                );
+            }
+            let (models, _) = prepared.enumerate(inst.target, expected_count == 0);
+            assert_eq!(models.len(), expected_count, "group models for {tag}");
+        }
+        fs::remove_dir_all(&dir).expect("remove archived test sidecars");
+    }
 }
