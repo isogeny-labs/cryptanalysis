@@ -46,3 +46,28 @@ d=experiments/prime-field-auxiliary-ic/m31-subset-frontier
 The final output contains all three rows in the table. For the Lean replay,
 set `proof` to the absolute path of `Frontier.lean`, enter a Mathlib checkout
 with Lean 4.34.1 and run `lake env lean -DwarningAsError=true "$proof"`.
+
+## Point-negation orbit table
+
+For an x-membership query, a point and its negative share the same answer.
+The curve cubic has no field root, so each finite x in the sum table has
+exactly two signed points. For each coordinate pair i < j, enumerate Pᵢ + Pⱼ
+and Pᵢ − Pⱼ. For i = j, retain the double. The sign choices omitted from the
+outer loop give the negatives of these sums. The program checks equality of
+the complete projected baseline set with the orbit set, including the count
+499940 = 2 × 249970. It does not construct signed decomposition witnesses.
+
+Use the same input pipeline above, substituting orbit.gp for census.gp and
+384M for 256M. Initialization and the exact comparison precede timing.
+The six warm pairs alternate order on a shared ARM64 host. Timings cover
+enumeration, key packing, and sorting into a set. Baseline keys encode the
+full affine point, orbit keys encode x. Each column below is in milliseconds.
+
+| Pair | Baseline CPU | Orbit CPU | Baseline wall | Orbit wall |
+|---:|---:|---:|---:|---:|
+| 1 | 891 | 430 | 1851 | 614 |
+| 2 | 1060 | 465 | 2096 | 726 |
+| 3 | 993 | 445 | 2127 | 856 |
+| 4 | 1115 | 480 | 2478 | 1097 |
+| 5 | 1008 | 458 | 1395 | 597 |
+| 6 | 910 | 408 | 1073 | 477 |
