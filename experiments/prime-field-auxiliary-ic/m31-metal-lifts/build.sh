@@ -15,7 +15,7 @@ cd "$(dirname "$0")"
     else
       cat support.inc
     fi
-  elif [[ ${2:-} == stream || ${2:-} == alias ]]; then
+  elif [[ ${2:-} == stream || ${2:-} == alias || ${2:-} == field ]]; then
     sed '/^int main(/,$d' panel.inc
     cat "$2.inc"
   elif [[ ${2:-} == emit ]]; then
