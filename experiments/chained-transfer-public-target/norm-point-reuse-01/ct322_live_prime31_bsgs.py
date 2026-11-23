@@ -187,6 +187,7 @@ def benchmark(binary):
             "source": "existing ordinary crypto prime31 cofactor-one fixture",
             "p": curve["p"], "subgroup_order": curve["subgroup_prime"],
             "public_sha256": issued["public_sha256"],
+            "public_challenge": public,
             "native_processes": len(results),
             "correct_full_prime31_discrete_logs": len(results),
             "post_reveal_commitments_replayed": admitted["target_count"],
