@@ -70,6 +70,34 @@ class Curve:
         raise RuntimeError('No point found')
 
 
+def _layer_walk(curve, start, generator, count):
+    """Enumerate a power-of-two affine coset prefix in scalar order."""
+    points = [start]
+    stride = generator
+    p = curve.p
+    while len(points) < count:
+        u, v = stride
+        prefixes = []
+        product = 1
+        for x, _ in points:
+            prefixes.append(product)
+            product = product * (u-x) % p
+        # start lies outside the kernel, so no point equals ±stride.
+        assert product != 0
+        inverse = pow(product, -1, p)
+        translated = [None] * len(points)
+        for i in reversed(range(len(points))):
+            x, y = points[i]
+            slope = (v-y) * prefixes[i] * inverse % p
+            inverse = inverse * (u-x) % p
+            z = (slope*slope - curve.a2 - x - u) % p
+            translated[i] = z, (slope*(x-z)-y) % p
+        points.extend(translated)
+        if len(points) < count:
+            stride = curve.add(stride, stride)
+    return [x for x, _ in points], curve.add(points[-1], generator)
+
+
 def _append_reciprocals(xs, p):
     """Append the field inverses of the original entries in the same order."""
     prefixes = []
@@ -163,12 +191,15 @@ def chain(p, s, enumerate_all=False, root_limit=None):
     paired = p == 2**31-1 and checked_count == 2**s
     half_walk = paired and s >= 3
     walk_count = checked_count // 2 if half_walk else checked_count
-    for i in range(walk_count):
-        assert R is not None
-        if not paired:
-            assert eval_chain(R[0]) == 0
-        V.append(R[0])
-        R = E.add(R, G)
+    if half_walk and s >= 8:
+        V, R = _layer_walk(E, T, G, walk_count)
+    else:
+        for i in range(walk_count):
+            assert R is not None
+            if not paired:
+                assert eval_chain(R[0]) == 0
+            V.append(R[0])
+            R = E.add(R, G)
     if half_walk:
         # On y²=x³+x, translating by (0,0) sends x to its reciprocal.
         # The midpoint is T + half; the second half ends at T.
