@@ -108,4 +108,38 @@ theorem four_vector_image_bound {G : Type*} [DecidableEq G]
     (vs.image eval).card ≤ 6566785 :=
   (vector_image_bound 56 4 2 0 vs eval shape).trans_eq four_card
 
+/-- Per-column counts of positive and negative occurrences, before cancellation. -/
+abbrev Occurrences := List (ℕ × ℕ)
+
+def normalize (v : Occurrences) : List ℤ := v.map fun (a,b) => (a : ℤ) - b
+
+def terms (v : Occurrences) : ℕ := (v.map fun (a,b) => a+b).sum
+
+def cancelledPairs (v : Occurrences) : ℕ := (v.map fun (a,b) => min a b).sum
+
+theorem cancellation_identity (v : Occurrences) :
+    weight (normalize v) + 2 * cancelledPairs v = terms v := by
+  induction v with
+  | nil => rfl
+  | cons ab v ih =>
+    obtain ⟨a,b⟩ := ab
+    change ((a : ℤ) - b).natAbs + weight (normalize v) +
+      2 * (min a b + cancelledPairs v) = a+b + terms v
+    rcases le_total a b with h | h
+    · rw [Int.natAbs_natCast_sub_natCast_of_le h, min_eq_left h]
+      omega
+    · rw [Int.natAbs_natCast_sub_natCast_of_ge h, min_eq_right h]
+      omega
+
+theorem four_occurrence_image_bound {G : Type*} [DecidableEq G]
+    (rows : Finset Occurrences) (eval : List ℤ → G)
+    (shape : ∀ r ∈ rows, r.length = 56 ∧ terms r = 4) :
+    (rows.image (eval ∘ normalize)).card ≤ 6566785 := by
+  rw [← Finset.image_image]
+  apply four_vector_image_bound
+  intro v hv
+  obtain ⟨r, hr, rfl⟩ := Finset.mem_image.mp hv
+  obtain ⟨hl, ht⟩ := shape r hr
+  exact ⟨by simpa [normalize] using hl, by have := cancellation_identity r; omega⟩
+
 end SignedCapacity
