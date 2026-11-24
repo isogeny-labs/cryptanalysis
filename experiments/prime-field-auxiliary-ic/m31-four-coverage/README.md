@@ -685,3 +685,15 @@ The three archived v2_batch runs share the target and public fixture with their 
 | 2 | 11.667566 | 18.318452 | 636.93 | 4.916436 |
 
 For the counterfactual, hold time outside the loop fixed and replace L seconds in the loop by L/s seconds. The recorded loop seconds are 9.67651, 5.16008 and 11.6626. Add half a unit of the last printed place to each loop time, round the cold IC total down to the nanosecond and round the rho total up. ArchiveParity.lean proves that the residual for seed 0 exceeds rho by more than 1.5 ms even at zero future loop time. It proves strict losses for seed 1 through 350-fold loop acceleration and seed 2 through 870-fold. These are retrospective thresholds for one target and three runs. They include timing overhead and depend on preserving all costs outside the loop.
+
+### Signed integer smoothness on disjoint auxiliary fibers
+
+smooth-twist.py generates public 32-coordinate auxiliary orbits with PARI/GP, accepting the first 1024 full disjoint orbits per seed without filtering on the number of lifts. Seed 291164 excludes every coordinate accepted for seed 291163. For each nonzero right-hand side x³+2x+14 the Legendre symbol selects the base at x or the twist at −x. Every sampled right-hand side was nonzero. At each bound 256, 1024 and 4096 the two input bits say whether x and p−x, respectively, have all prime factors at most the bound. An independent replay using PARI factor and ellordinate reproduced every cell of smooth-twist.csv.
+
+| Bound | Correct on 32768 held-out points using the discovery-optimal rule | Best possible correct using the same two bits on holdout |
+|---:|---:|---:|
+| 256 | 16279 | 16514 |
+| 1024 | 16289 | 16534 |
+| 4096 | 16285 | 16504 |
+
+Always choosing the twist gives 16484 correct on holdout. The best rule chosen after seeing those labels gains at most 50 correct decisions over that constant. At bound 4096, retaining only smooth positive representatives keeps 2094 of 16284 valid base lifts. SignedSmoothScore.lean imports the CSV counts as numerals and kernel-checks the three training optima, their held-out scores and the ceilings over all sixteen deterministic rules at each individual bound. This tests integer smoothness on the sampled auxiliary orbits; joint multibound predictors and group-order smoothness are separate questions. Run python3 smooth-twist.py to reproduce the CSV and replay the Lean source with Lean 4.34.1 and mathlib.
