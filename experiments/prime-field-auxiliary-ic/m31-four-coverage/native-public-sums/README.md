@@ -31,3 +31,13 @@ The local Apple M4 Pro comparison in `sorted-table-times.csv` uses the same bina
 The default field multiplication adds the low 31 bits of a 64-bit product to the high bits and conditionally subtracts the modulus. The chord formula also folds the slope square and the two x-coordinate subtractions together. The input coordinates must be canonical field elements. The product and accumulator bounds and the resulting abscissa identity are proved in the parent directory's `WordReduction.lean`.
 
 Compile `census.cpp` with `-DM31_BASELINE_REMAINDER` for the original remainder and separate chord subtractions, or `-DM31_SEPARATE_CHORD` to use the Mersenne product fold alone. In `reduction-times.csv`, `remainder` denotes the original control, `fold` uses the product fold alone, and `fused` denotes the default. The comparison uses paired-512 generation, radix sort and multiset output. Each fixture runs every permutation of the three arms six times, in fresh processes. The fixtures and round order are interleaved, and every sorted output is checked against the fixture's independent digest.
+
+## Interleaved batch products
+
+The `paired-512-lanes4` arm distributes each batch's denominators over four running products. A two-level multiplication tree obtains all four reciprocals with one field inversion, including for partial batches. The reverse pass visits requests in the original order. The `paired-512` arm uses one running product. Both arms have the same ordinary-chord precondition.
+
+```sh
+/tmp/m31-public-census paired-512-lanes4 /tmp/m31-public-x.bin radix < basis.txt
+```
+
+In `lane-times.csv`, the frozen binary is built from commit `529249a9a`. The current binary contains both lane counts. Each fixture uses 36 fresh-process rounds, with each of the six arm orders repeated six times and the fixture rounds shuffled together. Generation and sorted-table times are in milliseconds. Each output was checked against its independent fixture digest. The algebra for partitioning products and reversing the tree is in the parent directory's `PairInversion.lean`.

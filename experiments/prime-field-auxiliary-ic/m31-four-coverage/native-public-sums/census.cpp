@@ -43,7 +43,7 @@ Point twice(Point a){return fromSlope(a,a,mul(add(mul(3,mul(a.x,a.x)),2),inv(add
 struct Request{Point a,b;unsigned next,weight;};
 struct State{Point pt;unsigned next;};
 using Clock=std::chrono::steady_clock;
-template<unsigned Width, bool PairedSigns = false>
+template<unsigned Width, bool PairedSigns = false, unsigned Lanes = 1>
 std::vector<W> census(const std::array<Point,17>& basis){
     std::array<std::array<Point,5>,17> multiples{};
     std::array<std::vector<State>,4> states;
@@ -59,14 +59,30 @@ std::vector<W> census(const std::array<Point,17>& basis){
     auto flush=[&](){
         if(!used)return;
         std::array<W,Width> before,delta;
-        W prod=1;
-        for(unsigned k=0;k<used;++k){
-            auto r=batch[k];before[k]=prod;delta[k]=sub(r.a.x,r.b.x);
-            prod=mul(prod,delta[k]);
+        static_assert(Lanes == 1 || Lanes == 4);
+        std::array<W, Lanes> products;
+        products.fill(1);
+        for (unsigned k = 0; k < used; ++k) {
+            W& product = products[k % Lanes];
+            before[k] = product;
+            delta[k] = sub(batch[k].a.x, batch[k].b.x);
+            product = mul(product, delta[k]);
         }
-        W reciprocal=inv(prod);
+        std::array<W, Lanes> reciprocals;
+        if constexpr (Lanes == 1) {
+            reciprocals[0] = inv(products[0]);
+        } else {
+            W left = mul(products[0], products[1]);
+            W right = mul(products[2], products[3]);
+            W rootInverse = inv(mul(left, right));
+            W leftInverse = mul(right, rootInverse);
+            W rightInverse = mul(left, rootInverse);
+            reciprocals = {mul(products[1], leftInverse), mul(products[0], leftInverse),
+                           mul(products[3], rightInverse), mul(products[2], rightInverse)};
+        }
         for(unsigned k=used;k-->0;){
             const Request& r = batch[k];
+            W& reciprocal = reciprocals[k % Lanes];
             W inverseDelta = mul(before[k], reciprocal);
             reciprocal = mul(reciprocal, delta[k]);
             auto emit = [&](W numerator) {
@@ -128,9 +144,11 @@ int main(int argc,char**argv){
     }
     int arm=std::atoi(argv[1]);
     bool paired = std::string(argv[1]) == "paired-512";
+    bool pairedFour = std::string(argv[1]) == "paired-512-lanes4";
     auto start=Clock::now();
     std::vector<W> xs;
-    if (paired) xs = census<512, true>(basis);
+    if (pairedFour) xs = census<512, true, 4>(basis);
+    else if (paired) xs = census<512, true>(basis);
     else switch (arm) {
         case 1: xs = census<1>(basis); break;
         case 32: xs = census<32>(basis); break;
