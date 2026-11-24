@@ -55,7 +55,7 @@ private def finite : E.Point → Bool
 private theorem kernel_killed : (1024 : Nat) • G = 0 := by
   change (2^10 : Nat) • G = 0
   rw [← twicePow_eq]
-  have h : finite (twicePow G 10) = false := by native_decide
+  have h : finite (twicePow G 10) = false := by decide +kernel
   cases he : twicePow G 10 with
   | zero => rfl
   | some _ => simp [he,finite] at h
@@ -68,13 +68,13 @@ private theorem survives (a : E.Point) (h : finite (twicePow a 10) = true) :
   exact Bool.noConfusion h
 
 private theorem coset_survives : (1024 : Nat) • T ≠ 0 :=
-  survives T (by native_decide)
+  survives T (by decide +kernel)
 
 theorem coset_finite (i : Nat) : T + i • G ≠ 0 := by
   simpa using (separated coset_survives kernel_killed i 0).1
 
 theorem shift_finite (k : Fin 10) : (2^(k:Nat) : Nat) • G ≠ 0 := by
-  have allStages : ∀ j : Fin 10, finite (twicePow G j.val) = true := by native_decide
+  have allStages : ∀ j : Fin 10, finite (twicePow G j.val) = true := by decide +kernel
   have h := allStages k
   rw [← twicePow_eq]
   intro he
@@ -88,5 +88,30 @@ theorem fixture_chord {x y u v : F} (hp : E.Nonsingular x y) (hq : E.Nonsingular
   have distinct := distinct_x hp hq (by rwa [p,q]) (by rwa [p,q])
   exact sub_ne_zero.mpr distinct.symm
 
+theorem generator_order : addOrderOf G = 1024 :=
+  addOrderOf_eq_prime_pow (p := 2) (n := 9) (shift_finite ⟨9, by decide⟩) kernel_killed
+
+/-- The two signs cannot alias different representatives in the frozen prefix. -/
+theorem coset_distinct_x {x y u v : F} (hp : E.Nonsingular x y) (hq : E.Nonsingular u v)
+    (i j : Fin 1024) (hne : i ≠ j)
+    (p : Point.some hp = T + i.val • G) (q : Point.some hq = T + j.val • G) : x ≠ u := by
+  apply distinct_x hp hq
+  · rw [p,q]
+    intro h
+    have congr := nsmul_eq_nsmul_iff_modEq.mp (add_left_cancel h)
+    rw [generator_order] at congr
+    change i.val % 1024 = j.val % 1024 at congr
+    rw [Nat.mod_eq_of_lt i.isLt, Nat.mod_eq_of_lt j.isLt] at congr
+    exact hne (Fin.ext congr)
+  · rw [p,q]
+    intro h
+    have kill (k : Nat) : (1024 : Nat) • (k • G) = 0 := by rw [smul_comm, kernel_killed, nsmul_zero]
+    have eq := congrArg ((1024 : Nat) • ·) h
+    simp only [nsmul_add, kill, add_zero, smul_neg] at eq
+    have nz : (1024 : Nat) • (T+T) ≠ 0 := survives (T+T) (by decide +kernel)
+    exact nz (by rw [nsmul_add, ← eq_neg_iff_add_eq_zero]; exact eq)
+
+#print axioms coset_distinct_x
+#print axioms shift_finite
 #print axioms fixture_chord
 end M31CosetChords
