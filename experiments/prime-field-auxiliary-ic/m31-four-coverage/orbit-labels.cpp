@@ -122,10 +122,24 @@ template<bool simplified,bool use_inverse=false> Labels homogeneous(const Point&
     }
     return labels;
 }
+Labels permuted(Point q,Point generator) {
+    unsigned stride=generator_stride(generator);
+    Labels bits=homogeneous<false>(q,fixed);
+    uint8x16x2_t table={{vld1q_u8(bits.data()),vld1q_u8(bits.data()+16)}};
+    const uint8x16_t indices={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+    // For odd stride, the upper sixteen indices toggle bit four.
+    auto lo=vandq_u8(vmulq_u8(indices,vdupq_n_u8(stride)),vdupq_n_u8(31));
+    Labels output;
+    vst1q_u8(output.data(),vqtbl2q_u8(table,lo));
+    vst1q_u8(output.data()+16,vqtbl2q_u8(table,veorq_u8(lo,vdupq_n_u8(16))));
+    return output;
+}
+
 }
 
 int main(int argc,char** argv) {
-    bool stream=argc==4 && std::string(argv[3])=="shift-stream";
+    bool permute=argc==4 && std::string(argv[3])=="permute-stream";
+    bool stream=argc==4 && (permute || std::string(argv[3])=="shift-stream");
     bool shifts_test=argc==5 && std::string(argv[3])=="shifts";
     bool single=argc==5 && std::string(argv[3])=="single";
     if(argc!=4 && !single && !shifts_test) return 1;
@@ -161,6 +175,8 @@ int main(int argc,char** argv) {
                 Labels expected;
                 for(unsigned k=0;k<32;++k) expected[k]=row.expected[(j+(reverse?32-k:k))%32];
                 unsigned g=j%16,stride=2*g+1;
+                auto via_permutation=permuted(pt,{fixed.x[stride],fixed.y[stride]});
+                for(unsigned k=0;k<32;++k) if(via_permutation[k]!=expected[k*stride%32]) return 9;
                 auto rotated=raw_labels(pt,generators[g]);
                 for(unsigned k=0;k<32;++k) if(rotated[k]!=expected[k*stride%32]) return 9;
                 for(auto fn:std::array{affine,homogeneous<false>,homogeneous<true>,homogeneous<false,true>})
@@ -179,10 +195,11 @@ int main(int argc,char** argv) {
             generators.push_back({fixed.x[k],fixed.y[k]});
         }
         for(unsigned pos=0;pos<2;++pos) {
-            auto method=3+(seed+pos)%2;
+            auto method=(permute?4:3)+(seed+pos)%2;
             auto start=std::chrono::steady_clock::now();
             for(size_t i=0;i<rows.size();++i) {
                 if(method==3) output[i]=raw_labels(rows[i].point,RawShifts(generators[i]));
+                else if(method==5) output[i]=permuted(rows[i].point,generators[i]);
                 else output[i]=homogeneous<false>(rows[i].point,reindex(generators[i]));
             }
             auto ns=std::chrono::duration<double,std::nano>(std::chrono::steady_clock::now()-start);
@@ -196,12 +213,20 @@ int main(int argc,char** argv) {
     }
     if(shifts_test) {
         unsigned method=std::stoul(argv[4]);
-        if(method>=5) return 1;
+        if(method>=6) return 1;
         unsigned stride=2*(seed%16)+1;
         Point generator={fixed.x[stride],fixed.y[stride]};
         asm volatile("" : "+r"(generator.x), "+r"(generator.y));
         const Point pt=rows[0].point;
         auto begin=std::chrono::steady_clock::now();
+        if(method==5) {
+            Labels result=permuted(pt,generator);
+            asm volatile("" : : "r"(result.data()) : "memory");
+            auto elapsed=std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now()-begin);
+            for(unsigned j=0;j<32;++j) if(result[j]!=rows[0].expected[j*stride%32]) return 8;
+            std::cout<<method<<','<<elapsed.count()<<'\n';
+            return 0;
+        }
         if(method==3) {
             RawShifts shifts(generator);
             Labels result=raw_labels(pt,shifts);

@@ -1,3 +1,4 @@
+import Std.Tactic.BVDecide
 import OrbitLabels
 import Mathlib.GroupTheory.OrderOfElement
 
@@ -68,5 +69,16 @@ theorem reciprocal_step (acc d : F) (hp : acc≠0) (hd : d≠0) :
 theorem reindex {G : Type*} [AddCommGroup G] (g : G) (order : addOrderOf g=32)
     (stride j : Nat) : ((j*stride)%32) • g = j • (stride • g) := by
   rw [← order, mod_addOrderOf_nsmul, mul_smul]
+
+/-- Reordering the output preserves any pointwise public label. -/
+theorem label_reindex {G L : Type*} [AddCommGroup G] (label : G → L)
+    (q g : G) (order : addOrderOf g=32) (stride j : Nat) :
+    label (q+((j*stride)%32) • g) = label (q+j • (stride • g)) := by
+  rw [reindex g order]
+
+/-- The byte multiply wraps at 256; its low five bits still index the 32-byte table.
+Adding 16 to the lane toggles bit four of the index for every odd stride. -/
+theorem upper_byte_index (i stride : BitVec 8) (odd : stride &&& 1 = 1) :
+    (((i+16)*stride) &&& 31) = (((i*stride) &&& 31) ^^^ 16) := by bv_decide
 
 end M31OrbitShiftBuild

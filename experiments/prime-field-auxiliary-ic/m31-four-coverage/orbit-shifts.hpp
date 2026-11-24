@@ -105,10 +105,15 @@ Labels raw_labels(Point pt,const RawShifts& shifts) {
     return labels;
 }
 
-Shifts reindex(Point generator) {
+unsigned generator_stride(Point generator) {
     unsigned stride=1;
     while(stride<32 && (fixed.x[stride]!=generator.x || fixed.y[stride]!=generator.y)) stride+=2;
     if(stride==32) std::abort();
+    return stride;
+}
+
+Shifts reindex(Point generator) {
+    unsigned stride=generator_stride(generator);
     Shifts result({},{});
     for(unsigned j=1;j<32;++j) {
         unsigned index=(j*stride)%32;
