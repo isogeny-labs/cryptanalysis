@@ -46,10 +46,22 @@ assert all(pow(p, k // q, r) != 1 for q in factors if k % q == 0)
 
 The last two assertions establish `ord_r(p) = k`, using the prime factorization of `k`. This is a producer arithmetic check, not independent PCC verification. [pcc:unverified]
 
+## The preimage torsor retains the point, but needs orientation
+
+There is an exact point-dependent lift, even though `phi` annihilates rational points. Since `phi=1-pi` is a separable isogeny, every `Q in E(F_p)` has geometric preimages. Choose any `T` with `phi(T)=Q`. Then `pi(T)=T-Q`, and because `Q` is Frobenius-fixed, induction gives
+
+```text
+pi^m(T) = T - [m]Q.
+```
+
+When `Q` has order `r`, these are `r` distinct points for `0 <= m < r`, and `pi^r(T)=T`. Thus every such `T` has field of definition **exactly** `F_(p^r)`, and Frobenius acts on the preimage fiber as one `r`-cycle. The same unlabelled cycle occurs for every nonzero rational `Q`; its cycle type carries no scalar label. An explicit extension-field representation of a preimage has degree `r`, while a symbolic description by the equation `phi(T)=Q` does not supply an orientation or a cheap comparison algorithm. [pcc:unverified]
+
+Equivalently, the connecting class of `Q` in `H^1(F_p, ker(phi))` is represented at Frobenius by `pi(T)-T=-Q`. Under the identification `ker(phi)=E(F_p)=<G>` and `Q=[d]G`, that value is `[-d]G`. Writing it as the integer `-d mod r` requires the unknown coordinate relative to `G`. This is a **point-dependent relation containing `d`**, but its direct cohomological representation has not reduced the computation. The earlier [prime-division Frobenius-torsor proposal](https://github.com/isogeny-labs/crypto-autoresearcher/blob/main/ledger/proposals/IDEA-20260906-a3e96c.yaml) studies the same orientation issue for a different division map; this paragraph specializes it to `1-pi` and gives the exact field degree. The [formalized `1-pi` kernel and degree](https://taucetiproject.org/docs/TauCeti/AlgebraicGeometry/EllipticCurve/Isogeny/OneSubFrobenius/Basic.html) agree with the elementary identities above. [pcc:unverified]
+
 ## Cost and scope gate
 
 This is a point-sensitive ideal of norm `r`, but it does not produce a factor-base relation containing `d`: one direction annihilates all rational points and the dual is known scalar multiplication on them. Constructing a kernel polynomial or an explicit degree-`r` rational map would add work without changing those restrictions. The exact P-192 embedding degree `ord_r(p) = (r - 1)/10` also makes direct access to the complementary torsion line an extension-field problem of 189-bit degree. The earlier factorization is in `crypto:research/notes/cm-isogeny/RESEARCH_NIST_CYCLOTOMIC_POINT_HEIGHTS.md`; this screen independently checked its product, factor primality, and the order test. [pcc:unverified]
 
 This gate applies to `1 - pi` and its dual on a prime-order rational group. It is not a lower bound on all coordinate-dependent isogeny constructions. A successor must specify a target-dependent invariant that survives transport, then charge its evaluation, relation yield, and full single-target recovery against rho. [pcc:unverified]
 
-Producer claim: `PCC-20261124-f14459` (unverified). [pcc:unverified]
+Producer claims: `PCC-20261124-f14459` for the isogeny restriction and `PCC-20261124-f773c1` for the preimage orbit (both unverified). [pcc:unverified]
