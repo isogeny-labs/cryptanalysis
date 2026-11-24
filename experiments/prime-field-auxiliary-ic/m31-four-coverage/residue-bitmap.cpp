@@ -4,6 +4,7 @@
 #include <chrono>
 #include <cstdio>
 #include <iostream>
+#include <numeric>
 #include <random>
 #include <vector>
 
@@ -190,8 +191,42 @@ uint32_t coordinate(uint32_t i) {
     return i==p?0:i;
 }
 
+#ifdef M31_COORDINATE_CACHE
+// Cache a declared working set of 1024 batches. An absent key recomputes the batch.
+struct CoordinateCache {
+    static constexpr unsigned capacity=1u<<17;
+    std::vector<uint32_t> slots=std::vector<uint32_t>(capacity,p);
+    unsigned probe(uint32_t key) const {
+        unsigned i=(key*2654435761u)>>(32-17);
+        while ((slots[i]&p)!=key && slots[i]!=p) i=(i+1)&(capacity-1);
+        return i;
+    }
+    explicit CoordinateCache(const std::vector<Batch>& inputs) {
+        if(inputs.size()>capacity/64) std::abort();
+        for(const auto& batch:inputs) {
+            auto labels=classify<3>(batch);
+            for(unsigned j=0;j<32;++j)
+                slots[probe(batch[j])]=batch[j]|(uint32_t(labels[j])<<31);
+        }
+    }
+    Labels lookup(const Batch& batch) const {
+        Labels labels{};
+        for(unsigned j=0;j<32;++j) {
+            uint32_t word=slots[probe(batch[j])];
+            if(word==p) return classify<3>(batch);
+            labels[j]=word>>31;
+        }
+        return labels;
+    }
+};
+#endif
+
 int main(int argc,char** argv) {
+#ifdef M31_COORDINATE_CACHE
+    if(argc!=2 && argc!=4) return 1;
+#else
     if(argc!=2) return 1;
+#endif
 #if defined(M31_ROTATE_TABLE) || defined(M31_TRIPLE_TABLE) || defined(M31_QUAD_TABLE)
     const std::string command=argv[1];
     if(command=="--check-build") {
@@ -234,6 +269,13 @@ int main(int argc,char** argv) {
         return 0;
     }
 #endif
+#if defined(M31_REGISTER_BIC) && !defined(M31_COMPARE_FOLD)
+    constexpr int reference_arm=3;
+    constexpr auto reference_name="neon-register";
+#else
+    constexpr int reference_arm=1;
+    constexpr auto reference_name="neon";
+#endif
     unsigned seed=std::stoul(argv[1]);
     std::vector<Batch> hot(1024);
     std::vector<Labels> oracle(hot.size());
@@ -243,11 +285,47 @@ int main(int argc,char** argv) {
         hot[i][j]=x;
         oracle[i][j]=b;
     }
+#ifdef M31_COORDINATE_CACHE
+    if(argc==4) {
+        const std::string arm=argv[2];
+        const unsigned passes=std::stoul(argv[3]);
+        if((arm!="cache" && arm!="arithmetic") || !passes) return 2;
+        std::vector<unsigned> order(hot.size());
+        std::iota(order.begin(),order.end(),0);
+        std::mt19937 shuffle(seed);
+        std::shuffle(order.begin(),order.end(),shuffle);
+        std::vector<Labels> output(hot.size());
+        auto consume=[&](auto classify_batch) {
+            for(unsigned pass=0;pass<passes;++pass) {
+                for(auto i:order) output[i]=classify_batch(hot[i]);
+                asm volatile("" : : "r"(output.data()) : "memory");
+            }
+        };
+        auto begin=Clock::now();
+        if(arm=="cache") {
+            CoordinateCache cache(hot);
+            consume([&](const Batch& x){return cache.lookup(x);});
+        } else {
+            consume([](const Batch& x){return classify<3>(x);});
+        }
+        auto elapsed=std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now()-begin);
+        if(output!=oracle) return 3;
+        std::cout<<elapsed.count()<<"\n";
+        return 0;
+    }
+#endif
     auto start=Clock::now();
 #ifdef M31_COMPARE_FOLD
     constexpr auto candidate_name="complement";
     for(size_t i=0;i<hot.size();++i)
         if(classify<3>(hot[i])!=oracle[i]) return 3;
+#elif defined(M31_COORDINATE_CACHE)
+    constexpr auto candidate_name="coordinate-cache";
+    CoordinateCache cache(hot);
+    double build=std::chrono::duration<double>(Clock::now()-start).count();
+    std::cerr<<"build_seconds,"<<build<<"\n";
+    for(size_t i=0;i<hot.size();++i)
+        if(cache.lookup(hot[i])!=oracle[i]) return 3;
 #else
     constexpr auto candidate_name="bitmap";
     Table table;
@@ -274,16 +352,18 @@ int main(int argc,char** argv) {
                 if(cached) {
 #ifdef M31_COMPARE_FOLD
                     for(size_t i=0;i<n;++i) scalar[i]=classify<3>(inputs[i]);
+#elif defined(M31_COORDINATE_CACHE)
+                    for(size_t i=0;i<n;++i) scalar[i]=cache.lookup(inputs[i]);
 #else
                     for(size_t i=0;i<n;++i) for(unsigned j=0;j<32;++j)
                         scalar[i][j]=table.square(rhs(inputs[i][j]));
 #endif
                 } else {
-                    for(size_t i=0;i<n;++i) neon[i]=classify<1>(inputs[i]);
+                    for(size_t i=0;i<n;++i) neon[i]=classify<reference_arm>(inputs[i]);
                 }
                 double ns=std::chrono::duration<double,std::nano>(Clock::now()-start).count();
                 if(round>=2) std::printf("%s,%u,%s,%.4f\n",fresh?"fresh":"hot",round-2,
-                    cached?candidate_name:"neon",ns/(32*n));
+                    cached?candidate_name:reference_name,ns/(32*n));
             }
             if(scalar!=neon) return 5;
         }

@@ -851,3 +851,27 @@ The seconds are process medians over eight paired builds per layout on the Apple
 Use the preceding C++ native flags, choose a compressed table layout, and pass --build-vector, --build-scalar or --check-build without stdin. Define M31_VECTOR_BUILD to select vector construction for ordinary labeled-coordinate runs. ResidueBuild.lean checks root-grid coverage and uniqueness, acceptance masks and the carry-free horizontal sum. VectorCubic.lean contains the exact M31 product-fold theorem and MaskEmit.lean contains the set-bit traversal theorem. The elapsed times in residue-build.csv concern setup only.
 
 A separate packed-table variant filters forbidden four-bit windows in the vector lanes before issuing scalar rank lookups. ResidueBuild.lean proves the combined window predicate splits exactly into the three nine-bit predicates. The extra filter won only 2/8 paired builds, with median times of 0.760 s filtered and 0.750 s unfiltered. It remains a separate M31_VECTOR_RUN_FILTER option. A packed vector build with this option completed the --exhaustive check against direct square membership for all 2147483647 field values. A separate AddressSanitizer and UndefinedBehaviorSanitizer build passed the full array comparison. The extra-filter timing records are in residue-build-filter.csv.
+
+### Cold crossover for public coordinate labels
+
+The 128 MiB direct residue table, the 16 MiB three-run table and the 9.58 MiB packed table each faced the register-BIC NEON classifier inside the same process. Seeds 221–226 used all six binary orders and alternated the two input panels. The compressed layouts used vector construction. The direct table took a median 4.045 s to build. Its repeated lookups took 2.34 ns per coordinate against 2.98 ns for arithmetic. Dividing each process's build time by its median per-coordinate saving gives modeled crossover counts of 5.19–9.54 billion repeated coordinates. This extrapolates the measured rates. The direct table lost every fresh-stream process median. Both compressed tables lost every process median on both streams. Raw measurements are in residue-crossover.csv.
+
+The coordinate-cache arm takes 1024 public batches (32768 coordinate slots) as its declared working set. It computes the labels itself with register-BIC NEON, then inserts full 31-bit coordinates and their labels into 131072 four-byte slots (512 KiB payload). A multiplicative hash chooses the initial slot. Linear probing resolves collisions, and the unused field word p identifies empty slots. A batch with any absent coordinate uses the arithmetic classifier for all 32 entries. The cache is read-only after setup. Across 12 seeds it took a median 208 µs to prepare. Repeated coordinates took 1.38 ns each against 2.92 ns for arithmetic. Fresh inputs took 3.07 ns against 2.98 ns. Timings cover the cubic and label output. The field-wide comparison and working-set comparison share seeds 221–226 but use separate processes.
+
+The charged test allocates the hash table, computes its labels, serves every requested pass, and destroys the hash table inside the timer. Both arms receive the same shuffled order of complete public batches, fixed across passes in a process. Input parsing, output buffer allocation, independent label checks and process launch are outside the timer. Each measurement uses a new process. All reported outputs matched the panel labels. Each pass covers the same 32768 coordinate slots.
+
+| Passes | Arithmetic µs | Cache µs | Median paired arithmetic/cache | Cache wins |
+|---|---:|---:|---:|---:|
+| 1 | 111.5 | 280.6 | 0.400 | 0/12 |
+| 2 | 213.4 | 346.7 | 0.615 | 0/12 |
+| 4 | 414.7 | 440.8 | 0.941 | 1/12 |
+| 5 | 520.0 | 470.8 | 1.103 | 12/12 |
+| 6 | 631.4 | 514.1 | 1.226 | 12/12 |
+| 7 | 726.6 | 558.6 | 1.319 | 12/12 |
+| 8 | 834.9 | 590.8 | 1.421 | 12/12 |
+| 16 | 1670.7 | 893.6 | 1.879 | 12/12 |
+| 32 | 3306.5 | 1477.3 | 2.249 | 12/12 |
+
+These measurements quantify reuse of an explicitly known working set. To replay, add -DM31_REGISTER_BIC to the existing native benchmark flags. Select the usual bitmap layout or define -DM31_COORDINATE_CACHE. A seed argument alone runs the hot/fresh streams. For the charged hash test append cache or arithmetic and a positive pass count. The panel is 291163 plus seed parity. Seeds 241–252 cover counts 1, 2, 4, 8, 16 and 32. The follow-up uses 261–272 for 5, 6 and 7. See working-set-crossover.csv and working-set-charged.csv for individual measurements and launch order in the charged test.
+
+CoordinateCache.lean proves the packed entry preserves its key and label and excludes the sentinel, the probe sequence has distinct positions within one full traversal, and returning a fully matching batch or recomputing a missing batch yields the reference labels given sound stored entries. Lean 4.34.1 replayed with warnings as errors. A separate sanitizer build passed the repeated and fresh comparisons.
