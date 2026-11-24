@@ -740,3 +740,19 @@ For nonzero a in M31 exactly one of a and −a is a square. Store one bit per lo
 Compile residue-bitmap.cpp with Apple Clang 21.0.0 using -O3 -mcpu=native -std=c++17. Supply the seed-291164 label stream from smooth-twist.py on stdin and pass each shuffle seed 111–114 as the sole argument. The hot stream uses the same 32768 public coordinates each traversal. Fresh rounds use 4194304 generated inputs each, transforming successive disjoint counter ranges via a 31-bit permutation and mapping the excluded field word p to zero. Different coordinates can still address the same residue. Each process discards two warmups and retains six matched rounds per stream. Both arms evaluate the curve cubic and materialize the full output. Every output matches the shared NEON kernel and all labeled fixture inputs receive an independent check.
 
 On the Apple M4 Pro construction took 4.05–4.08 s. Across the four process medians fresh bitmap lookups took 8.44–8.57 ns/coordinate versus 3.23–3.33 for arithmetic. On the hot repeat stream the bitmap won in three processes. Their rates imply 4.03–4.45 billion repeated queries to recover build time if the observed savings persist. In the fourth process the hot bitmap was slower even before charging construction. These crossover estimates are derived. The experiment measures label throughput, with no collector runtime attribution. Raw observations and per-process build times are in residue-bitmap.csv.
+
+### Direct-address residue lookup using rotating 31-bit words
+
+Multiplication by two rotates a canonical M31 word left by one bit. Two is a field square (65536² = 2 mod p) and −1 is a nonsquare. Multiplication by −2 therefore flips the character at each step. ResidueOrbits.lean proves that −2 has order 62 and its subgroup has index 34636833 in the units. One bit per orbit would occupy 4329605 bytes rounded up; this figure excludes any mechanism to find an orbit's dense index.
+
+The implemented table occupies 32 MiB and supports direct lookup. For each nonzero canonical input, locate a bit equal to its preceding cyclic neighbor and different from its following neighbor. Optionally complement the word, then rotate this pattern so the high two bits are zero and the low bit is one. The new value is an odd representative below 2²⁹. Dropping the low bit gives the 28-bit table address. Complement the retrieved bit exactly when the word was complemented. Zero has a separate return. The table builder enumerates lower-half roots and marks only squares meeting the address condition. Lean checks the existence of a marked bit, the rotated bit pattern at all 31 choices, the arithmetic rotation identity, and the quadratic-character transformation. The bit-vector checks use bv_decide.
+
+Build residue-bitmap.cpp with -DM31_ROTATE_TABLE for 32 MiB or without it for 128 MiB. The matched protocol used input panel 291164 and shuffle seeds 121–124, alternating which binary ran first. Every timed output matched the NEON implementation. A separate rotated build passed AddressSanitizer and UndefinedBehaviorSanitizer at seed 125.
+
+| Method | Build seconds | Repeated coordinates, ns each | Fresh coordinates, ns each |
+|---|---:|---:|---:|
+| 128 MiB table | 4.07–4.31 | 2.18–2.28 | 8.41–8.59 |
+| 32 MiB rotation table | 2.13–2.21 | 3.25–3.49 | 7.90–8.33 |
+| NEON arithmetic in the rotation runs | none | 3.16–3.47 | 3.29–3.34 |
+
+Ranges summarize four process medians for lookup and four individual builds. The 32 MiB table reduced build time and narrowly improved fresh lookup in each pair. Arithmetic remained faster on fresh inputs. The 4.13 MiB orbit-label count is a distinct mathematical storage result; this experiment measures the directly addressed table. Raw readings are in residue-rotation.csv.

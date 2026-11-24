@@ -10,6 +10,26 @@
 using Clock = std::chrono::steady_clock;
 struct Table {
     std::vector<uint64_t> words;
+#ifdef M31_ROTATE_TABLE
+    Table() : words(size_t(1)<<22) {
+        for(uint64_t y=1;y<=p/2;++y) {
+            uint32_t r=y*y%p;
+            if((r>>29)==0 && (r&1)) words[r>>7] |= uint64_t(1)<<((r>>1)&63);
+        }
+    }
+    bool square(uint32_t a) const {
+        if(a==0) return true;
+        uint32_t left=((a<<1)&p)|(a>>30);
+        uint32_t right=(a>>1)|((a&1)<<30);
+        uint32_t marks=(a^right)&~(a^left);
+        unsigned bit=__builtin_ctz(marks);
+        bool negate=(a>>bit)&1;
+        uint32_t v=negate?(p^a):a;
+        unsigned shift=bit+1;
+        uint32_t rotated=(v>>shift)|((v<<(31-shift))&p);
+        return bool((words[rotated>>7]>>((rotated>>1)&63))&1) != negate;
+    }
+#else
     Table() : words((size_t(p)/2+64)/64) {
         words[0]=1;
         for(uint64_t y=1;y<=p/2;++y) {
@@ -22,6 +42,7 @@ struct Table {
         uint32_t k=negate?p-a:a;
         return bool((words[k>>6]>>(k&63))&1) != negate;
     }
+#endif
 };
 
 // Permute 31-bit inputs. The single excluded field word p maps to zero below.
