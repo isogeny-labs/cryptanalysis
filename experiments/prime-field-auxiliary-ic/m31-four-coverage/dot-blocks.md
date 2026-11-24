@@ -49,3 +49,9 @@ Each pass pairs row r of A with row (r + 37k) modulo 4096 of B for pass index k.
 | 128 | 3 | 4 | 1.066 |
 
 At 17 terms, packing won in three of six seeds at ten uses and five of six at twelve uses. At 64 terms in the initial panel, one use cost median 11.13 ns/dot wide and 18.56 ns/dot with packing, while sixteen uses cost 9.38 and 5.87 ns/dot respectively. Actual caller reuse, allocation of new scratch, and host memory behavior can shift these crossovers.
+
+## Archived collector dispatch
+
+At revision 9a1d8a6cf4158197c06b0782f833d4626931ebff the benchmark driver's run_one selects chain_batch for v2_batch and supplies five argv entries. In native_v2.cpp this selects auxiliary for the main loop and leaves the optional validation branch disabled. Both call sites of dot are inside explicitBase. Consequently the recorded source and invocation imply zero calls to dot for seeds 0, 1 and 2. Changing only the arithmetic inside that helper saves zero executed dot-product operations in these runs. The packing crossover applies to workloads that actually evaluate these dot products.
+
+All three audited records give source_sha256 equal to the native_v2.cpp digest 52c20890f4c920742e339c5c66e04b76b819604d913160ee8b63967e6e0aa341. The driver computes this digest from source bytes and can reuse an executable based on modification time. The pinned optimized snapshot omits native31. This audit establishes source-level reachability. Executable identity and historical hardware counters remain unverified.
