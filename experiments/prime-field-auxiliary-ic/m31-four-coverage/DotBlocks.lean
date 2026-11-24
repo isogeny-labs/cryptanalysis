@@ -45,4 +45,16 @@ theorem sum_fits (blocks : List Nat) (size : blocks.length ≤ 2^30)
   unfold radix at *
   omega
 
+-- Truncating a canonical 64-bit input to its low 32 bits is exact.
+theorem narrow_exact (x : BitVec 64) (h : x.toNat < p) :
+    (x.setWidth 32).toNat = x.toNat := by
+  unfold p at h
+  simp only [BitVec.toNat_setWidth, Nat.mod_eq_of_lt (show x.toNat < 2^32 by omega)]
+
+theorem tail_fits (r a b : Nat) (hr : r < p) (ha : a < p) (hb : b < p) :
+    r + a*b < 2^64 := by
+  have bound := Nat.mul_le_mul (show a ≤ p-1 by omega) (show b ≤ p-1 by omega)
+  unfold p at *
+  omega
+
 end M31DotBlocks
