@@ -177,3 +177,40 @@ through five single-seed points.
 
 Next: repeat each cell >= 5 times (attempt counts vary), and bracket the
 threshold with q_bits = 40, 44 at fixed p = 56 bits.
+
+## L26 — the "threshold" was a probe artifact; correction (2026-11-24)
+
+L16 concluded that the engine's cost "jumps somewhere between 36 and 47 bits"
+on the strength of a 48-bit safe prime that did not finish in 9 minutes. **That
+conclusion is withdrawn.**
+
+Two measurements replace it.
+
+**1. Fixed p = 56 bits, vary q_bits, 5 repeats per cell (`run_l26.py`):**
+
+| q_bits | q | median wall | min–max | median linalg | Lanczos iters |
+|---:|---:|---:|---|---:|---|
+| 36 | 34,359,738,421 | 0.125 s | 0.122–0.129 | 0.116 | 670 ×5 |
+| 40 | 549,755,813,911 | 0.121 s | 0.119–0.124 | 0.113 | 670 ×5 |
+| 44 | 8,796,093,022,237 | 0.132 s | 0.127–0.135 | 0.124 | 670 ×5 |
+| 46 | 35,184,372,088,891 | 0.119 s | 0.113–0.121 | 0.111 | 668 ×5 |
+
+Flat from 36 to 46 bits, with identical iteration counts. No threshold.
+
+**2. The 48-bit safe prime, re-run directly:** `p = 140,737,488,356,903`
+(48 bits, `q` 47 bits, `p = 2q+1`) solves in **0.02 s** — 2984 relations, a
+1374×304 active matrix, 304 Lanczos iterations, all 303 factor-base logs
+verified.
+
+**What went wrong before:** the earlier probe searched for a safe prime by
+stepping `nextprime` from `2^(bits-1)`, for six sizes up to 56 bits, inside one
+script with a single wall-clock budget. The 56-bit safe-prime *search* is what
+consumed the time; the solver was never slow. The lesson is recorded here
+because it is the kind of error the record exists to catch: a timeout in a
+composite script was attributed to the component under study.
+
+**Corrected statement:** across `q_bits = 28…47` at p = 48…56 bits, the IC
+engine's cost is **flat in `log q`** (0.02–0.13 s) and the sparse solve is not
+the binding term at these sizes. Cost is governed by p (factor-base size and
+relation count), not by the large factor's size. What happens at larger p is
+still unknown.
