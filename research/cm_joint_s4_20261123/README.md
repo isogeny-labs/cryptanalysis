@@ -15,6 +15,17 @@ Can redundant equations from a degree-5 horizontal isogeny make a three-summand 
 
 The source S4 is the resultant of two standard third summation polynomials. This follows the summation-polynomial setup used in [Petit, Kosters, and Messeng, *Algebraic Approaches for the Elliptic Curve Discrete Logarithm Problem over Prime Fields*](https://people.maths.ox.ac.uk/petit/files/16PKC_primeECDLP.pdf). The additional endpoint equations reuse the same source coordinates through the explicit isogeny; they do not supply independent relations or enlarge the factor base. [pcc:unverified]
 
+An [exhaustive three-sum support audit](EXACT_THREE_SUM_SUPPORT.md) of
+this fixed eight-point base finds 92 decomposable points among the
+1068 nonzero targets, a natural hit probability of `23/267`. It also
+checks every source and endpoint multiplicity under the horizontal
+map. The four-query timing panel below deliberately balances two
+positives and two negatives; its positive share is not a yield
+estimate. [pcc:unverified]
+
+The fixed-instance count is recorded as `PCC-20261124-89e12e` with
+unverified standing. [pcc:unverified]
+
 The repository's [PKM auxiliary-curve study](../pkm_aux_curve_odd_isogeny_20261123/README.md) tests odd-degree isogeny towers for a different factor-base construction. This screen asks specifically whether adding transported endpoint equations helps a fixed source-curve membership system. [pcc:unverified]
 
 ## Reproduce
