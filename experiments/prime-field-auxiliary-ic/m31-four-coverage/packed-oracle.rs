@@ -5,7 +5,7 @@ fn check_packed_lift() {
     let mut seed = 0x63a5_1ef9_a87b_u64;
     let mut accepted = 0;
     let mut zero_roots = 0;
-    for panel in 0..256 {
+    for panel in 0..288 {
         let mut xs = [0; 128];
         for i in 0..64 {
             seed ^= seed << 13;
@@ -15,6 +15,8 @@ fn check_packed_lift() {
                 0
             } else if i % 8 == 0 {
                 1
+            } else if panel >= 256 {
+                1 + seed % (p - 1)
             } else {
                 seed % p
             };
@@ -25,6 +27,7 @@ fn check_packed_lift() {
             1 => 1,
             2 => p - 1,
             3 => (p / 2) * (p / 2) % p,
+            256.. => p - 3,
             _ => seed % p,
         };
         fn scalar_table(xs: &[u64; 128], b: u64) -> Points {
@@ -57,6 +60,19 @@ fn check_packed_lift() {
             assert_eq!(base, expected);
             assert_eq!(twist, expected_twist);
         }
+        if xs.iter().all(|&x| x != 0) {
+            for mask in [false, true] {
+                let mut base = vec![(p, p)];
+                let mut twist = vec![(p, p)];
+                if mask {
+                    neon_lift::dual_routes::<true>(&xs, b, &mut base, &mut twist);
+                } else {
+                    neon_lift::dual_routes::<false>(&xs, b, &mut base, &mut twist);
+                }
+                assert_eq!(base, expected);
+                assert_eq!(twist, expected_twist);
+            }
+        }
         accepted += expected.len() - 1;
         if panel < 4 {
             match panel {
@@ -75,5 +91,5 @@ fn check_packed_lift() {
         compare::<32, false>(&xs, b, &expected);
         compare::<8, true>(&xs, b, &expected);
     }
-    println!("256 panels, 32768 slots, {accepted} accepted, {zero_roots} zero ordinates, 5 single-output and 2 dual-output implementations");
+    println!("288 panels, 36864 slots, {accepted} accepted, {zero_roots} zero ordinates, 5 single-output and 4 dual-output implementations (ordered variants on nonzero pairs)");
 }

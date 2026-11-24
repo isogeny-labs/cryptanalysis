@@ -141,18 +141,18 @@ fn half_fiber_root<const W: usize, const ROOT: u8>(terminal: u64) -> [u64; 128] 
 }
 
 #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
-fn half_bench(rotation: usize, order: &str, holdout: bool, fresh: bool, single: bool) {
+fn half_bench(rotation: usize, order: &str, holdout: bool, fresh: bool, single: bool, fourth: bool) {
     let mut terminals: Vec<u64> = include_str!("fiber-masks.csv")
         .lines()
         .skip(1)
         .map(|s| s.split(',').nth(1).unwrap().parse().unwrap())
         .collect();
-    if holdout || fresh {
+    if holdout || fresh || fourth {
         let archived = terminals;
         let first = archived[0];
         let (mut prev, mut curr) = (2, first);
         terminals = Vec::with_capacity(32);
-        let start = if fresh { 129 } else { 65 };
+        let start = if fourth { 193 } else if fresh { 129 } else { 65 };
         let mut prior = Vec::new();
         for power in 1..start + 63 {
             if (65..start).contains(&power) && power % 2 == 1 {
@@ -169,6 +169,10 @@ fn half_bench(rotation: usize, order: &str, holdout: bool, fresh: bool, single: 
     terminals.rotate_left(rotation % 32);
     if single {
         terminals.truncate(1);
+    }
+    if !single && order.chars().all(|c| matches!(c, 'u' | 'x' | 'y')) {
+        stream_bench(&terminals, order, fourth);
+        return;
     }
     let mut expected = Points::new();
     let curve = Curve::<31>::new(2, 14).unwrap();
@@ -199,7 +203,7 @@ fn half_bench(rotation: usize, order: &str, holdout: bool, fresh: bool, single: 
         expected[start..].sort_unstable();
     }
     let mut out = Points::with_capacity(4096);
-    if order.chars().all(|c| matches!(c, 'i' | 'j' | 'k' | 'v' | 'u')) {
+    if order.chars().all(|c| matches!(c, 'i' | 'j' | 'k' | 'v' | 'u' | 'x' | 'y')) {
         assert!(single);
         dual_bench(terminals[0], order, &expected);
         return;

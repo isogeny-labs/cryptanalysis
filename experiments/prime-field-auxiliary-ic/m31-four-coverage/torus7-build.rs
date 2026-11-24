@@ -171,6 +171,7 @@ fn main() {
             args.iter().skip(4).any(|s| s == "holdout"),
             args.iter().skip(4).any(|s| s == "fresh"),
             args.iter().skip(4).any(|s| s == "single"),
+            args.iter().skip(4).any(|s| s == "fourth"),
         );
         return;
     }

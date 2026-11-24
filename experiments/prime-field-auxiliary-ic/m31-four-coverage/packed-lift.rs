@@ -97,13 +97,8 @@ pub(super) fn dual_packed<const V: usize, const MASKED: bool>(
     }
 }
 
-// The public fiber has 64 distinct nonzero sign pairs.
-pub(super) fn dual_ordered<const NETWORK: bool>(
-    xs: &[u64; 128],
-    b: u64,
-    base: &mut Points,
-    twist: &mut Points,
-) {
+#[inline(always)]
+fn ordered_pairs<const NETWORK: bool>(xs: &[u64; 128]) -> [u64; 128] {
     let mut pairs = [0u64; 128];
     for i in 0..64 {
         pairs[i] = xs[i].min(M::P - xs[i]);
@@ -120,6 +115,17 @@ pub(super) fn dual_ordered<const NETWORK: bool>(
     for i in 0..64 {
         pairs[64 + i] = M::P - pairs[i];
     }
+    pairs
+}
+
+// The public fiber has 64 distinct nonzero sign pairs.
+pub(super) fn dual_ordered<const NETWORK: bool>(
+    xs: &[u64; 128],
+    b: u64,
+    base: &mut Points,
+    twist: &mut Points,
+) {
+    let pairs = ordered_pairs::<NETWORK>(xs);
     let mut pos = [u64::MAX; 128];
     let mut neg = [u64::MAX; 128];
     for offset in [0, 32] {
@@ -189,4 +195,69 @@ fn network_sort(keys: &mut [u32; 64]) {
     stage::<64, 4>(keys);
     stage::<64, 2>(keys);
     stage::<64, 1>(keys);
+}
+
+pub(super) fn dual_routes<const MASK: bool>(
+    xs: &[u64; 128],
+    b: u64,
+    base: &mut Points,
+    twist: &mut Points,
+) {
+    let pairs = ordered_pairs::<true>(xs);
+    let mut ord = [0u64; 128];
+    let mut flags = [0u8; 128];
+    let mut base_masks = [0u64; 2];
+    let mut twist_masks = [0u64; 2];
+    for offset in [0, 32] {
+        let (rhs, roots) = paired_roots::<16>(&pairs, b, offset);
+        for j in 0..16 {
+            let side = j / 8;
+            let start = offset + 4 * (j % 8);
+            let mut left = 0;
+            let mut right = 0;
+            for k in 0..4 {
+                let i = 64 * side + start + k;
+                let y = u64::from(roots[j][k]);
+                let r = u64::from(rhs[j][k]);
+                let positive = M::sq(y) == r;
+                let negative = !positive || r == 0;
+                ord[i] = y.min(M::sub(0, y));
+                if MASK {
+                    left |= u64::from(positive) << k;
+                    right |= u64::from(negative) << k;
+                } else {
+                    flags[i] = u8::from(positive) + 2 * u8::from(negative);
+                }
+            }
+            if MASK {
+                base_masks[side] |= left << start;
+                twist_masks[side ^ 1] |= right << start;
+            }
+        }
+    }
+    if MASK {
+        for (out, masks, flip) in [(base, base_masks, 0), (twist, twist_masks, 64)] {
+            for (side, mut mask) in masks.into_iter().enumerate() {
+                if side == 1 {
+                    mask = mask.reverse_bits();
+                }
+                while mask != 0 {
+                    let bit = mask.trailing_zeros() as usize;
+                    let i = if side == 0 { bit } else { 127 - bit };
+                    out.push((pairs[i], ord[i ^ flip]));
+                    mask &= mask - 1;
+                }
+            }
+        }
+    } else {
+        for (out, flip, flag) in [(base, 0, 1), (twist, 64, 2)] {
+            let mut n = out.len();
+            out.resize(n + 128, (0, 0));
+            for i in (0..64).chain((64..128).rev()) {
+                out[n] = (pairs[i], ord[i ^ flip]);
+                n += usize::from(flags[i ^ flip] & flag != 0);
+            }
+            out.truncate(n);
+        }
+    }
 }
