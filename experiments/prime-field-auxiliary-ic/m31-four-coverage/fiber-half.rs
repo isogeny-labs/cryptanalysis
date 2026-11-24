@@ -1,17 +1,3 @@
-const FIXED_STEP: u64 = 1_330_526_061;
-
-// For slots i >= 1, x[i] = weights[i]*x[1] - weights[i-1]*x[0].
-const FIXED_WEIGHTS: [u32; 64] = {
-    let mut u = [0; 64];
-    u[1] = 1;
-    let mut i = 2;
-    while i < 64 {
-        u[i] = ((FIXED_STEP * u[i - 1] as u64 + M::P - u[i - 2] as u64) % M::P) as u32;
-        i += 1;
-    }
-    u
-};
-
 const CENTERED_WEIGHTS: [i32; 64] = {
     let mut weights = [0; 64];
     let mut i = 0;

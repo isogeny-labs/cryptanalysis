@@ -95,3 +95,54 @@ pub(super) fn fixed_tables(
     });
     counts
 }
+
+pub(super) fn checked_lanes(xs: &[u64], terminal: u64) -> bool {
+    assert_eq!(xs.len() % 4, 0);
+    unsafe {
+        let mut valid = vdupq_n_u32(u32::MAX);
+        for chunk in xs.as_chunks::<4>().0 {
+            let ptr = chunk.as_ptr();
+            let mut x = vcombine_u32(vmovn_u64(vld1q_u64(ptr)), vmovn_u64(vld1q_u64(ptr.add(2))));
+            for _ in 0..7 {
+                x = reduced_sum(product4(x, x), vdupq_n_u32(M::P as u32 - 2));
+            }
+            valid = vandq_u32(valid, vceqq_u32(x, vdupq_n_u32(terminal as u32)));
+        }
+        vminvq_u32(valid) == u32::MAX
+    }
+}
+
+// Sorted coordinates have matching negative coordinates in reverse order.
+pub(super) fn base_lift(xs: &[u64; 128]) -> Points {
+    let mut mask = [0u64; 2];
+    let mut ord = [0u64; 128];
+    for offset in [0, 32] {
+        let (rhs, roots) = vector_roots(xs, 14, offset);
+        for j in 0..16 {
+            let side = j / 8;
+            let start = offset + 4 * (j % 8);
+            let index = 64 * side + start;
+            let (valid, _) = unsafe {
+                classify4(
+                    &rhs[j],
+                    &roots[j],
+                    &mut ord.as_chunks_mut::<4>().0[index / 4],
+                )
+            };
+            mask[side] |= valid << start;
+        }
+    }
+    let mut out = Points::with_capacity(128);
+    for (side, mut bits) in mask.into_iter().enumerate() {
+        if side == 1 {
+            bits = bits.reverse_bits();
+        }
+        while bits != 0 {
+            let bit = bits.trailing_zeros() as usize;
+            let i = 64 * side + bit;
+            out.push((xs[i], ord[if side == 0 { i } else { 64 + (63 - bit) }]));
+            bits &= bits - 1;
+        }
+    }
+    out
+}

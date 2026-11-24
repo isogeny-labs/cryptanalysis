@@ -257,6 +257,20 @@ include!("setup-batches.rs");
 
 fn main() {
     let curve = Curve::<31>::new(2, 14).unwrap();
+    #[cfg(all(
+        target_arch = "aarch64",
+        target_feature = "neon",
+        neon_coordinates,
+        signed_pairs
+    ))]
+    if std::env::args().nth(1).as_deref() == Some("coordinate-only") {
+        coordinate_panel(
+            curve,
+            &std::env::args().nth(2).unwrap(),
+            std::env::args().nth(3).as_deref() == Some("first"),
+        );
+        return;
+    }
     if std::env::args().nth(1).as_deref() == Some("trace-batches") {
         setup_panel::<true>(
             curve,
@@ -329,5 +343,42 @@ fn main() {
                 measure(curve, &cases, &mut scratch)
             );
         }
+    }
+}
+
+#[cfg(all(
+    target_arch = "aarch64",
+    target_feature = "neon",
+    neon_coordinates,
+    signed_pairs
+))]
+fn coordinate_panel(curve: Curve<31>, order: &str, first: bool) {
+    for method in order.chars() {
+        let build = || match method {
+            'o' => coordinate_source::generate(curve),
+            'z' => coordinate_source::weighted(),
+            _ => panic!("expected o or z"),
+        };
+        let start = Instant::now();
+        let points = black_box(build());
+        let initial = start.elapsed().as_nanos();
+        let reference: Vec<_> = include_str!("base71-points.csv")
+            .lines()
+            .map(|row| {
+                let (x, y) = row.split_once(',').unwrap();
+                (x.parse::<u64>().unwrap(), y.parse::<u64>().unwrap())
+            })
+            .collect();
+        assert_eq!(points.as_slice(), reference);
+        let ns = if first {
+            initial as f64
+        } else {
+            let start = Instant::now();
+            for _ in 0..256 {
+                black_box(build());
+            }
+            start.elapsed().as_nanos() as f64 / 256.
+        };
+        println!("{method},{ns:.3}");
     }
 }

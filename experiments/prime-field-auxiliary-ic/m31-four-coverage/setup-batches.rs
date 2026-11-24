@@ -4,6 +4,11 @@ mod coordinate_source {
     use crate::field::F;
     include!("torus7-coordinates.rs");
 
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+    pub(super) fn weighted() -> [(u64, u64); 71] {
+        weighted_base71()
+    }
+
     pub(super) fn generate(curve: Curve<31>) -> [(u64, u64); 71] {
         let width = if cfg!(all(
             neon_coordinates,

@@ -1,0 +1,110 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-24T00:56:43Z",
+ "id": "PCC-20261124-4d7e88",
+ "kind": "measurement",
+ "producer": {
+  "commit": "6e771691462e6968a982068f4f9b3bdadf1e2083",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "f27577cbc5e113732a321f77e28519619516f10c2c2a714de5a28b521845cca5",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/Base71.lean",
+   "theorem": "M31Base71.complete"
+  },
+  {
+   "decl_sha256": "feb349a20b27b5bcf2b108a51d3a6142201119c7f9f45456111c7a5cb5ba14d9",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/Base71.lean",
+   "theorem": "M31Base71.mirror_check"
+  },
+  {
+   "decl_sha256": "5ce741755eb5d936225ce3957c9f938ff893a7a07dfd4534add532b790712cad",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/Base71.lean",
+   "theorem": "M31Base71.base_count"
+  },
+  {
+   "decl_sha256": "3d3b9b2c9613cd1fced261a0ac3d981de27d5e3ab4e1e44a71aca621b2362979",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/Base71.lean",
+   "theorem": "M31Base71.ordered_fixture"
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/Base71.lean",
+    "sha256": "11d652e46f89f85959bc82d7ffdbd2951b66a3ff459b4c881eb6ff86a58630bd"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/base71-points.csv",
+    "sha256": "2f2f4b744a678d1796086eea39ef4eb2d66700af24f2a4eae4410ef894e3abd1"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/base71-publication.csv",
+    "sha256": "00e0cc94b2dd5cb355327aded18823982eab61a1c4a2c20fe38c5633aaf166cb"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/base71-final.csv",
+    "sha256": "ae04696dd1f0d0ab0d7d74986c1e948cd91a725bb5c55e8abdf93d11269f7067"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/replay-base71.py",
+    "sha256": "1898626a95708c8cfa9c9b5ee0136badf723a8a47a786d9a2f29772cb47b0487"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/fiber-half.rs",
+    "sha256": "c8d4931f6b6f6e2b2b5507f325b629c33ff79c2425be88f71a771e953f737fde"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/rust-batch-width.rs",
+    "sha256": "9a11ce59248981181951fbd215f02a88c5bc43e916cd63dcd37c75b7126f0018"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/setup-batches.rs",
+    "sha256": "c4406fcee09433d599e35279814d06c3c4da04abf414e239d7ab150be7de6a6b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/torus7-coordinates.rs",
+    "sha256": "fee715132ab0e027bd2f1e879a6d9d9bcf7a55aed38087682048c14dcc2764b0"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/vector-cubic.rs",
+    "sha256": "65997dc99aed1b91225199e6db50c76f555dcf91946cee49fe1ec2ca727058fe"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "Generating the checked 71-point public M31 base table from the caller executable on M4 Pro gave median paired first-call and warmed speedups 1.354 and 1.729 for native release and 1.424 and 1.781 with one codegen unit in the final source replay, each over 64 rounds."
+}

@@ -622,3 +622,20 @@ Rebuild torus7-build.rs on arm64 with the a82976381 field source, Rust 1.93.1, e
 The trace-batches setup caller in setup-batches.rs requests one ordered 71-point base table from coordinate_source::generate. Its native width-132 route in torus7-coordinates.rs calls neon_lift::points. The two-output experiment runs through torus7-build.rs. The measured two-table interval therefore supplies no observed runtime fraction for that setup caller or for a complete index-calculus run.
 
 PCC-20261124-716b99 [pcc:unverified]
+
+### Generating the setup caller's single base table
+
+The public setup fixture uses the base curve y²=x³+2x+14 and terminal 340921998. The coordinate-only entry point in rust-batch-width.rs compares the existing coordinate_source::generate interface (method o) with a weighted recurrence and reflected-half validation (method z). Each returns an owned array of 71 points in increasing x order. Both search for the first seed, calculate the step and adjacent root, sort the coordinates, check distinctness and validate the fiber. The candidate verifies the fixed step before using the recurrence weights, checks that opposite ends of the sorted array are negatives, and tests all 64 lower representatives with seven four-lane iterations. It emits only base-curve points. The independent base71-points.csv reference is read after the first timed call and before the warmed timing loop.
+
+| Final M4 Pro build | Workload | Existing, ns | Candidate, ns | Median paired speedup | Wins |
+|---|---|---:|---:|---:|---:|
+| Native release | First call | 4541 | 3355 | 1.354 | 64/64 |
+| Native release | Warmed | 2542 | 1471 | 1.729 | 64/64 |
+| One codegen unit | First call | 4791 | 3458 | 1.424 | 64/64 |
+| One codegen unit | Warmed | 2620 | 1461 | 1.781 | 64/64 |
+
+Compile rust-batch-width.rs using Rust 1.93.1, edition 2021, opt-level=3, target-cpu=native, --cfg signed_pairs and --cfg neon_coordinates. Set M31_FIELD_RS to the absolute path to field.rs from a82976381. Add -C codegen-units=1 for the second binary. Run replay-base71.py with both binary paths and redirect stdout to a CSV. Every first-call observation gets a fresh process. The timed interval excludes process startup, construction of the curve argument and fixture comparison. Every warmed observation averages 256 calls. Each build receives both method orders in 64 paired rounds. base71-publication.csv records the initial replay and base71-final.csv records the replay after source formatting. Multiple calls and compiler variants on one host measure timing stability on the same public fixture. These results cover coordinate generation up to the array return.
+
+Compile Base71.lean in the Lean 4.34.1 environment after FixedOrbitExact and FiberLift, passing the absolute source path so include_str resolves its neighboring CSV. The kernel checks the first seed, step, terminal, orbit coverage, reflected-half validation rule, and count of 71 canonical lifts. The ordered_fixture theorem checks strict order and all 128 orbit lookups against the selected canonical ordinate or absence. The decimal rows are elaborated into a literal list, and both the count and fixture checks use decide +kernel. The axiom reports for both list propext, Classical.choice and Quot.sound.
+
+PCC-20261124-4d7e88 [pcc:unverified]
