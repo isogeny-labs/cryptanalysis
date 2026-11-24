@@ -892,3 +892,26 @@ The batch arm recomputes all 32 labels upon the first absent coordinate. The com
 Each entry reports two median paired throughput ratios relative to arithmetic. Ratios above one favor the respective cache arm. For random misses the compact arm won 12/12 seeds at one or four misses per 32, and 1/12 at eight. With all coordinates unseen, arithmetic won every comparison against compaction. Thus miss placement and the repeated working set both matter.
 
 Compile cache-mixture.cpp with -std=c++17 -O3 -mcpu=native -DM31_REGISTER_BIC on AArch64. Pass SEED PRIMED_PANEL_FILE UNSEEN_PANEL_FILE, optionally followed by random. Use seeds 300–311 for spread/grouped and 318–329 for random. Primed panel ID is 291163 + (seed / 6 mod 2), using integer division. Each panel receives all six arm orders. Raw records are cache-mixture.csv and cache-random.csv. CoordinateCache.lean proves that updating the destinations of misses preserves all other positions and restores the reference labels given correct hit and computed miss labels. Tests also exercised final partial batches of sizes 1 through 31 with duplicate absent keys. A separate sanitizer build passed.
+
+### One cubic for the product over a 32-coordinate auxiliary orbit
+
+For the smooth-twist panels, let f(x)=x³+2x+14 on the public abscissas of a coset of the order-32 subgroup of y²=x³+x. At a degree-two quotient step, shift the two-torsion abscissa t to zero. Paired coordinates u=x−t and z satisfy uz=B. Their common quotient abscissa is X=u+z+A. For any cubic g in the shifted coordinate, g(u)g(z) is a cubic in u+z. Its coefficients follow by collecting the symmetric terms and substituting uz=B. Applying this identity through five quotient steps yields
+
+    product of the 32 f(x) = 1330410815 X³ + 368863965 X² + 1911999596 X + 1606038711  (mod 2147483647),
+
+where X is the final quotient abscissa. This computes the exact product. Its quadratic character gives the parity of twist labels when every f(x) is nonzero. On the two unfiltered panels 541 and 538 of 1024 orbits had odd parity, respectively. An aggregate character gives one bit about 32 labels.
+
+OrbitNorm.lean proves the symmetric cubic identity, the two-torsion chord formula, the image curve equation, the iterated norm for any paired fiber satisfying the step relations, the five-step coefficients, and the projective character correction. The specific maps are derived from the public point using PARI/GP in orbit-norm.py. That independent replay checks the multiplicative pairing condition and coincident quotient coordinates at every level for every supplied orbit, then checks the final product against direct multiplication and the supplied labels. Both complete panels passed. Run the script with both label files as arguments.
+
+Starting with just one abscissa, the native path propagates projective coordinates (U,V) through all five maps without inversion. It evaluates the homogeneous final cubic and multiplies by V, which changes the affine value by the square V⁴ when V is nonzero. Every denominator was checked in the independent replay. A separate timing arm receives X precomputed outside the timer.
+
+| Median ns per aggregate orbit character on Apple M4 Pro | Seed 291163 | Seed 291164 |
+|---|---:|---:|
+| Product from all 32 supplied coordinates, scalar | 144.03 | 144.62 |
+| Projective norm from the first coordinate, five maps charged | 73.38 | 73.99 |
+| Final cubic with quotient coordinate supplied | 44.64 | 44.98 |
+| Register NEON on all 32 supplied coordinates, reduce labels to parity | 99.66 | 100.15 |
+
+The first-coordinate norm beat both full-input controls on every one of the 48 paired launches. Median paired NEON/norm ratios were 1.365 and 1.358. The executable processes one orbit per call and times 32 shuffled-panel traversals per method. Each input contract excludes initial panel generation and loading. These timings cover a single aggregate query. Consumers requesting every individual label require additional information.
+
+Compile orbit-norm.cpp with -std=c++17 -O3 -mcpu=native -DM31_REGISTER_BIC and supply shuffle seed and panel filename. Seeds 384–407 use the first panel, 408–431 the second. All 24 method orders occur once per panel. IDs 0, 1, 2 and 3 match the row order above. Raw timings are in orbit-norm.csv. A separate sanitizer build passed the full panel comparison. Replay OrbitNorm.lean with Lean 4.34.1 and warnings as errors.
