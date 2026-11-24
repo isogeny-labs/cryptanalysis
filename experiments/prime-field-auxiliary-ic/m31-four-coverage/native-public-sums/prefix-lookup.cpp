@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <chrono>
+#include <bit>
 #include <cstdint>
 #include <fstream>
 #include <iostream>
@@ -56,10 +57,34 @@ double lookup(const std::vector<Word>& table, const std::vector<Word>& queries,
     return std::chrono::duration<double, std::micro>(Clock::now() - start).count();
 }
 
+double hashLookup(const std::vector<Word>& table, const std::vector<Word>& queries,
+                  std::vector<Word>& answers) {
+    struct Entry { Word key = 0; Word count = 0; };
+    auto start = Clock::now();
+    // Keep at least one empty slot. Zero count marks it, so key zero is valid.
+    const std::size_t capacity = std::bit_ceil(std::uint64_t{2} * table.size() + 1);
+    const std::size_t mask = capacity - 1;
+    std::vector<Entry> entries(capacity);
+    auto locate = [&](Word key) -> Entry& {
+        std::size_t slot = key & mask;
+        while (entries[slot].count && entries[slot].key != key)
+            slot = (slot + 1) & mask;
+        return entries[slot];
+    };
+    for (Word key : table) {
+        Entry& entry = locate(key);
+        entry.key = key;
+        ++entry.count;
+    }
+    for (std::size_t i = 0; i < queries.size(); ++i)
+        answers[i] = locate(queries[i]).count;
+    return std::chrono::duration<double, std::micro>(Clock::now() - start).count();
+}
+
 int main(int argc, char** argv) {
     if (argc != 5) return 1;
     const std::string mode = argv[1];
-    if (mode != "prefix" && mode != "binary") return 1;
+    if (mode != "prefix" && mode != "binary" && mode != "hash") return 1;
     auto table = readWords(argv[2]);
     auto queries = readWords(argv[3]);
     auto outOfRange = [](Word key) { return key >= (1u << 31); };
@@ -67,8 +92,10 @@ int main(int argc, char** argv) {
         || std::any_of(table.begin(), table.end(), outOfRange)
         || std::any_of(queries.begin(), queries.end(), outOfRange)) return 2;
     std::vector<Word> answers(queries.size());
-    double us = mode == "prefix" ? lookup<true>(table, queries, answers)
-                                 : lookup<false>(table, queries, answers);
+    double us;
+    if (mode == "hash") us = hashLookup(table, queries, answers);
+    else if (mode == "prefix") us = lookup<true>(table, queries, answers);
+    else us = lookup<false>(table, queries, answers);
     std::ofstream output(argv[4], std::ios::binary);
     output.write(reinterpret_cast<const char*>(answers.data()), answers.size() * sizeof(Word));
     output.close();

@@ -52,3 +52,9 @@ clang++ -O3 -mcpu=native -std=c++20 prefix-lookup.cpp -o /tmp/m31-prefix-lookup
 ```
 
 The `prefix-times.csv` timer starts with the same sorted table and query array already in memory. It includes directory allocation and construction and all queries, and ends before output serialization. Table generation, file reads, input validation, answer-array allocation and directory destruction are outside this timing. Each case used 12 rounds with balanced mode ordering and fresh processes. For each basis and mixture, Python's `random.Random(2026112414)` generated 65,536 queries. Uniform queries use `randrange(2147483647)`. For the half-planted mixture, odd-numbered positions (zero based) instead draw from the sorted table with `choice`. Shorter cases use prefixes of these streams. Every individual answer was compared with a Python frequency count. The numerical crossover applies to these two fixtures and these query streams.
+
+## Setup-charged hash comparison
+
+The `hash` lookup mode indexes the full 31-bit key and its count in a linear-probed array. A zero count marks an empty slot. For 28,033 entries, the array has 65,536 slots of eight bytes each (512 KiB). It charges allocation, initialization, insertion and querying to the same timer used for the binary and prefix arms. Each query returns its exact multiplicity.
+
+Run `python3 hash-panel.py` to replay the initial comparison and `python3 hash-panel.py --confirm` for the fresh-stream confirmation at 262,144 queries. Both write CSV to standard output. The archived rows are in `hash-times.csv`. The driver builds the binaries, verifies both fixture digests, balances arm order, and checks every answer against an independent frequency count. Uniform and half-planted streams are reported separately.
