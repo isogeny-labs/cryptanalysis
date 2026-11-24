@@ -1,0 +1,16 @@
+digraph arithmetic {
+  graph [rankdir=TB, bgcolor="white", ranksep=0.4, nodesep=0.45, fontname="DejaVu Sans"];
+  node [shape=box, style="rounded,filled", fillcolor="#eef4fa", color="#315574", fontname="DejaVu Sans", fontsize=12, margin="0.13,0.1"];
+  edge [color="#315574", fontname="DejaVu Sans", fontsize=11];
+  ideals [label="Actual D / F7\n2,401 ideal predicates -> 121 canonical classes"];
+  cantor [label="Polynomial Cantor composition / reduction\nComplete 121 x 121 class table"];
+  roots [label="Actual divisor roots and multiplicities\nBoth cover maps -> elliptic group traces"];
+  agreement [label="All 14,641 addition entries agree\nActual pushforward pairs biject with E(F7)^2", fillcolor="#edf8f0", color="#23845a"];
+  replay [label="11 chained inputs / existing BSGS recoveries\nOriginal elliptic source replay"];
+  ideals -> cantor;
+  ideals -> roots;
+  cantor -> agreement [label="computed ideals"];
+  roots -> agreement [label="separate arithmetic route"];
+  agreement -> replay [label="same scalar, p1_* Gamma = I"];
+  {rank=same; cantor; roots;}
+}
