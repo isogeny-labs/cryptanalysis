@@ -1,0 +1,648 @@
+{
+ "fixture_hash": "sha256:28f1e789fb4ad50a1c04f8bdac05b793759f6df5d0ee0fc5fd3e6cf32f76e8e1",
+ "executable_or_source_hash": "sha256:a8006b201a8dddc11669e84574d5067bf4af0bb85eed62dd83d8fd27ac289430",
+ "host_id": "Mac.attlocal.net",
+ "resource_caps": {
+  "cpus": 14,
+  "memory_note": "single process, <2 GiB"
+ },
+ "seeds": "splitmix64 seed 11 for the random shape; structured shapes are seed-free (canonical enumeration)",
+ "claim_boundary_non_claims": [
+  "toy rungs (20 and 24 bits), not secp256k1",
+  "no key recovery, no asymptotic sub-rho claim",
+  "no claim that any base shape raises the expected yield: the counting identity proves the opposite",
+  "hit-rate is exact for one base per cell, not a sample mean"
+ ],
+ "drafts": [
+  {
+   "regime": "prime",
+   "stage": "relation_yield",
+   "n_or_bits": {
+    "bits": 20,
+    "p": 1046047
+   },
+   "base_id_or_hash": "sha256:35a0fe5016c19d7e4d2045330066b1d5556e52e1cf200db3144c7b257fb66f21",
+   "base_id_basis": "recipe string (p, curve, shape, m, N, enumeration rule); NOT a hash of the materialised dlog list",
+   "factor_base_size_F": 1448,
+   "m_summands": 2,
+   "eta_or_coverage_policy": "exhaustive: every m-multiset of the base enumerated, r(R) accumulated over the whole group; coverage = |E| (no sampling)",
+   "pr_decomposition_or_hit_rate_with_ci": {
+    "value": 0.634175,
+    "ci95": [
+     0.633252,
+     0.635097
+    ],
+    "definition": "#{R != O : r(R) >= 1} / (|E| - 1)",
+    "note": "the value is exact for this base; the interval is the binomial error a T-target estimate of the same quantity would carry, reported so the field is comparable"
+   },
+   "trials_per_relation": 1.5769,
+   "target_mix": {
+    "natural": 1.0,
+    "planted_sat": 0.0,
+    "proven_unsat": 0.0
+   },
+   "total_relations": 1048352,
+   "mean_r_exclO": 1.001504,
+   "max_r_exclO": 8,
+   "identity_check": {
+    "sum_r_equals_C_N_plus_m_minus_1_m": true,
+    "tuples": 1049076
+   }
+  },
+  {
+   "regime": "prime",
+   "stage": "relation_yield",
+   "n_or_bits": {
+    "bits": 20,
+    "p": 1046047
+   },
+   "base_id_or_hash": "sha256:f2e33193ba78bc10a89b4a04e95b906e3dae171aa9e6a9286e8808f9d127b4d1",
+   "base_id_basis": "recipe string (p, curve, shape, m, N, enumeration rule); NOT a hash of the materialised dlog list",
+   "factor_base_size_F": 1448,
+   "m_summands": 2,
+   "eta_or_coverage_policy": "exhaustive: every m-multiset of the base enumerated, r(R) accumulated over the whole group; coverage = |E| (no sampling)",
+   "pr_decomposition_or_hit_rate_with_ci": {
+    "value": 0.633273,
+    "ci95": [
+     0.63235,
+     0.634196
+    ],
+    "definition": "#{R != O : r(R) >= 1} / (|E| - 1)",
+    "note": "the value is exact for this base; the interval is the binomial error a T-target estimate of the same quantity would carry, reported so the field is comparable"
+   },
+   "trials_per_relation": 1.5791,
+   "target_mix": {
+    "natural": 1.0,
+    "planted_sat": 0.0,
+    "proven_unsat": 0.0
+   },
+   "total_relations": 1048352,
+   "mean_r_exclO": 1.001504,
+   "max_r_exclO": 8,
+   "identity_check": {
+    "sum_r_equals_C_N_plus_m_minus_1_m": true,
+    "tuples": 1049076
+   }
+  },
+  {
+   "regime": "prime",
+   "stage": "relation_yield",
+   "n_or_bits": {
+    "bits": 20,
+    "p": 1046047
+   },
+   "base_id_or_hash": "sha256:ed8b33783670fb7e3c834d43ecaeffc3c8026ab43dc361db550df206756a2115",
+   "base_id_basis": "recipe string (p, curve, shape, m, N, enumeration rule); NOT a hash of the materialised dlog list",
+   "factor_base_size_F": 1448,
+   "m_summands": 2,
+   "eta_or_coverage_policy": "exhaustive: every m-multiset of the base enumerated, r(R) accumulated over the whole group; coverage = |E| (no sampling)",
+   "pr_decomposition_or_hit_rate_with_ci": {
+    "value": 0.631584,
+    "ci95": [
+     0.63066,
+     0.632508
+    ],
+    "definition": "#{R != O : r(R) >= 1} / (|E| - 1)",
+    "note": "the value is exact for this base; the interval is the binomial error a T-target estimate of the same quantity would carry, reported so the field is comparable"
+   },
+   "trials_per_relation": 1.5833,
+   "target_mix": {
+    "natural": 1.0,
+    "planted_sat": 0.0,
+    "proven_unsat": 0.0
+   },
+   "total_relations": 1048352,
+   "mean_r_exclO": 1.001504,
+   "max_r_exclO": 9,
+   "identity_check": {
+    "sum_r_equals_C_N_plus_m_minus_1_m": true,
+    "tuples": 1049076
+   }
+  },
+  {
+   "regime": "prime",
+   "stage": "relation_yield",
+   "n_or_bits": {
+    "bits": 20,
+    "p": 1046047
+   },
+   "base_id_or_hash": "sha256:be396e5fd7d3e09b1934658524336a5f7246313b030572c674c98a54e5715cd8",
+   "base_id_basis": "recipe string (p, curve, shape, m, N, enumeration rule); NOT a hash of the materialised dlog list",
+   "factor_base_size_F": 512,
+   "m_summands": 2,
+   "eta_or_coverage_policy": "exhaustive: every m-multiset of the base enumerated, r(R) accumulated over the whole group; coverage = |E| (no sampling)",
+   "pr_decomposition_or_hit_rate_with_ci": {
+    "value": 0.117616,
+    "ci95": [
+     0.116999,
+     0.118233
+    ],
+    "definition": "#{R != O : r(R) >= 1} / (|E| - 1)",
+    "note": "the value is exact for this base; the interval is the binomial error a T-target estimate of the same quantity would carry, reported so the field is comparable"
+   },
+   "trials_per_relation": 8.5022,
+   "target_mix": {
+    "natural": 1.0,
+    "planted_sat": 0.0,
+    "proven_unsat": 0.0
+   },
+   "total_relations": 131072,
+   "mean_r_exclO": 0.125215,
+   "max_r_exclO": 4,
+   "identity_check": {
+    "sum_r_equals_C_N_plus_m_minus_1_m": true,
+    "tuples": 131328
+   }
+  },
+  {
+   "regime": "prime",
+   "stage": "relation_yield",
+   "n_or_bits": {
+    "bits": 20,
+    "p": 1046047
+   },
+   "base_id_or_hash": "sha256:38b46c30e4f3c4d74e587432c13ce88f93439af6df96fb474eb73ba82657c03a",
+   "base_id_basis": "recipe string (p, curve, shape, m, N, enumeration rule); NOT a hash of the materialised dlog list",
+   "factor_base_size_F": 512,
+   "m_summands": 2,
+   "eta_or_coverage_policy": "exhaustive: every m-multiset of the base enumerated, r(R) accumulated over the whole group; coverage = |E| (no sampling)",
+   "pr_decomposition_or_hit_rate_with_ci": {
+    "value": 0.117494,
+    "ci95": [
+     0.116877,
+     0.118111
+    ],
+    "definition": "#{R != O : r(R) >= 1} / (|E| - 1)",
+    "note": "the value is exact for this base; the interval is the binomial error a T-target estimate of the same quantity would carry, reported so the field is comparable"
+   },
+   "trials_per_relation": 8.5111,
+   "target_mix": {
+    "natural": 1.0,
+    "planted_sat": 0.0,
+    "proven_unsat": 0.0
+   },
+   "total_relations": 131072,
+   "mean_r_exclO": 0.125215,
+   "max_r_exclO": 5,
+   "identity_check": {
+    "sum_r_equals_C_N_plus_m_minus_1_m": true,
+    "tuples": 131328
+   }
+  },
+  {
+   "regime": "prime",
+   "stage": "relation_yield",
+   "n_or_bits": {
+    "bits": 20,
+    "p": 1046047
+   },
+   "base_id_or_hash": "sha256:c55678fe2fb36678457eb76dc761099993fefa52801ee5d9ba8f0be653754bca",
+   "base_id_basis": "recipe string (p, curve, shape, m, N, enumeration rule); NOT a hash of the materialised dlog list",
+   "factor_base_size_F": 512,
+   "m_summands": 2,
+   "eta_or_coverage_policy": "exhaustive: every m-multiset of the base enumerated, r(R) accumulated over the whole group; coverage = |E| (no sampling)",
+   "pr_decomposition_or_hit_rate_with_ci": {
+    "value": 0.117643,
+    "ci95": [
+     0.117026,
+     0.11826
+    ],
+    "definition": "#{R != O : r(R) >= 1} / (|E| - 1)",
+    "note": "the value is exact for this base; the interval is the binomial error a T-target estimate of the same quantity would carry, reported so the field is comparable"
+   },
+   "trials_per_relation": 8.5003,
+   "target_mix": {
+    "natural": 1.0,
+    "planted_sat": 0.0,
+    "proven_unsat": 0.0
+   },
+   "total_relations": 131072,
+   "mean_r_exclO": 0.125215,
+   "max_r_exclO": 5,
+   "identity_check": {
+    "sum_r_equals_C_N_plus_m_minus_1_m": true,
+    "tuples": 131328
+   }
+  },
+  {
+   "regime": "prime",
+   "stage": "relation_yield",
+   "n_or_bits": {
+    "bits": 24,
+    "p": 16776547
+   },
+   "base_id_or_hash": "sha256:2b0f6c4539837e40c43fde625cd4618c58b71b151df279725b446de1f97e8dbc",
+   "base_id_basis": "recipe string (p, curve, shape, m, N, enumeration rule); NOT a hash of the materialised dlog list",
+   "factor_base_size_F": 5792,
+   "m_summands": 2,
+   "eta_or_coverage_policy": "exhaustive: every m-multiset of the base enumerated, r(R) accumulated over the whole group; coverage = |E| (no sampling)",
+   "pr_decomposition_or_hit_rate_with_ci": {
+    "value": 0.63241,
+    "ci95": [
+     0.632179,
+     0.632641
+    ],
+    "definition": "#{R != O : r(R) >= 1} / (|E| - 1)",
+    "note": "the value is exact for this base; the interval is the binomial error a T-target estimate of the same quantity would carry, reported so the field is comparable"
+   },
+   "trials_per_relation": 1.5813,
+   "target_mix": {
+    "natural": 1.0,
+    "planted_sat": 0.0,
+    "proven_unsat": 0.0
+   },
+   "total_relations": 16773632,
+   "mean_r_exclO": 1.000269,
+   "max_r_exclO": 10,
+   "identity_check": {
+    "sum_r_equals_C_N_plus_m_minus_1_m": true,
+    "tuples": 16776528
+   }
+  },
+  {
+   "regime": "prime",
+   "stage": "relation_yield",
+   "n_or_bits": {
+    "bits": 24,
+    "p": 16776547
+   },
+   "base_id_or_hash": "sha256:584bc5550e4b50e45bc4dc6d1871790dccf3c8626eb4782f7bfd43a3eb52c110",
+   "base_id_basis": "recipe string (p, curve, shape, m, N, enumeration rule); NOT a hash of the materialised dlog list",
+   "factor_base_size_F": 5792,
+   "m_summands": 2,
+   "eta_or_coverage_policy": "exhaustive: every m-multiset of the base enumerated, r(R) accumulated over the whole group; coverage = |E| (no sampling)",
+   "pr_decomposition_or_hit_rate_with_ci": {
+    "value": 0.632454,
+    "ci95": [
+     0.632223,
+     0.632684
+    ],
+    "definition": "#{R != O : r(R) >= 1} / (|E| - 1)",
+    "note": "the value is exact for this base; the interval is the binomial error a T-target estimate of the same quantity would carry, reported so the field is comparable"
+   },
+   "trials_per_relation": 1.5811,
+   "target_mix": {
+    "natural": 1.0,
+    "planted_sat": 0.0,
+    "proven_unsat": 0.0
+   },
+   "total_relations": 16773632,
+   "mean_r_exclO": 1.000269,
+   "max_r_exclO": 10,
+   "identity_check": {
+    "sum_r_equals_C_N_plus_m_minus_1_m": true,
+    "tuples": 16776528
+   }
+  },
+  {
+   "regime": "prime",
+   "stage": "relation_yield",
+   "n_or_bits": {
+    "bits": 24,
+    "p": 16776547
+   },
+   "base_id_or_hash": "sha256:b79ed3839881e30d9af2025a1319f4252b907d2c56310aa1ac1dcdcd1b06e93d",
+   "base_id_basis": "recipe string (p, curve, shape, m, N, enumeration rule); NOT a hash of the materialised dlog list",
+   "factor_base_size_F": 5792,
+   "m_summands": 2,
+   "eta_or_coverage_policy": "exhaustive: every m-multiset of the base enumerated, r(R) accumulated over the whole group; coverage = |E| (no sampling)",
+   "pr_decomposition_or_hit_rate_with_ci": {
+    "value": 0.632145,
+    "ci95": [
+     0.631914,
+     0.632376
+    ],
+    "definition": "#{R != O : r(R) >= 1} / (|E| - 1)",
+    "note": "the value is exact for this base; the interval is the binomial error a T-target estimate of the same quantity would carry, reported so the field is comparable"
+   },
+   "trials_per_relation": 1.5819,
+   "target_mix": {
+    "natural": 1.0,
+    "planted_sat": 0.0,
+    "proven_unsat": 0.0
+   },
+   "total_relations": 16773632,
+   "mean_r_exclO": 1.000269,
+   "max_r_exclO": 10,
+   "identity_check": {
+    "sum_r_equals_C_N_plus_m_minus_1_m": true,
+    "tuples": 16776528
+   }
+  },
+  {
+   "regime": "prime",
+   "stage": "relation_yield",
+   "n_or_bits": {
+    "bits": 20,
+    "p": 1046047
+   },
+   "base_id_or_hash": "sha256:2368948daab0e6798bd4102cc1664e4ce91bc21dd5c5443a193161cfa667c542",
+   "base_id_basis": "recipe string (p, curve, shape, m, N, enumeration rule); NOT a hash of the materialised dlog list",
+   "factor_base_size_F": 184,
+   "m_summands": 3,
+   "eta_or_coverage_policy": "exhaustive: every m-multiset of the base enumerated, r(R) accumulated over the whole group; coverage = |E| (no sampling)",
+   "pr_decomposition_or_hit_rate_with_ci": {
+    "value": 0.62872,
+    "ci95": [
+     0.627794,
+     0.629645
+    ],
+    "definition": "#{R != O : r(R) >= 1} / (|E| - 1)",
+    "note": "the value is exact for this base; the interval is the binomial error a T-target estimate of the same quantity would carry, reported so the field is comparable"
+   },
+   "trials_per_relation": 1.5905,
+   "target_mix": {
+    "natural": 1.0,
+    "planted_sat": 0.0,
+    "proven_unsat": 0.0
+   },
+   "total_relations": 1055240,
+   "mean_r_exclO": 1.008084,
+   "max_r_exclO": 97,
+   "identity_check": {
+    "sum_r_equals_C_N_plus_m_minus_1_m": true,
+    "tuples": 1055240
+   }
+  },
+  {
+   "regime": "prime",
+   "stage": "relation_yield",
+   "n_or_bits": {
+    "bits": 20,
+    "p": 1046047
+   },
+   "base_id_or_hash": "sha256:c71ca102b8daeb8a7658add539edbbc7a7889da648dfe844d92b97a16f01122b",
+   "base_id_basis": "recipe string (p, curve, shape, m, N, enumeration rule); NOT a hash of the materialised dlog list",
+   "factor_base_size_F": 184,
+   "m_summands": 3,
+   "eta_or_coverage_policy": "exhaustive: every m-multiset of the base enumerated, r(R) accumulated over the whole group; coverage = |E| (no sampling)",
+   "pr_decomposition_or_hit_rate_with_ci": {
+    "value": 0.626822,
+    "ci95": [
+     0.625896,
+     0.627749
+    ],
+    "definition": "#{R != O : r(R) >= 1} / (|E| - 1)",
+    "note": "the value is exact for this base; the interval is the binomial error a T-target estimate of the same quantity would carry, reported so the field is comparable"
+   },
+   "trials_per_relation": 1.5953,
+   "target_mix": {
+    "natural": 1.0,
+    "planted_sat": 0.0,
+    "proven_unsat": 0.0
+   },
+   "total_relations": 1055236,
+   "mean_r_exclO": 1.00808,
+   "max_r_exclO": 97,
+   "identity_check": {
+    "sum_r_equals_C_N_plus_m_minus_1_m": true,
+    "tuples": 1055240
+   }
+  },
+  {
+   "regime": "prime",
+   "stage": "relation_yield",
+   "n_or_bits": {
+    "bits": 20,
+    "p": 1046047
+   },
+   "base_id_or_hash": "sha256:9248ce3b636c512e05c5e3f438725672eff306ba39cee6670b29fd7daec7e7d5",
+   "base_id_basis": "recipe string (p, curve, shape, m, N, enumeration rule); NOT a hash of the materialised dlog list",
+   "factor_base_size_F": 184,
+   "m_summands": 3,
+   "eta_or_coverage_policy": "exhaustive: every m-multiset of the base enumerated, r(R) accumulated over the whole group; coverage = |E| (no sampling)",
+   "pr_decomposition_or_hit_rate_with_ci": {
+    "value": 0.627982,
+    "ci95": [
+     0.627056,
+     0.628908
+    ],
+    "definition": "#{R != O : r(R) >= 1} / (|E| - 1)",
+    "note": "the value is exact for this base; the interval is the binomial error a T-target estimate of the same quantity would carry, reported so the field is comparable"
+   },
+   "trials_per_relation": 1.5924,
+   "target_mix": {
+    "natural": 1.0,
+    "planted_sat": 0.0,
+    "proven_unsat": 0.0
+   },
+   "total_relations": 1055238,
+   "mean_r_exclO": 1.008082,
+   "max_r_exclO": 97,
+   "identity_check": {
+    "sum_r_equals_C_N_plus_m_minus_1_m": true,
+    "tuples": 1055240
+   }
+  },
+  {
+   "regime": "prime",
+   "stage": "relation_yield",
+   "n_or_bits": {
+    "bits": 20,
+    "p": 1046047
+   },
+   "base_id_or_hash": "sha256:9535d6b7c00e42b2126eea3cb1c2eff8f69063f515958061e22417feb4afc73d",
+   "base_id_basis": "recipe string (p, curve, shape, m, N, enumeration rule); NOT a hash of the materialised dlog list",
+   "factor_base_size_F": 96,
+   "m_summands": 3,
+   "eta_or_coverage_policy": "exhaustive: every m-multiset of the base enumerated, r(R) accumulated over the whole group; coverage = |E| (no sampling)",
+   "pr_decomposition_or_hit_rate_with_ci": {
+    "value": 0.12972,
+    "ci95": [
+     0.129076,
+     0.130364
+    ],
+    "definition": "#{R != O : r(R) >= 1} / (|E| - 1)",
+    "note": "the value is exact for this base; the interval is the binomial error a T-target estimate of the same quantity would carry, reported so the field is comparable"
+   },
+   "trials_per_relation": 7.7089,
+   "target_mix": {
+    "natural": 1.0,
+    "planted_sat": 0.0,
+    "proven_unsat": 0.0
+   },
+   "total_relations": 152096,
+   "mean_r_exclO": 0.145299,
+   "max_r_exclO": 51,
+   "identity_check": {
+    "sum_r_equals_C_N_plus_m_minus_1_m": true,
+    "tuples": 152096
+   }
+  },
+  {
+   "regime": "prime",
+   "stage": "relation_yield",
+   "n_or_bits": {
+    "bits": 20,
+    "p": 1046047
+   },
+   "base_id_or_hash": "sha256:d0ab2f27b780ed0a7d02c7004c7fa36cff2fe10c007c36593ca62b8bdbd74194",
+   "base_id_basis": "recipe string (p, curve, shape, m, N, enumeration rule); NOT a hash of the materialised dlog list",
+   "factor_base_size_F": 96,
+   "m_summands": 3,
+   "eta_or_coverage_policy": "exhaustive: every m-multiset of the base enumerated, r(R) accumulated over the whole group; coverage = |E| (no sampling)",
+   "pr_decomposition_or_hit_rate_with_ci": {
+    "value": 0.129835,
+    "ci95": [
+     0.129191,
+     0.130479
+    ],
+    "definition": "#{R != O : r(R) >= 1} / (|E| - 1)",
+    "note": "the value is exact for this base; the interval is the binomial error a T-target estimate of the same quantity would carry, reported so the field is comparable"
+   },
+   "trials_per_relation": 7.7021,
+   "target_mix": {
+    "natural": 1.0,
+    "planted_sat": 0.0,
+    "proven_unsat": 0.0
+   },
+   "total_relations": 152096,
+   "mean_r_exclO": 0.145299,
+   "max_r_exclO": 50,
+   "identity_check": {
+    "sum_r_equals_C_N_plus_m_minus_1_m": true,
+    "tuples": 152096
+   }
+  },
+  {
+   "regime": "prime",
+   "stage": "relation_yield",
+   "n_or_bits": {
+    "bits": 20,
+    "p": 1046047
+   },
+   "base_id_or_hash": "sha256:40f5e43cd61086dcb072c3b3ea60f4f8033f12529d40395744f5a0ce224c0735",
+   "base_id_basis": "recipe string (p, curve, shape, m, N, enumeration rule); NOT a hash of the materialised dlog list",
+   "factor_base_size_F": 96,
+   "m_summands": 3,
+   "eta_or_coverage_policy": "exhaustive: every m-multiset of the base enumerated, r(R) accumulated over the whole group; coverage = |E| (no sampling)",
+   "pr_decomposition_or_hit_rate_with_ci": {
+    "value": 0.131667,
+    "ci95": [
+     0.131019,
+     0.132315
+    ],
+    "definition": "#{R != O : r(R) >= 1} / (|E| - 1)",
+    "note": "the value is exact for this base; the interval is the binomial error a T-target estimate of the same quantity would carry, reported so the field is comparable"
+   },
+   "trials_per_relation": 7.5949,
+   "target_mix": {
+    "natural": 1.0,
+    "planted_sat": 0.0,
+    "proven_unsat": 0.0
+   },
+   "total_relations": 152096,
+   "mean_r_exclO": 0.145299,
+   "max_r_exclO": 50,
+   "identity_check": {
+    "sum_r_equals_C_N_plus_m_minus_1_m": true,
+    "tuples": 152096
+   }
+  },
+  {
+   "regime": "prime",
+   "stage": "relation_yield",
+   "n_or_bits": {
+    "bits": 24,
+    "p": 16776547
+   },
+   "base_id_or_hash": "sha256:98c508ec8c8fe3fb24de655ca599db5045e3ac8bed2bf75ff12ff5a971c6b78d",
+   "base_id_basis": "recipe string (p, curve, shape, m, N, enumeration rule); NOT a hash of the materialised dlog list",
+   "factor_base_size_F": 464,
+   "m_summands": 3,
+   "eta_or_coverage_policy": "exhaustive: every m-multiset of the base enumerated, r(R) accumulated over the whole group; coverage = |E| (no sampling)",
+   "pr_decomposition_or_hit_rate_with_ci": {
+    "value": 0.628659,
+    "ci95": [
+     0.628428,
+     0.62889
+    ],
+    "definition": "#{R != O : r(R) >= 1} / (|E| - 1)",
+    "note": "the value is exact for this base; the interval is the binomial error a T-target estimate of the same quantity would carry, reported so the field is comparable"
+   },
+   "trials_per_relation": 1.5907,
+   "target_mix": {
+    "natural": 1.0,
+    "planted_sat": 0.0,
+    "proven_unsat": 0.0
+   },
+   "total_relations": 16757358,
+   "mean_r_exclO": 0.999299,
+   "max_r_exclO": 238,
+   "identity_check": {
+    "sum_r_equals_C_N_plus_m_minus_1_m": true,
+    "tuples": 16757360
+   }
+  },
+  {
+   "regime": "prime",
+   "stage": "relation_yield",
+   "n_or_bits": {
+    "bits": 24,
+    "p": 16776547
+   },
+   "base_id_or_hash": "sha256:7624a167b167e0af3339f58ef49d953bd38986f10f0b1f8eb87387fc72272c97",
+   "base_id_basis": "recipe string (p, curve, shape, m, N, enumeration rule); NOT a hash of the materialised dlog list",
+   "factor_base_size_F": 464,
+   "m_summands": 3,
+   "eta_or_coverage_policy": "exhaustive: every m-multiset of the base enumerated, r(R) accumulated over the whole group; coverage = |E| (no sampling)",
+   "pr_decomposition_or_hit_rate_with_ci": {
+    "value": 0.629746,
+    "ci95": [
+     0.629514,
+     0.629977
+    ],
+    "definition": "#{R != O : r(R) >= 1} / (|E| - 1)",
+    "note": "the value is exact for this base; the interval is the binomial error a T-target estimate of the same quantity would carry, reported so the field is comparable"
+   },
+   "trials_per_relation": 1.5879,
+   "target_mix": {
+    "natural": 1.0,
+    "planted_sat": 0.0,
+    "proven_unsat": 0.0
+   },
+   "total_relations": 16757358,
+   "mean_r_exclO": 0.999299,
+   "max_r_exclO": 236,
+   "identity_check": {
+    "sum_r_equals_C_N_plus_m_minus_1_m": true,
+    "tuples": 16757360
+   }
+  },
+  {
+   "regime": "prime",
+   "stage": "relation_yield",
+   "n_or_bits": {
+    "bits": 24,
+    "p": 16776547
+   },
+   "base_id_or_hash": "sha256:95a9017a4ceb4612c8be553873e9d3a7c6b81b6588e1fabb5e411aaa6b9c4095",
+   "base_id_basis": "recipe string (p, curve, shape, m, N, enumeration rule); NOT a hash of the materialised dlog list",
+   "factor_base_size_F": 464,
+   "m_summands": 3,
+   "eta_or_coverage_policy": "exhaustive: every m-multiset of the base enumerated, r(R) accumulated over the whole group; coverage = |E| (no sampling)",
+   "pr_decomposition_or_hit_rate_with_ci": {
+    "value": 0.629339,
+    "ci95": [
+     0.629108,
+     0.62957
+    ],
+    "definition": "#{R != O : r(R) >= 1} / (|E| - 1)",
+    "note": "the value is exact for this base; the interval is the binomial error a T-target estimate of the same quantity would carry, reported so the field is comparable"
+   },
+   "trials_per_relation": 1.589,
+   "target_mix": {
+    "natural": 1.0,
+    "planted_sat": 0.0,
+    "proven_unsat": 0.0
+   },
+   "total_relations": 16757358,
+   "mean_r_exclO": 0.999299,
+   "max_r_exclO": 239,
+   "identity_check": {
+    "sum_r_equals_C_N_plus_m_minus_1_m": true,
+    "tuples": 16757360
+   }
+  }
+ ]
+}

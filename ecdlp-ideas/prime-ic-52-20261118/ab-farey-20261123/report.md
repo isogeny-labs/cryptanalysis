@@ -1,0 +1,319 @@
+# The a/b (small-rational-height) factor base: generation, and why it cannot buy relations
+
+Date: 2026-11-23. Closes or opens LEAD 8 of `mythos52-b7/ev-leads-pr-records.md`
+("small-rational-height base … never measured against intervals at equal size").
+
+---
+
+## 0. What was asked, restated
+
+Two questions were bundled in the request, and they have different answers:
+
+1. **Can a/b generation be made fast?**  Yes, and the reason is a structural
+   identity, not an engineering trick: the set is the *Farey sequence* under
+   two involutions, so it can be produced by a mediant recurrence (no gcd
+   test, no hash set, O(1) memory) and **addressed by index in O(polylog B)
+   without storing anything**.
+2. **Can a choice of a/b's yield more relations?**  No — in expectation, at
+   fixed `|F|`, this is a theorem (`Check/Farey.lean`, `sum_repCount`), not a
+   tuning question.  The total representation count is `|F|^m` for *every*
+   factor base; shape can only redistribute the count across targets.
+
+The rest of this note is the arithmetic and the measurement behind those two
+sentences, plus the one place where the a/b shape does have a real (but
+quantitatively useless) edge: the Jochemsz–May box product, worth 0.28 bits.
+
+---
+
+## 1. The set, exactly
+
+    X(B) = { a·b⁻¹ mod p : gcd(a,b) = 1, 1 ≤ |a|,|b| ≤ B, b ≠ 0 } ∪ {0}
+
+The `b = 0` row must be dropped (`a/0` is not a field element), and `x = -x'`
+via `(a,b) ~ (-a,-b)`.  What survives is the Farey sequence of order `B` in
+`(0,1]`, together with its reciprocals and signs.
+
+**Counts** (exact; `Check/Farey.lean` `farey_card` proves the first line, the
+rest is the `2`-to-`1` quotient by `±1` plus the extra `x = 0`):
+
+    #{(a,b) : 1 ≤ a ≤ b ≤ B, gcd(a,b)=1} = Φ(B) = Σ_{b≤B} φ(b)
+    |{(a,b) : 1 ≤ |a|,|b| ≤ B, gcd(a,b)=1, b≠0}| = 8Φ(B) − 2
+    |X(B)| = 4Φ(B) − 1
+
+`raw/counts.json` checks both lines by brute force for `B ≤ 96` and the
+asymptotic `|X(B)|/B² → 12/π² = 1.2158542` to seven digits:
+
+| B | `|X(B)|` | `|X|/B²` |
+|---|---|---|
+| 2^16 | 5 222 059 703 | 1.2158555 |
+| 2^18 | 83 553 058 575 | 1.2158570 |
+| 2^20 | 1 336 846 396 983 | 1.2158547 |
+
+(For `B = 2^20` the base has 1.3·10¹² elements — nine orders of magnitude more
+than can be materialised, which is where rank/unrank starts to matter.)
+
+---
+
+## 2. Generation: two algorithms and a sharding primitive
+
+`abgen.py`, three modes, all verified to produce the *same* set:
+
+* **naive** — scan the quarter square, `gcd` each pair, batch-invert, insert
+  into a set.  The obvious implementation; costs `B²` gcds and needs a
+  `|X|`-element set.
+* **farey** — mediant recurrence over `(a,b)`, emit `±a/b, ±b/a`
+  (`a = b` emits only `±1`), batched inversion per block.  Costs `Φ(B) ≈
+  0.304·B²` steps — **3.3× fewer by construction** — no gcd, no set, O(1)
+  memory.
+* **unrank** — `FareyRank(B).unrank(i)` returns the `i`-th pair in
+  `(b ascending, a ascending)` order by binary-searching the totient prefix
+  and then finding the `k`-th integer coprime to `b` by inclusion–exclusion
+  over its distinct primes.  Storage is the totient prefix only.
+
+Measured (Python 3.12, one core, `raw/bench.json`):
+
+| B | pairs | naive | farey | speedup |
+|---|---|---|---|---|
+| 2^8 | 19 924 | 0.14 s | 0.03 s | 5.5× |
+| 2^10 | 199 264 | 2.31 s | 0.54 s | 4.2× |
+| 2^11 | 510 002 | 10.19 s | 2.27 s | 4.5× |
+| 2^12 | 1 275 854 | 41.25 s | 9.35 s | 4.4× |
+
+`raw/selfcheck.json`: rank/unrank are mutual inverses at `B ∈ {1,2,7,64,1000,
+4096}`, and the image covers exactly the Farey set (full enumeration checked
+for `B ≤ 64`).  Random access at `B = 2^20` (a 1.3·10¹²-element base) costs
+**58 µs per unrank** in pure Python — the point being that it *exists*: the
+base is an addressable array, so it shards across machines with no
+communication and no storage.
+
+That is the whole of the generation result: a 4–5× constant, O(1) memory, and
+a sharding primitive that the interval base gets for free but that the a/b
+base previously lacked.
+
+---
+
+## 3. Yield: the counting identity, and the exact measurement
+
+Let `F ⊂ E(F_p)` be a factor base of `N` points, `r(R)` the number of
+`m`-multisets of `F` summing to `R`.  Then
+
+    Σ_{R ∈ E} r(R) = C(N+m−1, m)
+
+for **every** `F` — this is `sum_repCount` in Lean (ordered version:
+`Σ_R r(R) = N^m`), and the corollary `mean_shape_blind` is that two
+equal-sized factor bases have identical total, hence identical mean yield
+`C(N+m−1,m)/|E|`.  A uniform random target set of size `T` therefore yields
+`T · C(N+m−1,m)/|E|` relations in expectation, whatever the shape.  Targets
+in IC are `kG` for many `k`, i.e. uniform random, so the identity applies.
+
+The measurement is **exact, not sampled**: `ecell.c` builds the discrete-log
+table of `E` (so point addition is integer addition mod `n`), then enumerates
+*every* `m`-multiset and accumulates `r(R)` over the whole group.  Curve
+`y² = x³ + 7`, `p = 1046047` (`#E = 1046779`, prime) and
+`p = 16776547` (`#E = 16769119`, prime); all three shapes normalised to the
+same `N` points on the same curve.
+
+Exact identities (`raw/cells.json`, `analyse.py` §1) — all hold:
+
+* `tuples = C(N+m−1,m)` for every cell;
+* `Σ_R r(R) = tuples` for every cell;
+* at `m = 2` the trivial spike is `r(O) = N/2` exactly (`P + (−P)`, the
+  negation any symmetric base gives away for free).
+
+Shape comparison at equal `|F|` (`P(r≥1)` is the fraction of non-identity
+targets that decompose at all; the relation *count* is fixed by the identity
+and does not need a table):
+
+| p | m | N | interval | farey | random |
+|---|---|---|---|---|---|
+| 2^20 | 2 | 1448 | .63417 | .63327 | .63158 |
+| 2^20 | 3 | 184 | .62872 | .62682 | .62798 |
+| 2^24 | 2 | 5792 | .63241 | .63245 | .63215 |
+| 2^24 | 3 | 464 | .62866 | .62975 | .62934 |
+
+and the means, which are the identical-quantity check:
+
+| p | m | N | mean `r` (all three shapes) |
+|---|---|---|---|
+| 2^20 | 2 | 1448 | 1.001504 |
+| 2^20 | 3 | 184 | 1.008084 |
+| 2^24 | 2 | 5792 | 1.000269 |
+| 2^24 | 3 | 464 | 0.999299 |
+
+The mean is the same rational number `(C(N+m−1,m) − r(O))/(|E|−1)` in every
+shape.  The only shape-dependence left is in `r(O)` — the trivial spike — and
+it shows up in the sixth decimal at `m = 3` (`1.008084 / 1.008080 / 1.008082`),
+because the number of 3-term zero-sum relations is shape-dependent while the
+*total* over all `R` is not.  At `m = 2` the spike is the exact `N/2` counted
+in §3 and the means agree to all printed digits.
+
+**Reading the `P(r≥1)` column honestly.** These are deterministic properties
+of one specific base each, so a binomial error bar is not a valid uncertainty
+on the *comparison*.  What matters is that the differences are ≤ 0.002 in
+absolute value (≤ 0.3%) and their **sign flips between rungs**:
+
+    farey − interval (m=2):  −0.0009 at 2^20,  +0.00004 at 2^24
+    farey − interval (m=3):  −0.0019 at 2^20,  +0.0011 at 2^24
+
+There is no reproducible direction, and the quantity that a matrix consumes —
+the number of relations — is fixed by the identity.  Verdict: **refuted**.
+
+*(Sub-percent effects do exist and are worth naming, but they do not form a
+pattern: the random base is lowest at `m = 2` on both rungs, the interval base
+is lowest at `m = 3, p = 2^24`, and the a/b base is lowest at `m = 3, p = 2^20`.
+"Structure mildly regularises the representation function" is at best a
+0.05–0.2% effect with no stable sign, and it never favours the a/b base.)*
+
+---
+
+## 4. The one real structural asset, and why it is worthless
+
+At equal `|F|` the a/b base needs only
+
+    B ≈ sqrt(π²/12 · |F|) = 0.907·sqrt(|F|)
+
+of *height*, whereas an interval base needs width `|F|`.  At the corpus's best
+cell (`α = 0.2`, `p = 2^256`, `|F| = 2^51.2`) that is `B = 2^25.5`: 26-bit
+numerators and denominators describe a 2^51-element base.  That is a genuine
+compactness win — and it is exactly cancelled by the doubled variable count,
+because `x = a/b` has *two* unknowns where `x` has one, each of individual
+degree `d = 2^{m−1}` after clearing denominators:
+
+    interval box product:  X^{m·d}     with X = |F|
+    a/b box product:       B^{2m·d}    with B² = (π²/12)|F|
+    ⇒ ratio = (π²/12)^{m·d} → the a/b product is 2^{0.28·m·d} smaller.
+
+`box_product` in Lean is the algebraic content (`(B·B)^{m·d} = B^{2·m·d}`).
+In bits: at `m = 4`, `d = 8`, the products are `2^1638.4` (interval) and
+`2^1629.4` (a/b) against a Jochemsz–May bound of `2^102.4` — a 9-bit cut off a
+**1536-bit** gap.  In the exponent: `Δα = log₂(π²/12)/log₂p = 0.0011` at 256
+bits, i.e. the a/b base reaches `|F| = 2^51.48` where the interval base reaches
+`2^51.2`.  It also doubles the number of Macaulay variables.  Net: a
+0.001-in-the-exponent gain for a 2× variable increase.
+
+---
+
+## 5. Lean
+
+`lean-check/`, `leanprover/lean4:v4.28.0`, mathlib `fadcf92`. Builds clean,
+no `sorry`; `raw/axioms.txt`:
+
+    sum_repCount      ⊂ {propext, Classical.choice, Quot.sound}
+    mean_shape_blind  ⊂ {propext, Classical.choice, Quot.sound}
+    card_coprime_Icc  ⊂ {propext, Classical.choice, Quot.sound}
+    farey_card        ⊂ {propext, Classical.choice, Quot.sound}
+    box_product       ⊂ {propext}
+
+* `sum_repCount : Σ g, repCount F m g = |F|^m` — the load-bearing statement.
+* `mean_shape_blind : |F₁| = |F₂| → Σ_g repCount F₁ m g = Σ_g repCount F₂ m g`.
+* `card_coprime_Icc : #{a ∈ [1,b] : (a,b)=1} = φ(b)` (via `a ↦ b−a`, which
+  preserves coprimality: `Nat.coprime_self_sub_left`).
+* `farey_card : #fareyPairs B = Σ_{b≤B} φ(b)`.
+* `box_product : (B·B)^{m·d} = B^{2·m·d}`.
+
+Not formalised, and why: the *unordered* count `C(|F|+m−1,m)` needs
+`#(s.sym n) = C(|F|+n−1,n)`, which Mathlib does not have for `n > 2`; the
+ordered statement gives the same conclusion (both totals are shape-blind), so
+this is a library gap, not a gap in the argument.  The quotient count
+`|X(B)| = 4Φ(B) − 1` is checked by brute force rather than proved.
+
+---
+
+## 6. Verdicts against the pre-registered protocol
+
+| id | claim | outcome |
+|---|---|---|
+| H1 | `|X(B)| = 4Φ(B) − 1` | **confirmed exactly** (B ≤ 96 brute force; generator asserts it to B = 2^12) |
+| H2 | Farey generation ≥3× faster, O(1) memory, shardable | **confirmed**: 4.2–5.5×, set-free, 58 µs random access at `B = 2^20` |
+| H3 | `Σ_R r(R) = C(N+m−1,m)` for every shape | **confirmed exactly** in all 18 cells, and **proved** (`sum_repCount`) |
+| H4 | some a/b choice yields more relations | **REFUTED** — means identical to 6 dp; `P(r≥1)` differences ≤0.3% with sign flipping between rungs |
+| H5 | height advantage survives the doubled variables | **refuted**: exactly cancelled; net `Δα = 0.0011` at 256 bits, 2× variables |
+| H6 | sign-redundant pair lists inflate hits by `2^m` | **confirmed exactly** (4.0000 at m=2, 8.0000 at m=3; distinct relations unchanged) |
+
+### What would have to be true for a/b to win
+Not a higher yield (impossible at fixed `|F|`) and not a smaller box product
+(cancelled).  The only surviving possibility is a *search algorithm* that
+exploits `(P¹)^m`-bihomogeneity to beat the MITM floor `|F|^{⌈m/2⌉}` — i.e. a
+solver, not a base.  That is a different hypothesis with its own kill test
+(solving degree of the bihomogeneous `S_{m+1}` vs the interval encoding at
+equal `|F|`, on a 32-bit rung), and it should be filed separately; the base
+choice contributes nothing to it.
+
+### Where the a/b base still earns its keep
+1. As a **shardable, storage-free description** of a large base (rank/unrank).
+2. As a **26-bit description of a 2^51-element base** where the interval base
+   needs 51 bits — irrelevant to the cost model, relevant if a base must be
+   *specified* rather than enumerated.
+3. As the **null-model twin** of the interval base: any future "yield" claim
+   about a factor base must now beat both, and the identity says the mean is
+   untouchable, so only variance/tail claims survive.
+
+---
+
+## RECORDS
+
+```yaml
+title: "The a/b factor base has no yield advantage: the mean representation count is shape-blind"
+class: disproof
+claim: "For any factor base F in a finite abelian group, sum over targets of r(R) = C(|F|+m-1,m) (unordered) / |F|^m (ordered). Any two equal-sized bases therefore have identical expected relation yield. Measured exactly over the whole group for interval, Farey and random bases at 2^20 and 2^24: identical means to 6 dp, P(r>=1) differences <= 0.3% with sign flipping between rungs."
+mechanism: "counting identity, not a heuristic: the sum map from m-multisets to the group has a fixed total; shape only moves mass between targets."
+novelty_status: "corpus LEAD 8 closed; the identity was folklore-adjacent but never stated as the reason"
+citations:
+  - {ref: "mythos52-b7/ev-leads-pr-records.md LEAD 8", provenance: internal, claim: "small-rational-height base never measured against intervals at equal size", verified_by: "this note"}
+  - {ref: "Check/Farey.lean::sum_repCount", provenance: internal, claim: "sum_g repCount F m g = |F|^m", verified_by: "lean 4.28, #print axioms clean"}
+assumptions:
+  - "IC targets kG are equidistributed, so a uniform target set is the right model"
+  - "the adversary cannot choose F after seeing R without solving the decomposition (circular)"
+predictions:
+  - {metric: "mean r at equal |F|", direction: "identical across shapes", minimum_effect: "any deviation would falsify the identity"}
+```
+
+```yaml
+title: "Farey enumeration and rank/unrank: the a/b base is an addressable array"
+class: measurement
+claim: "X(B) = {a/b : 1<=|a|,|b|<=B, gcd=1, b!=0} u {0} has |X| = 4*Phi(B) - 1 ~ 1.2158542 B^2, is generated by the Farey mediant recurrence in 3.3x fewer steps than the square scan (4.2-5.5x wall in Python), in O(1) memory, and is addressable by index in O(polylog B) with no storage."
+mechanism: "the base is the Farey sequence of order B up to x -> -x and x -> 1/x; rank = Phi(b-1) + #{a' <= a : gcd(a',b)=1}, unrank by bisecting the totient prefix and an inclusion-exclusion k-th-coprime search."
+novelty_status: "generation constant is folklore; the rank/unrank for sharding is new here"
+citations:
+  - {ref: "Check/Farey.lean::farey_card", provenance: internal, claim: "#fareyPairs B = sum_{b<=B} phi(b)", verified_by: "lean 4.28"}
+  - {ref: "raw/bench.json, raw/selfcheck.json", provenance: internal, claim: "4.2-5.5x, 58us unrank at B=2^20", verified_by: "measured"}
+assumptions:
+  - "unrank cost is measured in Python; a C port should be ~50x faster"
+```
+
+## LEADS
+
+1. **Bihomogeneous solving degree.** The only surviving a/b question: does the
+   `(P¹)^m`-bihomogeneous `S_{m+1}` system have a lower first-fall degree than
+   the interval encoding at equal `|F|`? Measured via a Macaulay rank profile
+   at a 32-bit rung, m = 3,4.  Kill line: D_bihom ≥ D_interval at equal `|F|`.
+2. **Sign-redundancy audit of existing yield numbers.** Any corpus yield
+   figure computed by counting hits over `(a,b)` pairs is inflated by `2^m`
+   (exactly: 4 and 8 measured).  Worth a grep over the campaign's yield tables.
+3. **Rank/unrank as a shard primitive** for any large structured base
+   (interval bases get it free; subgroup and mixed bases may not).
+4. **Uniform rank-profile schema** — already LEAD 11 of b7; nothing here
+   changes it.
+
+## Filing
+
+`raw/claim_draft_relation_yield.json` is a schema-complete `relation_yield`
+draft for the **prime** regime of `docs/ic/boundary_targets.json` (schema v2),
+18 cells, with all six required stage fields plus the six global provenance
+fields.  It is a draft: filing is a write to the `crypto` ledger, which is out
+of scope here.  Note for the filer: the hit rate is *exact* per base, so the
+`ci95` field carries the binomial interval a T-target estimate would have —
+it is there for comparability, not because the value is sampled.  The
+`base_id_or_hash` hashes the recipe, not a materialised dlog list (stated in
+`base_id_basis`).
+
+## Reproduction
+
+```
+cd ecdlp-ideas/prime-ic-52-20261118/ab-farey-20261123
+python3 abgen.py counts && python3 abgen.py selfcheck && python3 abgen.py bench
+cc -O3 -o ecell ecell.c -lm && cc -O2 -o findprime findprime.c
+./findprime 16777216 2 > raw/prime24.txt     # ~6 min, first line used
+python3 run_cells.py && python3 analyse.py
+cd lean-check && lake exe cache get && lake build && lake env lean Check/Axioms.lean
+```
