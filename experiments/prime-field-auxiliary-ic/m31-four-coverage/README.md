@@ -697,3 +697,11 @@ smooth-twist.py generates public 32-coordinate auxiliary orbits with PARI/GP, ac
 | 4096 | 16285 | 16504 |
 
 Always choosing the twist gives 16484 correct on holdout. The best rule chosen after seeing those labels gains at most 50 correct decisions over that constant. At bound 4096, retaining only smooth positive representatives keeps 2094 of 16284 valid base lifts. SignedSmoothScore.lean imports the CSV counts as numerals and kernel-checks the three training optima, their held-out scores and the ceilings over all sixteen deterministic rules at each individual bound. This tests integer smoothness on the sampled auxiliary orbits; joint multibound predictors and group-order smoothness are separate questions. Run python3 smooth-twist.py to reproduce the CSV and replay the Lean source with Lean 4.34.1 and mathlib.
+
+### Exact depth of the M31 base-lift indicator
+
+For canonical field input x, output one if some y satisfies y²=x³+2x+14 and zero otherwise. SideIndicatorDepth.lean proves that the minimum multiplication depth for this task is 31 in the SquareRootDepth arithmetic-circuit model. In that model addition, subtraction and multiplication by constants are free in the depth accounting. An arbitrary number of parallel gates is allowed. The proof checks that x=1 admits a lift and x=0 has none.
+
+For every prime p and nonempty proper subset S of its prime field, a polynomial taking values one on S and zero elsewhere has degree at least p−1. Its sum over the field equals the nonzero field element |S|. Every polynomial of degree below p−1 sums to zero. Since depth d permits degree at most 2^d, p=2³¹−1 requires depth at least 31. For the matching upper bound, each term 1−(x−a)^(p−1) detects x=a, and a balanced power circuit evaluates it at depth 31. Summing one term per accepted coordinate realizes the full indicator with unrestricted circuit width.
+
+This is a universal field-arithmetic depth result. A machine equality test, branch, bit operation or table lookup extends the model. The upper construction is a mathematical witness and has no measured runtime advantage. Replay FiberLift.lean and SquareRootDepth.lean before SideIndicatorDepth.lean with Lean 4.34.1 and the same module output directory on LEAN_PATH.
