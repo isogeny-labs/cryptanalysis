@@ -148,7 +148,14 @@ include!("fiber-cache.rs");
 include!("fiber-half.rs");
 include!("table-phases.rs");
 
+include!("packed-oracle.rs");
+
 fn main() {
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+    if std::env::args().nth(1).as_deref() == Some("validate-packed") {
+        check_packed_lift();
+        return;
+    }
     #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
     if std::env::args().nth(1).as_deref() == Some("validate-signed") {
         neon_lift::check_signed();

@@ -523,3 +523,15 @@ A third group used the traces of odd powers 129 through 191 of the element repre
 The paired control/O ratio was 1.040 with 31/32 terminal medians favoring O; control/R was 1.038 with 30/32 favoring R. All ratios are medians of per-terminal median within-round ratios. Process startup, input selection and downstream table use are outside the timed rebuild. Raw order and timing records are in packed-lift.csv and packed-lift-fresh.csv. Use fiber-half TERMINAL ORDER single with no further argument for archive, holdout for the second panel or fresh for the third. Replay PairedCubic.lean then PackedTraversal.lean in Lean 4.34.1 with warnings treated as errors.
 
 PCC-20261124-547bf5 [pcc:unverified]
+
+### Canonical ordinates and the sorted packed table
+
+FiberLift.lean proves the square acceptance criterion for every field element, including zero. CanonicalLift.lean uses that theorem to characterize the emitted ordinate. For any field value r, the lift emits y exactly when y² = r and the ordinary residue of y is at most 1073741823. Taking the smaller of the two opposite representatives implements this choice. The signed 29-step arithmetic model from TerminalRoot.lean yields the same field candidate as the exponent in the acceptance test.
+
+For any list of M31 abscissas and any curve-value function, word_spec characterizes membership of an arbitrary integer key in the sorted output. It must encode an input abscissa and its canonical ordinate, and each such pair contributes its key. With distinct input abscissas, sorted_keys also proves that the table has no duplicate keys. Reordering the 128 inputs using any of the four measured vector widths gives exactly the same sorted list, including multiplicities if inputs repeat. The proofs apply to the mathematical filter, packing and sorting model. The native scalar-oracle comparisons check the implementations separately.
+
+Replay CanonicalLift.lean in the Lean 4.34.1 mathlib environment with warnings as errors. Its experiment dependencies, in build order, are FiberLift.lean, SignedSquare.lean, TerminalRoot.lean, PairedCubic.lean and PackedTraversal.lean. Use the same module output directory on LEAN_PATH. The axiom report for the key membership and traversal equality theorems lists propext, Classical.choice and Quot.sound.
+
+The native validate-packed mode additionally tests five actual packed implementations against independent u64 remainder arithmetic over 256 deterministic panels (32,768 slots). The cases include repeated abscissas, a completely rejected panel, completely accepted panels, y = 0, the half-field ordinate boundary, and appending after existing output. The oracle retained 16,664 points including 128 zero ordinates. All five implementations reproduced the scalar sequence exactly.
+
+PCC-20261124-eb70be [pcc:unverified]
