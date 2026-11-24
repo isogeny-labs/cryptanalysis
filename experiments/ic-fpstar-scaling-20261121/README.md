@@ -144,3 +144,36 @@ smooth (4 ms → 54 ms) and that the linear algebra is the growing term
 
 Next: repeat at q_bits = 32 and 36 to fit the exponent as a function of
 log(largest factor) — that is the number a cost model actually needs.
+
+## L16 — cost as a function of the large factor's size (2026-11-24)
+
+L15 held `q` fixed and varied `p`. This run fixes `p` at 56 bits and varies
+`q_bits = log2(largest prime factor of p-1)`. Driver: `run_l16.py`; raw output
+in `results_l16.json`.
+
+| q_bits | q | fb | relations | sieve (s) | linalg (s) | total (s) | lanczos iters |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 20 | 524,309 | 669 | 6,837 | 0.004 | 0.013 | 0.018 | **0** |
+| 24 | 8,388,617 | 669 | 6,658 | 0.004 | 0.024 | 0.028 | **0** |
+| 28 | 134,217,757 | 669 | 6,705 | 0.004 | 0.206 | 0.210 | 1,340 |
+| 32 | 2,147,483,659 | 669 | 6,696 | 0.004 | 0.113 | 0.117 | 669 |
+| 36 | 34,359,738,421 | 669 | 6,656 | 0.004 | 0.120 | 0.124 | 670 |
+
+**The first two rows are not IC runs.** `q <= 2^24 = IC_SMALL_Q`, so the engine
+solves by Pohlig–Hellman and never builds the matrix (`lanczos_iterations = 0`).
+Any fit that includes them is meaningless — the "q^0.19" reported by the driver
+is exactly that mistake, and is withdrawn here.
+
+**Among the three genuine IC rows there is no growth:** 0.21 s at q_bits = 28,
+0.117 s at 32, 0.124 s at 36. The 28-bit row is the *slowest*, with
+`lanczos_iterations = 1340` against a factor base of 669 (two attempts or two
+moduli), which looks like an attempt-count artifact rather than a size effect.
+
+**Together with the 47-bit safe prime (did not finish in 9 minutes), the honest
+statement is that this engine's cost is not a smooth function of `log q` in the
+tested range: it is flat from 28 to 36 bits, then jumps somewhere between 36 and
+47 bits.** A cost model needs that threshold located, not an exponent fitted
+through five single-seed points.
+
+Next: repeat each cell >= 5 times (attempt counts vary), and bracket the
+threshold with q_bits = 40, 44 at fixed p = 56 bits.
