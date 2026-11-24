@@ -16,6 +16,8 @@ fn dual_bench(t: u64, order: &str, expected_base: &Points) {
             twist.clear();
             let xs = half_fiber_root::<4, 7>(black_box(t));
             match method {
+                'u' => neon_lift::dual_ordered::<true>(&xs, 14, &mut base, &mut twist),
+                'v' => neon_lift::dual_ordered::<false>(&xs, 14, &mut base, &mut twist),
                 'i' => {
                     neon_lift::packed_lift::<16, false>(&xs, 14, &mut base);
                     neon_lift::packed_lift::<16, false>(&xs, M::P - 14, &mut twist);

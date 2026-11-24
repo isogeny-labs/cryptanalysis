@@ -96,3 +96,97 @@ pub(super) fn dual_packed<const V: usize, const MASKED: bool>(
         out.extend(keys.iter().map(|&key| (key >> 31, key & M::P)));
     }
 }
+
+// The public fiber has 64 distinct nonzero sign pairs.
+pub(super) fn dual_ordered<const NETWORK: bool>(
+    xs: &[u64; 128],
+    b: u64,
+    base: &mut Points,
+    twist: &mut Points,
+) {
+    let mut pairs = [0u64; 128];
+    for i in 0..64 {
+        pairs[i] = xs[i].min(M::P - xs[i]);
+    }
+    if NETWORK {
+        let mut keys = std::array::from_fn::<u32, 64, _>(|i| pairs[i] as u32);
+        network_sort(&mut keys);
+        for i in 0..64 {
+            pairs[i] = u64::from(keys[i]);
+        }
+    } else {
+        pairs[..64].sort_unstable();
+    }
+    for i in 0..64 {
+        pairs[64 + i] = M::P - pairs[i];
+    }
+    let mut pos = [u64::MAX; 128];
+    let mut neg = [u64::MAX; 128];
+    for offset in [0, 32] {
+        let (rhs, roots) = paired_roots::<16>(&pairs, b, offset);
+        for j in 0..16 {
+            let first = offset + (j / 8) * 64 + 4 * (j % 8);
+            for k in 0..4 {
+                let i = first + k;
+                let y = u64::from(roots[j][k]);
+                let r = u64::from(rhs[j][k]);
+                let ok = M::sq(y) == r;
+                let ord = y.min(M::sub(0, y));
+                if ok {
+                    pos[i] = ord;
+                }
+                if !ok || r == 0 {
+                    neg[i ^ 64] = ord;
+                }
+            }
+        }
+    }
+    for i in (0..64).chain((64..128).rev()) {
+        if pos[i] != u64::MAX {
+            base.push((pairs[i], pos[i]));
+        }
+        if neg[i] != u64::MAX {
+            twist.push((pairs[i], neg[i]));
+        }
+    }
+}
+
+#[inline(always)]
+fn stage<const K: usize, const J: usize>(keys: &mut [u32; 64]) {
+    for chunk in (0..64).step_by(2 * J) {
+        for i in chunk..chunk + J {
+            let a = keys[i];
+            let b = keys[i + J];
+            if i & K == 0 {
+                keys[i] = a.min(b);
+                keys[i + J] = a.max(b);
+            } else {
+                keys[i] = a.max(b);
+                keys[i + J] = a.min(b);
+            }
+        }
+    }
+}
+fn network_sort(keys: &mut [u32; 64]) {
+    stage::<2, 1>(keys);
+    stage::<4, 2>(keys);
+    stage::<4, 1>(keys);
+    stage::<8, 4>(keys);
+    stage::<8, 2>(keys);
+    stage::<8, 1>(keys);
+    stage::<16, 8>(keys);
+    stage::<16, 4>(keys);
+    stage::<16, 2>(keys);
+    stage::<16, 1>(keys);
+    stage::<32, 16>(keys);
+    stage::<32, 8>(keys);
+    stage::<32, 4>(keys);
+    stage::<32, 2>(keys);
+    stage::<32, 1>(keys);
+    stage::<64, 32>(keys);
+    stage::<64, 16>(keys);
+    stage::<64, 8>(keys);
+    stage::<64, 4>(keys);
+    stage::<64, 2>(keys);
+    stage::<64, 1>(keys);
+}

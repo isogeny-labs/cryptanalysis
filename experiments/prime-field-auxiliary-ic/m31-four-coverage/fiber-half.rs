@@ -199,7 +199,7 @@ fn half_bench(rotation: usize, order: &str, holdout: bool, fresh: bool, single: 
         expected[start..].sort_unstable();
     }
     let mut out = Points::with_capacity(4096);
-    if order.chars().all(|c| matches!(c, 'i' | 'j' | 'k')) {
+    if order.chars().all(|c| matches!(c, 'i' | 'j' | 'k' | 'v' | 'u')) {
         assert!(single);
         dual_bench(terminals[0], order, &expected);
         return;
