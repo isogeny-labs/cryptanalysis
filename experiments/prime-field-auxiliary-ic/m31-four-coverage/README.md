@@ -756,3 +756,17 @@ Build residue-bitmap.cpp with -DM31_ROTATE_TABLE for 32 MiB or without it for 12
 | NEON arithmetic in the rotation runs | none | 3.16–3.47 | 3.29–3.34 |
 
 Ranges summarize four process medians for lookup and four individual builds. The 32 MiB table reduced build time and narrowly improved fresh lookup in each pair. Arithmetic remained faster on fresh inputs. The 4.13 MiB orbit-label count is a distinct mathematical storage result; this experiment measures the directly addressed table. Raw readings are in residue-rotation.csv.
+
+### Three consecutive equal bits give a 16 MiB table
+
+Compile residue-bitmap.cpp with -DM31_TRIPLE_TABLE and the same native flags and input as the 32 MiB experiment. An additional equality check selects the end of a run of at least three equal cyclic bits. Rotation and optional complement then give an odd representative below 2²⁸. Lean's triple_address proves the address pattern for every selected index. Its triple_fallback proves that for a canonical nonzero input, the fallback occurs exactly when there are no three consecutive equal cyclic bits. Zero returns directly.
+
+An exhaustive scan of the 2147483646 nonzero residues found 3010348 fallbacks (0.14018%). An independent count uses the last two bits as states. The successors of 00, 01, 10 and 11 are respectively {01}, {10,11}, {00,01} and {10}. The trace of the 31st power of this adjacency matrix counts words with a specified starting position and cyclic closure, giving the same 3010348. This census is over field elements. Cubic values on a particular input stream can have a different frequency. Every timed lookup includes the scalar reciprocity fallback.
+
+| Apple M4 Pro, seeds 131–134 | Build seconds | Repeated coordinates, ns each | Fresh coordinates, ns each |
+|---|---:|---:|---:|
+| 32 MiB | 2.14–2.20 | 3.32–3.47 | 8.14–8.34 |
+| 16 MiB | 1.24–1.32 | 3.72–4.05 | 5.80–6.40 |
+| NEON in 16 MiB processes | none | see raw timings | 3.25–3.31 |
+
+Ranges cover four process medians for lookup and four builds. The smaller table cut fresh lookup time by 23–29% across paired seeds while increasing repeated-coordinate time. Each process compared every output with NEON across warmup and measurement. A separate seed-135 build passed AddressSanitizer and UndefinedBehaviorSanitizer. The raw measurements are in residue-triples.csv. These measurements cover public base/twist classification.

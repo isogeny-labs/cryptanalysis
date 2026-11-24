@@ -10,11 +10,16 @@
 using Clock = std::chrono::steady_clock;
 struct Table {
     std::vector<uint64_t> words;
-#ifdef M31_ROTATE_TABLE
-    Table() : words(size_t(1)<<22) {
+#if defined(M31_ROTATE_TABLE) || defined(M31_TRIPLE_TABLE)
+#ifdef M31_TRIPLE_TABLE
+    static constexpr unsigned address_bits=27;
+#else
+    static constexpr unsigned address_bits=28;
+#endif
+    Table() : words(size_t(1)<<(address_bits-6)) {
         for(uint64_t y=1;y<=p/2;++y) {
             uint32_t r=y*y%p;
-            if((r>>29)==0 && (r&1)) words[r>>7] |= uint64_t(1)<<((r>>1)&63);
+            if((r>>(address_bits+1))==0 && (r&1)) words[r>>7] |= uint64_t(1)<<((r>>1)&63);
         }
     }
     bool square(uint32_t a) const {
@@ -22,6 +27,11 @@ struct Table {
         uint32_t left=((a<<1)&p)|(a>>30);
         uint32_t right=(a>>1)|((a&1)<<30);
         uint32_t marks=(a^right)&~(a^left);
+#ifdef M31_TRIPLE_TABLE
+        uint32_t left2=((left<<1)&p)|(left>>30);
+        marks &= ~(a^left2);
+        if(!marks) return reciprocity(a);
+#endif
         unsigned bit=__builtin_ctz(marks);
         bool negate=(a>>bit)&1;
         uint32_t v=negate?(p^a):a;

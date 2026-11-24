@@ -60,5 +60,20 @@ theorem selected_bits (x : BitVec 31) (i : Fin 31)
     v.rotateRight (i.val+1) &&& 1610612737 = 1 := by
   fin_cases i <;> simp only [Nat.reduceAdd] at * <;> bv_decide
 
+def triple (x : BitVec 31) :=
+  ~~~(x ^^^ x.rotateLeft 1) &&& ~~~(x ^^^ (x.rotateLeft 1).rotateLeft 1)
+
+theorem triple_fallback (x : BitVec 31) (lo : x ≠ 0) (hi : x ≠ 2147483647) :
+    ((x ^^^ x.rotateRight 1) &&& triple x = 0) ↔ triple x = 0 := by
+  unfold triple
+  bv_decide
+
+theorem triple_address (x : BitVec 31) (i : Fin 31)
+    (mark : (((x ^^^ x.rotateRight 1) &&& triple x) >>> i.val) &&& 1 = 1) :
+    let v := if (x >>> i.val) &&& 1 = 0 then x else ~~~x
+    v.rotateRight (i.val+1) &&& 1879048193 = 1 := by
+  unfold triple at mark
+  fin_cases i <;> simp only [Nat.reduceAdd] at * <;> bv_decide
+
 theorem bytes : (34636833 + 7) / 8 = 4329605 := by decide
 end M31ResidueOrbits
