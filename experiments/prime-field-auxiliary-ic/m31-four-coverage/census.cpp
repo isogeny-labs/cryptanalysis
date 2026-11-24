@@ -11,6 +11,7 @@
 #include <map>
 #include <random>
 #include <unordered_map>
+#include <unordered_set>
 
 using Word = std::uint32_t;
 constexpr Word p=2147483647;
@@ -410,10 +411,41 @@ static void five_prefixes(std::vector<Word> xs) {
     for(unsigned ways:{1,4,6,12,24}) std::cout<<ways<<','<<hits[ways]<<'\n';
 }
 
+template<class Record>
+static void visit_shell(unsigned arity, Record& record) {
+    for(unsigned i=0; i<basis.size(); i+=2)
+        visit<false>(basis[i],i,arity-1,record);
+}
+
+// Each triple abscissa can contribute at most once to the intersection.
+static std::uint64_t sparse_overlap() {
+    constexpr Word mask=(1u<<22)-1;
+    Bits filter((mask+1)/64);
+    std::unordered_set<Word> remaining;
+    auto insert=[&](Word x) {
+        if(x==p) return;
+        remaining.insert(x);
+        filter[(x&mask)/64] |= UINT64_C(1)<<(x%64);
+    };
+    visit_shell(3,insert);
+    auto before=remaining.size();
+    auto remove=[&](Word x) {
+        if(filter[(x&mask)/64] & (UINT64_C(1)<<(x%64))) remaining.erase(x);
+    };
+    visit_shell(4,remove);
+    return 2*(before-remaining.size());
+}
+
 int main(int argc,char** argv) {
     std::vector<Word> xs;
     Word x;
     while(std::cin>>x) xs.push_back(x);
+    if(argc==2 && std::string(argv[1])=="overlap-3-4") {
+        if(xs.empty() || xs.size()>195) throw std::invalid_argument("invalid basis size");
+        load_basis(xs);
+        std::cout<<sparse_overlap()<<'\n';
+        return 0;
+    }
     if(argc==2 && (std::string(argv[1])=="five-prefixes" || std::string(argv[1])=="simple-five")) {
         if(xs.empty() || xs.size()>195) throw std::invalid_argument("invalid basis size");
         if(std::string(argv[1])=="simple-five") five_prefixes<true>(xs);
