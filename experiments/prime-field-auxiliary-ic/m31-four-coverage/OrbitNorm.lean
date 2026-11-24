@@ -100,6 +100,27 @@ def steps : List (Step F) :=
   [⟨0,0,1⟩,⟨2,6,8⟩,⟨262150,786438,3145792⟩,
    ⟨135006214,403445766,562160130⟩,⟨199756251,1939860868,1327400300⟩]
 
+/-- The constant term of the shifted numerator vanishes at a nonzero
+two-torsion root on the preceding quotient. -/
+theorem cancel_at_torsion {K : Type*} [Field K] (t a₂ a₄ : K) (ht : t ≠ 0)
+    (root : t^3+a₂*t^2+a₄*t = 0) :
+    t^2-(3*t+a₂)*t+(3*t^2+2*a₂*t+a₄) = 0 := by
+  apply (mul_eq_zero.mp (_ : t*(t^2-(3*t+a₂)*t+(3*t^2+2*a₂*t+a₄)) = 0)).resolve_left ht
+  linear_combination root
+
+theorem factored_step (u v : R) (s : Step R) (h : s.t^2-s.A*s.t+s.B = 0) :
+    let w := u-s.t*v
+    (w*w+s.A*(w*v)+s.B*v^2, w*v) =
+      (u*(u+(s.A-2*s.t)*v), v*(u-s.t*v)) := by
+  dsimp only
+  congr 1
+  · linear_combination v^2*h
+  · ring
+
+theorem concrete_coefficients :
+    (steps.drop 1).map (fun s => (s.t^2-s.A*s.t+s.B, s.A-2*s.t)) =
+      [(0,2),(0,262138),(0,133433338),(0,1540348366)] := by decide +kernel
+
 theorem final_cubic : steps.foldl descend (⟨1,0,2,14⟩ : Cubic F) =
     ⟨1330410815,368863965,1911999596,1606038711⟩ := by decide +kernel
 

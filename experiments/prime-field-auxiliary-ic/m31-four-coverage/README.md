@@ -915,3 +915,20 @@ Starting with just one abscissa, the native path propagates projective coordinat
 The first-coordinate norm beat both full-input controls on every one of the 48 paired launches. Median paired NEON/norm ratios were 1.365 and 1.358. The executable processes one orbit per call and times 32 shuffled-panel traversals per method. Each input contract excludes initial panel generation and loading. These timings cover a single aggregate query. Consumers requesting every individual label require additional information.
 
 Compile orbit-norm.cpp with -std=c++17 -O3 -mcpu=native -DM31_REGISTER_BIC and supply shuffle seed and panel filename. Seeds 384–407 use the first panel, 408–431 the second. All 24 method orders occur once per panel. IDs 0, 1, 2 and 3 match the row order above. Raw timings are in orbit-norm.csv. A separate sanitizer build passed the full panel comparison. Replay OrbitNorm.lean with Lean 4.34.1 and warnings as errors.
+
+### Factoring the five-step norm and batching independent orbits
+
+Four of the five quotient numerators simplify. For w=U−tV the numerator w²+A wV+B V² expands to U²+(A−2t)UV+(t²−At+B)V². At a nonzero two-torsion abscissa t on y²=x(x²+a₂x+a₄), the last coefficient equals t²+a₂t+a₄ and vanishes. Thus the remaining numerator is U(U+(A−2t)V), with denominator V(U−tV). The initial (t,A,B)=(0,0,1) step from affine x is simply (x²+1,x). OrbitNorm.lean proves the general cancellation and projective identity, and kernel-checks the four reduced coefficients 2, 262138, 133433338 and 1540348366 for the concrete quotient chain.
+
+All four arms start with the first public abscissa and compute one aggregate parity bit per orbit. Each vector call gathers 32 independent starts from the shuffled row storage, evaluates the five projective steps, then evaluates their characters in eight four-lane NEON registers. The vector control specializes the initial step in the same way as the factored vector arm. No terminal coordinates or label bits are inputs to any timed implementation.
+
+| Schedule / input panel | Scalar original | Scalar factored | NEON original numerator | NEON factored numerator |
+|---|---:|---:|---:|---:|
+| 64 traversals, 291163 | 74.44 | 67.14 | 9.97 | 7.75 |
+| 64 traversals, 291164 | 73.28 | 67.54 | 9.87 | 7.64 |
+| First traversal, 291163 | 73.16 | 66.45 | 10.38 | 8.10 |
+| First traversal, 291164 | 73.32 | 66.49 | 10.29 | 8.02 |
+
+Cells are median ns per orbit at a throughput workload of 1024 independent orbits. Each panel balances all 24 method orders. In the first-traversal comparison each method runs in its own process, timing one traversal after input and oracle preparation. All arms charge input gathers, quotient evaluation, character evaluation and parity output. Panel construction, parsing, oracle preparation, output allocation and process startup are outside. These results describe throughput with 32-way batching. A single isolated orbit still uses the scalar path.
+
+Use the preceding native C++ flags and add the third argument batch for 64 traversals (seeds 456–479 and 480–503 respectively). Use first-batch METHOD for one traversal (528–551 and 552–575). Methods 0 through 3 follow the column order above. Raw records are orbit-norm-batch.csv and orbit-norm-first-batch.csv. With check-batch, every one of the 32 orbit positions becomes the starting coordinate and every output is compared against parity of the independent labels. The sanitizer build checked 65536 starts across both panels. Replay OrbitNorm.lean under Lean 4.34.1 with warnings as errors.

@@ -31,6 +31,20 @@ inline int32x4_t fold(int32x4_t x) {
     return vaddq_s32(hi,vsubq_s32(vandq_s32(vmulq_s32(x,x),mask),mask));
 }
 
+inline int32x4_t complement_square(int32x4_t lane) {
+    auto high=vqdmulhq_s32(lane,lane);
+    auto low=vmulq_s32(lane,lane);
+    int32x4_t complement;
+#ifdef M31_REGISTER_BIC
+    // Keep the mask in a register for one vector BIC instruction.
+    asm("bic %0.16b, %1.16b, %2.16b"
+        : "=w"(complement) : "w"(vdupq_n_s32(p)), "w"(low));
+#else
+    complement=vbicq_s32(vdupq_n_s32(p),low);
+#endif
+    return vsubq_s32(high,complement);
+}
+
 template<int arm>
 __attribute__((noinline)) Labels classify(const Batch& x) {
     Labels out{};
@@ -43,17 +57,7 @@ __attribute__((noinline)) Labels classify(const Batch& x) {
         for (int j=0;j<8;++j) state[j]=vreinterpretq_s32_u32(vld1q_u32(&r[4*j]));
         for (int k=0;k<30;++k) for (auto& lane:state) {
             if constexpr (arm==3) {
-                auto high=vqdmulhq_s32(lane,lane);
-                auto low=vmulq_s32(lane,lane);
-                int32x4_t complement;
-#ifdef M31_REGISTER_BIC
-                // Keep the mask in a register for one vector BIC instruction.
-                asm("bic %0.16b, %1.16b, %2.16b"
-                    : "=w"(complement) : "w"(vdupq_n_s32(p)), "w"(low));
-#else
-                complement=vbicq_s32(vdupq_n_s32(p),low);
-#endif
-                lane=vsubq_s32(high,complement);
+                lane=complement_square(lane);
             } else lane=fold(lane);
         }
         for (int j=0;j<8;++j) {

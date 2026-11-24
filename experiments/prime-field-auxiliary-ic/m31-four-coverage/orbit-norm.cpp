@@ -12,9 +12,9 @@
 
 using Word=uint32_t;
 
-Word mul(Word a,Word b) { return uint64_t(a)*b%p; }
-Word add(Word a,Word b) { Word s=a+b; return s>=p?s-p:s; }
-Word sub(Word a,Word b) { return a>=b?a-b:a+(p-b); }
+constexpr Word mul(Word a,Word b) { return uint64_t(a)*b%p; }
+constexpr Word add(Word a,Word b) { Word s=a+b; return s>=p?s-p:s; }
+constexpr Word sub(Word a,Word b) { return a>=b?a-b:a+(p-b); }
 Word power(Word x,Word n) {
     Word acc=1;
     while(n) { if(n&1) acc=mul(acc,x); x=mul(x,x); n>>=1; }
@@ -62,8 +62,11 @@ template<unsigned method> __attribute__((noinline)) bool evaluate(const Row& row
     return square(prod);
 }
 
+#include "orbit-norm-batch.hpp"
+
 int main(int argc,char** argv) {
-    if(argc!=3) return 1;
+    bool first=argc==5 && std::string(argv[3])=="first-batch";
+    if(!first && argc!=3 && !(argc==4 && (std::string(argv[3])=="batch" || std::string(argv[3])=="check-batch"))) return 1;
     unsigned seed=std::stoul(argv[1]);
     std::ifstream in(argv[2]);
     std::vector<Row> rows(1024);
@@ -87,6 +90,23 @@ int main(int argc,char** argv) {
     }
     std::mt19937 gen(seed);
     std::shuffle(rows.begin(),rows.end(),gen);
+    if(argc==4 && std::string(argv[3])=="check-batch") {
+        std::vector<uint8_t> bits(rows.size());
+        for(unsigned index=0;index<32;++index) {
+            for(auto& row:rows) std::rotate(row.xs.begin(),row.xs.begin()+1,row.xs.end());
+            for(size_t i=0;i<rows.size();i+=32)
+                orbit_batch::vector_batch<true>(rows.data()+i,bits.data()+i);
+            for(size_t i=0;i<rows.size();++i) if(bits[i]!=rows[i].expected) return 5;
+        }
+        std::cout<<32*rows.size()<<" orbit starts matched\n";
+        return 0;
+    }
+    if(first) {
+        unsigned method=std::stoul(argv[4]);
+        if(method>=4) return 1;
+        return batch_bench(rows,seed,method);
+    }
+    if(argc==4) return batch_bench(rows,seed);
     std::vector<uint8_t> result(rows.size());
     std::array<unsigned,4> order={0,1,2,3};
     for(unsigned k=0;k<seed%24;++k) std::next_permutation(order.begin(),order.end());
