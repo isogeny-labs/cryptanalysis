@@ -785,3 +785,18 @@ On Apple M4 Pro, Clang lowered the ordinary complement intrinsic to MVN followed
 Each timing cell is a median of eight process medians. Ratios are medians of within-process ratios. The register version won every process median on both streams. The panels supply the repeated coordinates and independent labels. The fresh stream uses the separate counter intervals selected by the shuffle seeds. Every output was compared with the control in every round, including warmups. A seed-169 register build passed AddressSanitizer and UndefinedBehaviorSanitizer.
 
 Compile residue-bitmap.cpp with -O3 -mcpu=native -std=c++17 -DM31_COMPARE_FOLD. Add -DM31_REGISTER_BIC for the four-instruction arm. Input and invocation follow the bitmap protocol above. Raw process timings are in complement-fold.csv and register-fold.csv. The comparison measures single-core public base/twist labels on M31.
+
+### Register BIC in complete Rust base/twist table builds
+
+Both binaries generated public coordinates from the same terminal, computed ordinates and returned the two sorted point tables. Rust 1.93.1 on the Apple M4 Pro emitted five instructions per vector square for the control and four for the explicit register BIC. The optional register_bic build changes the positive signed fold inside the 29-square chain. The Lean theorem M31ResidueOrbits.complement_chain proves equality of the word-level iterations for any starting word and any number of rounds, given the same high and low product operations. Both builds passed validate-signed and validate-packed. Each whole-table benchmark also checked both point vectors against scalar lifting on an independently generated inverse tree.
+
+| Warm stream, reusable output | Control median ns/pair | Register BIC median ns/pair | Median paired control/BIC | Rounds favoring BIC |
+|---|---:|---:|---:|---:|
+| Archive | 1233.5 | 1159.9 | 1.057 | 48/48 |
+| Holdout | 1231.7 | 1157.2 | 1.056 | 44/48 |
+| Fresh | 1230.0 | 1182.8 | 1.047 | 42/48 |
+| Fourth | 1220.6 | 1167.2 | 1.055 | 47/48 |
+
+Each warm observation covers 256 full method-x table builds over 32 terminals. The first-call comparison uses the direct vector-cubic path in a fresh process, charging coordinate generation and allocation of the owned output vectors. Across 12 pairs per terminal, the median terminal ratio was 1.018 for odd trace powers 385–447 (21 of 32 terminal medians favored BIC) and 1.002 for powers 449–511 (17 of 32). The first-call medians show little gain, especially on the second panel. The warm and first-call paths also differ in cubic evaluation and routing, so these data alone cannot attribute the difference to allocation or cache state.
+
+Compile torus7-build.rs twice with the pinned field source from a82976381, --edition=2021 -C opt-level=3 -C target-cpu=native, adding --cfg register_bic to the candidate. Run replay-register-stream.py CONTROL BIC for the warm table, and replay-owned.py CONTROL previous --register-bic BIC with previous or fresh for first-call data. The raw observations are in register-stream.csv, owned-bic-previous.csv and owned-bic-fresh.csv. The tested SHA-256 binary digests were 475aed47cb733425cf42b00048ae7c5ef8f8ada04810c029918e2445a35a4ae8 (control) and 99dd538b070de45e8ba3ac0c92ab40051565527697cc595360e4c5c6b3eeb856 (BIC).

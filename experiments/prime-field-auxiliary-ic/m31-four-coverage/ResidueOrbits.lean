@@ -79,5 +79,15 @@ theorem complement_fold (hi lo : BitVec 32) :
     hi - (2147483647 &&& ~~~lo) = hi + ((lo &&& 2147483647) - 2147483647) := by
   bv_decide
 
+/-- Substitution in a whole square-root chain, including lanes represented by negative words.
+The two implementations share the multiply-high and multiply-low operations. -/
+theorem complement_chain (high low : BitVec 32 → BitVec 32) (n : Nat) (x : BitVec 32) :
+    (fun v => high v - (2147483647 &&& ~~~(low v)))^[n] x =
+    (fun v => high v + ((low v &&& 2147483647) - 2147483647))^[n] x := by
+  have same : (fun v => high v - (2147483647 &&& ~~~(low v))) =
+      (fun v => high v + ((low v &&& 2147483647) - 2147483647)) :=
+    funext fun v => complement_fold (high v) (low v)
+  rw [same]
+
 theorem bytes : (34636833 + 7) / 8 = 4329605 := by decide
 end M31ResidueOrbits

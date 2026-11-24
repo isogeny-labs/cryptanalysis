@@ -13,7 +13,20 @@ unsafe fn signed_chain<const V: usize, const NEGATED: bool>(
                 // Clearing the product bits in p gives p - (v² mod 2³¹).
                 vsubq_s32(vbicq_s32(p, product), hi)
             } else {
-                vaddq_s32(hi, vsubq_s32(vandq_s32(product, p), p))
+                #[cfg(register_bic)]
+                {
+                    let complement;
+                    std::arch::asm!(
+                        "bic {dst:v}.16b, {mask:v}.16b, {low:v}.16b",
+                        dst = lateout(vreg) complement,
+                        mask = in(vreg) p,
+                        low = in(vreg) product,
+                        options(pure, nomem, nostack, preserves_flags),
+                    );
+                    vsubq_s32(hi, complement)
+                }
+                #[cfg(not(register_bic))]
+                { vaddq_s32(hi, vsubq_s32(vandq_s32(product, p), p)) }
             };
         }
     }
