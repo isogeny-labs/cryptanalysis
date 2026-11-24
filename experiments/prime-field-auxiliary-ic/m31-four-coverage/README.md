@@ -721,3 +721,14 @@ The matrix with row h, column s and entry equal to the base-lift bit at x=65536h
 TensorMinor.lean uses native_decide to verify all 16384 entries against the field square-root test and the entire matrix product against the identity modulo two. FiberLift.lift_exact supplies the curve interpretation. A rank inequality gives a minimum inner dimension of 128 for any binary linear factorization across this cut. The integer determinant is nonzero because it reduces to a nonzero determinant modulo two, so the same rank lower bound holds for the 0/1 matrix over characteristic-zero fields. An independent PARI/GP evaluation using kronecker, matdet and matrank confirmed binary rank 128 and an odd 69-digit integer determinant.
 
 This constrains exact sum-of-products tensor representations with the specified input partition. It gives a lower bound from one minor and no numerical approximation-error or wall-time estimate. Replay FiberLift.lean first with Lean 4.34.1, then pass the absolute path of TensorMinor.lean so include_str resolves its CSV.
+
+### Base-versus-twist label throughput on public fibers
+
+The three side-methods.cpp arms consume the same batches of 32 abscissae and return 32 base-lift bits. Each arm computes the target cubic. The scalar reciprocity arm evaluates the Jacobi symbol by removing powers of two and applying Euclidean remainders. The two NEON arms apply 30 signed folded squarings in eight four-lane registers. One canonicalizes the final square and compares it with the curve value. The other checks only its corrected parity. For a nonzero curve value a, the two possible final residues a and p−a have opposite parity. Zero is handled by equality. SideParity.lean proves the Jacobi criterion, the signed-representative low-bit correction and the parity decision for every M31 input. These theorems concern the mathematical operations; the executable receives separate per-output checks.
+
+| Generator seed | Scalar Jacobi ns/coordinate | NEON full equality | NEON parity |
+|---:|---:|---:|---:|
+| 291163 | 81.68 | 3.41 | 3.42 |
+| 291164 | 82.10 | 3.44 | 3.45 |
+
+Build side-methods.cpp with Apple Clang 21.0.0 using -O3 -mcpu=native -std=c++17. Generate the two archived input streams with python3 smooth-twist.py --labels SEED. For each panel run the binary with shuffle seeds 101 through 106 and supply the generated stream on stdin. Each process checks all 32768 outputs after each timed traversal. Three warmups precede nine measured rounds per arm with rotated and reversed order. The table gives medians of the six process medians on an Apple M4 Pro. A separate sanitizer run used shuffle seed 107 on the second panel. side-methods.csv contains all timing rows. These data cover warmed Boolean classification only. The parity check produced no reproducible wall-time saving, and the scalar reciprocity implementation took about 24 times as long as full NEON equality.
