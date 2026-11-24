@@ -50,3 +50,18 @@ At a favorable 1 PiB allowance of 32 bytes per signed base point, `B <= 2^45`. F
 The exact order used is `r=6277101735386680763835789423176059013767194773182842284081`. The arithmetic is reproducible with `B=2**45`, `T=math.comb(B+2,3)`, `U=B//2`, `expected_queries=U*r/T`, and `rho=math.sqrt(math.pi*r/4)`; the resulting query-to-rho ratio is `216.6488001`. This is a count comparison, not a timed benchmark. [pcc:unverified]
 
 The effective unknown dimension is the key exception. At `B=2^45`, a one-equivalent-per-query strategy would need `U < 2^36.241` to fit below that rho reference even before all other costs. A base made from known-scalar or CM-loop orbits could reduce `U`; the earlier [CM orbit-arc hypothesis](https://github.com/isogeny-labs/crypto-autoresearcher/blob/main/ledger/hypotheses/H-CMFB-7d4e1a.yaml) already studies the two-summand version and identifies its BSGS-equivalent decomposition search. A three-summand proposal must therefore provide both an efficiently described large base with genuinely reduced `U` and a coordinate-dependent oracle whose **fully charged** cost stays within the stricter inequality `setup + (U*r/C(B+2,3))*T + LA + descent < rho`. Horizontal transport of an unchanged base alone changes neither `U` nor its decompositions. [pcc:unverified]
+
+### Pricing the rank-one orbit exception
+
+Suppose an orbit base has one unknown seed log. Its other logs are known multiples of that seed, so one base relation and one target relation can determine the seed log and `d` when their two coefficients are independent. If the seed is `G`, one target relation suffices. This is the precise rank reduction studied for two summands by the earlier CM orbit-arc hypothesis; the calculation below prices the standard explicit pair-table search for three summands. [pcc:unverified]
+
+Precompute all unordered base-point pair sums, about `B^2/2` entries, then test `R-P` against that table for each of `B` points per query. For `h` required relations and natural uniform queries, the favorable leading work model is
+
+```text
+C_pair(B,h) = B^2/2 + (h*r/C(B+2,3))*B
+            ~= B^2/2 + 6*h*r/B^2.
+```
+
+The minimum of this model is `2*sqrt(3*h*r)` at `B=(12*h*r)^(1/4)`. Against the negation-aware rho reference `sqrt(pi*r/4)`, the minimum is `4*sqrt(3*h/pi)` times larger: about `3.91` for one relation or `5.53` for two. On P-192 the corresponding bases have `log2(B)=48.896` and `49.146`, while their 32-byte pair tables alone require about `2^101.79` and `2^102.29` bytes. At the 1 PiB base cap `B=2^45`, the explicit pair table still needs about `2^94` bytes. These are optimistic counted-operation and table-size calculations for this **specific** lookup method, with no lookup, map, or linear-algebra charge; they are not a generic lower bound. The scoped cost statement is recorded as `PCC-20261124-cdbc5b`, with unverified standing. [pcc:unverified]
+
+The remaining candidate is therefore narrower than merely reducing relation rank: it needs a compact coordinate-based three-sum oracle on a large, low-rank CM orbit base **without** materializing its pair table. The decisive experiment must compare a genuine CM orbit with a matched known-scalar orbit, measure natural-query relations and all setup, and show that the solver beats the per-query budget above on an identical base. A compact description of the orbit or a low-rank relation matrix alone does not supply that oracle. [pcc:unverified]
