@@ -102,6 +102,16 @@ This screen still uses a four-signed-point base, one constructed positive query,
 
 ## Ray-class bridge audit
 
+The [prime-to-order isogeny descent gate](PRIME_TO_R_DESCENT_GATE.md)
+shows that a smooth horizontal chain whose degree is coprime to the
+prime rational-group order is bijective on rational points. Its standard
+isogeny-descent cokernel is zero, so that construction supplies no
+point label for `Q`. This leaves coordinate-dependent solver-cost and
+relation-yield effects open, as well as the degree-`r` preimage torsor
+examined below. [pcc:unverified]
+The scoped theorem record is `PCC-20261124-921ac2`; its producer
+attestation is not independent verification. [pcc:unverified]
+
 The [ray-class reduction audit](RAY_CLASS_REDUCTION_AUDIT.md) checks a proposed obstruction in the existing lead atlas. The identity `pi = 1 mod (pi-1)` correctly gives trivial Artin symbol at the relevant prime, but it does not identify the reduced Weber values: prime-to-`p` torsion reduction is injective. A class-number-one `D=-19`, `p=47`, `r=61` control gives 30 distinct reduced x-values, contradicting the older proposal's one-value prediction. The ray labels of those values remain unknown from their coordinates; this repairs the search boundary without supplying a point-to-ideal algorithm. Producer claim `PCC-20261124-cc75fc` is unverified. [pcc:unverified]
 
 The [ray-label character gate](RAY_LABEL_CHARACTER_GATE.md) gives an exact point-dependent baseline: a quadratic-character resolvent satisfies `R(Q)=chi_r(d)R(G)` when `Q=[d]G`, and the same `D=-19` instance checks all 60 nonzero scalars. Its direct target pass costs about `r/2` group additions, far above same-target rho at P-192, and the identity is generic rather than CM-specific. A single low-degree x-only rational map cannot replace the full sum. A future CM proposal must supply a compact, charged evaluation of a useful ray-label quotient and beat this generic construction and rho on the same target. Producer claim `PCC-20261124-943a1c` is unverified. [pcc:unverified]
