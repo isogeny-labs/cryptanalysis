@@ -6,6 +6,13 @@
 // CHAIN_COUNT=1 uses the frozen batchPlus implementation, unchanged.
 using Batch = std::array<Point, 64>;
 
+#ifdef FUSED_CHORD
+inline U foldChord(U value) {
+    U sum = (value & p) + (value >> 31);
+    return sum >= p ? sum - p : sum;
+}
+#endif
+
 template<std::size_t Chains>
 void stripedAdd(Batch& points, const Batch& steps) {
     std::array<U, 64> denominator, prefix;
@@ -39,8 +46,13 @@ void stripedAdd(Batch& points, const Batch& steps) {
         U reciprocal = mul(back[g], prefix[j]);
         back[g] = mul(back[g], denominator[j]);
         U slope = mul(sub(b.y, a.y), reciprocal);
+#ifdef FUSED_CHORD
+        U x = foldChord(slope * slope + (2*p - a.x - b.x));
+        points[j] = {x, foldChord(slope * sub(a.x, x) + (p - a.y)), false};
+#else
         U x = sub(sub(mul(slope, slope), a.x), b.x);
         points[j] = {x, sub(mul(slope, sub(a.x, x)), a.y), false};
+#endif
     }
 }
 

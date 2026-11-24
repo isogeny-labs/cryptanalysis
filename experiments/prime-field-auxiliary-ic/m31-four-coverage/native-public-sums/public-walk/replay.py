@@ -1,8 +1,10 @@
 """Run python3 replay.py > timings.csv on a native little-endian host.
 
+Use --fused-chord to compare the ordinary and fused four-chain chord formulas.
 The timed fresh process initializes all public points, generates the prefix
 and writes its coordinates to /dev/null. Full-stream checks run separately.
 """
+import argparse
 import csv
 import hashlib
 import itertools
@@ -28,15 +30,17 @@ def child_cpu():
     return usage.ru_utime + usage.ru_stime
 
 
-def panel(work):
+def panel(work, fused_chord=False):
     source = subprocess.check_output(["git", "show", NATIVE], cwd=HERE)
     if hashlib.sha256(source).hexdigest() != "52c20890f4c920742e339c5c66e04b76b819604d913160ee8b63967e6e0aa341":
         raise ValueError("unexpected field implementation")
     (work / "native_v2.cpp").write_bytes(source)
     builds = {}
-    for count in (1, 2, 4):
+    variants = (4, "4-fused") if fused_chord else (1, 2, 4)
+    for count in variants:
+        flags = ["-DCHAIN_COUNT=4", "-DFUSED_CHORD"] if count == "4-fused" else [f"-DCHAIN_COUNT={count}"]
         builds[count] = work / f"walk{count}"
-        subprocess.run(["clang++", "-O3", "-mcpu=native", "-std=c++20", f"-DCHAIN_COUNT={count}",
+        subprocess.run(["clang++", "-O3", "-mcpu=native", "-std=c++20", *flags,
                         "-I", work, HERE / "walk.cpp", "-o", builds[count]], check=True)
 
     writer = csv.writer(sys.stdout, lineterminator="\n")
@@ -49,7 +53,7 @@ def panel(work):
                 digest = hashlib.file_digest(child.stdout, "sha256").hexdigest()
                 if child.wait() or digest != expected:
                     raise ValueError(f"public stream mismatch for {exe.name} seed {seed}")
-        plan = list(itertools.permutations(builds))
+        plan = list(itertools.permutations(builds)) * (4 if fused_chord else 1)
         rng.shuffle(plan)
         for rnd, order in enumerate(plan):
             for pos, count in enumerate(order):
@@ -61,5 +65,8 @@ def panel(work):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--fused-chord", action="store_true")
+    options = parser.parse_args()
     with tempfile.TemporaryDirectory() as directory:
-        panel(Path(directory))
+        panel(Path(directory), options.fused_chord)
