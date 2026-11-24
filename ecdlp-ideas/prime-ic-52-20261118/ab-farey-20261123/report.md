@@ -193,7 +193,62 @@ bits, i.e. the a/b base reaches `|F| = 2^51.48` where the interval base reaches
 
 ---
 
-## 5. Lean
+## 5. The last place a/b differs: the inner-loop predicate (added post hoc)
+
+Section 3 settled the *yield*; section 4 settled the *lattice* route. What
+neither settles is the third route: the **materialised sieve**, which is the
+only prime-field IC backend that actually runs (`rung-slope-20261119`; tables
+8 MB → 8.6 GB across k = 32…56). It materialises the base and hashes partial
+sums, so it hits the wall the ledger already names: a 2^51.2-element base at
+32 B/entry is 2^56 bytes. The natural rescue is to stop materialising and test
+membership from the defining data. That test costs:
+
+| base | predicate | cost per probe |
+|---|---|---|
+| interval `[1,X]` | `x <= X` | 1 comparison ≈ 0.3 ns |
+| a/b `X(B)` | rational reconstruction on `(p,x)` | **135 EEA steps** ≈ 16.2 kcycles ≈ 5.4 µs |
+
+(p = secp256k1, `B = 2^26` = `p^0.1`; median 135 steps, p95 150, max 169 over
+20 000 random probes; counted model at 3 GHz — Python measured 48.7 µs, which
+is the same number with interpreter overhead.)
+
+So the compact description is **1.6·10⁴× too slow** — 14 bits per probe. One
+sweep of the base at 5.4 µs/probe is 2^51 · 5.4 µs ≈ 1.2·10¹⁰ s ≈ 380 years,
+before any MITM factor. Compactness does not substitute for the table.
+
+Correctness, since a 14-bit penalty is only meaningful if the predicate is
+right: exhaustive over **all** `x ∈ F_p` for 44 `(p,B)` pairs (p ∈
+{1019, 4093, 10007, 40009, 100003}), zero mismatches against the enumerated
+set, and 108/108 recall on planted elements at production height. The early
+exit is sound because `|t_i|` is non-decreasing in the EEA, so the first
+remainder below the box bound is the only possible witness.
+
+`PROTOCOL-amendment-1.json` records that this hypothesis was declared after
+the run; it is reported here as post hoc, with its kill line (10×).
+
+### Shadow price: the relation phase is shape-blind in cost, not just yield
+
+Under the MITM model the cost of one attempted target is `|F|^{⌈m/2⌉}`
+half-sum insertions/probes and the expected number of relations per attempt is
+`C(|F|+m−1,m)/|E|`, so
+
+    cost per relation  =  |F|^{⌈m/2⌉} · |E| / C(|F|+m−1,m)
+
+which contains no shape at all. Combine with section 3 and section 4:
+
+| lever | a/b vs interval |
+|---|---|
+| expected yield at fixed `|F|` | identical (theorem, measured) |
+| relations per unit MITM work | identical (above) |
+| Jochemsz–May box product | 2^{0.28·m·d} smaller, worth `Δα = 0.0011` |
+| variables | 2× more |
+| enumeration per element | one batched inversion per pair vs none |
+| membership probe (unmaterialised) | 1.6·10⁴× slower |
+| shardable without storage | **yes — the one genuine win** |
+
+---
+
+## 6. Lean
 
 `lean-check/`, `leanprover/lean4:v4.28.0`, mathlib `fadcf92`. Builds clean,
 no `sorry`; `raw/axioms.txt`:
@@ -219,7 +274,7 @@ this is a library gap, not a gap in the argument.  The quotient count
 
 ---
 
-## 6. Verdicts against the pre-registered protocol
+## 7. Verdicts against the pre-registered protocol
 
 | id | claim | outcome |
 |---|---|---|
@@ -229,6 +284,7 @@ this is a library gap, not a gap in the argument.  The quotient count
 | H4 | some a/b choice yields more relations | **REFUTED** — means identical to 6 dp; `P(r≥1)` differences ≤0.3% with sign flipping between rungs |
 | H5 | height advantage survives the doubled variables | **refuted**: exactly cancelled; net `Δα = 0.0011` at 256 bits, 2× variables |
 | H6 | sign-redundant pair lists inflate hits by `2^m` | **confirmed exactly** (4.0000 at m=2, 8.0000 at m=3; distinct relations unchanged) |
+| H7 | compact a/b description can replace the materialised table | **refuted** (post hoc, `PROTOCOL-amendment-1.json`): 135 EEA steps/probe = 1.6·10⁴× a comparison |
 
 ### What would have to be true for a/b to win
 Not a higher yield (impossible at fixed `|F|`) and not a smaller box product
@@ -242,8 +298,9 @@ choice contributes nothing to it.
 ### Where the a/b base still earns its keep
 1. As a **shardable, storage-free description** of a large base (rank/unrank).
 2. As a **26-bit description of a 2^51-element base** where the interval base
-   needs 51 bits — irrelevant to the cost model, relevant if a base must be
-   *specified* rather than enumerated.
+   needs 51 bits — relevant only if a base must be *specified* rather than
+   enumerated.  Section 5 closes the natural follow-up: you cannot swap the
+   description for the table (1.6·10⁴× per probe).
 3. As the **null-model twin** of the interval base: any future "yield" claim
    about a factor base must now beat both, and the identity says the mean is
    untouchable, so only variance/tail claims survive.
@@ -281,6 +338,22 @@ assumptions:
   - "unrank cost is measured in Python; a C port should be ~50x faster"
 ```
 
+```yaml
+title: "The a/b base cannot replace the materialised table: 135 EEA steps per membership probe"
+class: disproof
+claim: "At alpha = 0.2 (p = secp256k1, B = 2^26) the rational-reconstruction membership test costs 135 EEA divisions (median, p95 150) = 16.2 kcycles ~ 5.4us at 3 GHz, against 1 comparison ~ 0.3 ns for the interval base: 1.6e4x, i.e. 14 bits per probe. One sweep of the 2^51.2-element base is ~380 years. The predicate is exact (exhaustive over all x for 44 (p,B) pairs; 108/108 recall on planted elements)."
+mechanism: "membership for x = a/b with |a|,|b| <= B is rational reconstruction on (p,x), exact when 2B^2 < p (here 2B^2 = p^0.2); the EEA must descend from p to sqrt|F| before the box test can fire, which is unavoidable."
+novelty_status: "the compactness-for-memory trade had never been priced"
+citations:
+  - {ref: "rung-slope-20261119/report.md", provenance: internal, claim: "the live backend materialises base + partial sums, 8 MB -> 8.6 GB over k=32..56", verified_by: "frozen run"}
+  - {ref: "PROTOCOL-amendment-1.json", provenance: internal, claim: "H7 declared post hoc with a 10x kill line", verified_by: "this note"}
+assumptions:
+  - "one 256/256-bit division ~ 120 cycles at 3 GHz (limb arithmetic, 4 limbs)"
+  - "interval membership is a single comparison because the base is a range"
+predictions:
+  - {metric: "EEA steps per probe at B = p^0.1", direction: "~log2(p)/log2(B) x constant", minimum_effect: "sub-100 steps would reopen the compactness route"}
+```
+
 ## LEADS
 
 1. **Bihomogeneous solving degree.** The only surviving a/b question: does the
@@ -294,6 +367,9 @@ assumptions:
    (interval bases get it free; subgroup and mixed bases may not).
 4. **Uniform rank-profile schema** — already LEAD 11 of b7; nothing here
    changes it.
+5. **Closed by this note:** the "compact description replaces the table" hope
+   for the materialised-sieve backend (135 EEA steps/probe, 1.6·10^4x a
+   comparison).  Do not re-propose it without a sub-100-step reconstruction.
 
 ## Filing
 
@@ -315,5 +391,6 @@ python3 abgen.py counts && python3 abgen.py selfcheck && python3 abgen.py bench
 cc -O3 -o ecell ecell.c -lm && cc -O2 -o findprime findprime.c
 ./findprime 16777216 2 > raw/prime24.txt     # ~6 min, first line used
 python3 run_cells.py && python3 analyse.py
+python3 membership.py          # section 5 (post hoc, PROTOCOL-amendment-1.json)
 cd lean-check && lake exe cache get && lake build && lake env lean Check/Axioms.lean
 ```
