@@ -17,17 +17,39 @@ W power(W x, W n) {
     return result;
 }
 
+static W reverse_bits(W word) {
+    W result = 0;
+    for (unsigned i = 0; i < 64; ++i) {
+        result = (result << 1) | (word & 1);
+        word >>= 1;
+    }
+    return result;
+}
+
+template<bool mirror>
+static std::vector<W> square_table() {
+    std::vector<W> squares((p+63)/64);
+    for (W y = 1; y <= p/2; ++y) {
+        W z = y*y % p;
+        if (!mirror || z <= p/2)
+            squares[z/64] |= W{1} << (z%64);
+    }
+    if constexpr (mirror) {
+        for (std::size_t i = 0; i < squares.size()/2; ++i)
+            squares[squares.size()-1-i] = ~reverse_bits(squares[i]);
+        // The reflection of zero is the padding bit at index p.
+        squares.back() &= ~(W{1} << 63);
+    }
+    return squares;
+}
+
 int main(int argc, char **argv) {
     const bool full = argc == 2 && std::string_view(argv[1]) == "--full";
     if (argc != 1 && !full) return 4;
     // Distinct prime factors of p-1 certify the order of the generator.
     for (W q : {2,3,7,11,31,151,331})
         if (power(generator,(p-1)/q)==1) return 1;
-    std::vector<W> squares((p+63)/64);
-    for (W y=1;y<=p/2;++y) {
-        W z=y*y%p;
-        squares[z/64] |= W{1} << (z%64);
-    }
+    const auto squares = full ? square_table<false>() : square_table<true>();
     auto sq=[&](W z){return (squares[z/64]>>(z%64))&1;};
     const W step=power(generator,462), cube_step=power(step,3);
     std::array<W,4> total{};

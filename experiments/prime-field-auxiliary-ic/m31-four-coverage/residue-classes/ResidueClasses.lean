@@ -114,4 +114,11 @@ theorem negation_flips_square (x : F) (hx : x ≠ 0) : IsSquare (-x) ↔ ¬IsSqu
       map_mul, quadraticChar_neg_one_iff_not_isSquare.mpr hm]
   constructor <;> intro h <;> linarith
 
+/-- Indices of the reflected bit in the 2^31-bit square table. -/
+theorem mirror_word (z : ℕ) (hz : z < p) :
+    (p - z) / 64 = 33554431 - z / 64 ∧
+    (p - z) % 64 = 63 - z % 64 := by
+  unfold p at *
+  omega
+
 end M31.ResidueClasses

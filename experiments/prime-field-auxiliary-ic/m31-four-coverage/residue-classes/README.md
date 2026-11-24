@@ -30,3 +30,9 @@ binary took 38.734 s (full), 21.628 s (paired), 22.336 s (paired), and
 38.548 s (full). Wall time includes square-table construction and CSV
 output. All four outputs matched the archived CSV byte for byte.
 The ratio of mean times is 1.76× for this public census.
+
+The default builder marks nonzero squares in the lower half, then fills the
+upper half by reversing and complementing each reflected word. It clears
+the padding bit at index p. The full control marks every square directly and
+enumerates all 462 classes. The Lean lemmas `mirror_word` and
+`negation_flips_square` establish the index and membership identities.
