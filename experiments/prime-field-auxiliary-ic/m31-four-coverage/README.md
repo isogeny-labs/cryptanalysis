@@ -713,3 +713,11 @@ For the base-lift label of x on the M31 curve y²=x³+2x+14, every one of the 32
 Replay FiberLift.lean then PrefixWidth.lean with Lean 4.34.1. The lift-label equivalence and state-count inference are symbolic. The sorted-signature distinction uses Lean native_decide. An independent PARI/GP replay with prefix-width.gp computes the Legendre symbol and counts signatures after each additional suffix. For high bits first, 29 consecutive suffixes distinguish all ordinary rows and 31 distinguish all rows up to complement. For low bits first, 33 suffixes distinguish all rows even up to complement (PARI census only).
 
 The bound concerns the count of distinct residual states at a specified input cut. It gives no lower bound on machine instructions or tensor rank. Arbitrarily interleaved orders and the seven branch bits of a restricted Torus7 fiber define different cuts.
+
+### Tensor rank at the high-15/low-16 bit cut
+
+The matrix with row h, column s and entry equal to the base-lift bit at x=65536h+s has rank at least 128 over GF(2) and every characteristic-zero field, including the reals. Restrict to the 128 prefixes starting at 512 and the first 128 suffixes. tensor-minor.py searches consecutive nonoverlapping prefix blocks and prints the first invertible minor together with a binary inverse. Replay with Python 3 and compare stdout to tensor-minor.csv.
+
+TensorMinor.lean uses native_decide to verify all 16384 entries against the field square-root test and the entire matrix product against the identity modulo two. FiberLift.lift_exact supplies the curve interpretation. A rank inequality gives a minimum inner dimension of 128 for any binary linear factorization across this cut. The integer determinant is nonzero because it reduces to a nonzero determinant modulo two, so the same rank lower bound holds for the 0/1 matrix over characteristic-zero fields. An independent PARI/GP evaluation using kronecker, matdet and matrank confirmed binary rank 128 and an odd 69-digit integer determinant.
+
+This constrains exact sum-of-products tensor representations with the specified input partition. It gives a lower bound from one minor and no numerical approximation-error or wall-time estimate. Replay FiberLift.lean first with Lean 4.34.1, then pass the absolute path of TensorMinor.lean so include_str resolves its CSV.
