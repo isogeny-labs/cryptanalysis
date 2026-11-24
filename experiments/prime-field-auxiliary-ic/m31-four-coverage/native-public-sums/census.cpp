@@ -9,9 +9,21 @@
 #include <vector>
 using W=uint32_t;
 constexpr W p=2147483647;
-W mul(W x,W y){return uint64_t(x)*y%p;}
 W add(W x,W y){W z=x+y;return z>=p?z-p:z;}
 W sub(W x,W y){return x>=y?x-y:x+(p-y);}
+// Canonical field inputs allow a product plus 2p to fit a single Mersenne fold.
+W fold(uint64_t product) {
+    return add(W(product >> 31), W(product) & p);
+}
+
+W mul(W x, W y) {
+#ifdef M31_BASELINE_REMAINDER
+    return uint64_t(x) * y % p;
+#else
+    return fold(uint64_t(x) * y);
+#endif
+}
+
 W inv(W x){
     if(!x)std::abort();
     W acc=1;
@@ -20,7 +32,11 @@ W inv(W x){
 }
 struct Point{W x,y;};
 Point fromSlope(Point a,Point b,W m){
+#if !defined(M31_BASELINE_REMAINDER) && !defined(M31_SEPARATE_CHORD)
+    W x = fold(uint64_t(m)*m + (2*p - a.x - b.x));
+#else
     W x=sub(sub(mul(m,m),a.x),b.x);
+#endif
     return {x,sub(mul(m,sub(a.x,x)),a.y)};
 }
 Point twice(Point a){return fromSlope(a,a,mul(add(mul(3,mul(a.x,a.x)),2),inv(add(a.y,a.y))));}
@@ -107,7 +123,9 @@ int main(int argc,char**argv){
     const std::string sortMode = argc >= 4 ? argv[3] : "std";
     if (sortMode != "std" && sortMode != "radix") return 1;
     std::array<Point,17> basis;
-    for(auto& pt:basis)if(!(std::cin>>pt.x>>pt.y))return 2;
+    for (auto& pt : basis) {
+        if (!(std::cin >> pt.x >> pt.y) || pt.x >= p || pt.y >= p) return 2;
+    }
     int arm=std::atoi(argv[1]);
     bool paired = std::string(argv[1]) == "paired-512";
     auto start=Clock::now();

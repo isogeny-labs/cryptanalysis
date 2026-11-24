@@ -25,3 +25,9 @@ Pass a fourth command-line word to select the sort and print two comma-separated
 ```
 
 The local Apple M4 Pro comparison in `sorted-table-times.csv` uses the same binary for all four combinations of generator (`1024` or `paired-512`) and sort (`std` or `radix`). Each of the 24 possible execution orders occurs once, with one fresh process per arm and the expected SHA-256 verified after each run. The radix sort makes three stable passes with 11, 11 and 10 significant bits. Its scratch storage includes a second key array and 2,048 counters.
+
+## Mersenne reduction in the sorted table build
+
+The default field multiplication adds the low 31 bits of a 64-bit product to the high bits and conditionally subtracts the modulus. The chord formula also folds the slope square and the two x-coordinate subtractions together. The input coordinates must be canonical field elements. The product and accumulator bounds and the resulting abscissa identity are proved in the parent directory's `WordReduction.lean`.
+
+Compile `census.cpp` with `-DM31_BASELINE_REMAINDER` for the original remainder and separate chord subtractions, or `-DM31_SEPARATE_CHORD` to use the Mersenne product fold alone. In `reduction-times.csv`, `remainder` denotes the original control, `fold` uses the product fold alone, and `fused` denotes the default. The comparison uses paired-512 generation, radix sort and multiset output. Each fixture runs every permutation of the three arms six times, in fresh processes. The fixtures and round order are interleaved, and every sorted output is checked against the fixture's independent digest.
