@@ -75,5 +75,9 @@ theorem triple_address (x : BitVec 31) (i : Fin 31)
   unfold triple at mark
   fin_cases i <;> simp only [Nat.reduceAdd] at * <;> bv_decide
 
+theorem complement_fold (hi lo : BitVec 32) :
+    hi - (2147483647 &&& ~~~lo) = hi + ((lo &&& 2147483647) - 2147483647) := by
+  bv_decide
+
 theorem bytes : (34636833 + 7) / 8 = 4329605 := by decide
 end M31ResidueOrbits

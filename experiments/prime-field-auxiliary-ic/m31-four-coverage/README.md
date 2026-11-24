@@ -770,3 +770,18 @@ An exhaustive scan of the 2147483646 nonzero residues found 3010348 fallbacks (0
 | NEON in 16 MiB processes | none | see raw timings | 3.25–3.31 |
 
 Ranges cover four process medians for lookup and four builds. The smaller table cut fresh lookup time by 23–29% across paired seeds while increasing repeated-coordinate time. Each process compared every output with NEON across warmup and measurement. A separate seed-135 build passed AddressSanitizer and UndefinedBehaviorSanitizer. The raw measurements are in residue-triples.csv. These measurements cover public base/twist classification.
+
+### Four-instruction signed square on AArch64
+
+The signed fold combines a doubled high multiply with the low 31 product bits and subtracts p. Its equivalent form subtracts the complemented low 31 bits from the high product. ResidueOrbits.complement_fold (in namespace M31ResidueOrbits) checks the word identity for all pairs of 32-bit operands. SignedSquare.lean establishes the operand bounds, absence of saturation, modular square and iteration identity. Both files replayed with Lean 4.34.1 and warnings as errors.
+
+On Apple M4 Pro, Clang lowered the ordinary complement intrinsic to MVN followed by an immediate BIC. That version was slower in every fresh run at seeds 141–148. Giving BIC an explicit mask register produced SQDMULH, MUL, BIC and SUB per vector square. The control emitted five instructions. The full timed classifier includes cubic evaluation and output labeling. It uses eight four-lane vectors per batch and the same 30 squarings per lane in both arms.
+
+| Coordinate panel and shuffle seeds | Control fresh ns/coordinate | Register BIC fresh ns/coordinate | Median paired throughput ratio | Repeated-coordinate ratio |
+|---|---:|---:|---:|---:|
+| 291164, 151–158 | 3.282 | 2.956 | 1.112 | 1.102 |
+| 291163, 161–168 | 3.293 | 2.959 | 1.111 | 1.092 |
+
+Each timing cell is a median of eight process medians. Ratios are medians of within-process ratios. The register version won every process median on both streams. The panels supply the repeated coordinates and independent labels. The fresh stream uses the separate counter intervals selected by the shuffle seeds. Every output was compared with the control in every round, including warmups. A seed-169 register build passed AddressSanitizer and UndefinedBehaviorSanitizer.
+
+Compile residue-bitmap.cpp with -O3 -mcpu=native -std=c++17 -DM31_COMPARE_FOLD. Add -DM31_REGISTER_BIC for the four-instruction arm. Input and invocation follow the bitmap protocol above. Raw process timings are in complement-fold.csv and register-fold.csv. The comparison measures single-core public base/twist labels on M31.

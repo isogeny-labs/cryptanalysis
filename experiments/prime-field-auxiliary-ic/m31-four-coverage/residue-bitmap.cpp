@@ -77,12 +77,19 @@ int main(int argc,char** argv) {
         oracle[i][j]=b;
     }
     auto start=Clock::now();
+#ifdef M31_COMPARE_FOLD
+    constexpr auto candidate_name="complement";
+    for(size_t i=0;i<hot.size();++i)
+        if(classify<3>(hot[i])!=oracle[i]) return 3;
+#else
+    constexpr auto candidate_name="bitmap";
     Table table;
     double build=std::chrono::duration<double>(Clock::now()-start).count();
     std::cerr<<"build_seconds,"<<build<<"\n";
     for(size_t i=0;i<hot.size();++i) for(size_t j=0;j<32;++j)
         if(table.square(rhs(hot[i][j]))!=oracle[i][j]) return 3;
     if(!table.square(0) || !table.square(1) || table.square(p-1)) return 4;
+#endif
     std::mt19937 rng(seed);
     std::shuffle(hot.begin(),hot.end(),rng);
     std::puts("stream,round,method,ns_per_coordinate");
@@ -98,14 +105,18 @@ int main(int argc,char** argv) {
                 bool cached=(round+k+seed)%2;
                 start=Clock::now();
                 if(cached) {
+#ifdef M31_COMPARE_FOLD
+                    for(size_t i=0;i<n;++i) scalar[i]=classify<3>(inputs[i]);
+#else
                     for(size_t i=0;i<n;++i) for(unsigned j=0;j<32;++j)
                         scalar[i][j]=table.square(rhs(inputs[i][j]));
+#endif
                 } else {
                     for(size_t i=0;i<n;++i) neon[i]=classify<1>(inputs[i]);
                 }
                 double ns=std::chrono::duration<double,std::nano>(Clock::now()-start).count();
                 if(round>=2) std::printf("%s,%u,%s,%.4f\n",fresh?"fresh":"hot",round-2,
-                    cached?"bitmap":"neon",ns/(32*n));
+                    cached?candidate_name:"neon",ns/(32*n));
             }
             if(scalar!=neon) return 5;
         }

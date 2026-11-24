@@ -41,13 +41,27 @@ __attribute__((noinline)) Labels classify(const Batch& x) {
         for (size_t i=0;i<x.size();++i) r[i]=rhs(x[i]);
         int32x4_t state[8];
         for (int j=0;j<8;++j) state[j]=vreinterpretq_s32_u32(vld1q_u32(&r[4*j]));
-        for (int k=0;k<30;++k) for (auto& lane:state) lane=fold(lane);
+        for (int k=0;k<30;++k) for (auto& lane:state) {
+            if constexpr (arm==3) {
+                auto high=vqdmulhq_s32(lane,lane);
+                auto low=vmulq_s32(lane,lane);
+                int32x4_t complement;
+#ifdef M31_REGISTER_BIC
+                // Keep the mask in a register for one vector BIC instruction.
+                asm("bic %0.16b, %1.16b, %2.16b"
+                    : "=w"(complement) : "w"(vdupq_n_s32(p)), "w"(low));
+#else
+                complement=vbicq_s32(vdupq_n_s32(p),low);
+#endif
+                lane=vsubq_s32(high,complement);
+            } else lane=fold(lane);
+        }
         for (int j=0;j<8;++j) {
             auto t=state[j];
             auto sign=vshrq_n_s32(t,31);
             auto input=vreinterpretq_s32_u32(vld1q_u32(&r[4*j]));
             uint32x4_t bit;
-            if constexpr (arm==1) {
+            if constexpr (arm==1 || arm==3) {
                 auto canonical=vaddq_s32(t,vandq_s32(sign,vdupq_n_s32(p)));
                 bit=vshrq_n_u32(vceqq_s32(canonical,input),31);
             } else {
