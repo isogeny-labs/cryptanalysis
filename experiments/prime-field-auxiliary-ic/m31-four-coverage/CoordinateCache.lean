@@ -37,4 +37,24 @@ theorem batch_result (label : Nat → Bool) (cached : Nat → Option Bool)
   | none => rfl
   | some bs => exact exactHit xs bs h
 
+/-- Each miss carries its destination; classification returns the corresponding lane label. -/
+def scatter (label initial : Nat → Bool) : List Nat → Nat → Bool
+  | [] => initial
+  | i :: rest => scatter label (Function.update initial i (label i)) rest
+
+theorem scatter_spec (label initial : Nat → Bool) (indices : List Nat) (j : Nat) :
+    scatter label initial indices j = if j ∈ indices then label j else initial j := by
+  induction indices generalizing initial with
+  | nil => simp [scatter]
+  | cons i rest ih =>
+    rw [scatter, ih]
+    by_cases h : j ∈ rest <;> by_cases e : j = i <;> simp [h, e]
+
+theorem compact_result (label initial : Nat → Bool) (misses : List Nat)
+    (hits : ∀ j, j ∉ misses → initial j = label j) :
+    scatter label initial misses = label := by
+  funext j
+  rw [scatter_spec]
+  split <;> simp_all
+
 end M31CoordinateCache

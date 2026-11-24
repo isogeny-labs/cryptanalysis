@@ -875,3 +875,20 @@ The charged test allocates the hash table, computes its labels, serves every req
 These measurements quantify reuse of an explicitly known working set. To replay, add -DM31_REGISTER_BIC to the existing native benchmark flags. Select the usual bitmap layout or define -DM31_COORDINATE_CACHE. A seed argument alone runs the hot/fresh streams. For the charged hash test append cache or arithmetic and a positive pass count. The panel is 291163 plus seed parity. Seeds 241–252 cover counts 1, 2, 4, 8, 16 and 32. The follow-up uses 261–272 for 5, 6 and 7. See working-set-crossover.csv and working-set-charged.csv for individual measurements and launch order in the charged test.
 
 CoordinateCache.lean proves the packed entry preserves its key and label and excludes the sentinel, the probe sequence has distinct positions within one full traversal, and returning a fully matching batch or recomputing a missing batch yields the reference labels given sound stored entries. Lean 4.34.1 replayed with warnings as errors. A separate sanitizer build passed the repeated and fresh comparisons.
+
+### Cache misses within public coordinate batches
+
+Each smooth-twist input panel contains 32768 distinct coordinates. The two panels together contain 65536 distinct coordinates. A single traversal or a switch to the other panel therefore supplies zero natural key reuse. The following experiment explicitly repeats a mixed set 16 times. It primes the cache from one complete panel and takes misses from the other, checking disjointness and every output label. Allocation, priming and destruction are charged to both cache arms. The arithmetic control computes every label on every pass. All three use the same register-BIC arithmetic.
+
+The batch arm recomputes all 32 labels upon the first absent coordinate. The compact arm saves each absent coordinate and its output address, computes 32 absent labels at a time, and writes them back in their original positions. It handles a final partial batch. Grouped inputs put all missing coordinates in whole batches. Spread inputs place the specified number at the front of every batch. Both contain exactly the same coordinates within each seed. The separate random schedule fixes the total miss count and shuffles miss positions throughout the stream. Positions and order are identical across arms. Cache contents stay fixed between passes.
+
+| Misses per 32 | Grouped batch / compact | Spread batch / compact | Random batch / compact |
+|---|---:|---:|---:|
+| 1 | 1.840 / 1.578 | 0.899 / 1.689 | 0.973 / 1.528 |
+| 4 | 1.704 / 1.411 | 0.892 / 1.335 | 0.806 / 1.299 |
+| 8 | 1.535 / 1.167 | 0.898 / 1.083 | 0.804 / 0.954 |
+| 16 | 1.230 / 0.829 | 0.903 / 0.837 | 0.828 / 0.481 |
+
+Each entry reports two median paired throughput ratios relative to arithmetic. Ratios above one favor the respective cache arm. For random misses the compact arm won 12/12 seeds at one or four misses per 32, and 1/12 at eight. With all coordinates unseen, arithmetic won every comparison against compaction. Thus miss placement and the repeated working set both matter.
+
+Compile cache-mixture.cpp with -std=c++17 -O3 -mcpu=native -DM31_REGISTER_BIC on AArch64. Pass SEED PRIMED_PANEL_FILE UNSEEN_PANEL_FILE, optionally followed by random. Use seeds 300–311 for spread/grouped and 318–329 for random. Primed panel ID is 291163 + (seed / 6 mod 2), using integer division. Each panel receives all six arm orders. Raw records are cache-mixture.csv and cache-random.csv. CoordinateCache.lean proves that updating the destinations of misses preserves all other positions and restores the reference labels given correct hit and computed miss labels. Tests also exercised final partial batches of sizes 1 through 31 with duplicate absent keys. A separate sanitizer build passed.
