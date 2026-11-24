@@ -77,7 +77,15 @@ int main(int argc,char**argv){
     for(auto& pt:basis)if(!(std::cin>>pt.x>>pt.y))return 2;
     int arm=std::atoi(argv[1]);
     auto start=Clock::now();
-    auto xs=arm==1?census<1>(basis):arm==32?census<32>(basis):census<128>(basis);
+    std::vector<W> xs;
+    switch (arm) {
+        case 1: xs = census<1>(basis); break;
+        case 32: xs = census<32>(basis); break;
+        case 256: xs = census<256>(basis); break;
+        case 512: xs = census<512>(basis); break;
+        case 1024: xs = census<1024>(basis); break;
+        default: xs = census<128>(basis); break;
+    }
     auto elapsed=std::chrono::duration<double,std::milli>(Clock::now()-start).count();
     std::sort(xs.begin(),xs.end());
     if(xs.size()!=28033||std::adjacent_find(xs.begin(),xs.end())!=xs.end())return 3;
