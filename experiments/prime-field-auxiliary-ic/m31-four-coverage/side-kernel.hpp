@@ -59,14 +59,17 @@ inline uint32x2_t cubic_pair(uint32x2_t x) {
     return reduce_cubic_product(vaddq_u64(product, vdupq_n_u64(14)));
 }
 
-template<int arm>
+template<int arm, bool input_is_rhs=false>
 __attribute__((noinline)) Labels classify(const Batch& x) {
+    static_assert(!input_is_rhs || arm==3);
     Labels out{};
     if constexpr (arm==0) {
         for (size_t i=0;i<x.size();++i) out[i]=reciprocity(rhs(x[i]));
     } else {
         Batch r;
-        if constexpr (arm==4) {
+        if constexpr (input_is_rhs) {
+            r=x;
+        } else if constexpr (arm==4) {
             for (size_t i=0;i<x.size();i+=2)
                 vst1_u32(&r[i], cubic_pair(vld1_u32(&x[i])));
         } else {
