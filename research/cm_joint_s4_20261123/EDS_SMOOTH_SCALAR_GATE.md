@@ -142,9 +142,18 @@ for name, p, r, a, b, gx, gy in cases:
     assert phi**(r*r) == ratio == 1/B
     assert phi2 == phi**4 * W(G, 2)
     assert phi**((p-1)//2) == B**((p-1)//2) == -1
+    indices = range(1, r) if name == 'D-19' else (1, 2, 3, 5)
+    for d in indices:
+        Q = d*G
+        phi_Q = (W(Q, p-1)/W(Q, p-1+r))**ZZ(r*r).inverse_mod(p-1)
+        w = W(G, d)
+        assert phi_Q == phi**(d*d) * w
+        sign = lambda z: 1 if z**((p-1)//2) == 1 else -1
+        assert sign(w) == sign(phi_Q) * (-1 if d % 2 else 1)
     print(name, {'phi_G': hex(int(phi)), 'phi_legendre': -1,
                  'shift_multiplier_legendre': -1,
-                 'doubling_identity_ok': True})
+                 'doubling_identity_ok': True,
+                 'checked_scalar_labels': len(indices)})
 PY
 ```
 
@@ -152,6 +161,33 @@ These conditions make the **published conditional reduction** applicable
 to a hypothetical absolute EDS-residue evaluator for the specified
 P-192 generator. They do not construct that evaluator. Producer claim
 `PCC-20261124-202050` is unverified. [pcc:unverified]
+
+### The missing bit is scalar parity
+
+Theorem 6's normalization law, checked by the script above for all 60
+nonzero labels on `D=-19` and for `d=1,2,3,5` on P-192, is
+
+```text
+Phi([d]G) = Phi(G)^(d^2) W_G(d).
+```
+
+On the P-192 generator `chi_p(Phi(G))=-1`, so taking field quadratic
+characters gives the exact target-dependent relation
+
+```text
+chi_p(W_G(d)) = chi_p(Phi(Q)) * (-1)^d,     Q=[d]G, 0<d<r.
+```
+
+`Phi(Q)` is computable from the supplied point without knowing `d`, by
+the paper's Theorem 8. Thus an absolute EDS-residue evaluator and a
+canonical-scalar parity evaluator differ only by a known point value
+on this instance. A smooth endomorphism acting as `[m]` satisfies the
+same universal propagation law
+`Phi([m]Q)=Phi(Q)^(m^2) psi_m(Q)`; it gives no independent equation for
+`(-1)^d`. The `1+pi` loop's `[2]` action is the even case already
+screened above. This pins the missing operation to a scalar-orientation
+bit, not an uncomputed curve-level ideal relation. Producer claim
+`PCC-20261124-bf468c` is unverified. [pcc:unverified]
 
 If an absolute EDS-residue oracle costs `T` in a common operation unit, the
 published reduction uses order `log2(r)` oracle calls plus polynomial
