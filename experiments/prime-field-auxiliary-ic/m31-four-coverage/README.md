@@ -673,3 +673,15 @@ Allowing each point to use a different depth also requires 11 terminal values. I
 For point-specific depths with a shared upper bound, the first bound that admits an 11-terminal cover is 29. The lower bound uses twelve archived inputs whose paths through depth 28 are pairwise disjoint; each needs a separate terminal. A finite witness attains eleven by depth 29, counting depth zero as an allowed choice. For replay, compile PeriodicCover.lean after TerminalSeparation.lean, then MixedCover.lean and BoundedCover.lean using Lean 4.34.1 with warnings treated as errors.
 
 PCC-20261124-6d5573 [pcc:unverified]
+
+### Cold parity under a loop-only improvement
+
+The three archived v2_batch runs share the target and public fixture with their seed-matched rho controls. At revision 9a1d8a6cf4158197c06b0782f833d4626931ebff, each manifest's raw byte counts and SHA-256 digests were checked for all six runs. The IC loop timer starts after setup and stops before result serialization. It includes the linear work done inside the loop. The cold total also charges external basis generation and subprocess wall time.
+
+| Seed | IC cold s | Rho cold ms | Cold ratio IC/rho | IC time outside loop, lower bound ms |
+|---:|---:|---:|---:|---:|
+| 0 | 9.685108 | 7.091595 | 1365.72 | 8.592568 |
+| 1 | 5.167236 | 21.868217 | 236.29 | 7.150504 |
+| 2 | 11.667566 | 18.318452 | 636.93 | 4.916436 |
+
+For the counterfactual, hold time outside the loop fixed and replace L seconds in the loop by L/s seconds. The recorded loop seconds are 9.67651, 5.16008 and 11.6626. Add half a unit of the last printed place to each loop time, round the cold IC total down to the nanosecond and round the rho total up. ArchiveParity.lean proves that the residual for seed 0 exceeds rho by more than 1.5 ms even at zero future loop time. It proves strict losses for seed 1 through 350-fold loop acceleration and seed 2 through 870-fold. These are retrospective thresholds for one target and three runs. They include timing overhead and depend on preserving all costs outside the loop.
