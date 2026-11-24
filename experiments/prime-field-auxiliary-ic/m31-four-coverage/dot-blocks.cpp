@@ -31,6 +31,10 @@ __attribute__((noinline)) Word native_product(const Input* a, const Input* b, si
 }
 #endif
 
+#ifdef M31_PAIRED_DOT
+Word paired_dot(const Word*, const Word*, size_t);
+#endif
+
 int main(int argc,char** argv) {
     if (argc!=2) return 1;
     std::mt19937 rng(std::stoul(argv[1]));
@@ -49,7 +53,11 @@ int main(int argc,char** argv) {
             }
             expected[r]=sum%p;
         }
-#ifdef M31_NATIVE_PRODUCT
+#if defined(M31_PAIRED_DOT)
+        constexpr int arms = 2;
+        const Kernel kernels[] = {dot<true>, paired_dot};
+        const char* labels[] = {"partial", "paired"};
+#elif defined(M31_NATIVE_PRODUCT)
         constexpr int arms = 3;
         const Kernel kernels[] = {dot<false>, dot<true>, native_product};
         const char* labels[] = {"canonical", "partial", "native"};
@@ -59,7 +67,7 @@ int main(int argc,char** argv) {
 #endif
         for (int round=0;round<arms*8;++round) for (int j=0;j<arms;++j) {
             int method=(round+j)%arms;
-#ifdef M31_NATIVE_PRODUCT
+#if defined(M31_NATIVE_PRODUCT) || defined(M31_PAIRED_DOT)
             Kernel run=kernels[method];
 #else
             Kernel run=method?dot<true, Input>:dot<false, Input>;
