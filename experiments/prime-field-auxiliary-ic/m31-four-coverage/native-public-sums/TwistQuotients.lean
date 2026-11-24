@@ -17,36 +17,44 @@ private theorem square_sum (hF : ringChar F ≠ 2) (f : F → ℤ) :
       rw [← quadraticChar_card_sqrts hF u, ← Finset.sum_filter]
       simp [Set.toFinset_setOf]
 
-private def cubic (u : F) := u^3 + 4*u^2 + 4*u - 196
-private def reciprocal (v : F) := 1 + 4*v + 4*v^2 - 196*v^3
+private def cubic (a b u : F) := u^3 + 2*a*u^2 + a^2*u - b^2
+private def reciprocal (a b v : F) := 1 + 2*a*v + a^2*v^2 - b^2*v^3
 
-private theorem swap (u : F) :
-    quadraticChar F u * quadraticChar F (cubic u) =
-    quadraticChar F (reciprocal u⁻¹) - (if u = 0 then 1 else 0) := by
+private theorem swap (a b u : F) :
+    quadraticChar F u * quadraticChar F (cubic a b u) =
+    quadraticChar F (reciprocal a b u⁻¹) - (if u = 0 then 1 else 0) := by
   by_cases hu : u = 0
   · simp [hu, reciprocal]
-  · have h : u * cubic u = (u^2)^2 * reciprocal u⁻¹ := by
+  · have h : u * cubic a b u = (u^2)^2 * reciprocal a b u⁻¹ := by
       unfold cubic reciprocal
       field_simp
     rw [← map_mul, h, map_mul, quadraticChar_sq_one' (pow_ne_zero 2 hu)]
     simp [hu]
+
+/-- Character correlation for the two cubics x³ + ax ± b, in odd characteristic. -/
+theorem family_correlation (a b : F) (hF : ringChar F ≠ 2) :
+    ∑ x : F, quadraticChar F ((x^3 + a*x + b)*(x^3 + a*x - b)) =
+      (∑ u : F, quadraticChar F (u^3 + 2*a*u^2 + a^2*u - b^2)) +
+      (∑ v : F, quadraticChar F (1 + 2*a*v + a^2*v^2 - b^2*v^3)) - 1 := by
+  classical
+  have h (x : F) : (x^3+a*x+b)*(x^3+a*x-b) = cubic a b (x^2) := by unfold cubic; ring
+  simp_rw [h]
+  rw [square_sum hF (fun u => quadraticChar F (cubic a b u))]
+  simp_rw [add_mul, one_mul, swap]
+  rw [Finset.sum_add_distrib, Finset.sum_sub_distrib]
+  have invsum := Equiv.sum_comp (Equiv.inv F) (fun v => quadraticChar F (reciprocal a b v))
+  change (∑ v : F, quadraticChar F (reciprocal a b v⁻¹)) = _ at invsum
+  rw [invsum]
+  simp [reciprocal, cubic]
+  ring
 
 /-- Character correlation for the two cubics x³ + 2x ± 14, in odd characteristic. -/
 theorem correlation (hF : ringChar F ≠ 2) :
     ∑ x : F, quadraticChar F ((x^3 + 2*x + 14)*(x^3 + 2*x - 14)) =
       (∑ u : F, quadraticChar F (u^3 + 4*u^2 + 4*u - 196)) +
       (∑ v : F, quadraticChar F (1 + 4*v + 4*v^2 - 196*v^3)) - 1 := by
-  classical
-  have h (x : F) : (x^3+2*x+14)*(x^3+2*x-14) = cubic (x^2) := by unfold cubic; ring
-  simp_rw [h]
-  rw [square_sum hF (fun u => quadraticChar F (cubic u))]
-  simp_rw [add_mul, one_mul, swap]
-  rw [Finset.sum_add_distrib, Finset.sum_sub_distrib]
-  have invsum := Equiv.sum_comp (Equiv.inv F) (fun v => quadraticChar F (reciprocal v))
-  change (∑ v : F, quadraticChar F (reciprocal v⁻¹)) = _ at invsum
-  rw [invsum]
-  simp [reciprocal, cubic]
-  ring
+  convert family_correlation (2 : F) 14 hF using 1
+  norm_num
 
 /-- One point at infinity together with the affine pairs satisfying y² = f(x). -/
 abbrev CurvePoints (f : F → F) := Option ((x : F) × {y : F // y^2 = f x})
