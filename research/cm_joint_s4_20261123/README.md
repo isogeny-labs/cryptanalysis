@@ -65,3 +65,27 @@ C_pair(B,h) = B^2/2 + (h*r/C(B+2,3))*B
 The minimum of this model is `2*sqrt(3*h*r)` at `B=(12*h*r)^(1/4)`. Against the negation-aware rho reference `sqrt(pi*r/4)`, the minimum is `4*sqrt(3*h/pi)` times larger: about `3.91` for one relation or `5.53` for two. On P-192 the corresponding bases have `log2(B)=48.896` and `49.146`, while their 32-byte pair tables alone require about `2^101.79` and `2^102.29` bytes. At the 1 PiB base cap `B=2^45`, the explicit pair table still needs about `2^94` bytes. These are optimistic counted-operation and table-size calculations for this **specific** lookup method, with no lookup, map, or linear-algebra charge; they are not a generic lower bound. The scoped cost statement is recorded as `PCC-20261124-cdbc5b`, with unverified standing. [pcc:unverified]
 
 The remaining candidate is therefore narrower than merely reducing relation rank: it needs a compact coordinate-based three-sum oracle on a large, low-rank CM orbit base **without** materializing its pair table. The decisive experiment must compare a genuine CM orbit with a matched known-scalar orbit, measure natural-query relations and all setup, and show that the solver beats the per-query budget above on an identical base. A compact description of the orbit or a low-rank relation matrix alone does not supply that oracle. [pcc:unverified]
+
+## P-192 four-summand horizontal endpoint screen
+
+The follow-up script `p192_tower_horizontal_s5.py` compares three equations for the **same** P-192 source x-base and the same two queries. The base comes from the four-root fiber of a depth-2, 2-isogeny tower on `y^2=x^3+x`. Exactly two of its four x-values lift to P-192, giving four signed source points. This auxiliary tower defines the base; it is distinct from the horizontal degree-5 map used in two of the equation systems. `source` has eight auxiliary tower equations and three source S3 sum constraints; `mapped5` adds four degree-5 rational x-map wires and uses three endpoint S3 constraints; `joint5` retains both source and endpoint S3 constraints. The P-192 Frobenius discriminant is fundamental, so the degree-5 ordinary map is horizontal. [pcc:unverified]
+
+The positive query is planted: `71 G + 83 Q` is defined as a four-term sum from that base. The negative query uses the fixed Python seed `20261124` for coefficients of the same `G,Q`. Exact point enumeration checks membership of both before algebraic solving. Each formulation was run three times serially, one process per query, under a 40-second wall cap. All 18 processes exited normally; the algebraic-closure SAT verdict matched exact point truth in all 18. The record `p192_tower_horizontal_s5_results.jsonl` contains every command's exit code, setup, solver time, wall time, inputs, and verdicts. [pcc:unverified]
+
+| Formulation | Positive median solver / wall (s) | Negative median solver / wall (s) | Sum of wall medians (s) |
+| :--- | ---: | ---: | ---: |
+| `source` | 0.303 / 2.799 | 0.223 / 2.329 | 5.129 |
+| `mapped5` | 0.279 / 3.240 | 0.217 / 2.667 | 5.906 |
+| `joint5` | 1.989 / 5.273 | 1.727 / 4.337 | 9.611 |
+
+The mapped system's small solver-time reduction did not survive process-level charging: the sum of its wall medians was 1.15 times source. The joint system was 1.87 times source. These are local exploratory component timings on one planted and one negative query with three repeats, without host isolation or a confidence interval. They do not measure natural-query yield, witness extraction, relation collection, linear algebra, descent, or an end-to-end same-target comparison. This fixed-base encoding provides no observed cold-cost gain. The producer claim is `PCC-20261124-ee500b`, with unverified standing. [pcc:unverified]
+
+Reproduce with the checked Sage launcher, running each mode and query as separate processes:
+
+```sh
+gtimeout 40 /Volumes/SSD990/cryptanalysis/sage -python research/cm_joint_s4_20261123/p192_tower_horizontal_s5.py --mode source --query planted
+gtimeout 40 /Volumes/SSD990/cryptanalysis/sage -python research/cm_joint_s4_20261123/p192_tower_horizontal_s5.py --mode mapped5 --query planted
+gtimeout 40 /Volumes/SSD990/cryptanalysis/sage -python research/cm_joint_s4_20261123/p192_tower_horizontal_s5.py --mode joint5 --query planted
+```
+
+Repeat with `--query negative`. SHA-256: script `e6a9cd86b0be0cd7f5416a983862f94cfef911c12374559918cdcc87bb638470`, raw JSONL `c4dbbd89e4f989062c425427ee4962e9ff5f827b5796a46c569d1edf90cc102e`. The next discriminating step is a compact oracle for a large, low-rank **genuine CM orbit** with natural query yield and a matched known-scalar control; this two-liftable-x auxiliary fiber cannot supply that scale. [pcc:unverified]
