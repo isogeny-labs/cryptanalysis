@@ -800,3 +800,20 @@ Both binaries generated public coordinates from the same terminal, computed ordi
 Each warm observation covers 256 full method-x table builds over 32 terminals. The first-call comparison uses the direct vector-cubic path in a fresh process, charging coordinate generation and allocation of the owned output vectors. Across 12 pairs per terminal, the median terminal ratio was 1.018 for odd trace powers 385–447 (21 of 32 terminal medians favored BIC) and 1.002 for powers 449–511 (17 of 32). The first-call medians show little gain, especially on the second panel. The warm and first-call paths also differ in cubic evaluation and routing, so these data alone cannot attribute the difference to allocation or cache state.
 
 Compile torus7-build.rs twice with the pinned field source from a82976381, --edition=2021 -C opt-level=3 -C target-cpu=native, adding --cfg register_bic to the candidate. Run replay-register-stream.py CONTROL BIC for the warm table, and replay-owned.py CONTROL previous --register-bic BIC with previous or fresh for first-call data. The raw observations are in register-stream.csv, owned-bic-previous.csv and owned-bic-fresh.csv. The tested SHA-256 binary digests were 475aed47cb733425cf42b00048ae7c5ef8f8ada04810c029918e2445a35a4ae8 (control) and 99dd538b070de45e8ba3ac0c92ab40051565527697cc595360e4c5c6b3eeb856 (BIC).
+
+### Allocation and first-call effects at fixed vector-table routing
+
+Both buffer modes call the same non-inlined fill_vector_pair function, which generates coordinates and emits both sorted public point tables. Mode a allocates two 128-entry vectors for each build and drops them before the next build. Mode r clears and reuses two vectors. Each process checks all 32 terminals against independent scalar lifts before timing each mode. Each observation averages 256 builds. Across 48 paired rounds per panel the schedule balances binary order and buffer-mode order independently. The replay used two sets of binaries, compiled before and after adding the first-then-warm entry point.
+
+| Panel | Fresh buffers, initial control/BIC | Reused, initial | Fresh buffers, replay | Reused, replay |
+|---|---:|---:|---:|---:|
+| Archive | 1.062 | 1.068 | 1.075 | 1.058 |
+| Holdout | 1.067 | 1.055 | 1.049 | 1.041 |
+| Fresh | 1.058 | 1.047 | 1.082 | 1.065 |
+| Fourth | 1.059 | 1.051 | 1.059 | 1.054 |
+
+Each entry is the median within-round control/BIC timing ratio. Across the eight panel/build combinations, the within-process median cost of fresh allocation and destruction was 32–44 ns per pair for the control and 28–40 ns for BIC (rounded). Both buffer modes retained a throughput gain in each panel and build. Allocation alone does not account for the weak first-call result.
+
+A separate comparison timed the first invocation of fill_vector_pair and 33 further invocations at the same terminal in the same process. Both timers include allocation and exclude destruction. Each call's outputs were checked outside the timer. Across 12 paired process launches for each of 32 terminals per panel, the median terminal control/BIC ratios were 1.017 and 1.018 on first call (21/32 and 19/32 terminal medians favored BIC). The median later-call ratio was 1.040 on both panels (32/32 each). The later process medians clustered at 1084 and 1042 ns, separated by roughly one tick of the host's 24 MHz timebase. The 256-build stream provides the better resolved throughput measurement. The local data show a first-call effect without identifying a particular cache, paging or allocator mechanism.
+
+Use the preceding Rust build flags and field source. Replay with replay-register-stream.py CONTROL BIC --allocation and replay-owned.py CONTROL PANEL --register-bic BIC --first-then-warm (PANEL is previous or fresh). Raw records are allocation-stream.csv, allocation-confirm.csv and first-warm-{previous,fresh}.csv. The final control and BIC SHA-256 digests are 2787b1f5f0a9d50dd188de0904eacb525395bb071b06348a1f36722158c975ac and a2c029540b5a4b46cc406561393f086ad6b2dfff9147fbc37482b0db2adde987. Both passed validate-signed and validate-packed.

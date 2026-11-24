@@ -8,10 +8,13 @@ import sys
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("control", type=Path)
 parser.add_argument("bic", type=Path)
+parser.add_argument("--allocation", action="store_true",
+                    help="compare fresh and reused buffers with the same vector-table path")
 args = parser.parse_args()
 panels = ["archive", "holdout", "fresh", "fourth"]
 writer = csv.writer(sys.stdout, lineterminator="\n")
-writer.writerow(["round", "panel", "rotation", "position", "binary", "ns_per_pair"])
+columns = ["round", "panel", "rotation", "position", "binary"]
+writer.writerow(columns + (["order", "buffer"] if args.allocation else []) + ["ns_per_pair"])
 for run in range(48):
     for step in range(4):
         index = (step + run) % 4
@@ -21,10 +24,15 @@ for run in range(48):
             methods.reverse()
         for position, arm in enumerate(methods):
             binary = getattr(args, arm).resolve()
-            cmd = [str(binary), "fiber-half", str(run % 32), "x"]
+            order = ("ar" if (run // 2 + index) % 2 == 0 else "ra") if args.allocation else "x"
+            cmd = [str(binary), "fiber-half", str(run % 32), order]
             if panel != "archive":
                 cmd.append(panel)
-            method, ns = subprocess.check_output(cmd, text=True).strip().split(",")
-            if method != "x" or float(ns) <= 0:
+            rows = list(csv.reader(subprocess.check_output(cmd, text=True).splitlines()))
+            if "".join(row[0] for row in rows) != order:
                 raise ValueError(f"Unexpected output from {cmd}")
-            writer.writerow([run, panel, run % 32, position, arm, ns])
+            for method, ns in rows:
+                if float(ns) <= 0:
+                    raise ValueError(f"Invalid timing from {cmd}")
+                extra = [order, method] if args.allocation else []
+                writer.writerow([run, panel, run % 32, position, arm, *extra, ns])

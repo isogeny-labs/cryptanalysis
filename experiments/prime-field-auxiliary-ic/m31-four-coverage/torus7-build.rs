@@ -152,6 +152,11 @@ include!("packed-oracle.rs");
 include!("dual-bench.rs");
 
 fn main() {
+    #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+    if std::env::args().nth(1).as_deref() == Some("first-then-warm") {
+        first_then_warm(std::env::args().nth(2).unwrap().parse().unwrap());
+        return;
+    }
     #[cfg(all(target_arch="aarch64",target_feature="neon"))]
     if std::env::args().nth(1).as_deref() == Some("first-table") {
         let args: Vec<_> = std::env::args().collect();

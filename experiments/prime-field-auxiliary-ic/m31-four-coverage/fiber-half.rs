@@ -156,7 +156,7 @@ fn half_bench(rotation: usize, order: &str, holdout: bool, fresh: bool, single: 
     if single {
         terminals.truncate(1);
     }
-    if !single && order.chars().all(|c| matches!(c, 'u' | 'x' | 'y')) {
+    if !single && order.chars().all(|c| matches!(c, 'u' | 'x' | 'y' | 'a' | 'r')) {
         stream_bench(&terminals, order, fourth);
         return;
     }
