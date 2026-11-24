@@ -61,13 +61,13 @@ def check_ordered_counts(k, counts):
         states = following
 
 
-def by_deadline(k, draws):
+def family_mass(k, draws, subset_counts):
     # For one specified r-subset, inclusion-exclusion forces every label in
     # it to appear, while excluding draws from the other k²-r labels.
     coefficients = Counter()
-    for r, independent in enumerate(independent_subsets(k)):
+    for r, count in enumerate(subset_counts):
         for j in range(r + 1):
-            coefficients[j] += independent * (-1)**(r-j) * comb(r, j)
+            coefficients[j] += count * (-1)**(r-j) * comb(r, j)
     lo = hi = 0
     for j, coefficient in coefficients.items():
         left, right = power_bounds(Q-2*(k*k-j), Q, draws)
@@ -75,6 +75,11 @@ def by_deadline(k, draws):
             left, right = right, left
         lo += coefficient * left
         hi += coefficient * right
+    return lo, hi
+
+
+def by_deadline(k, draws):
+    lo, hi = family_mass(k, draws, independent_subsets(k))
     return SCALE-hi, SCALE-lo
 
 
@@ -85,7 +90,14 @@ if __name__ == "__main__":
     # Compare with the published companion study's rounded waiting-time mean.
     mean = sum(Fraction(c * Q, comb(289, r)*2*(289-r)) for r, c in enumerate(counts))
     assert 48_700_441 < mean < 48_700_443
+    dependent_triples = comb(289, 3) - counts[3]
+    assert dependent_triples == 4*(comb(17, 2) + comb(17, 3)) == 3264
+    print("draws   P(dependency)   share with exactly three distinct labels")
     for budget in [25_484, 81_795, 71_462, 18_999_999, 34_771_537, 19_300_166, 45_496_514]:
         lo, hi = by_deadline(17, budget)
         assert 0 < lo <= hi <= SCALE and (hi-lo)*10**15 < lo
-        print(budget, f"{Decimal(lo+hi) / Decimal(2*SCALE):.12g}")
+        triples_lo, triples_hi = family_mass(17, budget, [0, 0, 0, dependent_triples])
+        share_lo, share_hi = Fraction(triples_lo, hi), Fraction(triples_hi, lo)
+        assert 0 < share_lo <= share_hi < 1 and share_hi-share_lo < Fraction(1, 10**12)
+        print(budget, f"{Decimal(lo+hi) / Decimal(2*SCALE):.12g}",
+              f"{100*float((share_lo+share_hi)/2):.6f}%")
