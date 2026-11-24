@@ -1,0 +1,11 @@
+# Six bits suffice for unrestricted linear addressing of 17 keys
+
+Apply the separating seven-bit map from XorCompress.lean to the 17 distinct keys. Write S for their images in the binary vector space of dimension seven. Translating every image by one fixed member of S leaves every pairwise XOR unchanged. The translated set consists of zero and 16 distinct nonzero vectors.
+
+Suppose the pairwise XORs covered the whole space. Form a parity-check matrix H with those 16 nonzero vectors as columns. Every syndrome would be a sum of at most two columns, allowing the empty sum for zero. This implies rank seven. For any 16-bit word, its syndrome would equal that of an error of weight at most two, so the kernel of H would be a binary length-16 code of codimension seven and covering radius at most two. Radius one is impossible because zero and the 16 single-column syndromes cover at most 17 values.
+
+Bound 3.13 gives 19 as the minimum length for this redundancy and radius. Hence the assumed cover is impossible. Since zero occurs among the pairwise XORs, some nonzero direction d is missing. The coding-theory lower bound is an external theorem in this derivation. [On the Structure of Linear Codes with Covering Radius Two and Three, Bound 3.13](https://pure.tue.nl/ws/files/2274131/425174.pdf)
+
+Project along d into six bits. SixBitQuotient.lean proves the projection is linear and that two inputs have equal outputs exactly when they are equal or their XOR is d. Its composition with the seven-bit map thus separates the original keys. Translation only enters the covering argument, so the resulting hash remains linear. FiveBitObstruction.lean supplies 17 valid M31 coordinates requiring at least six bits. Together these bounds give an exact worst-case width of six when the choice of linear map is unrestricted.
+
+The 4096 public held-out sets in window-holdout.json were also checked individually. Starting with the low seven bits and applying the first admissible mask to each successive bit, the final addresses had between 22 and 59 missing directions, with median 37. Applying the projection along the least missing direction gave 17 distinct six-bit outputs in every set. Table construction and runtime were unmeasured.
