@@ -1,5 +1,4 @@
 import Mathlib.Tactic
-import Std.Tactic.BVDecide
 
 namespace M31FiveBitObstruction
 
@@ -20,15 +19,11 @@ private def v (d : BitVec 6) : BitVec 31 := 158976 ^^^ (d &&& 56).setWidth 31
 
 private theorem members : ∀ d : BitVec 6, u d ∈ keys ∧ v d ∈ keys := by decide +kernel
 
-private theorem diff (a b : BitVec 6) :
-    u (a ^^^ b) ^^^ v (a ^^^ b) = a.setWidth 31 ^^^ b.setWidth 31 := by
-  unfold u v
-  bv_decide
+private theorem diff : ∀ a b : BitVec 6,
+    u (a ^^^ b) ^^^ v (a ^^^ b) = a.setWidth 31 ^^^ b.setWidth 31 := by decide +kernel
 
-private theorem apart (a b : BitVec 6) (ne : a ≠ b) :
-    u (a ^^^ b) ≠ v (a ^^^ b) := by
-  unfold u v
-  bv_decide
+private theorem apart : ∀ a b : BitVec 6, a ≠ b →
+    u (a ^^^ b) ≠ v (a ^^^ b) := by decide +kernel
 
 -- Restrict the hash to the low six-dimensional subspace. Its 64 elements
 -- cannot have distinct five-bit images. Every difference from that subspace
@@ -55,9 +50,8 @@ theorem collision (h : BitVec 31 → BitVec 5)
   refine ⟨_,hu,_,hv,apart a b hne,?_⟩
   have he := congrArg h (diff a b)
   rw [linear,linear,same] at he
-  exact (show ∀ x y z : BitVec 5, x ^^^ y = z ^^^ z → x = y by
-    intro x y z eq
-    bv_decide) _ _ _ he
+  rw [BitVec.xor_self] at he
+  exact BitVec.xor_eq_zero_iff.mp he
 
 theorem six_suffices : ∀ x ∈ keys, ∀ y ∈ keys,
     x.setWidth 6 = y.setWidth 6 → x = y := by

@@ -1,3 +1,6 @@
+#ifdef M31_NEON_PANEL
+#include <arm_neon.h>
+#endif
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -16,6 +19,34 @@ bool scan(const Keys& keys, Word x) {
     for (Word k : keys) found |= (k == x);
     return found != 0;
 }
+
+#ifdef M31_NEON_PANEL
+// Compare four queries per register, narrowing the Boolean masks only at output.
+void scan_batch(const Keys& keys, const Word* queries, unsigned char* out, int count) {
+    int i = 0;
+    for (; i + 8 <= count; i += 8) {
+        auto left = vld1q_u32(queries + i);
+        auto right = vld1q_u32(queries + i + 4);
+        auto hits_left = vdupq_n_u32(0);
+        auto hits_right = vdupq_n_u32(0);
+        for (Word key : keys) {
+            auto target = vdupq_n_u32(key);
+            hits_left = vorrq_u32(hits_left, vceqq_u32(left, target));
+            hits_right = vorrq_u32(hits_right, vceqq_u32(right, target));
+        }
+        auto hits = vcombine_u16(vmovn_u32(hits_left), vmovn_u32(hits_right));
+        vst1_u8(out + i, vshr_n_u8(vmovn_u16(hits), 7));
+    }
+    for (; i < count; ++i) out[i] = scan(keys, queries[i]);
+}
+#ifdef M31_REUSE_PANEL
+constexpr int arm_count = 5;
+#else
+constexpr int arm_count = 4;
+#endif
+#else
+constexpr int arm_count = 3;
+#endif
 
 int choose(const Keys& keys) {
     for (int shift : offsets) {
@@ -51,14 +82,29 @@ int main(int argc, char** argv) {
             queries[i] = x;
             expected[i] = std::find(keys.begin(),keys.end(),x) != keys.end();
         }
-        for (int round=0; round<9; ++round) for (int j=0; j<3; ++j) {
-            int arm = (round + (round/3%2 ? 2-j : j))%3;
+        for (int round=0; round<3*arm_count; ++round) for (int j=0; j<arm_count; ++j) {
+            int arm = (round + (round/arm_count%2 ? arm_count-1-j : j))%arm_count;
             auto start = std::chrono::steady_clock::now();
+#ifdef M31_REUSE_PANEL
+            std::array<unsigned char,128> candidate{};
+#endif
             for (size_t b=0; b<bases.size(); ++b) {
                 const auto& keys = bases[b];
                 auto apply = [&](auto lookup) {
                     for (int i=0; i<count; ++i) out[b*count+i] = lookup(queries[b*count+i]);
                 };
+#ifdef M31_NEON_PANEL
+                if (arm==3) scan_batch(keys, queries.data()+b*count, out.data()+b*count, count);
+#endif
+#ifdef M31_REUSE_PANEL
+                if (arm==4) {
+                    int shift = choose(keys);
+                    if (shift<0) { apply([&](Word x){return scan(keys,x);}); continue; }
+                    for (unsigned char i=0; i<keys.size(); ++i)
+                        candidate[(keys[i]>>shift)&127] = i;
+                    apply([&](Word x){return keys[candidate[(x>>shift)&127]] == x;});
+                }
+#endif
                 if (arm==0) apply([&](Word x){return scan(keys,x);});
                 if (arm==1) {
                     auto sorted = keys;
@@ -76,8 +122,8 @@ int main(int argc, char** argv) {
             }
             auto elapsed = std::chrono::steady_clock::now()-start;
             if (expected!=out) return 3;
-            if (round>=3) std::cout << count << ',' << round-3 << ',' <<
-                std::array{"scan","sort","window"}[arm] << ',' <<
+            if (round>=arm_count) std::cout << count << ',' << round-arm_count << ',' <<
+                std::array{"scan","sort","window","batch","reuse"}[arm] << ',' <<
                 std::chrono::duration<double,std::nano>(elapsed).count()/bases.size() << '\n';
         }
     }
