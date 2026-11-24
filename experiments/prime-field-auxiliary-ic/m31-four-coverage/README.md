@@ -639,3 +639,19 @@ Compile rust-batch-width.rs using Rust 1.93.1, edition 2021, opt-level=3, target
 Compile Base71.lean in the Lean 4.34.1 environment after FixedOrbitExact and FiberLift, passing the absolute source path so include_str resolves its neighboring CSV. The kernel checks the first seed, step, terminal, orbit coverage, reflected-half validation rule, and count of 71 canonical lifts. The ordered_fixture theorem checks strict order and all 128 orbit lookups against the selected canonical ordinate or absence. The decimal rows are elaborated into a literal list, and both the count and fixture checks use decide +kernel. The axiom reports for both list propext, Classical.choice and Quot.sound.
 
 PCC-20261124-4d7e88 [pcc:unverified]
+
+### What the archived cold runs establish about setup savings
+
+The archived batched IC and matched rho records use three search seeds on one known target. All six manifests reference the same public fixture bytes. Its 17-point basis shares exactly (3, 417540811) with the 71-point public table. The cold IC totals charge external basis preparation plus subprocess wall time. Internal setup is already included in the latter.
+
+| Archived seed | Cold time, s | Basis plus internal setup, ms | Removable fraction |
+|---:|---:|---:|---:|
+| 0 | 9.685108 | 2.397886 | 0.02476% |
+| 1 | 5.167236 | 2.203726 | 0.04265% |
+| 2 | 11.667566 | 2.390376 | 0.02049% |
+
+If basis generation and internal setup take zero time and all remaining elapsed time stays fixed, every archived run has a speedup strictly below 1.000427. The bound applies to this counterfactual on these three records. It gives no estimate for a change to the remaining computation. The source measurements remain retrospective producer observations.
+
+Run replay-archive-check.py to regenerate ArchiveData.lean and archive-accounting.json from the pinned Git objects. The replay checks the byte lengths and SHA-256 digests of all 33 raw manifest entries, including entries repeated across runs. It checks the seed, method label and wall-time accounting before rounding each total down and each removable component up to whole nanoseconds. Compile ArchiveData.lean followed by ArchiveCheck.lean with Lean 4.34.1 and warnings as errors. The deletion_bound theorem propagates the conservative rounding through the rational speedup inequality.
+
+PCC-20261124-aa31ba [pcc:unverified]
