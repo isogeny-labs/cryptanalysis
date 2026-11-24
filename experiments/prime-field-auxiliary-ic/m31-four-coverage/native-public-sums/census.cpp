@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
+#include <string>
 #include <vector>
 using W=uint32_t;
 constexpr W p=2147483647;
@@ -26,7 +27,7 @@ Point twice(Point a){return fromSlope(a,a,mul(add(mul(3,mul(a.x,a.x)),2),inv(add
 struct Request{Point a,b;unsigned next,weight;};
 struct State{Point pt;unsigned next;};
 using Clock=std::chrono::steady_clock;
-template<unsigned Width>
+template<unsigned Width, bool PairedSigns = false>
 std::vector<W> census(const std::array<Point,17>& basis){
     std::array<std::array<Point,5>,17> multiples{};
     std::array<std::vector<State>,4> states;
@@ -49,10 +50,16 @@ std::vector<W> census(const std::array<Point,17>& basis){
         }
         W reciprocal=inv(prod);
         for(unsigned k=used;k-->0;){
-            auto r=batch[k];W slope=mul(sub(r.a.y,r.b.y),mul(before[k],reciprocal));
-            reciprocal=mul(reciprocal,delta[k]);
-            Point c=fromSlope(r.a,r.b,slope);
-            if(r.weight==4)out.push_back(c.x);else states[r.weight].push_back({c,r.next});
+            const Request& r = batch[k];
+            W inverseDelta = mul(before[k], reciprocal);
+            reciprocal = mul(reciprocal, delta[k]);
+            auto emit = [&](W numerator) {
+                Point c = fromSlope(r.a, r.b, mul(numerator, inverseDelta));
+                if (r.weight == 4) out.push_back(c.x);
+                else states[r.weight].push_back({c, r.next});
+            };
+            emit(sub(r.a.y, r.b.y));
+            if constexpr (PairedSigns) emit(add(r.a.y, r.b.y));
         }
         used=0;
     };
@@ -60,10 +67,12 @@ std::vector<W> census(const std::array<Point,17>& basis){
         for(auto s:states[w])for(unsigned j=s.next;j<basis.size();++j){
             for(unsigned m=1;m<=4-w;++m){
                 Point b=multiples[j][m];
-                for(int sign=0;sign<2;++sign){
+                batch[used++] = {s.pt, b, j+1, w+m};
+                if (used == Width) flush();
+                if constexpr (!PairedSigns) {
+                    b.y = sub(0, b.y);
                     batch[used++]={s.pt,b,j+1,w+m};
                     if(used==Width)flush();
-                    b.y=sub(0,b.y);
                 }
             }
         }
@@ -76,9 +85,11 @@ int main(int argc,char**argv){
     std::array<Point,17> basis;
     for(auto& pt:basis)if(!(std::cin>>pt.x>>pt.y))return 2;
     int arm=std::atoi(argv[1]);
+    bool paired = std::string(argv[1]) == "paired-512";
     auto start=Clock::now();
     std::vector<W> xs;
-    switch (arm) {
+    if (paired) xs = census<512, true>(basis);
+    else switch (arm) {
         case 1: xs = census<1>(basis); break;
         case 32: xs = census<32>(basis); break;
         case 256: xs = census<256>(basis); break;
