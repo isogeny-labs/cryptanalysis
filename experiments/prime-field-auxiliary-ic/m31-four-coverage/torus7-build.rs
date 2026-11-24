@@ -149,6 +149,7 @@ include!("fiber-half.rs");
 include!("table-phases.rs");
 
 include!("packed-oracle.rs");
+include!("dual-bench.rs");
 
 fn main() {
     #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]

@@ -27,19 +27,36 @@ fn check_packed_lift() {
             3 => (p / 2) * (p / 2) % p,
             _ => seed % p,
         };
-        let mut expected = vec![(p, p)]; // Existing caller output must survive each append.
-        for &x in &xs {
-            let rhs = ((x * x % p) * x + 2 * x + b) % p;
-            let mut y = rhs;
-            for _ in 0..29 {
-                y = y * y % p;
+        fn scalar_table(xs: &[u64; 128], b: u64) -> Points {
+            let p = M::P;
+            let mut expected = vec![(p, p)];
+            for &x in xs {
+                let rhs = ((x * x % p) * x + 2 * x + b) % p;
+                let mut y = rhs;
+                for _ in 0..29 {
+                    y = y * y % p;
+                }
+                if y * y % p == rhs {
+                    expected.push((x, y.min((p - y) % p)));
+                }
             }
-            if y * y % p == rhs {
-                expected.push((x, y.min((p - y) % p)));
-                zero_roots += usize::from(y == 0);
-            }
+            expected[1..].sort_unstable();
+            expected
         }
-        expected[1..].sort_unstable();
+        let expected = scalar_table(&xs, b);
+        let expected_twist = scalar_table(&xs, (p - b) % p);
+        zero_roots += expected[1..].iter().filter(|q| q.1 == 0).count();
+        for masked in [false, true] {
+            let mut base = vec![(p, p)];
+            let mut twist = vec![(p, p)];
+            if masked {
+                neon_lift::dual_packed::<16, true>(&xs, b, &mut base, &mut twist);
+            } else {
+                neon_lift::dual_packed::<16, false>(&xs, b, &mut base, &mut twist);
+            }
+            assert_eq!(base, expected);
+            assert_eq!(twist, expected_twist);
+        }
         accepted += expected.len() - 1;
         if panel < 4 {
             match panel {
@@ -58,5 +75,5 @@ fn check_packed_lift() {
         compare::<32, false>(&xs, b, &expected);
         compare::<8, true>(&xs, b, &expected);
     }
-    println!("256 panels, 32768 slots, {accepted} accepted, {zero_roots} zero ordinates, 5 implementations");
+    println!("256 panels, 32768 slots, {accepted} accepted, {zero_roots} zero ordinates, 5 single-output and 2 dual-output implementations");
 }

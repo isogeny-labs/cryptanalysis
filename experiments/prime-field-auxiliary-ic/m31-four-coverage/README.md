@@ -545,3 +545,19 @@ FixedTableExact.lean checks the initializer and exclusion of the two exceptional
 Compile FixedOrbitExact.lean after FixedWeights.lean, and FixedTableExact.lean after FixedOrbitExact.lean and CanonicalLift.lean, in the experiment's Lean 4.34.1 environment with warnings treated as errors.
 
 PCC-20261124-d27faa [pcc:unverified]
+
+### Two sorted tables from a shared base/twist lift
+
+For the base equation y²=x³+2x+14, the twist equation y²=x³+2x−14 has the opposite right-hand side at −x. The earlier FiberLift.lean result established that the square of the M31 candidate equals either the right-hand side or its negative. DualPacked.lean connects that result to the canonical ordinate and to the routing rule in the packed implementation. Each shared chain produces both candidate outputs. A base match emits (x,y); a failed base check emits (−x,y) into the twist table; a zero right-hand side emits both. Each output uses its own packed keys and sort. For an input list closed under negation up to permutation, the routed twist keys sort to the same sequence as direct twist lifting.
+
+The local Apple M4 Pro comparison builds both sorted point tables from one terminal. Method i generates the coordinates once and calls the established 16-vector packed lift separately for each curve. Method j shares the signed square chain and conditionally appends to each packed buffer. Method k uses unconditional scratch writes and conditional index increments. All three include coordinate generation, sorting, unpacking and reading the output slices. They reuse caller capacity in a warmed process. Each terminal ran all six orders twice, with 256 complete two-table builds per timing.
+
+| Group of 32 terminals | Separate lifts, ns | Shared conditional lift, ns | Shared unconditional stores, ns | Paired i/j ratio |
+|---|---:|---:|---:|---:|
+| Archived | 1842.2 | 1327.0 | 1366.7 | 1.380 |
+| Holdout | 1837.0 | 1331.5 | 1374.0 | 1.377 |
+| Third panel | 1848.5 | 1334.2 | 1369.2 | 1.385 |
+
+Every terminal favored method j over i on its median within-round ratio. Each of the 96 complete table pairs matched scalar lifts over an independently generated inverse tree. Across each group the base/twist point totals were 2063/2033, 2059/2037 and 2002/2094. Separate validation with repeated x, zero right-hand sides, fully accepted/rejected panels and preexisting output checked both native sharing variants on 32,768 slots. This measures the two-output workload when both tables are requested. Use fiber-half TERMINAL ORDER single and the existing holdout or fresh selector as appropriate. Replay the Lean module after CanonicalLift.lean. The validation entry point is validate-packed.
+
+PCC-20261124-447636 [pcc:unverified]

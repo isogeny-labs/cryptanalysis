@@ -1,0 +1,83 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-24T00:19:42Z",
+ "id": "PCC-20261124-447636",
+ "kind": "measurement",
+ "producer": {
+  "commit": "1baf9965a0b284249cb6de1fb63e10605079111b",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "6c6f167236ed9227e0d8525d1661a1dc759b613a229ee7d3cb9590c8086112ec",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/DualPacked.lean",
+   "theorem": "M31DualPacked.split_exact"
+  },
+  {
+   "decl_sha256": "7278384ef939f6e8d09e1499c030c7288004b97e73d08d5c99de425fd9a6d71f",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/DualPacked.lean",
+   "theorem": "M31DualPacked.paired_curve"
+  },
+  {
+   "decl_sha256": "5aa63e5b935733109668044349afbee7b44921376a34fd2322e8d70af67836bb",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/DualPacked.lean",
+   "theorem": "M31DualPacked.sorted_twist"
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/DualPacked.lean",
+    "sha256": "59a9d7918765078f8bae5087b8c17b282e1d2ca833ecd46f1c62d93aceb6d84d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/dual-bench.rs",
+    "sha256": "acaecdbcc7fa98d4642fce86104e3d9d5a8517d6674e5e59e5feb50ada869d52"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/dual-lift.csv",
+    "sha256": "1c96f102f3ce3baf5548d46bc0ac88e8d957d9fb83e7fd915763f72c327f22ea"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/packed-lift.rs",
+    "sha256": "2211a879575346238f3e9baa5029043f2f88c150b62d74d7a6c169c2183937e9"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/packed-oracle.rs",
+    "sha256": "42001dc5e931e6dce6c91b849b8656b25a540f39676ba67a73e4c91d81b5dd83"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/fiber-half.rs",
+    "sha256": "8853171394aeb530fb22941ea6bcd8c00ddd2e0117155790bfc664789c29365c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/torus7-build.rs",
+    "sha256": "2411281778a5650fd4aa8e7201407fa8ab3baac23deffb62652e815bd331d732"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "On an Apple M4 Pro a shared lift for base and quadratic twist constructed both sorted M31 tables with median paired speedups 1.380, 1.377 and 1.385 over separate lifts across three groups of 32 terminals. All 96 terminal medians favored the conditional shared path."
+}
