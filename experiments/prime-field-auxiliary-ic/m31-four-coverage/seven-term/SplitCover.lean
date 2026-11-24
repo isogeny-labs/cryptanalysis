@@ -15,6 +15,17 @@ def endpoints (row : Fin 7 → G) : Finset G :=
     let point := ∑ j ∈ choice.2, row j
     if choice.1 then -point else point)
 
+/-- A witness refers to positions, so repeated values in a row are allowed. -/
+theorem signed_triple_mem (row : Fin 7 → G) (pos : Fin 3 ↪ Fin 7) (flip : Bool) :
+    (if flip then -(∑ i, row (pos i)) else ∑ i, row (pos i)) ∈ endpoints row := by
+  let slots := (univ : Finset (Fin 3)).map pos
+  have hs : slots ∈ triples := by
+    apply mem_powersetCard.mpr
+    exact ⟨subset_univ _, by simp [slots]⟩
+  apply mem_image.mpr
+  refine ⟨(flip, slots), mem_product.mpr ⟨mem_univ _, hs⟩, ?_⟩
+  cases flip <;> simp [slots]
+
 theorem endpoints_card (row : Fin 7 → G) : (endpoints row).card ≤ 70 := by
   unfold endpoints
   apply le_trans card_image_le
@@ -39,5 +50,16 @@ theorem m31_floor (classes : Finset ι) (row : ι → Fin 7 → G) (points : Fin
   have h := cover_bound classes row points covers
   rw [size] at h
   omega
+
+/-- It suffices to supply three distinct positions and a sign for each point. -/
+theorem m31_floor_of_triples (classes : Finset ι) (row : ι → Fin 7 → G)
+    (points : Finset G) (size : points.card = 3439976)
+    (witness : ∀ x ∈ points, ∃ c ∈ classes, ∃ (pos : Fin 3 ↪ Fin 7) (flip : Bool),
+      x = (if flip then -(∑ i, row c (pos i)) else ∑ i, row c (pos i))) :
+    49143 ≤ classes.card := by
+  apply m31_floor classes row points size
+  intro x hx
+  obtain ⟨c, hc, pos, flip, rfl⟩ := witness x hx
+  exact ⟨c, hc, signed_triple_mem (row c) pos flip⟩
 
 end M31SplitCover
