@@ -13,13 +13,37 @@ static inline uint32_t reduce(uint64_t z) {
 #endif
 }
 
+static inline uint32_t curve_rhs(uint64_t x) {
+    return reduce(reduce(x*x)*x + 2*x + 14);
+}
+
+static inline uint32_t checked_root(uint32_t rhs, uint32_t y) {
+    if (reduce((uint64_t)y*y) != rhs) return P;
+    return y < P-y ? y : P-y;
+}
+
 /* For each canonical x, output the smaller square root, or P on failure. */
 void lift_batch(const uint32_t *restrict xs, uint32_t *restrict ys, size_t count) {
-    for (size_t i = 0; i < count; ++i) {
-        uint64_t x = xs[i];
-        uint32_t rhs = reduce(reduce(x*x)*x + 2*x + 14);
-        uint64_t y = rhs;
-        for (int j = 0; j < 29; ++j) y = reduce(y*y);
-        ys[i] = reduce(y*y) == rhs ? (y < P-y ? y : P-y) : P;
+    enum { width = 32 };
+    size_t i = 0;
+    for (; count-i >= width; i += width) {
+        uint32_t rhs[width], y[width];
+        for (size_t k = 0; k < width; ++k)
+            y[k] = rhs[k] = curve_rhs(xs[i+k]);
+
+        /* Each lane computes rhs^(2^29). Advancing the lanes together
+           lets the compiler overlap the independent modular squares. */
+        for (int j = 0; j < 29; ++j)
+            for (size_t k = 0; k < width; ++k)
+                y[k] = reduce((uint64_t)y[k]*y[k]);
+
+        for (size_t k = 0; k < width; ++k)
+            ys[i+k] = checked_root(rhs[k], y[k]);
+    }
+
+    for (; i < count; ++i) {
+        uint32_t rhs = curve_rhs(xs[i]), y = rhs;
+        for (int j = 0; j < 29; ++j) y = reduce((uint64_t)y*y);
+        ys[i] = checked_root(rhs, y);
     }
 }
