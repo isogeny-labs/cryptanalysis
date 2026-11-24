@@ -34,7 +34,7 @@ def replay(binary):
     rank, _ = counts(base)
     if rank != 1:
         raise ValueError("Expected one initial five-term class")
-    proof = ["import Mathlib.Tactic"]
+    proof = [(HERE / "Round.lean").read_text()]
     gains = []
     with (HERE / "rounds.csv").open() as stream:
         reference = csv.reader(stream)
@@ -65,7 +65,16 @@ def replay(binary):
         if next(reference, None) is not None or rank != 41:
             raise ValueError("Incomplete nested replay")
     proof.append("example : 121 + 1 + " + " + ".join(map(str, gains)) + " = 162 := by decide")
-    subprocess.run(["lean", "--stdin"], input="\n".join(proof), text=True, check=True)
+    proof.append(f"""
+example {{K I : Type*}} [Field K] (space : Submodule K (I → K)) [FiniteDimensional K space]
+    (old : Fin {rank} → I → K) (pivot : Fin {len(outside)} → I)
+    (indep : LinearIndependent K old) (inside : ∀ i, old i ∈ space)
+    (prior : ∀ i j, old i (pivot j) = 0)
+    (witness : ∀ i, ∃ v ∈ space, v (pivot i) ≠ 0 ∧ ∀ j, i ≠ j → v (pivot j) = 0) :
+    162 ≤ Module.finrank K space :=
+  M31Round.space_lower_bound old pivot space indep inside prior witness
+""")
+    subprocess.run(["lean", "-DwarningAsError=true", "--stdin"], input="\n".join(proof), text=True, check=True)
     print("Verified the nested census, round pass counts, and conditional combined bound of 162.")
 
 

@@ -20,3 +20,9 @@ additional independent rows. Together with the 121 private coordinates
 in the outer insertion study, this gives a conditional rank lower bound
 of 162. The native finite counts and the five-term classification are
 premises. The replay checks aggregate evidence and does not extract rows.
+
+The same replay checks Round.lean and instantiates its ambient-space dimension
+bound at the observed core rank and outer coordinate count. Given an independent
+core family and one private-coordinate witness in the relation space per outer
+insertion, the relation space has dimension at least 162. Replaying the counts
+does not construct those row vectors in Lean.
