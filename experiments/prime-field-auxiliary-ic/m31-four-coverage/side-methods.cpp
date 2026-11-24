@@ -32,12 +32,18 @@ int main(int argc,char** argv) {
     std::puts("round,arm,ns_per_coordinate");
     for (int round=0;round<12;++round) for (int j=0;j<3;++j) {
         int arm=(round+(round/3%2?2-j:j))%3;
+#ifdef M31_CUBIC_PANEL
+        auto fn=arm==0?classify<2>:arm==1?classify<3>:classify<4>;
+        const char* label=arm==0?"parity":arm==1?"control":"wide";
+#else
         auto fn=arm==0?classify<0>:arm==1?classify<1>:classify<2>;
+        const char* label=arm==0?"jacobi":arm==1?"full":"parity";
+#endif
         auto start=std::chrono::steady_clock::now();
         for(size_t i=0;i<rows.size();++i) out[i]=fn(rows[i].x);
         double ns=std::chrono::duration<double,std::nano>(std::chrono::steady_clock::now()-start).count();
         for(size_t i=0;i<rows.size();++i) if(out[i]!=rows[i].label) return 3;
         if(round>=3) std::printf("%d,%s,%.4f\n",round-3,
-            arm==0?"jacobi":arm==1?"full":"parity",ns/(32*rows.size()));
+            label,ns/(32*rows.size()));
     }
 }

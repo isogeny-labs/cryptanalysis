@@ -45,6 +45,20 @@ inline int32x4_t complement_square(int32x4_t lane) {
     return vsubq_s32(high,complement);
 }
 
+// Both cubic intermediates are below 2^62. Fold each wide product
+// once at bit 31, then subtract p when the representative is at least p.
+inline uint32x2_t reduce_cubic_product(uint64x2_t t) {
+    auto mask = vdup_n_u32(p);
+    auto folded = vadd_u32(vand_u32(vmovn_u64(t), mask), vshrn_n_u64(t, 31));
+    return vsub_u32(folded, vand_u32(vcge_u32(folded, mask), mask));
+}
+
+inline uint32x2_t cubic_pair(uint32x2_t x) {
+    auto square = reduce_cubic_product(vmull_u32(x, x));
+    auto product = vmull_u32(vadd_u32(square, vdup_n_u32(2)), x);
+    return reduce_cubic_product(vaddq_u64(product, vdupq_n_u64(14)));
+}
+
 template<int arm>
 __attribute__((noinline)) Labels classify(const Batch& x) {
     Labels out{};
@@ -52,11 +66,16 @@ __attribute__((noinline)) Labels classify(const Batch& x) {
         for (size_t i=0;i<x.size();++i) out[i]=reciprocity(rhs(x[i]));
     } else {
         Batch r;
-        for (size_t i=0;i<x.size();++i) r[i]=rhs(x[i]);
+        if constexpr (arm==4) {
+            for (size_t i=0;i<x.size();i+=2)
+                vst1_u32(&r[i], cubic_pair(vld1_u32(&x[i])));
+        } else {
+            for (size_t i=0;i<x.size();++i) r[i]=rhs(x[i]);
+        }
         int32x4_t state[8];
         for (int j=0;j<8;++j) state[j]=vreinterpretq_s32_u32(vld1q_u32(&r[4*j]));
         for (int k=0;k<30;++k) for (auto& lane:state) {
-            if constexpr (arm==3) {
+            if constexpr (arm==3 || arm==4) {
                 lane=complement_square(lane);
             } else lane=fold(lane);
         }
@@ -65,7 +84,7 @@ __attribute__((noinline)) Labels classify(const Batch& x) {
             auto sign=vshrq_n_s32(t,31);
             auto input=vreinterpretq_s32_u32(vld1q_u32(&r[4*j]));
             uint32x4_t bit;
-            if constexpr (arm==1 || arm==3) {
+            if constexpr (arm==1 || arm==3 || arm==4) {
                 auto canonical=vaddq_s32(t,vandq_s32(sign,vdupq_n_s32(p)));
                 bit=vshrq_n_u32(vceqq_s32(canonical,input),31);
             } else {
