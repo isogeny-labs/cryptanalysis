@@ -22,3 +22,16 @@ clang++ -std=c++20 -O3 exceptional-x-check.cpp -o /tmp/m31-exceptional-check
 ```
 
 The last command compares the compiled hash against a sorted traversal for every field input, then checks the sentinel and the maximum unsigned word.
+
+## Interleaved square roots
+
+Pass a third argument `interleaved` to the panel executable to compare 1, 2, 4 and 8 independent four-lane root chains. Each SIMD vector undergoes the same 29 squarings. Each path uses binary search and stages labels in groups of four. The fixed panels of 8224 coordinates divide evenly into 32-input blocks. Timings cover the entire mixed-input traversal.
+
+Across eight shuffles per panel (314101–314108), with eight warmups and 24 measured rounds per arm, the median of the shuffle medians was:
+
+| Input seed | 1 chain | 2 chains | 4 chains | 8 chains |
+|---|---:|---:|---:|---:|
+| 312001 | 81.52 | 71.70 | 66.16 | 63.85 |
+| 312002 | 80.92 | 71.31 | 65.50 | 63.29 |
+
+Values are ns/input on Apple M4 Pro. All four arms checked the saved status and ordered labels after every traversal. Raw records are in `interleaved-roots.csv`.

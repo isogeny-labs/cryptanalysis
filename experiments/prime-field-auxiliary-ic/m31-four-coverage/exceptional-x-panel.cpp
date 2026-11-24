@@ -6,6 +6,7 @@
 #include <iostream>
 #include <random>
 #include <vector>
+#include <string_view>
 
 namespace {
 using W=uint32_t;
@@ -203,8 +204,41 @@ Labels permuted(Point q,Point generator) {
 
 #include "exceptional-x.hpp"
 struct Answer { W status; Labels label; bool operator==(const Answer&) const = default; };
+template<unsigned Chains>
+__attribute__((noinline)) void runInterleaved(const std::vector<W>& inputs, std::vector<Answer>& output) {
+    for(size_t base=0;base<inputs.size();base+=4*Chains) {
+        V rhs[Chains], roots[Chains];
+        for(unsigned b=0;b<Chains;++b) {
+            V x=vld1q_u32(inputs.data()+base+4*b);
+            rhs[b]=times(x,plus(times(x,x),dup(1)));
+            roots[b]=rhs[b];
+        }
+        for(int t=0;t<29;++t)
+            for(unsigned b=0;b<Chains;++b) roots[b]=times(roots[b],roots[b]);
+        for(unsigned b=0;b<Chains;++b) {
+            size_t i=base+4*b;
+            W ys[4],valid[4];
+            vst1q_u32(valid,vceqq_u32(times(roots[b],roots[b]),rhs[b]));
+            vst1q_u32(ys,vminq_u32(roots[b],vsubq_u32(dup(p),roots[b])));
+            Batch scratch[4]; unsigned ids[4],count=0;
+            for(unsigned k=0;k<4;++k) {
+                W x=inputs[i+k];
+                bool shortOrbit=valid[k] && (std::binary_search(m31_exceptional::coordinates.begin(),m31_exceptional::coordinates.end(),x));
+                if(!valid[k] || shortOrbit){output[i+k]={W(shortOrbit),{}};continue;}
+                output[i+k].status=2;
+
+                ids[count]=k;
+                scratch[count++]=prepared<false>({x,ys[k]},fixed);
+            }
+            for(unsigned t=0;t<count;++t)output[i+ids[t]].label=classify<3,true>(scratch[t]);
+        }
+    }
+}
+
+
 int main(int argc,char** argv) {
-    if(argc!=3) return 1;
+    bool interleaved = argc == 4 && std::string_view(argv[3]) == "interleaved";
+    if(argc!=3 && !interleaved) return 1;
     std::ifstream in(argv[1]); W x,st,bits;
     std::vector<W> xs; std::vector<Answer> expected;
     while(in>>x>>st>>bits) {
@@ -220,6 +254,22 @@ int main(int argc,char** argv) {
     std::vector<W> inputs; std::vector<Answer> truth;
     for(auto i:order) {inputs.push_back(xs[i]);truth.push_back(expected[i]);}
     std::vector<Answer> output(xs.size());
+    if(interleaved) {
+        for(int round=0;round<32;++round) for(int j=0;j<4;++j) {
+            unsigned arm=(seed+round+(round/4%2?3-j:j))%4;
+            auto start=std::chrono::steady_clock::now();
+            switch(arm) {
+                case 0: runInterleaved<1>(inputs,output); break;
+                case 1: runInterleaved<2>(inputs,output); break;
+                case 2: runInterleaved<4>(inputs,output); break;
+                case 3: runInterleaved<8>(inputs,output); break;
+            }
+            double ns=std::chrono::duration<double,std::nano>(std::chrono::steady_clock::now()-start).count();
+            if(output!=truth)return 3;
+            if(round>=8)std::cout<<round<<","<<arm<<","<<ns/inputs.size()<<"\n";
+        }
+        return 0;
+    }
     for(int round=0;round<24;++round) for(int j=0;j<3;++j) {
         unsigned arm=(seed+round+(round/3%2?2-j:j))%3;
         auto start=std::chrono::steady_clock::now();
