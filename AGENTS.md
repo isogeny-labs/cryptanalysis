@@ -6,6 +6,21 @@ the shared-code parity list — are stated once in
 `crypto-autoresearcher:docs/lab-contract.md`. That file wins on a shared
 convention; this file wins on anything specific to this repository.
 
+## Experiment seeds and paired A/B reproducibility
+
+Owner instruction, 2026-11-23. Apply
+[docs/experiment-seeds.md](docs/experiment-seeds.md) to new randomized
+experiments and comparisons. Freeze and record the complete seed manifest,
+PRNG versions and logical child streams before outcomes; pair compatible
+A/B stages on identical hashed public inputs; retain independent replicates,
+all failures and replay evidence. A repeated seed is a repeatability check,
+not an independent sample. Keep challenge-scalar material in evaluator custody.
+
+Preserve existing frozen protocols, the exact curve/workload identity rules,
+the declared online/cold accounting boundary, benchmark admission and evidence
+gates, current M31 instructions, and immutable historical records. Review and
+maintenance work audits these requirements without launching new experiments.
+
 ## Sabotage is assumed: proof-carrying claims
 
 Owner rule, 2026-11-04. Every producer, this session included, is assumed to
