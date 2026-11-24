@@ -82,6 +82,68 @@ Here `46=-1 mod 47`, agreeing with `chi_61(2)=-1`. This checks the
 construction on one finite CM instance, rather than its claimed cost at
 cryptographic size. [pcc:unverified]
 
+## What horizontal transport preserves
+
+Let `phi:E -> E'` be an `F_p`-rational isogeny whose degree is coprime to
+`r`, and put `H=phi(G)`. It is injective on `<G>`, so `H` also has order
+`r`. For every nonzero `Q=[d]G`, `phi(Q)=[d]H`, hence
+
+```text
+f_H(x(phi(Q))) = chi(d) = f_G(x(Q)).
+```
+
+This is an exact commutation law for the marked factor maps. If `phi` is
+an endomorphism acting by the known scalar `lambda` on `<G>`, then the
+same-source version reads
+`f_G(x(phi(Q)))=chi(lambda) f_G(x(Q))`. For the earlier
+`D=-19` smooth-norm element `1+pi` of norm `35=5*7`, rational Frobenius
+acts as one, so `lambda=2 mod 61` and the factor map changes sign. The
+known sign does not supply the unknown `chi(d)` without evaluating the
+map at a target point. [pcc:unverified]
+
+The following independent degree-5 horizontal instance checks the
+marked-map equality for every nonzero scalar. Its trace discriminant is
+the fundamental `-555`, so the degree-5 isogeny stays on the maximal-order
+crater, as detailed in the [joint screen](README.md):
+
+```sh
+/Volumes/SSD990/cryptanalysis/sage -python - <<'PY'
+from sage.all import GF, EllipticCurve, PolynomialRing
+p, r = 1009, 1069
+F = GF(p)
+E = EllipticCurve(F, [4, 10])
+G = E.gens()[0]
+phi = E.isogenies_prime_degree(5)[0]
+H = phi(G)
+R = PolynomialRing(F, 'X')
+X = R.gen()
+def factor_map(P):
+    pos, neg = [], []
+    for u in range(1, (r+1)//2):
+        (pos if pow(u, (r-1)//2, r) == 1 else neg).append((u*P)[0])
+    Fp = R.prod(X-x for x in pos)
+    Fm = R.prod(X-x for x in neg)
+    return (Fm-Fp)/(Fm+Fp), len(set(pos)), len(set(neg))
+f, np, nm = factor_map(G)
+g, hp, hm = factor_map(H)
+assert E.cardinality() == r and H.order() == r
+assert np == nm == hp == hm == (r-1)//4
+assert all(f((u*G)[0]) == g(phi(u*G)[0]) for u in range(1, r))
+print({'p': p, 'r': r, 'degree': phi.degree(),
+       'factor_degrees': [np, nm, hp, hm],
+       'all_1068_transport_labels_equal': True})
+PY
+```
+
+Observed output: `{'p': 1009, 'r': 1069, 'degree': 5,
+'factor_degrees': [267, 267, 267, 267],
+'all_1068_transport_labels_equal': True}`. The proof applies more broadly
+than this instance. Transport alone preserves the character and the
+`(r-1)/4` factor degree. A codomain-specific compact evaluator could still
+improve the *cost*; that would require an explicit construction and a
+matched source/generic comparison, rather than the commutation identity.
+Producer claim `PCC-20261124-0f2381` is unverified. [pcc:unverified]
+
 ## Cold P-192 cost and next gate
 
 At P-192's subgroup order,
