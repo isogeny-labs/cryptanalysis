@@ -204,7 +204,7 @@ Labels permuted(Point q,Point generator) {
 
 #include "exceptional-x.hpp"
 struct Answer { W status; Labels label; bool operator==(const Answer&) const = default; };
-template<unsigned Chains>
+template<unsigned Chains, unsigned Group = 1>
 __attribute__((noinline)) void runInterleaved(const std::vector<W>& inputs, std::vector<Answer>& output) {
     for(size_t base=0;base<inputs.size();base+=4*Chains) {
         V rhs[Chains], roots[Chains];
@@ -215,22 +215,26 @@ __attribute__((noinline)) void runInterleaved(const std::vector<W>& inputs, std:
         }
         for(int t=0;t<29;++t)
             for(unsigned b=0;b<Chains;++b) roots[b]=times(roots[b],roots[b]);
-        for(unsigned b=0;b<Chains;++b) {
-            size_t i=base+4*b;
-            W ys[4],valid[4];
-            vst1q_u32(valid,vceqq_u32(times(roots[b],roots[b]),rhs[b]));
-            vst1q_u32(ys,vminq_u32(roots[b],vsubq_u32(dup(p),roots[b])));
-            Batch scratch[4]; unsigned ids[4],count=0;
-            for(unsigned k=0;k<4;++k) {
-                W x=inputs[i+k];
-                bool shortOrbit=valid[k] && (std::binary_search(m31_exceptional::coordinates.begin(),m31_exceptional::coordinates.end(),x));
-                if(!valid[k] || shortOrbit){output[i+k]={W(shortOrbit),{}};continue;}
-                output[i+k].status=2;
+        static_assert(Group > 0 && Chains % Group == 0);
+        for(unsigned group=0;group<Chains;group+=Group) {
+            Batch scratch[4*Group];
+            unsigned ids[4*Group],count=0;
+            for(unsigned b=group;b<group+Group;++b) {
+                size_t i=base+4*b;
+                W ys[4],valid[4];
+                vst1q_u32(valid,vceqq_u32(times(roots[b],roots[b]),rhs[b]));
+                vst1q_u32(ys,vminq_u32(roots[b],vsubq_u32(dup(p),roots[b])));
+                for(unsigned k=0;k<4;++k) {
+                    W x=inputs[i+k];
+                    bool shortOrbit=valid[k] && (std::binary_search(m31_exceptional::coordinates.begin(),m31_exceptional::coordinates.end(),x));
+                    if(!valid[k] || shortOrbit){output[i+k]={W(shortOrbit),{}};continue;}
+                    output[i+k].status=2;
 
-                ids[count]=k;
-                scratch[count++]=prepared<false>({x,ys[k]},fixed);
+                    ids[count]=4*b+k;
+                    scratch[count++]=prepared<false>({x,ys[k]},fixed);
+                }
             }
-            for(unsigned t=0;t<count;++t)output[i+ids[t]].label=classify<3,true>(scratch[t]);
+            for(unsigned t=0;t<count;++t)output[base+ids[t]].label=classify<3,true>(scratch[t]);
         }
     }
 }
@@ -238,7 +242,8 @@ __attribute__((noinline)) void runInterleaved(const std::vector<W>& inputs, std:
 
 int main(int argc,char** argv) {
     bool interleaved = argc == 4 && std::string_view(argv[3]) == "interleaved";
-    if(argc!=3 && !interleaved) return 1;
+    bool grouped = argc == 4 && std::string_view(argv[3]) == "grouped";
+    if(argc!=3 && !interleaved && !grouped) return 1;
     std::ifstream in(argv[1]); W x,st,bits;
     std::vector<W> xs; std::vector<Answer> expected;
     while(in>>x>>st>>bits) {
@@ -254,11 +259,24 @@ int main(int argc,char** argv) {
     std::vector<W> inputs; std::vector<Answer> truth;
     for(auto i:order) {inputs.push_back(xs[i]);truth.push_back(expected[i]);}
     std::vector<Answer> output(xs.size());
-    if(interleaved) {
+    if(interleaved || grouped) {
         for(int round=0;round<32;++round) for(int j=0;j<4;++j) {
             unsigned arm=(seed+round+(round/4%2?3-j:j))%4;
+            if(grouped) {
+                for(size_t i=0;i<output.size();++i) {
+                    output[i].status=~truth[i].status;
+                    for(unsigned k=0;k<32;++k) output[i].label[k]=!truth[i].label[k];
+                }
+            }
             auto start=std::chrono::steady_clock::now();
-            switch(arm) {
+            if(grouped) {
+                switch(arm) {
+                    case 0: runInterleaved<8,1>(inputs,output); break;
+                    case 1: runInterleaved<8,2>(inputs,output); break;
+                    case 2: runInterleaved<8,4>(inputs,output); break;
+                    case 3: runInterleaved<8,8>(inputs,output); break;
+                }
+            } else switch(arm) {
                 case 0: runInterleaved<1>(inputs,output); break;
                 case 1: runInterleaved<2>(inputs,output); break;
                 case 2: runInterleaved<4>(inputs,output); break;

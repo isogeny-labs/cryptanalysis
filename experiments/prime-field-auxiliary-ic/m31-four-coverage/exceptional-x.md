@@ -35,3 +35,9 @@ Across eight shuffles per panel (314101–314108), with eight warmups and 24 mea
 | 312002 | 80.92 | 71.31 | 65.50 | 63.29 |
 
 Values are ns/input on Apple M4 Pro. All four arms checked the saved status and ordered labels after every traversal. Raw records are in `interleaved-roots.csv`.
+
+## Label grouping after interleaved roots
+
+Use the third argument `grouped` for eight root chains and label groups of 4, 8, 16 and 32 inputs. The four-input control classifies the accepted lanes of each vector before moving on. The 32-input arm collects accepted lanes across eight vectors and scatters labels to the saved input offsets. Every traversal starts with deliberately incorrect output words before the timer starts.
+
+The original local comparison on an M4 Pro is recorded in `grouped-labels.csv`. Across eight shuffles per panel, increasing the group from 4 to 32 reduced the median paired time by 2.86% and 3.25% on the saved panels and by 3.30% and 3.68% on fresh panels 315201 and 315202. Run `grouped-label-oracle.py` in a scratch directory to regenerate the two fresh input files using Python affine arithmetic. Pass either file and a shuffle from 315201 through 315208 to the executable. The saved panels used shuffles 315101 through 315108. The published harness shares one template across group sizes and was replayed for correctness; the CSV records timings from the original separate control and candidate functions.
