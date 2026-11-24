@@ -952,3 +952,22 @@ For a decoder that receives the five-step terminal coordinate and must return al
 The executable inverse in orbit-side-code.py obtains the two roots from the discriminant (X−A)²−4B at each step and then extracts the auxiliary ordinate. Running it on both public panels recovered all 131072 oriented starting points. For each of the 2048 orbits the 64 starts used all 64 codes and produced 64 distinct ordered label words. The replay tests reconstruction given a valid encoded point. Run python3 orbit-side-code.py with the two input panel paths. Replay OrbitSideCode.lean after compiling OrbitParityRank.lean into the same Lean 4.34.1 module directory.
 
 This resolves the earlier sufficiency question under the stated input contract. The six bits identify a point; they do not furnish its lift labels without an evaluation or stored labels. Decoder, indexing and table-construction costs would need to be charged to a performance comparison.
+
+### Full ordered lift labels from one oriented point
+
+Input is one affine point P=(x,y) on the public auxiliary curve y²=x³+x with a full 32-coordinate orbit under the fixed K. Output is the 32 individual base-lift bits in order for P+jK, j=0,…,31. For Q=jK=(a,b) outside the identity lane, let h=x−a, D=h² and N=(y−b)²−(x+a)D. The chord addition formula gives x(P+Q)=N/D. For the target cubic f(z)=z³+2z+14, the field word N³+2ND²+14D³ equals f(x(P+Q))h⁶. Since h is nonzero, multiplication by h⁶ preserves square membership, including at zero. The identity lane uses N=x and D=1. The implementation uses this full-fiber contract; starts with exceptional chord denominators require a different path.
+
+OrbitLabels.lean proves the denominator clearing, lift equivalence in both directions and the alternate numerator (x+a)(1+xa)−2yb. The native path evaluates all chords and characters in parallel NEON lanes. The affine controls exploit equal denominators for j and 32−j, using one field inversion across the sixteen distinct denominators per point. The vector affine control uses the same SIMD product reduction and character chain as the homogeneous path.
+
+| Median ns per complete 32-label output | Scalar affine setup + NEON labels | Vector homogeneous | Alternate homogeneous numerator | Vector affine |
+|---|---:|---:|---:|---:|
+| One 1024-point traversal, panel 291163 | 329.96 | 123.13 | 130.55 | 290.81 |
+| One 1024-point traversal, panel 291164 | 329.75 | 125.94 | 127.03 | 289.59 |
+| 32 traversals, panel 291163 | 322.85 | 121.12 | 124.24 | 284.37 |
+| 32 traversals, panel 291164 | 323.31 | 120.61 | 124.11 | 285.49 |
+
+Each arm builds the table of jK once inside its timed interval. Each panel balances all 24 method orders. The previously measured norm path returns one aggregate parity; these arms emit all the labels. Input loading, fixture ordinate reconstruction from the independent panel, and output validation are outside the timed interval. Each timed caller receives only P and the public shifts.
+
+For the single-point comparison each method runs once in a new process after fixture preparation. With runtime construction of the shifts, median paired vector-affine/homogeneous ratios were 1.068 and 1.048. With the 256-byte table compiled in, they were 1.757 and 2.004. Homogeneous medians were 4250 and 4375 ns with construction, or 375 and 334 ns with the fixed table. The first-call timings are quantized by the 24 MHz host timebase. The static table is specific to the public auxiliary curve and K. It was generated with PARI/GP and compared entry by entry against the runtime group law.
+
+Compile orbit-labels.cpp with -std=c++17 -O3 -mcpu=native -DM31_REGISTER_BIC. Supply seed, panel path and pass count (1 or 32). IDs 0–3 follow the throughput table column order. For a single-point timing append single METHOD after the panel path; methods 0/1 use dynamic shifts with affine/homogeneous arithmetic, 2/3 use their static counterparts. Throughput seeds are 600–623 and 624–647 for the two panels; single-point seeds are 648–671 and 672–695. See orbit-labels.csv and orbit-labels-first.csv for raw timings. The check argument in place of the pass count tests every cyclic start and both orientations; an AddressSanitizer and UndefinedBehaviorSanitizer build compared all four arithmetic paths against every expected word on 131072 oriented starts. The prior orbit-norm check-batch also passed after sharing the vector field helpers. Replay OrbitLabels.lean with Lean 4.34.1 and warnings as errors.
