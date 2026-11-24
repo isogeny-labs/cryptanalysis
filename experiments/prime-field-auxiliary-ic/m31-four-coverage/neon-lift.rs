@@ -51,6 +51,7 @@ mod neon_lift {
 
     include!("signed-square.rs");
     include!("paired-cubic.rs");
+    include!("packed-lift.rs");
 
     pub(super) fn validate() {
         let mut seed = 2718281828u64;

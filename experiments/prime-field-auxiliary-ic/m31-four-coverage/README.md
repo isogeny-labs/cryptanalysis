@@ -504,3 +504,22 @@ The initial single-terminal experiment compared J (separately reduced products),
 Median paired uninstrumented ratios were 1.010 and 1.009. The centered version won on the median of 24/32 archived and 26/32 held-out terminals. The stage measurements support a modest generation saving on this machine. The change in total time is small. All candidate coordinate arrays matched the separate-product baseline slot by slot and each full table matched the scalar oracle. Use the fiber-half command with single and optional holdout as above. The CSV files record every method order. Build FusedWeights.lean with Lean 4.34.1 and warnings as errors.
 
 PCC-20261123-4435b4 [pcc:unverified]
+
+### Direct packed lifting on a fresh 32-terminal panel
+
+The direct path writes each accepted canonical point as one unsigned 62-bit key, sorts the initialized prefix and expands it once into caller storage. It shares the centered-weight root generator, signed NEON square-root chain and final point representation with the preceding packed-sort control. Width changes affect register scheduling and the order of keys presented to the sorter. PackedTraversal.lean checks that the modeled traversal at each tested width visits all 128 slots exactly once and proves that the point encoding has no aliases for canonical ordinates.
+
+In the first single-table screen, methods M,N,O,Q,R,S are respectively the previous centered-weight control, direct packed output at 8, 16, 4 or 32 four-lane vectors, and an unconditional-store variant at 8 vectors. Each terminal saw all six positions twice. Median paired M/O ratios were 1.045 on the archived group and 1.046 on holdout. At the original eight-vector width the corresponding M/N ratios were 1.012 and 1.008. Four vectors were slower on every terminal median. Wider batches and direct packing together produced the observed improvement.
+
+A third group used the traces of odd powers 129 through 191 of the element represented by the first archived terminal. The harness verifies its 32 terminal coordinates are distinct from one another and both earlier panels. The group was first timed after the six-method screen. Every fresh terminal ran all 24 orders of four methods. Each timing averages 64 complete rebuilds from the terminal in a warmed process with caller capacity retained. Sorting, point materialization and output consumption are included. The harness compares every method's sorted points against scalar lifting over an independent inverse tree and checks generator arrays separately.
+
+| One sorted table on fresh terminals | Median ns | Median paired inverse-tree/method |
+|---|---:|---:|
+| Inverse tree with portable lifting (t) | 8249.7 | 1 |
+| Previous centered-weight packed-sort control (M) | 1131.2 | 7.230 |
+| Direct output, 16 vectors (O) | 1081.5 | 7.566 |
+| Direct output, 32 vectors (R) | 1087.4 | 7.506 |
+
+The paired control/O ratio was 1.040 with 31/32 terminal medians favoring O; control/R was 1.038 with 30/32 favoring R. All ratios are medians of per-terminal median within-round ratios. Process startup, input selection and downstream table use are outside the timed rebuild. Raw order and timing records are in packed-lift.csv and packed-lift-fresh.csv. Use fiber-half TERMINAL ORDER single with no further argument for archive, holdout for the second panel or fresh for the third. Replay PairedCubic.lean then PackedTraversal.lean in Lean 4.34.1 with warnings treated as errors.
+
+PCC-20261124-547bf5 [pcc:unverified]

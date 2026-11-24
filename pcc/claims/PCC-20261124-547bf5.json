@@ -1,0 +1,77 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-24T00:02:20Z",
+ "id": "PCC-20261124-547bf5",
+ "kind": "measurement",
+ "producer": {
+  "commit": "c784e7a4511be0638097658b6748a1f75b9fe64b",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "d3565a2d10eb3468178e7b5c5a9cd6ecd3fdd512c734880b9c37adebdb49225f",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/PackedTraversal.lean",
+   "theorem": "M31PackedTraversal.all_slots"
+  },
+  {
+   "decl_sha256": "7ec1c0be8824ba97c097873e0ed6b68d2e23d1afcd840cc95b60722b224f9b95",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/PackedTraversal.lean",
+   "theorem": "M31PackedTraversal.no_alias"
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/PackedTraversal.lean",
+    "sha256": "5e4623031577efcf50bdbfddfe5e9653160ba0596a9466dce56b8cbe12670f4b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/packed-lift.rs",
+    "sha256": "1ea3dcc8d676f14a37aebb3092e38e6fa9d6da50ddc57a6776609880d99662e8"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/packed-lift.csv",
+    "sha256": "fbc7ae9898e765b473ce9407ede4b9ca8b164aeab619849026c9562b2edffe07"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/packed-lift-fresh.csv",
+    "sha256": "da077ca11645c2cdc33f80831ab54755e1a078266b240a5eda4925f475b11593"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/fiber-half.rs",
+    "sha256": "8ca0a3ea9018ca27b13dccff5c4de8908c738b365bd3483c23fb913bb3b6f542"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/torus7-build.rs",
+    "sha256": "ecd92bda47dac269b29c58f9239eabcc2cada3b124b7ad83e21ae0c5a885a7e4"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/neon-lift.rs",
+    "sha256": "60bd438801d77bbf5199a5edd65da4fbd8f4d3de42f5ee111169599eda9d91fb"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "On 32 disjoint fresh M31 terminals on an Apple M4 Pro, direct packed lifting with 16 NEON vectors built one sorted table in a median 1081.5 ns. Matched median ratios were 1.040 over the centered weighted control and 7.566 over the portable inverse tree."
+}

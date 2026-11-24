@@ -141,19 +141,25 @@ fn half_fiber_root<const W: usize, const ROOT: u8>(terminal: u64) -> [u64; 128] 
 }
 
 #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
-fn half_bench(rotation: usize, order: &str, holdout: bool, single: bool) {
+fn half_bench(rotation: usize, order: &str, holdout: bool, fresh: bool, single: bool) {
     let mut terminals: Vec<u64> = include_str!("fiber-masks.csv")
         .lines()
         .skip(1)
         .map(|s| s.split(',').nth(1).unwrap().parse().unwrap())
         .collect();
-    if holdout {
+    if holdout || fresh {
         let archived = terminals;
         let first = archived[0];
         let (mut prev, mut curr) = (2, first);
         terminals = Vec::with_capacity(32);
-        for power in 1..=127 {
-            if power >= 65 && power % 2 == 1 {
+        let start = if fresh { 129 } else { 65 };
+        let mut prior = Vec::new();
+        for power in 1..start + 63 {
+            if (65..start).contains(&power) && power % 2 == 1 {
+                prior.push(curr);
+            }
+            if power >= start && power % 2 == 1 {
+                assert!(!prior.contains(&curr));
                 assert!(!archived.contains(&curr) && !terminals.contains(&curr));
                 terminals.push(curr);
             }
@@ -219,6 +225,7 @@ fn half_bench(rotation: usize, order: &str, holdout: bool, single: bool) {
             for &t in black_box(&terminals) {
                 let xs = match method {
                     'A' => half_fiber_root::<4, 1>(t),
+                    'M' | 'N' | 'O' | 'Q' | 'R' | 'S' => half_fiber_root::<4, 7>(t),
                     'K' => half_fiber_root::<4, 5>(t),
                     'L' => half_fiber_root::<4, 6>(t),
                     'J' => half_fiber_root::<4, 4>(t),
@@ -233,11 +240,31 @@ fn half_bench(rotation: usize, order: &str, holdout: bool, single: bool) {
                 };
                 let start = out.len();
                 match method {
+                    'N' => {
+                        neon_lift::packed_lift::<8, false>(&xs, 14, &mut out);
+                        continue;
+                    }
+                    'O' => {
+                        neon_lift::packed_lift::<16, false>(&xs, 14, &mut out);
+                        continue;
+                    }
+                    'Q' => {
+                        neon_lift::packed_lift::<4, false>(&xs, 14, &mut out);
+                        continue;
+                    }
+                    'R' => {
+                        neon_lift::packed_lift::<32, false>(&xs, 14, &mut out);
+                        continue;
+                    }
+                    'S' => {
+                        neon_lift::packed_lift::<8, true>(&xs, 14, &mut out);
+                        continue;
+                    }
                     't' => lift_list(&xs, &mut out),
                     'd' => neon_lift::paired_points::<false, false, 0>(&xs, 14, &mut out),
                     'p' | 'w' => neon_lift::paired_points::<true, false, 0>(&xs, 14, &mut out),
                     'n' => neon_lift::paired_points::<true, false, 2>(&xs, 14, &mut out),
-                    'z' | 'A' | 'B' | 'F' | 'J' | 'K' | 'L' => {
+                    'z' | 'A' | 'B' | 'F' | 'J' | 'K' | 'L' | 'M' => {
                         neon_lift::paired_points::<true, false, 1>(&xs, 14, &mut out)
                     }
                     'c' => neon_lift::paired_points::<true, true, 0>(&xs, 14, &mut out),
@@ -245,7 +272,7 @@ fn half_bench(rotation: usize, order: &str, holdout: bool, single: bool) {
                 }
                 if matches!(
                     method,
-                    'w' | 's' | 'z' | 'n' | 'A' | 'B' | 'F' | 'J' | 'K' | 'L'
+                    'w' | 's' | 'z' | 'n' | 'A' | 'B' | 'F' | 'J' | 'K' | 'L' | 'M'
                 ) {
                     neon_lift::sort_words(&mut out[start..]);
                 } else {

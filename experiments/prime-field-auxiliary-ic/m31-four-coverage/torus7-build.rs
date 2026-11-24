@@ -161,6 +161,7 @@ fn main() {
             args[2].parse().unwrap(),
             &args[3],
             args.iter().skip(4).any(|s| s == "holdout"),
+            args.iter().skip(4).any(|s| s == "fresh"),
             args.iter().skip(4).any(|s| s == "single"),
         );
         return;
