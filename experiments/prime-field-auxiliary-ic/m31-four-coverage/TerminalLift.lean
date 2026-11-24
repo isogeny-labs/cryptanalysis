@@ -43,4 +43,37 @@ theorem minimum_errors (predict : Nat → Bool) :
   have sub : sharedClass.Sublist roots := List.filter_sublist
   exact (unavoidable_errors predict).trans ((sub.filter _).length_le)
 
+private theorem first_mixed_pair :
+    1900319349 ∈ roots ∧ 2008905047 ∈ roots ∧
+    label 25 1900319349 = label 25 2008905047 ∧
+    accepts 1900319349 = true ∧ accepts 2008905047 = false := by decide +kernel
+
+-- This is an existence criterion for a classifier on this fixture.
+-- The positive-label lookup in the backward direction presupposes its labels.
+theorem exact_depth (d : Nat) :
+    (∃ f : Nat → Bool, ∀ x ∈ roots, f (label d x) = accepts x) ↔ d ≤ 24 := by
+  constructor
+  · rintro ⟨f, hf⟩
+    by_contra late
+    obtain ⟨ha,hb,eq25,yes,no⟩ := first_mixed_pair
+    have eqd := congrArg (step^[d-25]) eq25
+    unfold label at eqd
+    rw [← Function.iterate_add_apply, ← Function.iterate_add_apply,
+        show d-25+25 = d by omega] at eqd
+    have both := congrArg f eqd
+    change f (label d _) = f (label d _) at both
+    rw [hf _ ha, hf _ hb, yes, no] at both
+    contradiction
+  · intro early
+    classical
+    refine ⟨fun t => decide (∃ y ∈ roots, label d y = t ∧ accepts y = true), ?_⟩
+    intro x hx
+    by_cases yes : accepts x = true
+    · simpa only [yes, decide_eq_true_eq] using
+        (show ∃ y ∈ roots, label d y = label d x ∧ accepts y = true from ⟨x,hx,rfl,yes⟩)
+    · have h : ¬ ∃ y ∈ roots, label d y = label d x ∧ accepts y = true := by
+        rintro ⟨y,hy,eq,hit⟩
+        exact yes (unique_terminal hy hx early eq ▸ hit)
+      simp [h, Bool.eq_false_iff.mpr yes]
+
 end M31TerminalLift
