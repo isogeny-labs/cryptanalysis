@@ -225,8 +225,17 @@ def summarize_solve(report: dict, input_path: Path, arm_flags: list[str]) -> dic
     work = report["work"]
     phases = report["online_exclusive_phases"]["durations"]
     cli = report["cli_accounting"]
+    phase_report = report["online_exclusive_phases"]
+    accounting = report["online_accounting"]
+    if sum(phases.values()) != phase_report["total"] or phase_report["total"] != accounting["core"]:
+        raise ValueError("Exclusive phases do not match core search time")
+    call_total = accounting["input_validation"] + accounting["core"] + accounting["call_overhead"]
+    if call_total != accounting["total"] or call_total != report["online_wall_ns"]:
+        raise ValueError("Online accounting does not match call wall time")
     scalar = verify_certificate_independently(report)
     out = {
+        "online_exclusive_phases": phase_report,
+        "online_accounting": accounting,
         "replay_evidence": replay_evidence(report, input_path, arm_flags),
         "status": report["status"],
         "summands": report["configured_search"]["summands"],
