@@ -15,3 +15,13 @@ shasum -a 256 /tmp/m31-public-x.bin
 ```
 
 The expected SHA-256 for the 28,033 sorted little-endian uint32 words is `94ea695bcce35285ed2dea298caeebc4c401fcf6c41931a65cba1700b3b2c0fb`. Independent PARI/GP and Python affine enumerations produced this digest. The corresponding finite-support proof is in the parent directory's ArchiveRepeatedSums.lean.
+
+## Sorted public table timing
+
+Pass a fourth command-line word to select the sort and print two comma-separated milliseconds measurements. The first ends after generation. The second covers generation through completion of the in-memory sort, including radix scratch allocation and release. Input parsing, duplicate checks, serialization and downstream lookups fall outside both measurements.
+
+```sh
+/tmp/m31-public-census paired-512 /tmp/m31-public-x.bin radix < basis.txt
+```
+
+The local Apple M4 Pro comparison in `sorted-table-times.csv` uses the same binary for all four combinations of generator (`1024` or `paired-512`) and sort (`std` or `radix`). Each of the 24 possible execution orders occurs once, with one fresh process per arm and the expected SHA-256 verified after each run. The radix sort makes three stable passes with 11, 11 and 10 significant bits. Its scratch storage includes a second key array and 2,048 counters.

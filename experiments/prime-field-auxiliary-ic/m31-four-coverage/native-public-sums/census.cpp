@@ -80,8 +80,30 @@ std::vector<W> census(const std::array<Point,17>& basis){
     }
     return out;
 }
+// Three stable least-significant-digit passes cover every uint32 key.
+void radixSort(std::vector<W>& keys) {
+    constexpr unsigned digitBits = 11;
+    constexpr unsigned buckets = 1u << digitBits;
+    constexpr unsigned mask = buckets - 1;
+    std::vector<W> scratch(keys.size());
+    for (unsigned shift = 0; shift < 32; shift += digitBits) {
+        std::array<std::size_t, buckets> cursor{};
+        for (W key : keys) ++cursor[(key >> shift) & mask];
+        std::size_t next = 0;
+        for (auto& entry : cursor) {
+            std::size_t count = entry;
+            entry = next;
+            next += count;
+        }
+        for (W key : keys) scratch[cursor[(key >> shift) & mask]++] = key;
+        keys.swap(scratch);
+    }
+}
+
 int main(int argc,char**argv){
-    if(argc!=3)return 1;
+    if(argc!=3 && argc!=4)return 1;
+    const std::string sortMode = argc == 4 ? argv[3] : "std";
+    if (sortMode != "std" && sortMode != "radix") return 1;
     std::array<Point,17> basis;
     for(auto& pt:basis)if(!(std::cin>>pt.x>>pt.y))return 2;
     int arm=std::atoi(argv[1]);
@@ -98,9 +120,14 @@ int main(int argc,char**argv){
         default: xs = census<128>(basis); break;
     }
     auto elapsed=std::chrono::duration<double,std::milli>(Clock::now()-start).count();
-    std::sort(xs.begin(),xs.end());
+    if (sortMode == "radix") radixSort(xs);
+    else std::sort(xs.begin(),xs.end());
+    auto sortedMs = std::chrono::duration<double,std::milli>(Clock::now()-start).count();
     if(xs.size()!=28033||std::adjacent_find(xs.begin(),xs.end())!=xs.end())return 3;
     auto f=std::fopen(argv[2],"wb");if(!f)return 4;
     if(std::fwrite(xs.data(),sizeof(W),xs.size(),f)!=xs.size()||std::fclose(f))return 5;
-    std::cout<<elapsed<<'\n';
+    std::cout << elapsed;
+    if (argc == 4) std::cout << ',' << sortedMs;
+    std::cout << '\n';
+    return 0;
 }
