@@ -58,3 +58,7 @@ The `prefix-times.csv` timer starts with the same sorted table and query array a
 The `hash` lookup mode indexes the full 31-bit key and its count in a linear-probed array. A zero count marks an empty slot. For 28,033 entries, the array has 65,536 slots of eight bytes each (512 KiB). It charges allocation, initialization, insertion and querying to the same timer used for the binary and prefix arms. Each query returns its exact multiplicity.
 
 Run `python3 hash-panel.py` to replay the initial comparison and `python3 hash-panel.py --confirm` for the fresh-stream confirmation at 262,144 queries. Both write CSV to standard output. The archived rows are in `hash-times.csv`. The driver builds the binaries, verifies both fixture digests, balances arm order, and checks every answer against an independent frequency count. Uniform and half-planted streams are reported separately.
+
+## Low-bit rejection filter
+
+The `filtered-prefix` mode adds a 128 KiB bitmap to the exact prefix lookup. One bit records the presence of each low-20-bit residue. A clear bit returns zero immediately. A set bit triggers the full-key lookup and multiplicity check. Run `python3 hash-panel.py --filter` and `python3 hash-panel.py --filter --confirm` for the two panels in `filter-times.csv`. Timings include constructing the bitmap and prefix directory. The Lean statement in `ResidueFilter.lean` verifies the address bounds and preservation of counts under this rejection rule.

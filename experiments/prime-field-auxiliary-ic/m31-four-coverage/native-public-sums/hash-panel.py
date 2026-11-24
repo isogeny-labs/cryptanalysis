@@ -20,7 +20,7 @@ def pack(words):
     return struct.pack(f"<{len(words)}I", *words)
 
 
-def run(confirm):
+def run(confirm, filter_panel):
     if sys.byteorder != "little":
         raise RuntimeError("fixture files use little-endian words")
     lean = (SOURCE.parent / "HoldoutMultiplicity.lean").read_text()
@@ -55,7 +55,8 @@ def run(confirm):
                     qs = stream[:n]
                     path.write_bytes(pack(qs))
                     cases[fixture, mix, n] = path, pack([counts[q] for q in qs])
-        orders = list(permutations(MODES)) * 2
+        modes = ("prefix", "hash", "filtered-prefix") if filter_panel else MODES
+        orders = list(permutations(modes)) * 2
         plan = [(case, r, order) for case in cases for r, order in enumerate(orders)]
         random.Random(2026112418 if confirm else 2026112416).shuffle(plan)
         writer = csv.writer(sys.stdout, lineterminator="\n")
@@ -74,4 +75,6 @@ def run(confirm):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--confirm", action="store_true", help="repeat the largest query batch on a fresh stream")
-    run(parser.parse_args().confirm)
+    parser.add_argument("--filter", action="store_true", help="compare prefix and hash controls with a residue filter")
+    args = parser.parse_args()
+    run(args.confirm, args.filter)

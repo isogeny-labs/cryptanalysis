@@ -23,13 +23,20 @@ std::vector<Word> readWords(const char* path) {
     return words;
 }
 
-template<bool Indexed>
+template<bool Indexed, bool Filtered = false>
 double lookup(const std::vector<Word>& table, const std::vector<Word>& queries,
               std::vector<Word>& answers) {
     // The top 12 bits of a 31-bit key select a contiguous range.
     constexpr unsigned shift = 19;
     constexpr Word buckets = 4096;
     auto start = Clock::now();
+    constexpr Word residueMask = (1u << 20) - 1;
+    std::vector<std::uint64_t> present;
+    if constexpr (Filtered) {
+        present.resize((residueMask + 1) / 64);
+        for (Word key : table)
+            present[(key & residueMask) >> 6] |= std::uint64_t{1} << (key & 63);
+    }
     std::vector<Word> offsets;
     if constexpr (Indexed) {
         offsets.resize(buckets + 1);
@@ -42,6 +49,12 @@ double lookup(const std::vector<Word>& table, const std::vector<Word>& queries,
     }
     for (std::size_t i = 0; i < queries.size(); ++i) {
         Word key = queries[i];
+        if constexpr (Filtered) {
+            if (((present[(key & residueMask) >> 6] >> (key & 63)) & 1) == 0) {
+                answers[i] = 0;
+                continue;
+            }
+        }
         auto first = table.begin();
         auto last = table.end();
         if constexpr (Indexed) {
@@ -84,7 +97,7 @@ double hashLookup(const std::vector<Word>& table, const std::vector<Word>& queri
 int main(int argc, char** argv) {
     if (argc != 5) return 1;
     const std::string mode = argv[1];
-    if (mode != "prefix" && mode != "binary" && mode != "hash") return 1;
+    if (mode != "prefix" && mode != "binary" && mode != "hash" && mode != "filtered-prefix") return 1;
     auto table = readWords(argv[2]);
     auto queries = readWords(argv[3]);
     auto outOfRange = [](Word key) { return key >= (1u << 31); };
@@ -94,6 +107,7 @@ int main(int argc, char** argv) {
     std::vector<Word> answers(queries.size());
     double us;
     if (mode == "hash") us = hashLookup(table, queries, answers);
+    else if (mode == "filtered-prefix") us = lookup<true, true>(table, queries, answers);
     else if (mode == "prefix") us = lookup<true>(table, queries, answers);
     else us = lookup<false>(table, queries, answers);
     std::ofstream output(argv[4], std::ios::binary);
