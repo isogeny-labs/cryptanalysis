@@ -834,3 +834,20 @@ Each ns value is a median of six process medians, per coordinate, including cubi
 Compile residue-bitmap.cpp with the native C++ flags above. Define M31_QUAD_TABLE for the primary table alone, adding M31_REMAP_THREE or M31_PACK_RUNS for the respective alternatives. The packed binary also accepts --exhaustive with no stdin. It independently builds a direct bitmap of all squares by enumerating roots and checks its classification on every canonical input, including zero. The local exhaustive check covered 2147483647 values. The remap and packed binaries separately passed AddressSanitizer and UndefinedBehaviorSanitizer. Compile and run run4-census.cpp for the first and double miss counts. It tests for runs directly and uses complement symmetry.
 
 ResidueOrbits.lean proves the four-run marker and address properties, the sign under multiplication by three, run invariance under complement and cyclic rotation, the forced secondary high bit, the permissible interior nibbles, the counts of nine-bit blocks, and uniqueness and range of the mixed-radix address. Native performance and the exhaustive compiled test are separate evidence.
+
+### SIMD construction of public residue tables
+
+The scalar builder scans 1073741823 nonzero roots. The NEON builder includes root zero to cover the interval in exactly 67108864 blocks of 16. It squares four lanes at a time using the M31 high-product fold, selects canonical odd residues below the table threshold and collects sixteen eligibility bits in a single mask. Only selected lanes issue writes. The packed table uses a broader initial threshold to include its secondary range. Zero fails the odd predicate. All arms use one CPU thread.
+
+| Layout | Scalar build seconds | Vector build seconds | Median paired speedup |
+|---|---:|---:|---:|
+| 8 MiB, four-bit runs | 0.771 | 0.275 | 2.80× |
+| 9.58 MiB, packed | 0.985 | 0.750 | 1.32× |
+| 16 MiB, three-bit runs | 1.226 | 0.363 | 3.36× |
+| 32 MiB, two-bit runs | 2.143 | 0.694 | 3.09× |
+
+The seconds are process medians over eight paired builds per layout on the Apple M4 Pro. Each observation used a new process. Timers bracket table construction, including allocation and initialization. The post-build population count and process startup are outside the interval. Each layout used both launch orders equally often. Vector construction won every pair. The --check-build entry point compared every stored word against scalar construction in all four layouts, including the secondary table and rank directory when present.
+
+Use the preceding C++ native flags, choose a compressed table layout, and pass --build-vector, --build-scalar or --check-build without stdin. Define M31_VECTOR_BUILD to select vector construction for ordinary labeled-coordinate runs. ResidueBuild.lean checks root-grid coverage and uniqueness, acceptance masks and the carry-free horizontal sum. VectorCubic.lean contains the exact M31 product-fold theorem and MaskEmit.lean contains the set-bit traversal theorem. The elapsed times in residue-build.csv concern setup only.
+
+A separate packed-table variant filters forbidden four-bit windows in the vector lanes before issuing scalar rank lookups. ResidueBuild.lean proves the combined window predicate splits exactly into the three nine-bit predicates. The extra filter won only 2/8 paired builds, with median times of 0.760 s filtered and 0.750 s unfiltered. It remains a separate M31_VECTOR_RUN_FILTER option. A packed vector build with this option completed the --exhaustive check against direct square membership for all 2147483647 field values. A separate AddressSanitizer and UndefinedBehaviorSanitizer build passed the full array comparison. The extra-filter timing records are in residue-build-filter.csv.

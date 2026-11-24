@@ -40,7 +40,12 @@ struct Table {
         return ((c-radix/2)*radix+b)*radix+a;
     }
 #endif
-    Table() : words(size_t(1)<<(address_bits-6)) {
+#ifdef M31_VECTOR_BUILD
+    static constexpr bool default_vector_build=true;
+#else
+    static constexpr bool default_vector_build=false;
+#endif
+    explicit Table(bool vector_build=default_vector_build) : words(size_t(1)<<(address_bits-6)) {
 #ifdef M31_PACK_RUNS
         unsigned next=0;
         for(unsigned block=0;block<512;++block) {
@@ -53,15 +58,62 @@ struct Table {
         }
         if(next!=radix) std::abort();
 #endif
-        for(uint64_t y=1;y<=p/2;++y) {
-            uint32_t r=y*y%p;
-            if((r>>(address_bits+1))==0 && (r&1)) words[r>>7] |= uint64_t(1)<<((r>>1)&63);
+        if(vector_build) {
+            build_vectors();
+        } else {
+            for(uint64_t y=1;y<=p/2;++y) mark(uint32_t(y*y%p));
+        }
+    }
+
+    void mark(uint32_t r) {
+        if((r>>(address_bits+1))==0 && (r&1))
+            words[r>>7] |= uint64_t(1)<<((r>>1)&63);
 #ifdef M31_PACK_RUNS
-            if((r>>27)==1 && (r&1)) {
-                auto address=packed_address(r);
-                if(address<entries) secondary[address>>6] |= uint64_t(1)<<(address&63);
-            }
+        if((r>>27)==1 && (r&1)) {
+            auto address=packed_address(r);
+            if(address<entries) secondary[address>>6] |= uint64_t(1)<<(address&63);
+        }
 #endif
+    }
+
+    void build_vectors() {
+        // Zero never passes the odd filter. Including it gives full 16-root blocks.
+        constexpr unsigned width=16;
+#ifdef M31_PACK_RUNS
+        constexpr unsigned accepted_bits=28;
+#else
+        constexpr unsigned accepted_bits=address_bits+1;
+#endif
+        const auto prime=vdupq_n_u32(p);
+        const auto filter=vdupq_n_u32(~((1u<<accepted_bits)-1)|1u);
+        const uint32x4_t weights={1,2,4,8};
+        uint32x4_t y={0,1,2,3};
+        for(uint32_t base=0;base<=p/2;base+=width) {
+            uint32_t residues[width];
+            uint32x4_t flags=vdupq_n_u32(0);
+            for(unsigned group=0;group<width/4;++group) {
+                auto sy=vreinterpretq_s32_u32(y);
+                auto high=vreinterpretq_u32_s32(vqdmulhq_s32(sy,sy));
+                auto sum=vaddq_u32(high,vandq_u32(vmulq_u32(y,y),prime));
+                auto r=vminq_u32(sum,vsubq_u32(sum,prime));
+                vst1q_u32(residues+4*group,r);
+                auto hit=vceqq_u32(vandq_u32(r,filter),vdupq_n_u32(1));
+#if defined(M31_PACK_RUNS) && defined(M31_VECTOR_RUN_FILTER)
+                // In the secondary range discard forbidden runs within each nine-bit block.
+                auto equal=vmvnq_u32(veorq_u32(r,vshrq_n_u32(r,1)));
+                auto three=vandq_u32(equal,vandq_u32(vshrq_n_u32(equal,1),vshrq_n_u32(equal,2)));
+                auto valid=vceqzq_u32(vandq_u32(three,vdupq_n_u32(0x1f8fc7e)));
+                auto primary=vcltq_u32(r,vdupq_n_u32(1u<<27));
+                hit=vandq_u32(hit,vorrq_u32(primary,valid));
+#endif
+                flags=vorrq_u32(flags,vandq_u32(hit,vshlq_u32(weights,vdupq_n_s32(4*group))));
+                y=vaddq_u32(y,vdupq_n_u32(4));
+            }
+            unsigned mask=vaddvq_u32(flags);
+            while(mask) {
+                mark(residues[__builtin_ctz(mask)]);
+                mask &= mask-1;
+            }
         }
     }
     template<bool four=true>
@@ -140,6 +192,30 @@ uint32_t coordinate(uint32_t i) {
 
 int main(int argc,char** argv) {
     if(argc!=2) return 1;
+#if defined(M31_ROTATE_TABLE) || defined(M31_TRIPLE_TABLE) || defined(M31_QUAD_TABLE)
+    const std::string command=argv[1];
+    if(command=="--check-build") {
+        Table scalar(false), vector(true);
+        if(scalar.words!=vector.words) return 7;
+#ifdef M31_PACK_RUNS
+        if(scalar.secondary!=vector.secondary || scalar.ranks!=vector.ranks) return 7;
+#endif
+        std::puts("build arrays matched");
+        return 0;
+    }
+    if(command=="--build-scalar" || command=="--build-vector") {
+        auto start=Clock::now();
+        Table table(command=="--build-vector");
+        double seconds=std::chrono::duration<double>(Clock::now()-start).count();
+        uint64_t count=0;
+        for(auto word:table.words) count+=__builtin_popcountll(word);
+#ifdef M31_PACK_RUNS
+        for(auto word:table.secondary) count+=__builtin_popcountll(word);
+#endif
+        std::printf("%.9f,%llu\n",seconds,(unsigned long long)count);
+        return 0;
+    }
+#endif
 #ifdef M31_PACK_RUNS
     if(std::string(argv[1])=="--exhaustive") {
         Table table;
