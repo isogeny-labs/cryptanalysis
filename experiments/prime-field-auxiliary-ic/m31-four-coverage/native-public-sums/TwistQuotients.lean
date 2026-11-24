@@ -54,7 +54,7 @@ abbrev CurvePoints (f : F → F) := Option ((x : F) × {y : F // y^2 = f x})
 def pointTrace (f : F → F) : ℤ :=
   (Fintype.card F : ℤ) + 1 - Fintype.card (CurvePoints f)
 
-private theorem trace_eq (hF : ringChar F ≠ 2) (f : F → F) :
+theorem trace_eq (hF : ringChar F ≠ 2) (f : F → F) :
     pointTrace f = -(∑ x : F, quadraticChar F (f x)) := by
   classical
   have fiber (x : F) : (Fintype.card {y : F // y^2 = f x} : ℤ) =
