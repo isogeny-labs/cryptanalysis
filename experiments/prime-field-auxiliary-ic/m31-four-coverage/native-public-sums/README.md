@@ -41,3 +41,14 @@ The `paired-512-lanes4` arm distributes each batch's denominators over four runn
 ```
 
 In `lane-times.csv`, the frozen binary is built from commit `529249a9a`. The current binary contains both lane counts. Each fixture uses 36 fresh-process rounds, with each of the six arm orders repeated six times and the fixture rounds shuffled together. Generation and sorted-table times are in milliseconds. Each output was checked against its independent fixture digest. The algebra for partitioning products and reversing the tree is in the parent directory's `PairInversion.lean`.
+
+## Exact multiplicity lookup
+
+`prefix-lookup.cpp` takes a mode (`binary` or `prefix`), a sorted table file, a query file and an output path. All three files contain little-endian uint32 words on the benchmark host. For every query it writes the number of equal entries in the table. The prefix mode records 4,097 starting offsets (16,388 bytes) for the top 12 bits of each 31-bit key. Both modes find the lower bound and scan equal entries.
+
+```sh
+clang++ -O3 -mcpu=native -std=c++20 prefix-lookup.cpp -o /tmp/m31-prefix-lookup
+/tmp/m31-prefix-lookup prefix /tmp/m31-public-x.bin queries.bin counts.bin
+```
+
+The `prefix-times.csv` timer starts with the same sorted table and query array already in memory. It includes directory allocation and construction and all queries, and ends before output serialization. Table generation, file reads, input validation, answer-array allocation and directory destruction are outside this timing. Each case used 12 rounds with balanced mode ordering and fresh processes. For each basis and mixture, Python's `random.Random(2026112414)` generated 65,536 queries. Uniform queries use `randrange(2147483647)`. For the half-planted mixture, odd-numbered positions (zero based) instead draw from the sorted table with `choice`. Shorter cases use prefixes of these streams. Every individual answer was compared with a Python frequency count. The numerical crossover applies to these two fixtures and these query streams.
