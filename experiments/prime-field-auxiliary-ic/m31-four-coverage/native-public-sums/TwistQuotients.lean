@@ -48,4 +48,67 @@ theorem correlation (hF : ringChar F ≠ 2) :
   simp [reciprocal, cubic]
   ring
 
+/-- One point at infinity together with the affine pairs satisfying y² = f(x). -/
+abbrev CurvePoints (f : F → F) := Option ((x : F) × {y : F // y^2 = f x})
+
+def pointTrace (f : F → F) : ℤ :=
+  (Fintype.card F : ℤ) + 1 - Fintype.card (CurvePoints f)
+
+private theorem trace_eq (hF : ringChar F ≠ 2) (f : F → F) :
+    pointTrace f = -(∑ x : F, quadraticChar F (f x)) := by
+  classical
+  have fiber (x : F) : (Fintype.card {y : F // y^2 = f x} : ℤ) =
+      quadraticChar F (f x) + 1 := by
+    simpa [Fintype.card_subtype, Set.toFinset_setOf] using quadraticChar_card_sqrts hF (f x)
+  simp only [pointTrace, CurvePoints, Fintype.card_option, Fintype.card_sigma,
+    Nat.cast_add, Nat.cast_one, Nat.cast_sum, fiber, Finset.sum_add_distrib]
+  simp
+
+private theorem monic_sum (a b c d : F) (ha : a ≠ 0) :
+    (∑ x : F, quadraticChar F (a*x^3+b*x^2+c*x+d)) =
+      ∑ X : F, quadraticChar F (X^3+b*X^2+a*c*X+a^2*d) := by
+  have eqn (x : F) : (a*x)^3+b*(a*x)^2+a*c*(a*x)+a^2*d =
+      a^2*(a*x^3+b*x^2+c*x+d) := by ring
+  have reindex := Equiv.sum_comp (Equiv.mulLeft₀ a ha)
+    (fun X => quadraticChar F (X^3+b*X^2+a*c*X+a^2*d))
+  change (∑ x : F, quadraticChar F ((a*x)^3+b*(a*x)^2+a*c*(a*x)+a^2*d)) = _ at reindex
+  simpa only [eqn, map_mul, quadraticChar_sq_one' ha, one_mul] using reindex
+
+/-- The point counts on precisely the two monic models used in the GP replay
+determine the original correlation. The second change of variables needs 196 ≠ 0. -/
+theorem correlation_traces (hF : ringChar F ≠ 2) (ha : (-196 : F) ≠ 0) :
+    ∑ x : F, quadraticChar F ((x^3 + 2*x + 14)*(x^3 + 2*x - 14)) =
+      -1 - pointTrace (fun u : F => u^3 + 4*u^2 + 4*u - 196)
+         - pointTrace (fun u : F => u^3 + 4*u^2 - 784*u + 196^2) := by
+  rw [correlation hF, trace_eq hF, trace_eq hF]
+  have h := monic_sum (-196 : F) 4 4 1 ha
+  have hm : (∑ v : F, quadraticChar F (1 + 4*v + 4*v^2 - 196*v^3)) =
+      ∑ v : F, quadraticChar F (v^3 + 4*v^2 - 784*v + 196^2) := by
+    convert h using 2 <;> congr 1 <;> ring
+  rw [hm]
+  ring
+
+/-- Four times the number of common liftable abscissae, with both marginal
+traces charged and the correlation evaluated on the same field. -/
+theorem four_common (hF : ringChar F ≠ 2) (f g : F → F)
+    (hf : ∀ x, f x ≠ 0) (hg : ∀ x, g x ≠ 0)
+    [DecidablePred (fun x => IsSquare (f x) ∧ IsSquare (g x))] :
+    4 * (Fintype.card {x // IsSquare (f x) ∧ IsSquare (g x)} : ℤ) =
+      Fintype.card F - pointTrace f - pointTrace g +
+        ∑ x : F, quadraticChar F (f x * g x) := by
+  classical
+  have row (x : F) :
+      (if IsSquare (f x) ∧ IsSquare (g x) then (4 : ℤ) else 0) =
+      1 + quadraticChar F (f x) + quadraticChar F (g x) + quadraticChar F (f x*g x) := by
+    simp only [map_mul, ← quadraticChar_one_iff_isSquare (hf x),
+      ← quadraticChar_one_iff_isSquare (hg x)]
+    rcases quadraticChar_dichotomy (hf x) with h | h <;>
+      rcases quadraticChar_dichotomy (hg x) with k | k <;> simp [h,k]
+  have allRows := Finset.sum_congr (s₁ := Finset.univ) rfl (fun x _ => row x)
+  rw [← Finset.sum_filter] at allRows
+  simp only [Finset.sum_const, nsmul_eq_mul, Finset.sum_add_distrib, Finset.card_univ,
+    mul_one] at allRows
+  rw [Fintype.card_subtype, trace_eq hF, trace_eq hF]
+  linarith
+
 end M31.TwistQuotients
