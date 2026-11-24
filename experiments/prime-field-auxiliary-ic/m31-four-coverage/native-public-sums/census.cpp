@@ -101,8 +101,10 @@ void radixSort(std::vector<W>& keys) {
 }
 
 int main(int argc,char**argv){
-    if(argc!=3 && argc!=4)return 1;
-    const std::string sortMode = argc == 4 ? argv[3] : "std";
+    if(argc < 3 || argc > 5)return 1;
+    const bool multiset = argc == 5;
+    if (multiset && std::string(argv[4]) != "multiset") return 1;
+    const std::string sortMode = argc >= 4 ? argv[3] : "std";
     if (sortMode != "std" && sortMode != "radix") return 1;
     std::array<Point,17> basis;
     for(auto& pt:basis)if(!(std::cin>>pt.x>>pt.y))return 2;
@@ -123,11 +125,12 @@ int main(int argc,char**argv){
     if (sortMode == "radix") radixSort(xs);
     else std::sort(xs.begin(),xs.end());
     auto sortedMs = std::chrono::duration<double,std::milli>(Clock::now()-start).count();
-    if(xs.size()!=28033||std::adjacent_find(xs.begin(),xs.end())!=xs.end())return 3;
+    if (xs.size() != 28033) return 3;
+    if (!multiset && std::adjacent_find(xs.begin(), xs.end()) != xs.end()) return 3;
     auto f=std::fopen(argv[2],"wb");if(!f)return 4;
     if(std::fwrite(xs.data(),sizeof(W),xs.size(),f)!=xs.size()||std::fclose(f))return 5;
     std::cout << elapsed;
-    if (argc == 4) std::cout << ',' << sortedMs;
+    if (argc >= 4) std::cout << ',' << sortedMs;
     std::cout << '\n';
     return 0;
 }
