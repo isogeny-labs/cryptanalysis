@@ -53,6 +53,7 @@ pub struct ChainSatOracle<'i> {
     topology: String,
     conflict_cap: u64,
     model_cap: u64,
+    coordinate_branching: bool,
     prepared: bool,
     nodes: Vec<Node>,
     words: usize,
@@ -70,6 +71,7 @@ impl<'i> ChainSatOracle<'i> {
             topology: "serial".into(),
             conflict_cap: 10_000,
             model_cap: 128,
+            coordinate_branching: false,
             prepared: false,
             nodes: Vec::new(),
             words: 0,
@@ -196,6 +198,7 @@ impl<'i, 'g> DecompositionOracle<BinaryGroup<'g>> for ChainSatOracle<'i> {
                 "per-target cumulative conflict cap; default10000",
             ),
             ("models", "per-target model cap; default128"),
+            ("branching", "default|coordinates; default default"),
         ]
     }
     fn prepare(
@@ -218,7 +221,10 @@ impl<'i, 'g> DecompositionOracle<BinaryGroup<'g>> for ChainSatOracle<'i> {
             return Err("chain-sat instance/context field mismatch".into());
         }
         for key in params.0.keys() {
-            if !matches!(key.as_str(), "m" | "topology" | "conflicts" | "models") {
+            if !matches!(
+                key.as_str(),
+                "m" | "topology" | "conflicts" | "models" | "branching"
+            ) {
                 return Err(format!("chain-sat does not accept `{key}`"));
             }
         }
@@ -229,6 +235,11 @@ impl<'i, 'g> DecompositionOracle<BinaryGroup<'g>> for ChainSatOracle<'i> {
         if !matches!(self.topology.as_str(), "serial" | "balanced") {
             return Err("topology must be serial or balanced".into());
         }
+        self.coordinate_branching = match params.get("branching").unwrap_or("default") {
+            "default" => false,
+            "coordinates" => true,
+            _ => return Err("branching must be default or coordinates".into()),
+        };
         self.conflict_cap = params.u64_or("conflicts", 10_000)?;
         self.model_cap = params.u64_or("models", 128)?;
         if fb.points.iter().any(|p| p.infinity) || fb.neg_index.len() != fb.points.len() {
@@ -339,6 +350,10 @@ impl<'i, 'g> DecompositionOracle<BinaryGroup<'g>> for ChainSatOracle<'i> {
             .insert("chain_sat_variables".into(), encoding.vars as u64);
         self.setup
             .insert("chain_negations".into(), fb.points.len() as u64);
+        self.setup.insert(
+            "chain_coordinate_branching".into(),
+            u64::from(self.coordinate_branching),
+        );
         self.encoding = encoding;
         self.prepared = true;
         Ok(())
@@ -377,6 +392,10 @@ impl<'i, 'g> DecompositionOracle<BinaryGroup<'g>> for ChainSatOracle<'i> {
         }
         for (row, rhs) in &self.encoding.xors {
             solver.add_xor(row, *rhs);
+        }
+        if self.coordinate_branching {
+            let primary: Vec<u32> = (1..=self.words as u32 * self.instance.n).collect();
+            solver.set_branch_priority(&primary);
         }
         solver.conflict_budget = self.conflict_cap;
         self.count(
@@ -605,6 +624,7 @@ mod tests {
             let mut params = Params::default();
             params
                 .set("topology", topology)
+                .set("branching", "coordinates")
                 .set("conflicts", "100000")
                 .set("models", "100");
             let mut ops = GroupOps::default();
