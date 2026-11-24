@@ -89,5 +89,63 @@ theorem complement_chain (high low : BitVec 32 → BitVec 32) (n : Nat) (x : Bit
     funext fun v => complement_fold (high v) (low v)
   rw [same]
 
+def quad (x : BitVec 31) :=
+  triple x &&& ~~~(x ^^^ ((x.rotateLeft 1).rotateLeft 1).rotateLeft 1)
+
+theorem quad_fallback (x : BitVec 31) (lo : x ≠ 0) (hi : x ≠ 2147483647) :
+    ((x ^^^ x.rotateRight 1) &&& quad x = 0) ↔ quad x = 0 := by
+  unfold quad triple
+  bv_decide
+
+theorem quad_address (x : BitVec 31) (i : Fin 31)
+    (mark : (((x ^^^ x.rotateRight 1) &&& quad x) >>> i.val) &&& 1 = 1) :
+    let v := if (x >>> i.val) &&& 1 = 0 then x else ~~~x
+    v.rotateRight (i.val+1) &&& 2013265921 = 1 := by
+  unfold quad triple at mark
+  fin_cases i <;> simp only [Nat.reduceAdd] at * <;> bv_decide
+
+theorem three_character (a : F) : quadraticChar F (3*a) = -quadraticChar F a := by
+  have eq : (3 : F) = (-1) * (1268011823 : F)^2 := by decide +kernel
+  rw [map_mul, eq, map_mul, quadraticChar_sq_one' (by decide +kernel : (1268011823 : F) ≠ 0),
+    quadraticChar_neg_one_iff_not_isSquare.mpr M31FiberLift.minus_one_nonsquare]
+  ring
+
+theorem quad_rotate (x : BitVec 31) :
+    quad (x.rotateRight 1) = (quad x).rotateRight 1 := by
+  unfold quad triple
+  bv_decide
+
+theorem quad_complement (x : BitVec 31) : quad (~~~x) = quad x := by
+  unfold quad triple
+  bv_decide
+
+/-- Normalization after a three-bit match on a four-bit miss fixes another address bit. -/
+theorem secondary_high (v : BitVec 31) (miss : quad v = 0)
+    (headBits : v &&& 1879048193 = 1) : v &&& 2013265921 = 134217729 := by
+  unfold quad triple at miss
+  bv_decide
+
+theorem interior_nibble (v : BitVec 31) (miss : quad v = 0) (i : BitVec 5) (bound : i ≤ 27) :
+    let bits := (v >>> i) &&& 15
+    bits ≠ 0 ∧ bits ≠ 15 := by
+  unfold quad triple at miss
+  bv_decide
+
+def validNine (x : Nat) : Bool :=
+  (List.range 6).all fun k =>
+    let nibble := (x / 2^k) % 16
+    nibble != 0 && nibble != 15
+
+theorem nine_counts :
+    ((List.range 256).filter validNine).length = 149 ∧
+    ((List.range 512).filter validNine).length = 298 := by decide +kernel
+
+theorem packed_digits (a b c d e f : Nat)
+    (ha : a < 298) (hb : b < 298) (hc : c < 149)
+    (hd : d < 298) (he : e < 298) :
+    ((c * 298 + b) * 298 + a < 13231796) ∧
+    (((c * 298 + b) * 298 + a = (f * 298 + e) * 298 + d) ↔
+      a = d ∧ b = e ∧ c = f) := by omega
+
 theorem bytes : (34636833 + 7) / 8 = 4329605 := by decide
 end M31ResidueOrbits
