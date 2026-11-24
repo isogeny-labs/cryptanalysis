@@ -1,3 +1,6 @@
+#if defined(M31_FIXED_PANEL) && (defined(M31_NEON_PANEL) || defined(M31_REUSE_PANEL))
+#error Select one benchmark panel
+#endif
 #ifdef M31_NEON_PANEL
 #include <arm_neon.h>
 #endif
@@ -44,6 +47,16 @@ constexpr int arm_count = 5;
 #else
 constexpr int arm_count = 4;
 #endif
+#elif defined(M31_FIXED_PANEL)
+#ifdef M31_SMALL_CONTROL
+constexpr int arm_count = 5;
+#elif defined(M31_INDEX_CONTROL)
+constexpr int arm_count = 7;
+#elif defined(M31_COLD_CONTROL)
+constexpr int arm_count = 6;
+#else
+constexpr int arm_count = 5;
+#endif
 #else
 constexpr int arm_count = 3;
 #endif
@@ -63,6 +76,28 @@ int choose(const Keys& keys) {
     }
     return -1;
 }
+
+#ifdef M31_FIXED_PANEL
+// Empty words contain the out-of-domain value prime. Clear every touched slot,
+// including duplicates, before handing the table to the next base.
+template<bool clear_after=true, size_t Slots>
+void fixed_lookup(std::array<Word,Slots>& table, const Keys& keys,
+                  const Word* queries, unsigned char* out, int count) {
+    static_assert((Slots & (Slots-1)) == 0);
+    bool collided = false;
+    for (Word x : keys) {
+        auto& slot = table[x & (Slots-1)];
+        collided |= slot != prime;
+        slot = x;
+    }
+    if (collided) {
+        for (int i=0; i<count; ++i) out[i] = scan(keys,queries[i]);
+    } else {
+        for (int i=0; i<count; ++i) out[i] = table[queries[i] & (Slots-1)] == queries[i];
+    }
+    if constexpr (clear_after) for (Word x : keys) table[x & (Slots-1)] = prime;
+}
+#endif
 
 int main(int argc, char** argv) {
     if (argc != 2) return 1;
@@ -88,6 +123,14 @@ int main(int argc, char** argv) {
 #ifdef M31_REUSE_PANEL
             std::array<unsigned char,128> candidate{};
 #endif
+#ifdef M31_FIXED_PANEL
+#ifndef M31_SMALL_CONTROL
+            std::array<Word,512> fixed512;
+            std::array<Word,4096> fixed4096;
+            if (arm==3) fixed512.fill(prime);
+            if (arm==4) fixed4096.fill(prime);
+#endif
+#endif
             for (size_t b=0; b<bases.size(); ++b) {
                 const auto& keys = bases[b];
                 auto apply = [&](auto lookup) {
@@ -104,6 +147,45 @@ int main(int argc, char** argv) {
                         candidate[(keys[i]>>shift)&127] = i;
                     apply([&](Word x){return keys[candidate[(x>>shift)&127]] == x;});
                 }
+#endif
+#ifdef M31_FIXED_PANEL
+#ifdef M31_INDEX_CONTROL
+                if (arm==6) {
+                    std::array<unsigned char,4096> indices{};
+                    bool collided = false;
+                    for (unsigned char i=0; i<keys.size(); ++i) {
+                        auto& entry = indices[keys[i]&4095];
+                        collided |= entry != 0;
+                        entry = i+1;
+                    }
+                    if (collided) { apply([&](Word x){return scan(keys,x);}); continue; }
+                    apply([&](Word x){
+                        unsigned i = indices[x&4095];
+                        return i && keys[i-1] == x;
+                    });
+                }
+#endif
+#if defined(M31_COLD_CONTROL) || defined(M31_INDEX_CONTROL)
+                if (arm==5) {
+                    fixed4096.fill(prime);
+                    fixed_lookup<false>(fixed4096,keys,queries.data()+b*count,out.data()+b*count,count);
+                }
+#endif
+#ifdef M31_SMALL_CONTROL
+                if (arm==3) {
+                    std::array<Word,256> table;
+                    table.fill(prime);
+                    fixed_lookup<false>(table,keys,queries.data()+b*count,out.data()+b*count,count);
+                }
+                if (arm==4) {
+                    std::array<Word,512> table;
+                    table.fill(prime);
+                    fixed_lookup<false>(table,keys,queries.data()+b*count,out.data()+b*count,count);
+                }
+#else
+                if (arm==3) fixed_lookup(fixed512,keys,queries.data()+b*count,out.data()+b*count,count);
+                if (arm==4) fixed_lookup(fixed4096,keys,queries.data()+b*count,out.data()+b*count,count);
+#endif
 #endif
                 if (arm==0) apply([&](Word x){return scan(keys,x);});
                 if (arm==1) {
@@ -123,7 +205,14 @@ int main(int argc, char** argv) {
             auto elapsed = std::chrono::steady_clock::now()-start;
             if (expected!=out) return 3;
             if (round>=arm_count) std::cout << count << ',' << round-arm_count << ',' <<
-                std::array{"scan","sort","window","batch","reuse"}[arm] << ',' <<
+#ifdef M31_SMALL_CONTROL
+                std::array{"scan","sort","window","fresh256","fresh512"}[arm]
+#elif defined(M31_FIXED_PANEL)
+                std::array{"scan","sort","window","fixed512","fixed4096","fresh4096","fresh_index"}[arm]
+#else
+                std::array{"scan","sort","window","batch","reuse"}[arm]
+#endif
+                 << ',' <<
                 std::chrono::duration<double,std::nano>(elapsed).count()/bases.size() << '\n';
         }
     }
