@@ -1,4 +1,5 @@
 import Mathlib.Tactic
+import Mathlib.Data.List.GetD
 import Std.Tactic.BVDecide
 
 namespace M31NineExcess
@@ -73,6 +74,120 @@ theorem impossible (f : BitVec 7 → BitVec 9)
     exact Finset.mem_sdiff.mpr ⟨sub (Finset.mem_sdiff.mp hx).1,(Finset.mem_sdiff.mp hx).2⟩)
   have split := Finset.card_sdiff_add_card_inter image four
   rw [rest_size] at rest
+  omega
+
+-- Keep multiplicities and enumerate each unordered pair by its position.
+def diffs : List (BitVec 7) → List (BitVec 7)
+  | [] => []
+  | x::xs => xs.map (fun y => x ^^^ y) ++ diffs xs
+
+theorem twice_pairs (xs : List (BitVec 7)) :
+    2*(diffs xs).length + xs.length = xs.length^2 := by
+  induction xs with
+  | nil => decide
+  | cons x xs ih => simp [diffs]; nlinarith
+
+theorem cross_count (p : BitVec 7 → Bool)
+    (lin : ∀ x y, p (x ^^^ y) = (p x ^^ p y)) (xs : List (BitVec 7)) :
+    (diffs xs).countP p = xs.countP p * xs.countP (fun x => !(p x)) := by
+  induction xs with
+  | nil => rfl
+  | cons x xs ih =>
+    simp only [diffs, List.countP_append, List.countP_map, Function.comp_def,
+      List.countP_cons,lin,ih]
+    cases p x <;> simp [Nat.add_mul, Nat.mul_add] <;> ac_rfl
+
+def syndromes : List (BitVec 7) := (List.range 127).map (fun n => BitVec.ofNat 7 (n+1))
+
+theorem nine_extra (keys : List (BitVec 7)) (size : keys.length = 17)
+    (cover : ∀ d : BitVec 7, d ≠ 0 → d ∈ diffs keys) :
+    ∃ extra : List (BitVec 7), extra.length = 9 ∧ (diffs keys).Perm (extra ++ syndromes) := by
+  classical
+  have le : (syndromes : Multiset (BitVec 7)) ≤ (diffs keys : Multiset (BitVec 7)) := by
+    apply (Multiset.le_iff_subset (by decide +kernel : (syndromes : Multiset (BitVec 7)).Nodup)).2
+    intro d hd
+    apply cover
+    intro z
+    subst d
+    exact (by decide +kernel : (0 : BitVec 7) ∉ syndromes) hd
+  let m := (diffs keys : Multiset (BitVec 7)) - (syndromes : Multiset (BitVec 7))
+  have perm : (diffs keys).Perm (m.toList ++ syndromes) := by
+    apply Multiset.coe_eq_coe.mp
+    rw [← Multiset.coe_add,Multiset.coe_toList]
+    exact (Multiset.sub_add_cancel le).symm
+  refine ⟨m.toList,?_,perm⟩
+  have h := twice_pairs keys
+  rw [size] at h
+  have eq := perm.length_eq
+  rw [List.length_append,show syndromes.length = 127 by decide +kernel] at eq
+  omega
+
+def dot (u x : BitVec 7) : Bool :=
+  let z := u &&& x
+  (z ^^^ (z >>> 1) ^^^ (z >>> 2) ^^^ (z >>> 3) ^^^
+    (z >>> 4) ^^^ (z >>> 5) ^^^ (z >>> 6)).getLsbD 0
+
+private theorem dot_right (u a b : BitVec 7) : dot u (a ^^^ b) = (dot u a ^^ dot u b) := by
+  unfold dot
+  bv_decide
+private theorem dot_left (u v x : BitVec 7) : dot (u ^^^ v) x = (dot u x ^^ dot v x) := by
+  unfold dot
+  bv_decide
+
+set_option maxRecDepth 8192 in
+set_option maxHeartbeats 8000000 in
+private theorem balanced : ∀ u : BitVec 7, u ≠ 0 → syndromes.countP (dot u) = 64 := by
+  decide +kernel
+
+def signature (extra : List (BitVec 7)) (u : BitVec 7) : BitVec 9 :=
+  (BitVec.ofBoolListLE (extra.map (dot u))).setWidth 9
+
+private theorem bit_signature (extra : List (BitVec 7)) (u : BitVec 7) (i : Nat) (hi : i < 9) :
+    (signature extra u).getLsbD i = dot u (extra.getD i 0) := by
+  have zero : dot u 0 = false := by simp [dot]
+  simp only [signature, BitVec.getLsbD_setWidth, decide_eq_true hi, Bool.true_and,
+    BitVec.getLsbD_ofBoolListLE]
+  simpa only [zero] using List.getD_map (l := extra) (n := i) (d := 0) (dot u)
+
+private theorem signature_linear (extra : List (BitVec 7)) (a b : BitVec 7) :
+    signature extra (a ^^^ b) = signature extra a ^^^ signature extra b := by
+  apply BitVec.eq_of_getLsbD_eq
+  intro i hi
+  simp only [BitVec.getLsbD_xor,bit_signature _ _ _ hi,dot_left]
+
+private theorem signature_weight (extra : List (BitVec 7)) (len : extra.length = 9) (u : BitVec 7) :
+    weight (signature extra u) = extra.countP (dot u) := by
+  have reconstruct : (List.range 9).map (fun i => extra.getD i 0) = extra := by
+    apply List.ext_getElem
+    · simp [len]
+    · intro i h k
+      simp [List.getD_eq_getElem?_getD, List.getElem?_eq_getElem k]
+  unfold weight
+  rw [← List.countP_eq_length_filter]
+  calc
+    _ = (List.range 9).countP (fun i => dot u (extra.getD i 0)) :=
+      List.countP_congr (fun i hi => by rw [bit_signature _ _ _ (List.mem_range.mp hi)])
+    _ = _ := by
+      have h := List.countP_map (p := dot u) (f := fun i => extra.getD i 0) (l := List.range 9)
+      rw [reconstruct] at h
+      exact h.symm
+
+theorem missing_direction (keys : List (BitVec 7)) (size : keys.length = 17) :
+    ∃ d : BitVec 7, d ≠ 0 ∧ d ∉ diffs keys := by
+  by_contra! cover
+  obtain ⟨extra,len,perm⟩ := nine_extra keys size cover
+  apply impossible (signature extra) (signature_linear extra)
+  intro u nz
+  unfold good
+  rw [signature_weight extra len]
+  have count := perm.countP_eq (dot u)
+  rw [List.countP_append, balanced u nz, cross_count _ (dot_right u)] at count
+  have total := List.length_eq_countP_add_countP (dot u) (l := keys)
+  simp only [Bool.not_eq_true, Bool.decide_eq_false] at total
+  rw [size] at total
+  apply excess_weight (keys.countP (dot u)) _ (by omega)
+  have neg : keys.countP (fun x => !(dot u x)) = 17 - keys.countP (dot u) := by omega
+  rw [← neg]
   omega
 
 end M31NineExcess
