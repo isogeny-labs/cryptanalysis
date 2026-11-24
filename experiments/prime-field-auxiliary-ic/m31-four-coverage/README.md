@@ -655,3 +655,11 @@ If basis generation and internal setup take zero time and all remaining elapsed 
 Run replay-archive-check.py to regenerate ArchiveData.lean and archive-accounting.json from the pinned Git objects. The replay checks the byte lengths and SHA-256 digests of all 33 raw manifest entries, including entries repeated across runs. It checks the seed, method label and wall-time accounting before rounding each total down and each removable component up to whole nanoseconds. Compile ArchiveData.lean followed by ArchiveCheck.lean with Lean 4.34.1 and warnings as errors. The deletion_bound theorem propagates the conservative rounding through the rational speedup inequality.
 
 PCC-20261124-aa31ba [pcc:unverified]
+
+### How many seven-step fibers contain the archived basis?
+
+For the public map f(x)=x²−2 mod 2147483647, all 71 published table entries have the same seventh iterate. In contrast, the 17 archived base points have 17 distinct seventh iterates. Consequently exactly 17 terminal values are required to cover their abscissae with complete seven-step fibers. This is a count of distinct fibers and supplies no timing estimate for constructing multiple fibers together.
+
+TerminalSeparation.lean verifies a stronger finite-fixture statement. All 32 structured abscissae from the depth-five archive have distinct images under f iterated 24 times. Equality at any earlier common depth would persist to depth 24. The first coalescences occur at depth 25, leaving 30 labels for the 32 abscissae and 16 labels for the 17 selected points. This calculation concerns the specific archive inputs and the specified map. Regenerate ArchiveRoots.lean and ArchiveData.lean with replay-archive-check.py. Compile both before TerminalSeparation.lean using the same Lean environment and warnings-as-errors setting as the archive audit.
+
+PCC-20261124-7fe33e [pcc:unverified]
