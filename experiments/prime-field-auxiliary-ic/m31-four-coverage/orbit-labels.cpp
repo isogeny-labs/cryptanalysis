@@ -24,17 +24,17 @@ constexpr Point K={1965083199,1854403464};
 struct Shifts {
     Batch x{},y{};
     constexpr Shifts(Batch abscissas,Batch ordinates) : x(abscissas),y(ordinates) {}
-    Shifts() {
-        Point q=K;
+    explicit Shifts(Point generator=K) {
+        Point q=generator;
         for(unsigned j=1;j<32;++j) {
             x[j]=q.x; y[j]=q.y;
             if(j==31) break;
             W slope=j==1?mul(add(mul(3,mul(q.x,q.x)),1),inv(add(q.y,q.y))):
-                         mul(sub(q.y,K.y),inv(sub(q.x,K.x)));
-            W xn=sub(sub(mul(slope,slope),q.x),K.x);
+                         mul(sub(q.y,generator.y),inv(sub(q.x,generator.x)));
+            W xn=sub(sub(mul(slope,slope),q.x),generator.x);
             q={xn,sub(mul(slope,sub(q.x,xn)),q.y)};
         }
-        if(x[16]!=0 || y[16]!=0 || x[31]!=K.x || add(y[31],K.y)!=0) std::abort();
+        if(x[16]!=0 || y[16]!=0 || x[31]!=generator.x || add(y[31],generator.y)!=0) std::abort();
     }
 };
 // Coordinates of jK, with the identity lane handled separately.
@@ -47,6 +47,7 @@ constexpr Shifts fixed(
      65536,761055499,1408832458,947317871,828153390,1252173442,982704225,181850505,
      0,1965633142,1164779422,895310205,1319330257,1200165776,738651189,1386428148,
      2147418111,454265095,363123620,476959865,1319068109,1343161384,586872573,293080183});
+#include "orbit-shifts.hpp"
 struct Row { Point point; Batch xs; Labels expected; };
 
 Labels affine(const Point& q,const Shifts& s) {
@@ -124,12 +125,14 @@ template<bool simplified,bool use_inverse=false> Labels homogeneous(const Point&
 }
 
 int main(int argc,char** argv) {
+    bool stream=argc==4 && std::string(argv[3])=="shift-stream";
+    bool shifts_test=argc==5 && std::string(argv[3])=="shifts";
     bool single=argc==5 && std::string(argv[3])=="single";
-    if(argc!=4 && !single) return 1;
+    if(argc!=4 && !single && !shifts_test) return 1;
     unsigned seed=std::stoul(argv[1]);
     bool check=std::string(argv[3])=="check";
-    unsigned passes=(check||single)?0:std::stoul(argv[3]);
-    if(!check && !single && passes==0) return 1;
+    unsigned passes=(check||single||shifts_test||stream)?0:std::stoul(argv[3]);
+    if(!check && !single && !shifts_test && !stream && passes==0) return 1;
     std::ifstream in(argv[2]); std::vector<Row> rows(1024);
     for(auto& r:rows) {
         for(unsigned j=0;j<32;++j) {
@@ -146,6 +149,8 @@ int main(int argc,char** argv) {
     if(check) {
         Shifts shifts;
         if(fixed.x!=shifts.x || fixed.y!=shifts.y) return 7;
+        std::vector<RawShifts> generators;
+        for(unsigned k=1;k<32;k+=2) generators.emplace_back(Point{fixed.x[k],fixed.y[k]});
         for(auto& row:rows) for(unsigned j=0;j<32;++j) {
             W x=row.xs[j],dx=sub(x,K.x),xn=row.xs[(j+1)%32];
             W y=mul(sub(add(mul(x,add(mul(x,x),1)),mul(K.y,K.y)),
@@ -155,6 +160,9 @@ int main(int argc,char** argv) {
                 Point pt={x,reverse?sub(0,y):y};
                 Labels expected;
                 for(unsigned k=0;k<32;++k) expected[k]=row.expected[(j+(reverse?32-k:k))%32];
+                unsigned g=j%16,stride=2*g+1;
+                auto rotated=raw_labels(pt,generators[g]);
+                for(unsigned k=0;k<32;++k) if(rotated[k]!=expected[k*stride%32]) return 9;
                 for(auto fn:std::array{affine,homogeneous<false>,homogeneous<true>,homogeneous<false,true>})
                     if(fn(pt,shifts)!=expected) return 6;
             }
@@ -163,6 +171,64 @@ int main(int argc,char** argv) {
         return 0;
     }
     std::mt19937 gen(seed); std::shuffle(rows.begin(),rows.end(),gen);
+    if(stream) {
+        std::vector<Point> generators;
+        std::vector<Labels> output(rows.size());
+        for(size_t i=0;i<rows.size();++i) {
+            unsigned k=2*((seed+i)%16)+1;
+            generators.push_back({fixed.x[k],fixed.y[k]});
+        }
+        for(unsigned pos=0;pos<2;++pos) {
+            auto method=3+(seed+pos)%2;
+            auto start=std::chrono::steady_clock::now();
+            for(size_t i=0;i<rows.size();++i) {
+                if(method==3) output[i]=raw_labels(rows[i].point,RawShifts(generators[i]));
+                else output[i]=homogeneous<false>(rows[i].point,reindex(generators[i]));
+            }
+            auto ns=std::chrono::duration<double,std::nano>(std::chrono::steady_clock::now()-start);
+            for(size_t i=0;i<rows.size();++i) for(unsigned j=0;j<32;++j) {
+                unsigned k=2*((seed+i)%16)+1;
+                if(output[i][j]!=rows[i].expected[j*k%32]) return 8;
+            }
+            std::cout<<method<<','<<ns.count()/rows.size()<<'\n';
+        }
+        return 0;
+    }
+    if(shifts_test) {
+        unsigned method=std::stoul(argv[4]);
+        if(method>=5) return 1;
+        unsigned stride=2*(seed%16)+1;
+        Point generator={fixed.x[stride],fixed.y[stride]};
+        asm volatile("" : "+r"(generator.x), "+r"(generator.y));
+        const Point pt=rows[0].point;
+        auto begin=std::chrono::steady_clock::now();
+        if(method==3) {
+            RawShifts shifts(generator);
+            Labels result=raw_labels(pt,shifts);
+            asm volatile("" : : "r"(result.data()) : "memory");
+            auto elapsed=std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now()-begin);
+            for(unsigned j=0;j<32;++j) {
+                unsigned idx=(j*stride)%32;
+                W z=shifts.z[j],zz=mul(z,z);
+                if(!z || shifts.x[j]!=mul(fixed.x[idx],zz) ||
+                   shifts.y[j]!=mul(fixed.y[idx],mul(z,zz)) || result[j]!=rows[0].expected[idx]) return 8;
+            }
+            std::cout<<method<<','<<elapsed.count()<<'\n';
+            return 0;
+        }
+        Shifts shifts=method==0?Shifts(generator):method==1?layered(generator):
+                      method==2?projective_shifts(generator):reindex(generator);
+        Labels result=homogeneous<false>(pt,shifts);
+        asm volatile("" : : "r"(result.data()) : "memory");
+        auto elapsed=std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now()-begin);
+        for(unsigned j=0;j<32;++j) {
+            unsigned index=(stride*j)%32;
+            if(result[j]!=rows[0].expected[index] || shifts.x[j]!=fixed.x[index] ||
+               shifts.y[j]!=fixed.y[index]) return 8;
+        }
+        std::cout<<method<<','<<elapsed.count()<<'\n';
+        return 0;
+    }
     if(single) {
         unsigned method=std::stoul(argv[4]);
         if(method>=4) return 1;
