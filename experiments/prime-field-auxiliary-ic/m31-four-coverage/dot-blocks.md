@@ -35,3 +35,17 @@ Seeds 61–66 compare default packed inputs with -DM31_WIDE_INPUT in separate pr
 At 64 terms the wide within-seed ratios ranged from 1.026 to 1.089. Layout changes both the input traffic and the instructions feeding the multipliers. This experiment measures their combined effect.
 
 A second wide-input panel adds -DM31_NATIVE_PRODUCT. Its third arm multiplies the original uint64_t inputs in C++, letting the compiler choose instructions, and folds every four products once. Seeds 71–76 use six warmups and eighteen measured traversals per arm with rotating order. At 64 terms the medians across processes were 11.90 ns/dot for canonical NEON, 11.36 for partial NEON and 16.15 for the compiler-selected products. The third arm lost to partial NEON in every seed and length. All timed outputs passed the same independent reference. Seed 77 passed AddressSanitizer and UndefinedBehaviorSanitizer for the three-arm build. dot-layout.csv retains both panels. These measurements are local ARM throughput.
+
+## Paying for conversion from wide input
+
+dot-conversion.cpp compares narrowing on each load with copying both full 64-bit operand arrays into 32-bit scratch before traversal. Both arms call the same partially reduced NEON kernel. Every timed packed traversal copies both arrays afresh. Scratch allocation, fixture generation and reference computation are outside the timer. The scratch buffers require eight bytes per pair of input words (2 MiB at 64 terms and 4096 rows). The wide arrays remain resident. These are warmed processes on the M4 Pro.
+
+Each pass pairs row r of A with row (r + 37k) modulo 4096 of B for pass index k. Thus each operand row is reused once per pass with a different partner. A scalar 128-bit oracle checks every dot after each traversal. The Lean theorem packed_dot proves entrywise narrowing preserves the dot product for any two canonical rows of equal length. Compile dot-conversion.cpp with the same flags as the original benchmark. Seeds 81 through 86 use the default reuse counts. For fresh seeds 91 through 96 pass refine after the seed. Both panels alternate arm order, discard four warmups and retain eight measured rounds per arm and condition. Seed 97 passed the refine panel under AddressSanitizer and UndefinedBehaviorSanitizer. dot-conversion.csv contains the raw observations.
+
+| Terms | Last tested reuse count where wide won in all six fresh seeds | First tested reuse count where packing won in all six | Median wide/packed ratio at that first win |
+|---:|---:|---:|---:|
+| 17 | 8 | 14 | 1.032 |
+| 64 | 2 | 3 | 1.058 |
+| 128 | 3 | 4 | 1.066 |
+
+At 17 terms, packing won in three of six seeds at ten uses and five of six at twelve uses. At 64 terms in the initial panel, one use cost median 11.13 ns/dot wide and 18.56 ns/dot with packing, while sixteen uses cost 9.38 and 5.87 ns/dot respectively. Actual caller reuse, allocation of new scratch, and host memory behavior can shift these crossovers.

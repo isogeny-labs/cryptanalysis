@@ -57,4 +57,11 @@ theorem tail_fits (r a b : Nat) (hr : r < p) (ha : a < p) (hb : b < p) :
   unfold p at *
   omega
 
+-- Rows can be packed independently and paired later in any order.
+theorem packed_dot {n : Nat} (a b : Fin n → BitVec 64)
+    (ha : ∀ i, (a i).toNat < p) (hb : ∀ i, (b i).toNat < p) :
+    (∑ i, ((a i).setWidth 32).toNat * ((b i).setWidth 32).toNat) % p =
+      (∑ i, (a i).toNat * (b i).toNat) % p := by
+  simp only [narrow_exact _ (ha _), narrow_exact _ (hb _)]
+
 end M31DotBlocks
