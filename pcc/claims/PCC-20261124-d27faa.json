@@ -1,0 +1,75 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-24T00:11:23Z",
+ "id": "PCC-20261124-d27faa",
+ "kind": "theorem",
+ "producer": {
+  "commit": "6dca522bc4840dfd6e5782ca8f91078f3238fcaa",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "6353a17124478fde8c9baadb89092a2c3442a604785fff7391b297411617eef7",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/FixedOrbitExact.lean",
+   "theorem": "M31FixedOrbitExact.injective_slots"
+  },
+  {
+   "decl_sha256": "029d5d6989bb28c86dda02a67f8cdd07a6d2cf69d163443c0e03a77ad5e9fd20",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/FixedOrbitExact.lean",
+   "theorem": "M31FixedOrbitExact.exhausts"
+  },
+  {
+   "decl_sha256": "3279e27ba721e297b508496e6c57db05debc953689736674eb6639bb47491a16",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/FixedTableExact.lean",
+   "theorem": "M31FixedTableExact.packed_panel"
+  },
+  {
+   "decl_sha256": "aee9591b7fed9698ff42d1dc619f4c3fe6a45469dc731ffe39d14bea22afe195",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/FixedTableExact.lean",
+   "theorem": "M31FixedTableExact.panel_count"
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/FixedOrbitExact.lean",
+    "sha256": "e5ee5d507f8032ea5f7b5558d4675a0816893fd44ece82d55e280810b50e0447"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/FixedTableExact.lean",
+    "sha256": "c2f9544dab2eadd7a19933ebe5d872822b56d004d28270607087f0765d18b8f7"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/FixedWeights.lean",
+    "sha256": "2b06ae180329074c496c20fbc824c4ff7fa47e79945aecba1fecfbcbeb884b21"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/CanonicalLift.lean",
+    "sha256": "01d4d04d327a165e274f1142ced1774ed6a4246e966e0e93d8253dab8da9e0a0"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/HalfOrbit.lean",
+    "sha256": "5e604daff7334e0f43fdd9de78582d52af7cce3354c14df98fb3a467c1970759"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "For every valid fixed-step seed pair over M31 whose seventh-doubling terminal differs from both 2 and -2, the 128 recurrence slots are distinct and exhaust the fiber. For all 96 benchmark terminals the weighted half-orbit and canonical packed lift give the duplicate-free point table specified directly by the terminal equation."
+}

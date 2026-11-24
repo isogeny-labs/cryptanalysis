@@ -535,3 +535,13 @@ Replay CanonicalLift.lean in the Lean 4.34.1 mathlib environment with warnings a
 The native validate-packed mode additionally tests five actual packed implementations against independent u64 remainder arithmetic over 256 deterministic panels (32,768 slots). The cases include repeated abscissas, a completely rejected panel, completely accepted panels, y = 0, the half-field ordinate boundary, and appending after existing output. The oracle retained 16,664 points including 128 zero ordinates. All five implementations reproduced the scalar sequence exactly.
 
 PCC-20261124-eb70be [pcc:unverified]
+
+### Exact fixed-weight fibers and packed tables
+
+FixedOrbitExact.lean proves that the fixed-coefficient recurrence visits 128 distinct abscissas whenever its seed pair satisfies a²+b²+s²−a·b·s−4 = 0 and the seventh doubling of a differs from both 2 and −2. The theorem applies to arbitrary seeds in M31 satisfying these conditions. For a collision at a positive separation k<128, shift the seed to the earlier slot. The weight identity then gives u b = q a for two constants determined by k. Eliminating b from the seed equation determines a². A 127-entry kernel check establishes that the denominator is nonzero and that a collision would force the shifted terminal to be 2 or −2. Terminal preservation transfers that obstruction to the original seed. All 128 distinct slots satisfy the terminal equation, whose polynomial has degree 128. Hence they exhaust its M31 roots.
+
+FixedTableExact.lean checks the initializer and exclusion of the two exceptional terminals for all 96 distinct archived, held-out and fresh terminal coordinates. It checks the fresh terminal list against the same odd powers 129,131,…,191 used by the Rust harness. The coordinate formula uses the first 64 weighted positions and fills the other 64 by negation. The packed_panel theorem proves that these coordinates and the resulting sorted table have no duplicates. A packed (x,y) belongs to the modeled output exactly when x doubles seven times to the supplied terminal, y² equals the supplied curve-value function at x, and the canonical residue of y lies in the lower half of M31. This specification allows the curve-value function used by the benchmark and other M31 curves. Runtime and native-code correctness checks have separate records.
+
+Compile FixedOrbitExact.lean after FixedWeights.lean, and FixedTableExact.lean after FixedOrbitExact.lean and CanonicalLift.lean, in the experiment's Lean 4.34.1 environment with warnings treated as errors.
+
+PCC-20261124-d27faa [pcc:unverified]
