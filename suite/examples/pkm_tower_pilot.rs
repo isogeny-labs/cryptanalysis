@@ -25,6 +25,13 @@
 //! no pipeline, reports no `S`, and decides nothing on its own. Stage A of
 //! the note decides, on its full ladder.
 //!
+//! Kind `dickson_p1` is the Dickson tower of the non-split torus of order
+//! `p + 1` (`kinds` `kummer` and `dickson` take their roots of unity in
+//! `F_p^*` and need `2^t | p − 1`); it needs `2^t | p + 1`, so it is the
+//! Dickson tower on primes such as `p = 3·2^k − 1`. `--target-curve a,b`
+//! fixes the target curve `y² = x³ + a x + b` (the tower is redrawn until
+//! `m` of its abscissae carry points on it).
+//!
 //! `--engine tower` runs the same systems on the sparse tower engine
 //! `f4_fp_tower` instead (note §11): the tower equations become its
 //! rewriting rules, the other equations its input in normal form (the
@@ -222,6 +229,10 @@ enum Kind {
     Kummer,
     Dickson,
     Isogeny,
+    /// Dickson tower whose `V` comes from the non-split torus
+    /// `T_2 = ker(N: F_{p^2}^* -> F_p^*)` of order `p + 1` (needs
+    /// `2^t | p + 1`): `V = Tr(u·ζ^k)`, the same level equations as `Dickson`.
+    DicksonP1,
 }
 
 impl Kind {
@@ -230,6 +241,7 @@ impl Kind {
             Kind::Kummer => "kummer",
             Kind::Dickson => "dickson",
             Kind::Isogeny => "isogeny",
+            Kind::DicksonP1 => "dickson_p1",
         }
     }
 }
@@ -498,6 +510,90 @@ fn dickson(p: u64, t: usize, rng: &mut StdRng) -> Tower {
     }
 }
 
+// F_{p^2} = F_p[i]/(i^2 - n), n a non-residue; elements (re, im).
+fn f2_mul(a: (u64, u64), b: (u64, u64), n: u64, p: u64) -> (u64, u64) {
+    let re = addm(mulm(a.0, b.0, p), mulm(n, mulm(a.1, b.1, p), p), p);
+    let im = addm(mulm(a.0, b.1, p), mulm(a.1, b.0, p), p);
+    (re, im)
+}
+
+fn f2_pow(mut a: (u64, u64), mut e: u128, n: u64, p: u64) -> (u64, u64) {
+    let mut r = (1u64, 0u64);
+    while e > 0 {
+        if e & 1 == 1 {
+            r = f2_mul(r, a, n, p);
+        }
+        a = f2_mul(a, a, n, p);
+        e >>= 1;
+    }
+    r
+}
+
+/// Dickson tower on the norm-1 torus of order `p + 1`.  Requires
+/// `2^t | p + 1`.  `w_k = u·ζ^k` in `T_2`, `V = { w_k + w_k^{-1} } =
+/// { Tr(w_k) } ⊂ F_p`, and `D_2(w + 1/w) = w^2 + 1/w^2`, so the tower
+/// equations and the top constant `c = Tr(u^{2^t})` are as for `Dickson`.
+fn dickson_p1(p: u64, t: usize, rng: &mut StdRng) -> Tower {
+    assert!(
+        t < 63 && (p + 1).is_multiple_of(1u64 << t),
+        "dickson_p1: 2^{t} does not divide p + 1 = {} (v2(p + 1) = {})",
+        p + 1,
+        (p + 1).trailing_zeros()
+    );
+    // 2^t distinct traces need u² ∉ ⟨ζ⟩, impossible when |T_2 / ⟨ζ⟩| ≤ 2.
+    assert!(
+        (p + 1) >> t >= 3,
+        "dickson_p1: (p + 1) / 2^{t} = {} < 3 leaves no u with 2^{t} distinct traces",
+        (p + 1) >> t
+    );
+    let n = loop {
+        let n = rng.gen_range(2..p);
+        if powm(n, (p - 1) / 2, p) == p - 1 {
+            break n;
+        }
+    };
+    let rand_f2 = |rng: &mut StdRng| loop {
+        let s = (rng.gen_range(0..p), rng.gen_range(0..p));
+        if s != (0, 0) {
+            return s;
+        }
+    };
+    // T_2 element: s^{p-1}.
+    let torus = |s: (u64, u64)| f2_pow(s, (p - 1) as u128, n, p);
+    let zeta = loop {
+        let z = f2_pow(torus(rand_f2(rng)), ((p + 1) >> t) as u128, n, p);
+        if t == 0 || f2_pow(z, 1u128 << (t - 1), n, p) != (1, 0) {
+            break z;
+        }
+    };
+    loop {
+        let u = torus(rand_f2(rng));
+        let v: Vec<u64> = (0..1u64 << t)
+            .map(|k| {
+                let w = f2_mul(u, f2_pow(zeta, k as u128, n, p), n, p);
+                addm(w.0, w.0, p) // Tr(w) = 2·re for w in T_2
+            })
+            .collect();
+        let mut s = v.clone();
+        s.sort_unstable();
+        s.dedup();
+        if s.len() != 1 << t {
+            continue;
+        }
+        let ut = f2_pow(u, 1u128 << t, n, p);
+        return Tower {
+            kind: Kind::DicksonP1,
+            t,
+            size: 1 << t,
+            v,
+            scale: 1,
+            steps: vec![Step::Dickson; t],
+            c: addm(ut.0, ut.0, p),
+            info: json!({"torus": "p+1", "nonresidue": n, "u": [u.0, u.1], "zeta": [zeta.0, zeta.1]}),
+        };
+    }
+}
+
 fn random_point(curve: &PrimeCurve, rng: &mut StdRng) -> PrimePoint {
     loop {
         let x = rng.gen_range(0..curve.p);
@@ -535,8 +631,8 @@ fn nonsingular(a: u64, b: u64, p: u64) -> bool {
 /// A tower of 2-isogenies on an auxiliary curve `E'` with a rational
 /// point `Q` of order `2^t`; `V = x(R' + ⟨Q⟩)`.  The search for `E'` is
 /// the per-curve precomputation the oracle's base charges; here it is
-/// only reported.
-fn isogeny(p: u64, t: usize, rng: &mut StdRng) -> Tower {
+/// only reported.  `bsgs_count` selects [`point_count_bsgs`] for `#E'`.
+fn isogeny(p: u64, t: usize, bsgs_count: bool, rng: &mut StdRng) -> Tower {
     let two_t = 1u64 << t;
     let mut ops = GroupOps::default();
     let mut curves_tried = 0u64;
@@ -548,7 +644,14 @@ fn isogeny(p: u64, t: usize, rng: &mut StdRng) -> Tower {
             continue;
         }
         let e = PrimeCurve { p, a, b };
-        let n = e.point_count();
+        // `--aux-count bsgs`: the O(p^{1/4}) count of the general path.  It
+        // draws from `rng`, so it changes this kind's RNG stream; the exact
+        // O(p) count stays the default to keep earlier runs reproducible.
+        let n = if bsgs_count {
+            point_count_bsgs(&e, rng)
+        } else {
+            e.point_count()
+        };
         if !n.is_multiple_of(two_t) {
             continue;
         }
@@ -888,11 +991,19 @@ fn isogeny_general(p: u64, t: usize, degrees: &[u64], rng: &mut StdRng) -> Tower
     }
 }
 
-fn build_tower(kind: Kind, p: u64, t: usize, degrees: &[u64], rng: &mut StdRng) -> Tower {
+fn build_tower(
+    kind: Kind,
+    p: u64,
+    t: usize,
+    degrees: &[u64],
+    bsgs_count: bool,
+    rng: &mut StdRng,
+) -> Tower {
     let tower = match kind {
         Kind::Kummer => kummer(p, t, rng),
         Kind::Dickson => dickson(p, t, rng),
-        Kind::Isogeny if degrees == [2] => isogeny(p, t, rng),
+        Kind::DicksonP1 => dickson_p1(p, t, rng),
+        Kind::Isogeny if degrees == [2] => isogeny(p, t, bsgs_count, rng),
         Kind::Isogeny => isogeny_general(p, t, degrees, rng),
     };
     tower.check(p);
@@ -1407,6 +1518,13 @@ struct Args {
     /// cyclically (`--iso-degrees 3`, `--iso-degrees 2,3`).  `[2]`, the
     /// default, is the original tower and its code path.
     degrees: Vec<u64>,
+    /// Fix the target curve `y^2 = x^3 + a x + b` (`--target-curve a,b`)
+    /// instead of drawing a random one per cell.
+    target: Option<(u64, u64)>,
+    /// Degree-2 isogeny kind only: count `#E'` by BSGS (`--aux-count
+    /// bsgs`, `O(p^{1/4})`) instead of exactly (`exact`, `O(p)`, the
+    /// default).  The BSGS count changes the kind's RNG stream.
+    aux_count_bsgs: bool,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -1459,6 +1577,8 @@ fn parse_args() -> Args {
         trace: false,
         export: None,
         degrees: vec![2],
+        target: None,
+        aux_count_bsgs: false,
     };
     let args: Vec<String> = std::env::args().skip(1).collect();
     let list = |s: &str| -> Vec<usize> {
@@ -1484,6 +1604,7 @@ fn parse_args() -> Args {
                         "kummer" => Kind::Kummer,
                         "dickson" => Kind::Dickson,
                         "isogeny" => Kind::Isogeny,
+                        "dickson_p1" => Kind::DicksonP1,
                         other => panic!("unknown kind `{other}`"),
                     })
                     .collect()
@@ -1524,6 +1645,21 @@ fn parse_args() -> Args {
             "--max-nnz" => a.max_nnz = Some(v.parse().expect("--max-nnz")),
             "--dump" => a.dump = Some(v.parse().expect("--dump")),
             "--export" => a.export = Some(v),
+            "--target-curve" => {
+                let ab: Vec<u64> = v
+                    .split(',')
+                    .map(|x| x.trim().parse().expect("--target-curve a,b"))
+                    .collect();
+                assert_eq!(ab.len(), 2, "--target-curve a,b");
+                a.target = Some((ab[0], ab[1]));
+            }
+            "--aux-count" => {
+                a.aux_count_bsgs = match v.as_str() {
+                    "bsgs" => true,
+                    "exact" => false,
+                    other => panic!("unknown --aux-count `{other}` (bsgs, exact)"),
+                }
+            }
             "--iso-degrees" => {
                 a.degrees = v
                     .split(',')
@@ -1538,12 +1674,62 @@ fn parse_args() -> Args {
     a
 }
 
+/// Reject, before any cell runs, a fixed target curve that is singular and
+/// a `dickson_p1` sweep whose `t` range needs `2^t ∤ p + 1` (it would panic
+/// part-way through the sweep otherwise).
+fn validate_args(a: &Args) {
+    if let Some((ca, cb)) = a.target {
+        assert!(
+            nonsingular(ca % a.p, cb % a.p, a.p),
+            "--target-curve {ca},{cb} is singular mod p = {}",
+            a.p
+        );
+    }
+    if a.kinds.contains(&Kind::DicksonP1) {
+        let v2 = (a.p + 1).trailing_zeros() as usize;
+        for &m in &a.ms {
+            let max_t = match m {
+                2 => a.max_t,
+                3 => a.max_t_m3,
+                _ => a.max_t_m4,
+            };
+            // The sweep stops by itself once |V| > p/16.
+            let reachable = (0..=max_t)
+                .take_while(|&t| t < 63 && (1u64 << t) <= a.p / 16)
+                .last()
+                .unwrap_or(0);
+            assert!(
+                reachable <= v2,
+                "dickson_p1 needs 2^t | p + 1, but v2(p + 1) = {v2} for p = {} and m = {m} \
+                 sweeps t up to {reachable}; pass a max t (--max-t / --max-t-m3 / --max-t-m4) ≤ {v2}",
+                a.p
+            );
+        }
+        for &t in &a.ladder_ts {
+            assert!(
+                t <= v2,
+                "dickson_p1 needs 2^t | p + 1, but v2(p + 1) = {v2} for p = {} and \
+                 --ladder-t includes {t}",
+                a.p
+            );
+        }
+    }
+}
+
 /// A target curve over `F_p` on which at least `need` abscissae of `V`
 /// carry points.
-fn target_curve(p: u64, tower: &Tower, need: usize, rng: &mut StdRng) -> (PrimeCurve, Vec<u64>) {
+fn target_curve(
+    p: u64,
+    tower: &Tower,
+    need: usize,
+    fixed: Option<(u64, u64)>,
+    rng: &mut StdRng,
+) -> (PrimeCurve, Vec<u64>) {
     loop {
-        let a = rng.gen_range(0..p);
-        let b = rng.gen_range(1..p);
+        let (a, b) = match fixed {
+            Some((a, b)) => (a % p, b % p),
+            None => (rng.gen_range(0..p), rng.gen_range(1..p)),
+        };
         if !nonsingular(a, b, p) {
             continue;
         }
@@ -1556,6 +1742,9 @@ fn target_curve(p: u64, tower: &Tower, need: usize, rng: &mut StdRng) -> (PrimeC
             .collect();
         if on.len() >= need {
             return (curve, on);
+        }
+        if fixed.is_some() {
+            return (curve, on); // caller redraws the tower
         }
     }
 }
@@ -1576,8 +1765,23 @@ fn run_cell(cell: &Cell, a: &Args, sink: &mut Sink) -> bool {
         ^ ((cell.t as u64) << 16)
         ^ (cell.g as u64);
     let mut rng = StdRng::seed_from_u64(cell_seed);
-    let tower = build_tower(cell.kind, p, cell.t, &a.degrees, &mut rng);
-    let (curve, on) = target_curve(p, &tower, cell.m.max(2), &mut rng);
+    // With a fixed target curve, redraw the tower until at least m of its
+    // abscissae carry points on that curve.
+    let mut draws = 0u32;
+    let (tower, curve, on) = loop {
+        let tower = build_tower(cell.kind, p, cell.t, &a.degrees, a.aux_count_bsgs, &mut rng);
+        let (curve, on) = target_curve(p, &tower, cell.m.max(2), a.target, &mut rng);
+        if on.len() >= cell.m.max(2) {
+            break (tower, curve, on);
+        }
+        draws += 1;
+        assert!(
+            draws < 10_000,
+            "--target-curve: 10000 towers at t = {} without {} abscissae on the curve",
+            cell.t,
+            cell.m.max(2)
+        );
+    };
     let mut targets = Vec::new();
     let planted = if cell.t > a.planted_max_t && cell.control != Control::Ladder {
         0
@@ -1881,6 +2085,7 @@ fn dump_basis(basis: &[Poly], cell: &Cell, k: u32) {
 
 fn main() {
     let a = parse_args();
+    validate_args(&a);
     let started = Instant::now();
     let mut sink = Sink {
         rows: Vec::new(),
@@ -2066,12 +2271,143 @@ mod tests {
         for degrees in [vec![3u64], vec![5], vec![2, 3], vec![3, 2], vec![7]] {
             for t in 1..=3 {
                 let mut rng = StdRng::seed_from_u64(7 + t as u64);
-                let tower = build_tower(Kind::Isogeny, p, t, &degrees, &mut rng);
+                let tower = build_tower(Kind::Isogeny, p, t, &degrees, false, &mut rng);
                 assert_eq!(tower.size as u64, tower_size(Kind::Isogeny, t, &degrees));
                 for (j, e) in tower.equations(t, 0, p).iter().enumerate() {
                     assert_eq!(e.degree() as u64, level_degrees(&degrees, t)[j]);
                 }
             }
+        }
+    }
+
+    /// `p = 3·2^k − 1`: `v2(p − 1) = 1`, so `dickson` stops at `t = 1`, while
+    /// `dickson_p1` reaches `t = k`.  Every element of `V` is the trace of a
+    /// norm-1 element of `F_{p²}` lying in the coset `u·μ_{2^t}`, the
+    /// elements are distinct, and `V` is exactly the fiber of the composed
+    /// level map `D_{2^t}` over `c` (exhaustive over `F_p`).
+    #[test]
+    fn dickson_p1_v_is_torus_traces() {
+        for (p, k) in [(383u64, 7usize), (6143, 11)] {
+            assert_eq!(p, 3 * (1 << k) - 1);
+            for t in 1..=k {
+                let mut rng = StdRng::seed_from_u64(11 + t as u64);
+                let tower = build_tower(Kind::DicksonP1, p, t, &[2], false, &mut rng);
+                assert_eq!(tower.size, 1 << t);
+                let n = tower.info["nonresidue"].as_u64().unwrap();
+                assert_eq!(powm(n, (p - 1) / 2, p), p - 1, "n is a residue");
+                let pair = |key: &str| {
+                    let a = tower.info[key].as_array().unwrap();
+                    (a[0].as_u64().unwrap(), a[1].as_u64().unwrap())
+                };
+                let (u, zeta) = (pair("u"), pair("zeta"));
+                // Norm 1: x·x^p = re² − n·im² = 1.
+                let norm =
+                    |w: (u64, u64)| subm(mulm(w.0, w.0, p), mulm(n, mulm(w.1, w.1, p), p), p);
+                assert_eq!(norm(u), 1);
+                assert_eq!(norm(zeta), 1);
+                // ζ has exact order 2^t.
+                assert_eq!(f2_pow(zeta, 1u128 << t, n, p), (1, 0));
+                assert_ne!(f2_pow(zeta, 1u128 << (t - 1), n, p), (1, 0));
+                let mut expect: Vec<u64> = (0..1u128 << t)
+                    .map(|j| {
+                        let w = f2_mul(u, f2_pow(zeta, j, n, p), n, p);
+                        assert_eq!(norm(w), 1);
+                        // w ∉ F_p unless w = ±1: v² − 4 is then a non-residue.
+                        let v = addm(w.0, w.0, p);
+                        let d = subm(mulm(v, v, p), 4, p);
+                        assert!(d == 0 || powm(d, (p - 1) / 2, p) == p - 1);
+                        v
+                    })
+                    .collect();
+                expect.sort_unstable();
+                let mut got = tower.v.clone();
+                got.sort_unstable();
+                assert_eq!(got, expect, "p={p} t={t}");
+                // Levels: y_{j+1} = y_j² − 2, top constant c = Tr(u^{2^t}).
+                let ut = f2_pow(u, 1u128 << t, n, p);
+                assert_eq!(tower.c, addm(ut.0, ut.0, p));
+                let fiber: Vec<u64> = (0..p)
+                    .filter(|&x| {
+                        let y = tower.values(x, p);
+                        tower.apply(t - 1, y[t - 1], p) == tower.c
+                    })
+                    .collect();
+                assert_eq!(fiber, got, "p={p} t={t}: V is not the whole fiber");
+            }
+        }
+    }
+
+    /// On the twins `3·2^6 ∓ 1` (and `3·2^18 ∓ 1`, the aux study's
+    /// S20/REF20 pair, where the paired F4 ratio was 1.000), `dickson_p1`
+    /// on `p` and `dickson` on its twin give the same system shape at every
+    /// `t`: the same level equations, monomial for monomial, with only the
+    /// top constant differing.
+    #[test]
+    fn dickson_p1_matches_dickson_on_twin() {
+        for (pm, pp, k) in [(191u64, 193u64, 6usize), (786_431, 786_433, 8)] {
+            for t in 1..=k {
+                let mut r1 = StdRng::seed_from_u64(5);
+                let mut r2 = StdRng::seed_from_u64(5);
+                let a = build_tower(Kind::DicksonP1, pm, t, &[2], false, &mut r1);
+                let b = build_tower(Kind::Dickson, pp, t, &[2], false, &mut r2);
+                assert_eq!(a.size, b.size);
+                let (ea, eb) = (a.equations(t, 0, pm), b.equations(t, 0, pp));
+                assert_eq!(ea.len(), eb.len());
+                for (j, (x, y)) in ea.iter().zip(&eb).enumerate() {
+                    let top = j + 1 == t;
+                    // Coefficients as signed integers; the top level's
+                    // constant term (c) is the only allowed difference.
+                    let strip = |e: &Pol, p: u64| -> Vec<(Vec<u32>, i64)> {
+                        e.terms
+                            .iter()
+                            .filter(|(m, _)| !(top && m.iter().all(|&d| d == 0)))
+                            .map(|(m, &c)| {
+                                let c = if c > p / 2 {
+                                    c as i64 - p as i64
+                                } else {
+                                    c as i64
+                                };
+                                (m.clone(), c)
+                            })
+                            .collect()
+                    };
+                    let (sa, sb) = (strip(x, pm), strip(y, pp));
+                    assert_eq!(sa, sb, "t={t} level {j}");
+                }
+            }
+        }
+    }
+
+    #[test]
+    #[should_panic(expected = "does not divide p + 1")]
+    fn dickson_p1_rejects_t_beyond_v2() {
+        // v2(384) = 7.
+        dickson_p1(383, 8, &mut StdRng::seed_from_u64(1));
+    }
+
+    #[test]
+    #[should_panic(expected = "leaves no u")]
+    fn dickson_p1_rejects_degenerate_quotient() {
+        // p + 1 = 2^7: every u has u² ∈ ⟨ζ⟩ at t = 6, no 2^6 distinct traces.
+        dickson_p1(127, 6, &mut StdRng::seed_from_u64(1));
+    }
+
+    #[test]
+    fn fixed_target_curve_is_used() {
+        let p = 383;
+        let tower = build_tower(
+            Kind::DicksonP1,
+            p,
+            3,
+            &[2],
+            false,
+            &mut StdRng::seed_from_u64(2),
+        );
+        let (curve, on) = target_curve(p, &tower, 2, Some((0, 1)), &mut StdRng::seed_from_u64(3));
+        assert_eq!((curve.a, curve.b), (0, 1));
+        for &x in &on {
+            assert!(tower.v.contains(&x));
+            assert!(powm(curve.rhs(x), (p - 1) / 2, p) <= 1);
         }
     }
 }
