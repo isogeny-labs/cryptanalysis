@@ -601,3 +601,24 @@ After compiling torus7-build.rs with the preceding native flags, run `python3 re
 MaskEmit.lean proves that the enumeration returns exactly the set bits in strictly increasing order. It also checks four-lane mask insertion, bit reversal, and the upper-half index formula. Compile with Lean 4.34.1 and warnings as errors. The enumeration and insertion proofs use the native bv_decide certificate checker. Compiled NEON code and buffer routing have independent scalar-oracle coverage.
 
 PCC-20261124-5baa60 [pcc:unverified]
+
+### Vector arithmetic and first-call owned outputs
+
+The four-lane evaluator uses x(x²+2) for the odd part of the cubic. Doubling the signed 32-bit product and taking its high word computes the high part at radix 2³¹ for canonical operands. Combining that word with the low 31 product bits and conditionally subtracting the M31 prime gives the field product. VectorCubic.lean proves the arithmetic bounds, reduction, factored cubic identities and horizontal flag encoding. BufferBound.lean imports MaskEmit.lean and proves that each output needs at most 128 entries. The bitvector decision procedures use native certificate checking. The proofs concern the arithmetic model and output capacity. The scalar reference checks the compiled implementation separately.
+
+The first-table entry point returns two owned point vectors, with both allocations charged. Method direct appends each emitted point to a preallocated vector. Method fixed writes each table to a 128-entry buffer and copies its populated prefix into a new vector. Both publication arms use the same vector_tables function. The timer starts before coordinate generation and ends when both vectors have been built. Process startup, scalar-oracle checks and destruction of the returned vectors are outside the interval. Each sample runs in a fresh process.
+
+| Build and schedule | Odd trace powers | Median paired direct/fixed | Terminals favoring fixed |
+|---|---|---:|---:|
+| Publication, standalone comparison | 385–447 | 0.993 | 15/32 |
+| Publication, standalone comparison | 449–511 | 0.990 | 12/32 |
+| Prior executable, interleaved comparison | 449–511 | 1.083 | 31/32 |
+| Publication, interleaved comparison | 449–511 | 1.024 | 26/32 |
+
+The standalone schedules ran twelve paired rounds per terminal in alternating method order. The interleaved comparison ran eight rounds per terminal, rotating the four build/method combinations through ABCD, BDAC, DCBA and CADB. Within each block A and B use the prior executable and C and D use the publication build. A and C are direct. Each ratio is the median of the 32 within-terminal median paired ratios. These records show executable-dependent first-call behavior. They do not support transferring the prototype's first-call speedup to the publication implementation.
+
+Rebuild torus7-build.rs on arm64 with the a82976381 field source, Rust 1.93.1, edition 2021, opt-level=3 and target-cpu=native. Run replay-owned.py with the binary path and previous or fresh. Each timing is accompanied by a complete comparison after timing against scalar lifts over independently generated coordinates. The validate-packed entry point also exercises empty and full outputs, zero ordinates, duplicate coordinates and untouched buffer tails. Binary SHA-256 values in the interleaved comparison are 94765907121d21870ef14d788bd3ffd2d8409bdec8e47425ba30b9e7888a7d9f for the prior executable and 1d5e79690b10bde10585db788a1a9ecf880c912c65cb05b9fccf494b717267da for the publication build.
+
+The trace-batches setup caller in setup-batches.rs requests one ordered 71-point base table from coordinate_source::generate. Its native width-132 route in torus7-coordinates.rs calls neon_lift::points. The two-output experiment runs through torus7-build.rs. The measured two-table interval therefore supplies no observed runtime fraction for that setup caller or for a complete index-calculus run.
+
+PCC-20261124-716b99 [pcc:unverified]

@@ -93,3 +93,36 @@ fn stream_bench(terminals: &[u64], order: &str, fourth: bool) {
         println!("{method},{:.3}", start.elapsed().as_nanos() as f64 / 256.);
     }
 }
+
+#[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+fn first_owned_table(terminal: u64, method: &str) {
+    let start = Instant::now();
+    let xs = half_fiber_root::<4, 7>(black_box(terminal));
+    let tables = match method {
+        "direct" => {
+            let mut out = [Points::with_capacity(128), Points::with_capacity(128)];
+            neon_lift::vector_tables(&xs, 14, |table, point| out[table].push(point));
+            out
+        }
+        "fixed" => {
+            let mut out = [[(0, 0); 128]; 2];
+            let counts = neon_lift::fixed_tables(&xs, 14, &mut out);
+            [out[0][..counts[0]].to_vec(), out[1][..counts[1]].to_vec()]
+        }
+        _ => panic!("expected direct or fixed"),
+    };
+    black_box(&tables);
+    let ns = start.elapsed().as_nanos();
+    for (b, got) in [14, M::P - 14].into_iter().zip(tables.iter()) {
+        let curve = Curve::<31>::new(2, b).unwrap();
+        let mut expected = Points::new();
+        for x in inverse_tree::<false, false>(terminal, 0) {
+            if let Some(q) = curve.lift_x(x).unwrap() {
+                expected.push((x, q.y()));
+            }
+        }
+        expected.sort_unstable();
+        assert_eq!(&expected, got);
+    }
+    println!("{ns}");
+}

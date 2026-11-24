@@ -5,7 +5,7 @@ fn check_packed_lift() {
     let mut seed = 0x63a5_1ef9_a87b_u64;
     let mut accepted = 0;
     let mut zero_roots = 0;
-    for panel in 0..288 {
+    for panel in 0..296 {
         let mut xs = [0; 128];
         for i in 0..64 {
             seed ^= seed << 13;
@@ -13,7 +13,7 @@ fn check_packed_lift() {
             seed ^= seed << 17;
             xs[i] = if panel < 4 {
                 0
-            } else if i % 8 == 0 {
+            } else if panel >= 288 || i % 8 == 0 {
                 1
             } else if panel >= 256 {
                 1 + seed % (p - 1)
@@ -27,7 +27,8 @@ fn check_packed_lift() {
             1 => 1,
             2 => p - 1,
             3 => (p / 2) * (p / 2) % p,
-            256.. => p - 3,
+            256..=287 => p - 3,
+            288.. => [0, 1, 2, 3, 4, 5, p - 3, p - 1][panel - 288],
             _ => seed % p,
         };
         fn scalar_table(xs: &[u64; 128], b: u64) -> Points {
@@ -61,6 +62,12 @@ fn check_packed_lift() {
             assert_eq!(twist, expected_twist);
         }
         if xs.iter().all(|&x| x != 0) {
+            let mut fixed = [[(p, p); 128]; 2];
+            let counts = neon_lift::fixed_tables(&xs, b, &mut fixed);
+            for (i, reference) in [&expected, &expected_twist].into_iter().enumerate() {
+                assert_eq!(&fixed[i][..counts[i]], &reference[1..]);
+                assert!(fixed[i][counts[i]..].iter().all(|&q| q == (p, p)));
+            }
             for mask in [false, true] {
                 let mut base = vec![(p, p)];
                 let mut twist = vec![(p, p)];
@@ -91,5 +98,5 @@ fn check_packed_lift() {
         compare::<32, false>(&xs, b, &expected);
         compare::<8, true>(&xs, b, &expected);
     }
-    println!("288 panels, 36864 slots, {accepted} accepted, {zero_roots} zero ordinates, 5 single-output and 4 dual-output implementations (ordered variants on nonzero pairs)");
+    println!("296 panels, 37888 slots, {accepted} accepted, {zero_roots} zero ordinates, 5 single-output and 5 dual-output implementations (ordered variants on nonzero pairs)");
 }

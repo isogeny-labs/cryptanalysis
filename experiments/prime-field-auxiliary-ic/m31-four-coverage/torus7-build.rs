@@ -152,6 +152,12 @@ include!("packed-oracle.rs");
 include!("dual-bench.rs");
 
 fn main() {
+    #[cfg(all(target_arch="aarch64",target_feature="neon"))]
+    if std::env::args().nth(1).as_deref() == Some("first-table") {
+        let args: Vec<_> = std::env::args().collect();
+        first_owned_table(args[2].parse().unwrap(), &args[3]);
+        return;
+    }
     #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
     if std::env::args().nth(1).as_deref() == Some("validate-packed") {
         check_packed_lift();
