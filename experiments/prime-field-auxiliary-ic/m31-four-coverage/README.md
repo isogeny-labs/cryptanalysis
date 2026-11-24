@@ -663,3 +663,13 @@ For the public map f(x)=x²−2 mod 2147483647, all 71 published table entries h
 TerminalSeparation.lean verifies a stronger finite-fixture statement. All 32 structured abscissae from the depth-five archive have distinct images under f iterated 24 times. Equality at any earlier common depth would persist to depth 24. The first coalescences occur at depth 25, leaving 30 labels for the 32 abscissae and 16 labels for the 17 selected points. This calculation concerns the specific archive inputs and the specified map. Regenerate ArchiveRoots.lean and ArchiveData.lean with replay-archive-check.py. Compile both before TerminalSeparation.lean using the same Lean environment and warnings-as-errors setting as the archive audit.
 
 PCC-20261124-7fe33e [pcc:unverified]
+
+### Minimum terminal count across all depths
+
+For the archived 17-point basis, the minimum number of terminal values is 11. At a common depth the image has size 12 at depth 30 and size 11 at depth 31. It stays at 11 thereafter. Every input has the same label at depths 31 and 61. The finite verification of one period combined with monotonicity of image cardinality proves the result at arbitrary depth.
+
+Allowing each point to use a different depth also requires 11 terminal values. If two archived trajectories meet at any possibly different depths, the points must share their depth-31 label. Thus one terminal can cover only one of the eleven classes. The minimum concerns distinct terminal values under this map and says nothing about the cost of realizing the corresponding fibers.
+
+For point-specific depths with a shared upper bound, the first bound that admits an 11-terminal cover is 29. The lower bound uses twelve archived inputs whose paths through depth 28 are pairwise disjoint; each needs a separate terminal. A finite witness attains eleven by depth 29, counting depth zero as an allowed choice. For replay, compile PeriodicCover.lean after TerminalSeparation.lean, then MixedCover.lean and BoundedCover.lean using Lean 4.34.1 with warnings treated as errors.
+
+PCC-20261124-6d5573 [pcc:unverified]
