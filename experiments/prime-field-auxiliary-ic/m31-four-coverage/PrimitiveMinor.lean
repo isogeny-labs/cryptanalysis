@@ -39,14 +39,16 @@ theorem exists_minor {n : ℕ} (a b : Fin n → ℤ) (w : ℤ) (hw : 0 < w)
   rw [← same] at e
   exact (mul_left_cancel₀ ai.ne' e).symm
 
-/-- A weight-eight pair has a certified pivot directly in the group-order field. -/
-theorem exists_modular_minor {n : ℕ} (a b : Fin n → ℤ)
-    (ha : ∑ j, |a j| = 8) (hb : ∑ j, |b j| = 8)
+/-- An equal positive weight pair of weight at most eight has a certified pivot directly in the group-order field. -/
+theorem bounded_modular_minor {n : ℕ} (a b : Fin n → ℤ)
+    {w : ℤ} (hw : 0 < w) (cap : w ≤ 8)
+    (ha : ∑ j, |a j| = w) (hb : ∑ j, |b j| = w)
     (ca : Canonical a) (cb : Canonical b) (hne : a ≠ b) :
     ∃ i j, (a i : ZMod 2147505293) * b j - b i * a j ≠ 0 := by
-  obtain ⟨i, j, h⟩ := exists_minor a b 8 (by decide) ha hb ca cb hne
+  obtain ⟨i, j, h⟩ := exists_minor a b w hw ha hb ca cb hne
   refine ⟨i, j, ?_⟩
-  have bound (v : Fin n → ℤ) (hv : ∑ k, |v k| = 8) (k : Fin n) : |v k| ≤ 8 := by
+  have bound (v : Fin n → ℤ) (hv : ∑ k, |v k| = w) (k : Fin n) : |v k| ≤ 8 := by
+    apply le_trans _ cap
     rw [← hv]
     exact Finset.single_le_sum (fun t _ => abs_nonneg (v t)) (Finset.mem_univ k)
   have prod (k l : Fin n) : |a k * b l| ≤ 64 := by
@@ -62,5 +64,12 @@ theorem exists_modular_minor {n : ℕ} (a b : Fin n → ℤ)
   rw [mul_comm (a j) (b i)] at h₂
   norm_num at he
   omega
+
+/-- A weight-eight pair has a certified pivot directly in the group-order field. -/
+theorem exists_modular_minor {n : ℕ} (a b : Fin n → ℤ)
+    (ha : ∑ j, |a j| = 8) (hb : ∑ j, |b j| = 8)
+    (ca : Canonical a) (cb : Canonical b) (hne : a ≠ b) :
+    ∃ i j, (a i : ZMod 2147505293) * b j - b i * a j ≠ 0 :=
+  bounded_modular_minor a b (by decide) (by decide) ha hb ca cb hne
 
 end M31.PrimitiveMinor
