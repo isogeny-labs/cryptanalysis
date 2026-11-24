@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-24T04:56:52Z",
+ "id": "PCC-20261124-80ad70",
+ "kind": "statement",
+ "producer": {
+  "commit": "be9f78bd10f8e0af395cb20214cf3a259db54729",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "suite/examples/pkm_tower_pilot.rs",
+    "sha256": "f301b8dad7e54949ae2d58c91c6ea0970f225c17d6c4fa8c4097a952c0e9a613"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "docs/PKM_AUXILIARY_M31.md",
+    "sha256": "2ec8baa54472cdf876953fa060c6d0b198d2c5b0f259ad29d79d98491a9cf060"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "suite/examples/pkm_tower_pilot.rs; construction and correctness only",
+ "statement": "PKM pilot includes an opt-in known-order supersingular auxiliary constructor, pole-aware membership checks, and M31 independent-target correctness fixtures; local example tests are producer-only evidence."
+}
