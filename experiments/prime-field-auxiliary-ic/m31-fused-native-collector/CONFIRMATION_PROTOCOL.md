@@ -1,0 +1,7 @@
+# Frozen confirmation before measurement
+
+The first 96-arm panel in `RAW.csv` found a setup-charged wall and CPU gain on both frozen public M31 bases. Confirm with unchanged source and freshly chosen walk seeds 3, 4, 5. Use eight balanced rounds per seed per basis, 48 matched blocks and 96 arms, shuffled with `random.Random(824213)`. Each arm regenerates the basis, writes the exact public input, starts a fresh Rust process, builds the table and bitmap, collects relations, eliminates, checks the generator answer, parses output, and charges parent plus child CPU and wall time. All comparison gates in `PROTOCOL.md` remain mandatory. Do not flush OS caches.
+
+The exact command is `M31_SEEDS=3,4,5 M31_REPLAY_ORDER_SEED=824213 M31_REPLAY_TMPDIR=/Volumes/SSD990 python3 experiments/prime-field-auxiliary-ic/m31-fused-native-collector/replay.py > experiments/prime-field-auxiliary-ic/m31-fused-native-collector/CONFIRMATION.csv` with stderr recorded separately. The source/configuration used for `RAW.csv` had fixed seeds 0,1,2 and shuffle 112587; those first results are retained without rewriting. The runner's default shuffle has been changed to the protocol's 112593 only for future default invocations. This confirmation sets its shuffle explicitly.
+
+Report each basis's paired native/control wall and CPU ratios, wins, workload/answer parity, native calls/fallbacks, and any failures. A reproducible speedup here remains a same-target finite M31 implementation gain; it does not establish a new index-calculus complexity result or a crossover against matched rho.
