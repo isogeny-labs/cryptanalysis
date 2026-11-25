@@ -3,6 +3,26 @@ use std::{env, fs, time::Instant};
 
 const N: u64 = 2_147_505_293;
 const PACKED_SIGN: bool = option_env!("M31_PACKED_SIGN").is_some();
+const BLOOM_BITS: usize = if option_env!("M31_BLOOM_18").is_some() {
+    18
+} else if option_env!("M31_BLOOM_19").is_some() {
+    19
+} else if option_env!("M31_BLOOM_21").is_some() {
+    21
+} else if option_env!("M31_BLOOM_22").is_some() {
+    22
+} else {
+    20
+};
+fn bloom_bit(x: u64) -> usize {
+    if option_env!("M31_BLOOM_HASH_HIGH").is_some() {
+        (x as usize) >> (31 - BLOOM_BITS)
+    } else if option_env!("M31_BLOOM_HASH_LOW").is_some() {
+        (x as usize) & ((1 << BLOOM_BITS) - 1)
+    } else {
+        (x.wrapping_mul(0x9e3779b97f4a7c15) >> (64 - BLOOM_BITS)) as usize
+    }
+}
 fn mul(a: u64, b: u64) -> u64 {
     ((a as u128 * b as u128) % N as u128) as u64
 }
@@ -73,7 +93,7 @@ impl FlatIndex {
                 Vec::new()
             },
             x_bitmap: if option_env!("M31_X_BLOOM").is_some() {
-                vec![0; 1 << 14]
+                vec![0; 1 << (BLOOM_BITS - 6)]
             } else {
                 Vec::new()
             },
@@ -125,7 +145,7 @@ impl FlatIndex {
                 self.len += 1;
             }
             if new_x && !self.x_bitmap.is_empty() {
-                let bit = (u64::from(x).wrapping_mul(0x9e3779b97f4a7c15) >> 44) as usize;
+                let bit = bloom_bit(u64::from(x));
                 self.x_bitmap[bit >> 6] |= 1u64 << (bit & 63);
             }
         } else {
@@ -158,7 +178,7 @@ impl FlatIndex {
         PACKED_SIGN && self.sign_slots[self.slot(x)].0 == x
     }
     fn may_contain_x_bitmap(&self, x: u64) -> bool {
-        let bit = (x.wrapping_mul(0x9e3779b97f4a7c15) >> 44) as usize;
+        let bit = bloom_bit(x);
         self.x_bitmap[bit >> 6] & (1u64 << (bit & 63)) != 0
     }
     fn dump_sorted(&self, path: &str) -> std::io::Result<()> {
