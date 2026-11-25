@@ -101,6 +101,18 @@ validation, and matched-rho comparison. A CM-specific successor
 should use that cost contract and show what the horizontal map changes
 relative to its matched known-scalar control. [pcc:unverified]
 
+The [ramified degree-five orbit gate](HORIZONTAL_FIVE_ORBIT_GATE.md)
+rules out a direct transfer of the APS-E3 same-curve automorphism
+orbit to the degree-five map in either screen here. In both maximal
+CM orders, 5 ramifies and its prime ideal is nonprincipal. Every
+pure degree-five closed path therefore acts as an integer power of
+5, up to sign; an odd-length path does not return to the source
+isomorphism class. Mixed-degree pointed relations remain a distinct
+question and still require target-coordinate dependence and a fully
+charged cost comparison. [pcc:unverified]
+The scoped statement is `PCC-20261125-746072`, with unverified
+standing. [pcc:unverified]
+
 ## P-192 four-summand horizontal endpoint screen
 
 The follow-up script `p192_tower_horizontal_s5.py` compares three equations for the **same** P-192 source x-base and the same two queries. The base comes from the four-root fiber of a depth-2, 2-isogeny tower on `y^2=x^3+x`. Exactly two of its four x-values lift to P-192, giving four signed source points. This auxiliary tower defines the base; it is distinct from the horizontal degree-5 map used in two of the equation systems. `source` has eight auxiliary tower equations and three source S3 sum constraints; `mapped5` adds four degree-5 rational x-map wires and uses three endpoint S3 constraints; `joint5` retains both source and endpoint S3 constraints. The P-192 Frobenius discriminant is fundamental, so the degree-5 ordinary map is horizontal. [pcc:unverified]
