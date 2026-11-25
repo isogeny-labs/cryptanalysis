@@ -1,0 +1,289 @@
+{
+  "schema": "lead-testing.run/v1",
+  "lead_id": "LEAD-prime-batched-mitm-20261121",
+  "phase": 1,
+  "started": "2026-11-22T00:09:39Z",
+  "lead": {
+    "schema": "lead-testing.lead/v1",
+    "id": "LEAD-prime-batched-mitm-20261121",
+    "title": "Prime-field MITM prepared and probed in batches (x-only sum/difference per inversion, Montgomery batch inversion, native pricing)",
+    "hypothesis": "On the registry prime instances, preparing the mitm pair table with one inversion per abscissa pair and Montgomery batch inversion, and at m = 3 computing every R +/- P_i of a chunk of abscissae from one batched inversion, lowers counted end-to-end S against the registry baseline arm (prime-abscissa + mitm) at m = 2 and m = 3, with the same table entries, the same witnesses, the same trials and the same verified logarithms. The preparation and the m = 3 candidate arithmetic are charged as measured nanoseconds at the host's nanoseconds per addition (the convention of the binary mitm-batched oracle); lookups and hit verification stay counted as for mitm.",
+    "prior_art": [
+      "cryptanalysis suite/src/cryptanalysis/ic_framework/batch_mitm.rs (binary mitm-batched: complete native setup accounting, x_only preparation)",
+      "cryptanalysis suite/src/cryptanalysis/bsgs_fast.rs (FastField Montgomery batch_inv on word primes)",
+      "workspace docs/notes/prime-pdp-relation-leads-20261119.md Lead 1D (Montgomery batch inversion, shared-denominator x(P+Q)/x(P-Q), Prime31 verification)",
+      "research-kb: not reachable from this session (no MCP server, no local binary); recorded as a gap, not as absence of prior art"
+    ],
+    "kind": "bench",
+    "regimes": [
+      "prime"
+    ],
+    "regimes_excluded_because": "char2 and koblitz: the oracle is prime-field only (Montgomery arithmetic on a word prime); the binary regime already has mitm-batched with the same accounting convention, measured in cryptanalysis PRs #1703-#1727.",
+    "bench": {
+      "prime": {
+        "factor_base": "prime-abscissa",
+        "oracle": "mitm-prime-batched:m={m}"
+      }
+    }
+  },
+  "lead_sha256": "1d6b8ee3a032b7e2e35a477e713ecb14f46be655f2a85971790e0c6ea9a87b60",
+  "registry_sha256": "e840213ad5cfcc8c9d676204ee68ff3b9050f34bc91f73940a8327131d38bee2",
+  "cryptanalysis": {
+    "path": "/home/user/workspace/repos/cryptanalysis",
+    "commit": "225cd56637e7d650831e64b0213d2a3bea180bee",
+    "dirty": false,
+    "diff_sha256": null
+  },
+  "binaries": {
+    "ic": {
+      "path": "/home/user/workspace/repos/cryptanalysis/suite/target/release/ca-ic",
+      "sha256": "8e5dd7e4dd097a0796d71f88eed4ebc71473bc7c20e942bbdd4d96a624a77fc5"
+    },
+    "pilot": {
+      "path": "/home/user/workspace/repos/cryptanalysis/suite/target/release/examples/pkm_tower_pilot",
+      "sha256": "6fd6663108e9a79ddcf5c085f9ca12db9de4957897a853db905b26fb868a3558"
+    }
+  },
+  "host": {
+    "node": "vm",
+    "machine": "x86_64",
+    "cpus": 4,
+    "mem_available_gib": 14.83633804321289,
+    "python": "3.13.18"
+  },
+  "memory_ceiling_gib": 11.89,
+  "cells": [
+    {
+      "id": "bench-prime-16",
+      "kind": "bench",
+      "regime": "prime",
+      "degree": 16,
+      "arms": [
+        {
+          "arm": "baseline",
+          "m": null,
+          "config": {
+            "factor_base": "prime-abscissa:size=40",
+            "oracle": "mitm"
+          },
+          "cmd": [
+            "/home/user/workspace/repos/cryptanalysis/suite/target/release/ca-ic",
+            "bench",
+            "--bits",
+            "16",
+            "--factor-base",
+            "prime-abscissa:size=40",
+            "--oracle",
+            "mitm",
+            "--repeats",
+            "6",
+            "--seed",
+            "123145648762",
+            "--max-trials",
+            "2000000",
+            "--max-cofactor",
+            "8",
+            "--solver-budget-seconds",
+            "120",
+            "--rho-runs",
+            "8",
+            "--json",
+            "--out",
+            "{cell_dir}/baseline.json"
+          ]
+        },
+        {
+          "arm": "lead-m2",
+          "m": 2,
+          "config": {
+            "factor_base": "prime-abscissa:size=40",
+            "oracle": "mitm-prime-batched:m=2"
+          },
+          "cmd": [
+            "/home/user/workspace/repos/cryptanalysis/suite/target/release/ca-ic",
+            "bench",
+            "--bits",
+            "16",
+            "--factor-base",
+            "prime-abscissa:size=40",
+            "--oracle",
+            "mitm-prime-batched:m=2",
+            "--repeats",
+            "6",
+            "--seed",
+            "123145648762",
+            "--max-trials",
+            "2000000",
+            "--max-cofactor",
+            "8",
+            "--solver-budget-seconds",
+            "120",
+            "--rho-runs",
+            "0",
+            "--json",
+            "--out",
+            "{cell_dir}/lead-m2.json"
+          ]
+        },
+        {
+          "arm": "lead-m3",
+          "m": 3,
+          "config": {
+            "factor_base": "prime-abscissa:size=40",
+            "oracle": "mitm-prime-batched:m=3"
+          },
+          "cmd": [
+            "/home/user/workspace/repos/cryptanalysis/suite/target/release/ca-ic",
+            "bench",
+            "--bits",
+            "16",
+            "--factor-base",
+            "prime-abscissa:size=40",
+            "--oracle",
+            "mitm-prime-batched:m=3",
+            "--repeats",
+            "6",
+            "--seed",
+            "123145648762",
+            "--max-trials",
+            "2000000",
+            "--max-cofactor",
+            "8",
+            "--solver-budget-seconds",
+            "120",
+            "--rho-runs",
+            "0",
+            "--json",
+            "--out",
+            "{cell_dir}/lead-m3.json"
+          ]
+        }
+      ],
+      "m_unsupported": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "wall_seconds": 1800
+    },
+    {
+      "id": "bench-prime-18",
+      "kind": "bench",
+      "regime": "prime",
+      "degree": 18,
+      "arms": [
+        {
+          "arm": "baseline",
+          "m": null,
+          "config": {
+            "factor_base": "prime-abscissa:size=63",
+            "oracle": "mitm"
+          },
+          "cmd": [
+            "/home/user/workspace/repos/cryptanalysis/suite/target/release/ca-ic",
+            "bench",
+            "--bits",
+            "18",
+            "--factor-base",
+            "prime-abscissa:size=63",
+            "--oracle",
+            "mitm",
+            "--repeats",
+            "6",
+            "--seed",
+            "123145648762",
+            "--max-trials",
+            "2000000",
+            "--max-cofactor",
+            "8",
+            "--solver-budget-seconds",
+            "120",
+            "--rho-runs",
+            "8",
+            "--json",
+            "--out",
+            "{cell_dir}/baseline.json"
+          ]
+        },
+        {
+          "arm": "lead-m2",
+          "m": 2,
+          "config": {
+            "factor_base": "prime-abscissa:size=63",
+            "oracle": "mitm-prime-batched:m=2"
+          },
+          "cmd": [
+            "/home/user/workspace/repos/cryptanalysis/suite/target/release/ca-ic",
+            "bench",
+            "--bits",
+            "18",
+            "--factor-base",
+            "prime-abscissa:size=63",
+            "--oracle",
+            "mitm-prime-batched:m=2",
+            "--repeats",
+            "6",
+            "--seed",
+            "123145648762",
+            "--max-trials",
+            "2000000",
+            "--max-cofactor",
+            "8",
+            "--solver-budget-seconds",
+            "120",
+            "--rho-runs",
+            "0",
+            "--json",
+            "--out",
+            "{cell_dir}/lead-m2.json"
+          ]
+        },
+        {
+          "arm": "lead-m3",
+          "m": 3,
+          "config": {
+            "factor_base": "prime-abscissa:size=63",
+            "oracle": "mitm-prime-batched:m=3"
+          },
+          "cmd": [
+            "/home/user/workspace/repos/cryptanalysis/suite/target/release/ca-ic",
+            "bench",
+            "--bits",
+            "18",
+            "--factor-base",
+            "prime-abscissa:size=63",
+            "--oracle",
+            "mitm-prime-batched:m=3",
+            "--repeats",
+            "6",
+            "--seed",
+            "123145648762",
+            "--max-trials",
+            "2000000",
+            "--max-cofactor",
+            "8",
+            "--solver-budget-seconds",
+            "120",
+            "--rho-runs",
+            "0",
+            "--json",
+            "--out",
+            "{cell_dir}/lead-m3.json"
+          ]
+        }
+      ],
+      "m_unsupported": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "wall_seconds": 1800
+    }
+  ]
+}

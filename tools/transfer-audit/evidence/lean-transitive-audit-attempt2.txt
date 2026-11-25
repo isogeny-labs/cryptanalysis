@@ -1,0 +1,19 @@
+tools/lean/AuditAxioms.lean:49:37: warning: `String.trim` has been deprecated: Use `String.trimAscii` instead
+
+Note: The updated constant has a different type:
+  String → String.Slice
+instead of
+  String → String
+ok    TransferAudit.b163_genus63_bound  [propext, Classical.choice, Quot.sound]
+ok    TransferAudit.b163_genus64_bound  [propext, Classical.choice, Quot.sound]
+ok    TransferAudit.b163_obstruction  [propext, Classical.choice, Quot.sound]
+ok    TransferAudit.closed_coverage  [propext, Quot.sound]
+ok    TransferAudit.divisibility_obstruction  [propext, Quot.sound]
+ok    TransferAudit.integerWeilBound.eq_1  []
+ok    TransferAudit.invariant_transport  []
+ok    TransferAudit.pair63  []
+ok    TransferAudit.pair64  []
+ok    TransferAudit.size_obstruction  [propext, Quot.sound]
+ok    TransferAudit.sqrt_lower  [propext, Classical.choice, Quot.sound]
+ok    TransferAudit.sqrt_upper  [propext, Classical.choice, Quot.sound]
+audited 12 theorems in [TransferAudit]; 0 failing, 0 trusted (native_decide)

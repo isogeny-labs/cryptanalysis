@@ -1,0 +1,129 @@
+{
+ "all_as_expected": true,
+ "scenarios": {
+  "blaa_steps_differ": {
+   "as_expected": true,
+   "controls": {
+    "bl_aa_interval_inside_0.9_1.1": true,
+    "ic_aa_cold_inside_0.97_1.03": true,
+    "ic_aa_online_inside_0.95_1.05": true
+   },
+   "expected": "no_result",
+   "failed_checks": [
+    "bl_and_blaa_steps_identical"
+   ],
+   "primary": {
+    "ci95": [
+     19.999999999999996,
+     20.000000000000004
+    ],
+    "estimate": 20.0,
+    "n": 64
+   },
+   "reading": "no_result"
+  },
+  "budget_mismatch": {
+   "as_expected": true,
+   "controls": {
+    "bl_aa_interval_inside_0.9_1.1": true,
+    "ic_aa_cold_inside_0.97_1.03": true,
+    "ic_aa_online_inside_0.95_1.05": true
+   },
+   "expected": "no_result",
+   "failed_checks": [
+    "bl_precompute_pass_at_this_jobs_P_IC"
+   ],
+   "primary": {
+    "ci95": [
+     19.999999999999996,
+     20.000000000000004
+    ],
+    "estimate": 20.0,
+    "n": 64
+   },
+   "reading": "no_result"
+  },
+  "control_rows_differ": {
+   "as_expected": true,
+   "controls": {
+    "bl_aa_interval_inside_0.9_1.1": true,
+    "ic_aa_cold_inside_0.97_1.03": true,
+    "ic_aa_online_inside_0.95_1.05": true
+   },
+   "expected": "no_result",
+   "failed_checks": [
+    "bl_positive_control_rows_equal_archived"
+   ],
+   "primary": {
+    "ci95": [
+     19.999999999999996,
+     20.000000000000004
+    ],
+    "estimate": 20.0,
+    "n": 64
+   },
+   "reading": "no_result"
+  },
+  "no_gap": {
+   "as_expected": true,
+   "controls": {
+    "bl_aa_interval_inside_0.9_1.1": true,
+    "ic_aa_cold_inside_0.97_1.03": true,
+    "ic_aa_online_inside_0.95_1.05": true
+   },
+   "expected": "not_separated",
+   "failed_checks": [],
+   "primary": {
+    "ci95": [
+     1.0,
+     1.0
+    ],
+    "estimate": 1.0,
+    "n": 64
+   },
+   "reading": "not_separated"
+  },
+  "planted_gap_20": {
+   "as_expected": true,
+   "controls": {
+    "bl_aa_interval_inside_0.9_1.1": true,
+    "ic_aa_cold_inside_0.97_1.03": true,
+    "ic_aa_online_inside_0.95_1.05": true
+   },
+   "expected": "bl_online_faster_than_ic",
+   "failed_checks": [],
+   "primary": {
+    "ci95": [
+     19.999999999999996,
+     20.000000000000004
+    ],
+    "estimate": 20.0,
+    "n": 64
+   },
+   "reading": "bl_online_faster_than_ic"
+  },
+  "scalar_mismatch": {
+   "as_expected": true,
+   "controls": {
+    "bl_aa_interval_inside_0.9_1.1": true,
+    "ic_aa_cold_inside_0.97_1.03": true,
+    "ic_aa_online_inside_0.95_1.05": true
+   },
+   "expected": "no_result",
+   "failed_checks": [
+    "one_scalar_per_point_every_arm",
+    "oracle_replay"
+   ],
+   "primary": {
+    "ci95": [
+     19.999999999999996,
+     20.000000000000004
+    ],
+    "estimate": 20.0,
+    "n": 64
+   },
+   "reading": "no_result"
+  }
+ },
+ "what": "synthetic receipts through verify_receipt.py (inputs, not measurements)"
+}

@@ -5,11 +5,9 @@ name: fuzz
 # them, so the two never touch the same files.
 on:
   push:
-    branches: ['**']
+    branches: [main]
   pull_request:
-  schedule:
-    # 03:17 UTC nightly - the long soak.
-    - cron: '17 3 * * *'
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -41,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install clang and the sanitizer runtimes
         run: |
@@ -86,7 +84,7 @@ jobs:
 
       - name: Upload crash artifacts
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: fuzz-smoke-artifacts
           path: artifacts/
@@ -112,7 +110,7 @@ jobs:
           - fuzz_indexcalc
           - fuzz_ffi
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install clang and the sanitizer runtimes
         run: |
@@ -143,7 +141,7 @@ jobs:
 
       - name: Upload crash artifacts
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: fuzz-nightly-${{ matrix.harness }}-artifacts
           path: artifacts/
@@ -152,7 +150,7 @@ jobs:
 
       - name: Upload the grown corpus
         if: success()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: fuzz-nightly-${{ matrix.harness }}-corpus
           path: corpus-work/

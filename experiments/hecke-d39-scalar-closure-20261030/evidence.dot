@@ -1,0 +1,15 @@
+digraph Evidence {
+  graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.3"];
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=12, fillcolor="#e8f2ff"];
+  edge [fontname="Helvetica", fontsize=10];
+  fixture [label="SAVED EVIDENCE: 64 points\nX_0(11) / F_367; group order 385\nD_K=-39, conductor 6; subgroup r=11"];
+  hecke [label="48 saved Hecke rows\nrank 40 / 64; nullity 24"];
+  atkin [label="+ 64 Atkin-Lehner rows\nrank 52 / 64; nullity 12"];
+  proposal [label="PROPOSED: project by cofactor 35\nadd equality and scalar rows (m=2,3)\nnew ranks UNKNOWN", fillcolor="#fff3d6"];
+  gate [label="BLOCKED: no S3 checkpoint transport\nchecker unit tests pass\nresearch fixture NOT executed", fillcolor="#ffe8e8"];
+  goal [label="Acceptance: independent rank agreement\nif rank=63: anchor and replay all base logs\nthen test larger classes and target descent", fillcolor="#f0f0f0"];
+  fixture -> hecke -> atkin;
+  atkin -> proposal [label="need 11 extra pivots for nullity one", style=dashed];
+  proposal -> gate [style=dashed];
+  gate -> goal [label="after checkpoint access", style=dashed];
+}

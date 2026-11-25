@@ -1,0 +1,428 @@
+{
+  "recorded_at": "2026-10-30T06:44:44.064491+00:00",
+  "original_head": "573d9dc5b995778682ccf315152cee79879d3dfb",
+  "repair": "Persist failed/interrupted workload rows with measured completed phases, separate incomplete phases and explicit unknown complete costs; alarm cancellation and handler restoration; reserve unique output before workload.",
+  "old_bug_reproduced": "Original exact-source code raises uncaught injected TimeoutError and does not reach receipt writing. Isolated unit counterexample actually failed after correct dependencies were installed.",
+  "validation": {
+    "focused_cost_and_pair_controls": 10,
+    "full_experiment_folder_controls": 14,
+    "py_compile": "pass",
+    "scoped_whitespace": "pass",
+    "dependencies": {
+      "python_flint": "0.9.0",
+      "numpy": "2.5.4",
+      "isolated_venv": "/workspace/ca1321-control-venv-20261030"
+    }
+  },
+  "limitations": "Synthetic failure/control tests only. No GPU cost cell or scientific run launched; accepted benchmark harness and qualified speedup remain absent. Protocol600-second cap,4096table cap, arithmetic and original inputs/results remain unchanged.",
+  "sources": [
+    "experiments/hecke-sparse-target-20261030/COST_CELL_PROTOCOL.md",
+    "https://docs.python.org/3/library/signal.html#signal.alarm"
+  ],
+  "frozen_files_verified": 73,
+  "frozen_files": [
+    {
+      "path": "experiments/hecke-sparse-target-20261030/COST_CELL_PROTOCOL.md",
+      "bytes": 2780,
+      "sha256": "5010429cd0b9a6788b1702705578b674e1de4108adabbf9f4cdad0990ffaabf9"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/PAIR_REUSE_PROTOCOL.md",
+      "bytes": 3445,
+      "sha256": "7b99827260d43f0155563821636a51bdac1331a91f13de29ac10455b04256364"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/arity-01/launch.json",
+      "bytes": 492,
+      "sha256": "8df3d61cb4cc43d0acb5885bd11552dc676dac09bae4ee62b8a8951d0097cfcd"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/arity-01/receipt.json",
+      "bytes": 1101,
+      "sha256": "8c435a988e680484eea317a7814d6946be097a5923eb4692b76445822744ddc4"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/arity-01/stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/arity-01/stdout.txt",
+      "bytes": 1128,
+      "sha256": "747648acb9f711fcc353994328d5c0257b8eaa402479f5c8a14780f711937522"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/blocked-cost-cell-01/launch.json",
+      "bytes": 534,
+      "sha256": "e0a2087bee837a996095fd16b5bd06f5fb57bdc14fe70865af7e2d8d5747eb14"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/blocked-cost-cell-01/receipt.json",
+      "bytes": 139,
+      "sha256": "eddffb2ab73e6cc598c8b18f65a4238c964c75e0df4c7c66ae6fab0c228f0e3b"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/blocked-cost-cell-01/stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/blocked-cost-cell-01/stdout.txt",
+      "bytes": 311,
+      "sha256": "42c4428879d815161fbe31f7d9aee8993551f00c00bc04db31c3b9744fe7e29a"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/control-01/launch.json",
+      "bytes": 854,
+      "sha256": "397ccb24ce3070bb018914212775505ceb3f3c69d901b9827bbae1d79d8fbae4"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/control-01/modular-source.py",
+      "bytes": 11926,
+      "sha256": "09f91ad300be520ef459cfa08595e84f1e54587f7cc0ecce05f569862a36c444"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/control-01/stderr.txt",
+      "bytes": 366,
+      "sha256": "467680335a92e09d1b1edca8a5bb73295751f2ca7582bacfec971ceeb26d9702"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/control-01/stdout.txt",
+      "bytes": 267,
+      "sha256": "b64a388e46e62fca21267e02509a7b047918eeaeca394848f724069ff48908de"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/control-02/launch.json",
+      "bytes": 854,
+      "sha256": "c3b37022ee26f49f15ade27cce03f9facdd802071a9d6f14d78e82c1c66279ec"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/control-02/stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/control-02/stdout.txt",
+      "bytes": 456,
+      "sha256": "d8281dc9f112a4d2660d995e87a0c4629e487931a34f2c3794c55964cecc99cf"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/f30-01/launch.json",
+      "bytes": 514,
+      "sha256": "bc697caef8d9acb988d0edcc5c1bb7cc6b0f4f9ad0ef06fee33d1427b2818592"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/f30-01/receipt.json",
+      "bytes": 840858,
+      "sha256": "e64c2d4b97bd2a3577895aa0886a8cfd05d5828aba7a328e6e8583d496234264"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/f30-01/stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/f30-01/stdout.txt",
+      "bytes": 2708,
+      "sha256": "76c7b48cbd6f8d26ef84735da8c383c9c8f654e9f9d6ed5e588980649108db04"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/f30-large-01/launch.json",
+      "bytes": 533,
+      "sha256": "78c463e0015217a9934e59be674110a83daf3fda139eaafec8a586937ed58470"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/f30-large-01/selection.json",
+      "bytes": 19310,
+      "sha256": "22b4df9af3b07f238741dd9ac6fe6ba1816050998fab82d053e34310cd742ce6"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/f30-large-01/stderr.txt",
+      "bytes": 14154,
+      "sha256": "ae71fc9b0cb285729e12569677b0565db1bee2704e1ed2685ec8c4dc8889d82c"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/f30-large-01/stdout.txt",
+      "bytes": 185,
+      "sha256": "9584ec3d7c05e9dfff4fcbeceb4ba9092278f6941f4701b68b8dc3d2fe3b64c1"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/f6-large-01/launch.json",
+      "bytes": 525,
+      "sha256": "42f4950ca01e537d1cac6d7e9d64b7e5a6f03ceacbd83bc834506113366098d5"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/f6-large-01/receipt.json",
+      "bytes": 21639,
+      "sha256": "9867243fcdf96570b85bc3054c9206688d2a723e721196e7abc373f878de7a97"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/f6-large-01/stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/f6-large-01/stdout.txt",
+      "bytes": 2657,
+      "sha256": "60ef46acfbd11dd1b92345b7c2789bfa54f9a156144a059c5b5a323eb2874258"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/f6-medium-01/launch.json",
+      "bytes": 527,
+      "sha256": "21fa0c82f4313a51dfd528b5db3177aebb1fb2929de517b8f2c2294571618488"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/f6-medium-01/receipt.json",
+      "bytes": 24812,
+      "sha256": "86c858516518c31baa38fefd6c3bf317c60aebdb8c0ac5b3b5330fd8f89d8b97"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/f6-medium-01/stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/f6-medium-01/stdout.txt",
+      "bytes": 2657,
+      "sha256": "1403f4033a89402600f47ae05b06053626e2619098763ee35eb92207e0da6f3d"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/f6-small-01/launch.json",
+      "bytes": 525,
+      "sha256": "672c472307a4c02eb03a35f2ebc0818210741ded32c5d9df312a344aa35e13c9"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/f6-small-01/receipt.json",
+      "bytes": 212133,
+      "sha256": "4dcbb56ba7199f0831cefa566cb84497d992bd849b76f2029ee87f2674624475"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/f6-small-01/stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/f6-small-01/stdout.txt",
+      "bytes": 2640,
+      "sha256": "e028c9af772f3e80b9779df26483f8cdcd6602e8e23e703bbe879a36ed4880ea"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/full-control-01/launch.json",
+      "bytes": 528,
+      "sha256": "c359d82fc064ccb3c87e386edd3302846155345c1b696d6b175d6952926bc9a9"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/full-control-01/receipt.json",
+      "bytes": 1018,
+      "sha256": "5da258e171f6845b949f5f069f5cac7eff0a58283a5f85bf78bcec50f8ca7a42"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/full-control-01/stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/full-control-01/stdout.txt",
+      "bytes": 265,
+      "sha256": "c284ad8a22528f5ab6373fd2a03054193587de09efd048ad548211f24c250e35"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/full-control-01/study-source.py",
+      "bytes": 16488,
+      "sha256": "288250bfa4976f7c737bba1bbcb85c902db06ff71e37fd669e78d56134e58342"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/growth-01/launch.json",
+      "bytes": 493,
+      "sha256": "d0d3b4814b7b0831c633ea41b24073ea6306561b1b47fede6426643c9419b199"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/growth-01/receipt.json",
+      "bytes": 102375,
+      "sha256": "094b0a623b74d66a21049b32083cd5810fe83b749d53678ba162977efc205c8e"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/growth-01/stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/growth-01/stdout.txt",
+      "bytes": 2348,
+      "sha256": "d3a84587009518dc23fd5856b21e456923df8a0d9dc538fb6c5f5120b00b12aa"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/independent-01/launch.json",
+      "bytes": 499,
+      "sha256": "5d8e009340d429d478790331f979d68789d1ea1280a3882ddb75bf07546fae15"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/independent-01/receipt.json",
+      "bytes": 2369,
+      "sha256": "3c577397da23c0666c36dff30bca3e7f673de6cc856383d5df72a589b27f1bef"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/independent-01/stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/independent-01/stdout.txt",
+      "bytes": 2096,
+      "sha256": "a006e7811d141d50cba18fcff38187c9013081d15b3c0d1e12f0e15ad5d2f846"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/matched-base-01/launch.json",
+      "bytes": 535,
+      "sha256": "f8f36f98318c8f35dbf3b5cec24f57d55021ca3151e89ca5566a188eb6c8c6b7"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/matched-base-01/receipt.json",
+      "bytes": 791,
+      "sha256": "05b104c2833ce1a29a580d285ad4310b3681e2535aea02b9ad3f0d14d49435eb"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/matched-base-01/stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/matched-base-01/stdout.txt",
+      "bytes": 544,
+      "sha256": "dbb53efa9376b60fde30fb59dd37744e59ec83e365f59d8436afcee5512f8d1f"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/pair-reuse-01/f30-01/launch.json",
+      "bytes": 384,
+      "sha256": "fc519d4835819c6702638292033519d007417dd81f224914380382de62daeead"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/pair-reuse-01/f30-01/receipt.json",
+      "bytes": 69401,
+      "sha256": "f14a7c98b11d33ec61c57db3fd0effbd85ea2303dfef21dd941fe289e38e4feb"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/pair-reuse-01/f30-01/stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/pair-reuse-01/f30-01/stdout.txt",
+      "bytes": 1733,
+      "sha256": "f516c767e1af5504807bcf255d2240599ca3296cb9b8995356bbcf627f17eccc"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/pair-reuse-01/f6-large-01/launch.json",
+      "bytes": 393,
+      "sha256": "8a34b934cc6a64744bae59c495bbfa9739b045cc4e38c726bda059b45cee1628"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/pair-reuse-01/f6-large-01/receipt.json",
+      "bytes": 7115,
+      "sha256": "cd468465531e886ec37dbadf2f84e8e9e41453fb268c51b7a02cdc7381daf1f6"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/pair-reuse-01/f6-large-01/stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/pair-reuse-01/f6-large-01/stdout.txt",
+      "bytes": 1717,
+      "sha256": "eb8ebd169ab69e2aed722da24657736ea58be3e3e673b4d08290b4e7495b977b"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/pair-reuse-01/f6-medium-01/launch.json",
+      "bytes": 395,
+      "sha256": "355ba7d94f9c654e35e0524063953cdb0c5b70ad43a5eb30ad01f148c9d9deb1"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/pair-reuse-01/f6-medium-01/receipt.json",
+      "bytes": 13199,
+      "sha256": "db5aa031fbadf2e54a40574f42254ebfa8d2d97f4234238f79965ae477ce36fc"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/pair-reuse-01/f6-medium-01/stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/pair-reuse-01/f6-medium-01/stdout.txt",
+      "bytes": 1730,
+      "sha256": "7e66a9eff8ae0ab20b6d247637fee28226a1051ea5c85ffec185ca2c9b28f2f3"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/pair-reuse-01/f6-small-01/launch.json",
+      "bytes": 394,
+      "sha256": "b268f240695247513e952c22d4614d67ee596205e7b94c6002fa04ed0d9bd23f"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/pair-reuse-01/f6-small-01/receipt.json",
+      "bytes": 15998,
+      "sha256": "c6c6b54bd90fb8f9a173f58bb0082e949df3f0371ecd4f1ca8dbba83d53e759b"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/pair-reuse-01/f6-small-01/stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/pair-reuse-01/f6-small-01/stdout.txt",
+      "bytes": 1719,
+      "sha256": "dd52382e786b7f6b992168d1fdacf14bcc6ca1917da8a3dcc8f2cf4350bcc267"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/pair-reuse-01/launch.json",
+      "bytes": 498,
+      "sha256": "7e7d84ffae7a3334ac2b9681d1194b2d8f30f153e643924bf3775a482cbd2b03"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/pair-reuse-01/stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/hecke-sparse-target-20261030/runs/pair-reuse-01/stdout.txt",
+      "bytes": 7088,
+      "sha256": "cee4d2cfacd15610fa5ee88e68cc41758ccd86d771ca37aa6119704e014ba40a"
+    }
+  ],
+  "logs": [
+    {
+      "path": "initial-baseline-import-refusal.log.gz",
+      "raw_sha256": "06db31d7b4ae7996703ba85a63ef4dbbabc50c55befa84bc4483a994da75d64a",
+      "raw_bytes": 1213,
+      "gzip_sha256": "325345597f8cad16978b8b5b602a3ee91ad09d970422de743d4ac7585121d457"
+    },
+    {
+      "path": "initial-corrected-import-refusal.log.gz",
+      "raw_sha256": "62c17dc7ce1aff004c7596a8947dd84f853ded6e3b7c1a6ffaf4064abcb72e32",
+      "raw_bytes": 2152,
+      "gzip_sha256": "9bf7296cf13ae5318f6fe2091a10a78de657b137e6a6327b1fe0605c86dd0d28"
+    },
+    {
+      "path": "second-controls-attempt.log.gz",
+      "raw_sha256": "f63d0658544be13376b6cbb791d61d00948926989629c8afefaa481e323d7a90",
+      "raw_bytes": 2062,
+      "gzip_sha256": "f922c405d3315153b4c3f2036a48b56a92f1ca411921d7f3f45e7aa00c421b5d"
+    },
+    {
+      "path": "original-timeout-counterexample.log.gz",
+      "raw_sha256": "bee0107d96121d47d3cb2ef6ba34a27ac3fc2e7ffe8f8070a48fd45778f53db0",
+      "raw_bytes": 2253,
+      "gzip_sha256": "9e3566c37e1886d064f1b3d63ba7652c39eeb4fbaf4a898f609f37cfe047741f"
+    },
+    {
+      "path": "corrected-controls.log.gz",
+      "raw_sha256": "40e6a3053d86436d6aa245501343227a2e81436f4f14da71a21257468605aff6",
+      "raw_bytes": 109,
+      "gzip_sha256": "b6d5f4d6698c4e2991d5255358e5225bde6d69b1bbf2f3bf66d3b46d0eb8a392"
+    },
+    {
+      "path": "full-folder-controls.log.gz",
+      "raw_sha256": "0fa6e9196f096183c02cc2acc9c66c1dc944647981973bb5cc84a89647a36d1e",
+      "raw_bytes": 113,
+      "gzip_sha256": "124fc8ed35d6087286244dbd49d35eb76ecf184f40cce4a3c26e6ed466f3beea"
+    }
+  ]
+}

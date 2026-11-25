@@ -1,0 +1,173 @@
+{
+ "aa_control": {
+  "band": [
+   0.97,
+   1.03
+  ],
+  "cold_point_estimate_inside_band_rate": 1.0,
+  "e2e_point_estimate_inside_band_rate": 1.0,
+  "pairs": 24
+ },
+ "candidate_model": {
+  "index_build_factor": 0.7293334997103167,
+  "scan_selftest_factor": 1.0,
+  "source": "inputs/local_profile.json modelled (LOCAL DIAGNOSTIC)"
+ },
+ "cells": {
+  "1.00": {
+   "index_and_selftest_factor": [
+    1.0,
+    1.0
+   ],
+   "mc_se": 0.0035266839949164713,
+   "median_ci_hi_over_lo": 1.003577193539853,
+   "median_estimate": 1.0000118990444582,
+   "power": 0.005
+  },
+  "1.02": {
+   "index_and_selftest_factor": [
+    0.9615494742523483,
+    1.0
+   ],
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.0037793606736243,
+   "median_estimate": 1.020026110544975,
+   "power": 1.0
+  },
+  "1.03": {
+   "index_and_selftest_factor": [
+    0.9428841704913523,
+    1.0
+   ],
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.0042122296994105,
+   "median_estimate": 1.0299681272442367,
+   "power": 1.0
+  },
+  "1.05": {
+   "index_and_selftest_factor": [
+    0.9066201517557031,
+    1.0
+   ],
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.0051461829403834,
+   "median_estimate": 1.0500118674774965,
+   "power": 1.0
+  },
+  "1.10": {
+   "index_and_selftest_factor": [
+    0.821729380624524,
+    1.0
+   ],
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.0082706582219743,
+   "median_estimate": 1.0999811387996723,
+   "power": 1.0
+  },
+  "1.25": {
+   "index_and_selftest_factor": [
+    0.6078046373739532,
+    1.0
+   ],
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.0192879193325677,
+   "median_estimate": 1.2501962307142116,
+   "power": 1.0
+  },
+  "modelled": {
+   "index_and_selftest_factor": [
+    0.7293334997103167,
+    1.0
+   ],
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.0126196298453496,
+   "median_estimate": 1.1599113276050066,
+   "power": 1.0
+  }
+ },
+ "design": {
+  "aa_pairs_per_point": 2,
+  "attempts_per_rank_block": 16,
+  "distinct_rank_seeds": 36,
+  "planted_pairs_per_point": 1,
+  "points": 12,
+  "primary_pairs": 36,
+  "primary_pairs_per_point": 3
+ },
+ "expected_cold_ratio_at_prior_means": 1.2508358376964503,
+ "expected_index_build_ratio": 1.3711148608931156,
+ "expected_ratio_at_prior_means": 1.1601282901923677,
+ "law_gate": {
+  "archived_attempts": 576,
+  "archived_pooled_ratio": 0.993671233001841,
+  "attempts": 576,
+  "band": [
+   0.8,
+   1.2
+  ],
+  "pass_rate_at_archived_law": 1.0,
+  "rejection_rate_for_law_1.5x_worse": 1.0
+ },
+ "method": "simulated receipts drawn from the prior; primary statistic and two-stage paired bootstrap of verify_receipt.py (400 simulations per cell, 500 bootstrap draws each)",
+ "min_delta": 1.05,
+ "planted_control": {
+  "lower_bound_above_1_rate": 1.0,
+  "modelled_index_build_factor": 1.5,
+  "pairs": 12
+ },
+ "power_at_min_delta": 1.0,
+ "prior": "inputs/power_prior.json (run 39383739494, the parent's archived run, the current row's producer)",
+ "prior_means_ms": {
+  "E2E_A": 14211.601843083332,
+  "E2E_B_modelled": 12250.026107652993,
+  "cold_ms": 9781.733147722221,
+  "index_ms": 7247.205447777777,
+  "rank_stage_ms": 4429.868695361111,
+  "scan_selftest_ms": 1531.6145028888889
+ },
+ "runtime": {
+  "fits_one_job": true,
+  "fixed_after_schedule_min": 2.0,
+  "fixed_before_schedule_min": 16.0,
+  "job_limit_min": 180,
+  "job_total_min": 76.55215687216807,
+  "job_total_min_on_a_1.5x_slower_host": 113.82823530825209,
+  "mean_process_wall_s": {
+   "cM10IB": 11.787880551,
+   "cM10IC": 9.826304815569662,
+   "cM38IB": 11.91617218760274,
+   "cM38IC": 9.954596452172401,
+   "cM38ICX": 18.954596452172403,
+   "cM38ICaa": 9.954596452172401,
+   "cPIB": 11.721647833999999,
+   "cPIC": 9.76007209856966,
+   "kM38IB": 16.326381414583334,
+   "kM38IC": 14.364805679152996,
+   "kM38ICaa": 14.364805679152996,
+   "rT": 3.47422623575
+  },
+  "point_segment_s": 287.3468948659308,
+  "processes_per_point": {
+   "cM38IB": 3,
+   "cM38IC": 6,
+   "cM38ICX": 1,
+   "cM38ICaa": 2,
+   "kM38IB": 3,
+   "kM38IC": 5,
+   "kM38ICaa": 2,
+   "rT": 1
+  },
+  "q0_processes": {
+   "cM10IB": 1,
+   "cM10IC": 1,
+   "cM38IB": 1,
+   "cM38IC": 1,
+   "cPIB": 1,
+   "cPIC": 1
+  },
+  "schedule_min": 58.55215687216806,
+  "time_guard_deadline_min": 165
+ },
+ "schema": 1,
+ "type_i_at_1.00": 0.005
+}

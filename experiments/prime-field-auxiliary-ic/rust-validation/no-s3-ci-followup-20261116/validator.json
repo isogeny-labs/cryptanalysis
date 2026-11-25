@@ -1,0 +1,105 @@
+{
+  "status": "pass",
+  "independent": false,
+  "overall_ci_status": "pending",
+  "source_commit": "ad063e04e14d721ae1263a63c7c2ed5e07c2932e",
+  "scope": "Producer artifact-unit, wiring, workflow-preservation and format-selection controls only. Hosted static/native/Lean checks must still execute on the pushed head.",
+  "raw_data": [
+    {
+      "path": "artifact-tests.command.json",
+      "sha256": "76f377449aed0b797f499309895dabf30387f51a579a8c1fec6019a66e51be5f"
+    },
+    {
+      "path": "artifact-tests.log",
+      "sha256": "f5568f9011509f0ae7334c05e33225edf864d27d5b2905153e3746d752574158"
+    },
+    {
+      "path": "failed-ci-index.json",
+      "sha256": "83fed91e0263ec8d487e093d387dfc6f5ecf574f5e63232cd4aa2c8ac69294b5"
+    },
+    {
+      "path": "job-133536214408.log",
+      "sha256": "1ad9f9f20db334177f0b94d3b1317f96881984f62f72022e55c36d08347e4fcc"
+    },
+    {
+      "path": "job-133536214888.log",
+      "sha256": "5b71d593e6dc104ef9b74a4a99741f682608061361e0d8dece9ef41ffc1122aa"
+    },
+    {
+      "path": "job-133536215012.log",
+      "sha256": "011e6c125c693f02fa3984201a0fab7ef54ad46acf33c088f493a2879efec4aa"
+    },
+    {
+      "path": "job-133536215022.log",
+      "sha256": "b523ed9853d97b505d1edee48bc25be203a8a03f25c5794efafa27fe0e84bfea"
+    },
+    {
+      "path": "job-133536215027.log",
+      "sha256": "08c2fc75d89366a10f6badb709413eeb7fb8e7430bde2bd10a66e91188a69e67"
+    },
+    {
+      "path": "job-133536215278.log",
+      "sha256": "8799cb08ca0048ab6894487e758636a2659100ebb2b58746a0c313eda7bfe3bf"
+    },
+    {
+      "path": "job-133536215652.log",
+      "sha256": "8dba09c6271a24c9255809a59f3b24fc27f435be818008419b141ae859c80b5c"
+    },
+    {
+      "path": "job-133536217640.log",
+      "sha256": "d068878a5d9a535854bb15ab0e50a1da7b70618adf7733deebbb5ac62407c7ed"
+    },
+    {
+      "path": "preservation-controls.json",
+      "sha256": "8c633dcc8a0e4407e6f70a3dced38ed37ea437bc767f62098c015358ca5f95d8"
+    },
+    {
+      "path": "workflow-wiring.command.json",
+      "sha256": "9939b207fa4da54323c68e13bd0f63a49d19f39ee54e482bcb035e6f898915d2"
+    },
+    {
+      "path": "workflow-wiring.log",
+      "sha256": "1ef0d99d3ba29c1c9dc4889fabbb41d82ce8d9bbbaaf8ebf5856c9bf077bce57"
+    }
+  ],
+  "headline": [
+    {
+      "name": "artifact-regression-tests",
+      "claimed": 38,
+      "recomputed": 38,
+      "rel_tol": 0
+    },
+    {
+      "name": "preserved-workflow-configurations",
+      "claimed": 3,
+      "recomputed": 3,
+      "rel_tol": 0
+    }
+  ],
+  "format_selection": {
+    "tracked_paths": 70624,
+    "extra_examples": 12,
+    "output_sha256": "e732d2f8a602dc48febe33bfcece67bc0b896d1bd45f7974ec4ea75883995c2e",
+    "byte_identical": true,
+    "argv_before": [
+      "grep",
+      "-Ev",
+      "(^|/)generated/|^experiments/sage-ic-campaign/[^/]+/(source|baseline|candidate-v1)/|^experiments/koblitz-pair-claw-20260929/runs/([^/]+/)*(sources[-a-z0-9]*|control-sources|full-sources)/"
+    ],
+    "argv_after": [
+      "grep",
+      "-Ev",
+      "-f",
+      ".clang-format-exclusions"
+    ]
+  },
+  "failed_hosted_source": "77c4a3110ac4967abe06934bf6c4cd725fb4e285",
+  "prior_source_only_analysis_claim": "PCC-20261116-c91136",
+  "notes": [
+    "Eight complete provider failures are retained; no S3 retry, secret enumeration or check waiver was used.",
+    "Existing dedicated N83 source-only analysis receipt retains its earlier source and test scope; it is not relabeled as a new native/Lean execution.",
+    "Formatting exclusion regexp moved byte-exact to source configuration. Native comparison input is a tracked Git blob."
+  ],
+  "fresh_benchmark": false,
+  "qualified_speedup": null
+}

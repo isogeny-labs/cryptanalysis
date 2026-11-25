@@ -1,0 +1,456 @@
+{
+ "coverage": [
+  {
+   "ic_phase": "factor-base",
+   "count": 18
+  },
+  {
+   "ic_phase": "decomposition",
+   "count": 25
+  },
+  {
+   "ic_phase": "relation-collection",
+   "count": 12
+  },
+  {
+   "ic_phase": "relation-filtering",
+   "count": 8
+  },
+  {
+   "ic_phase": "linear-algebra",
+   "count": 4
+  },
+  {
+   "ic_phase": "descent",
+   "count": 7
+  },
+  {
+   "ic_phase": "cost-model",
+   "count": 9
+  },
+  {
+   "ic_phase": "curve-selection",
+   "count": 6
+  },
+  {
+   "ic_phase": "hardware",
+   "count": 11
+  }
+ ],
+ "relabel_flags": [
+  {
+   "id": "H050",
+   "reason": "Says yield must be divided by orbit multiplicity. That is accounting. It changes no relation count or cost."
+  },
+  {
+   "id": "H090",
+   "reason": "Admits that repricing canonicalisation is accounting. The only real content is the ONB bit-rotation, which duplicates H092/H098."
+  },
+  {
+   "id": "H086",
+   "reason": "Counts within 10% of random V, so the only claim is cheaper membership, which is a hardware micro-cost. Mislabelled curve-selection, and the same mechanism as H100/H018."
+  },
+  {
+   "id": "H084",
+   "reason": "Amortisation across twin curves E_0/E_1 only helps a paired workload. A single ECDLP instance gains nothing; the idea's own falsifier concedes this."
+  },
+  {
+   "id": "H076",
+   "reason": "Batch-target marginal cost is a cost-model statement about k targets. It does not speed up a single-target solve, and it is mislabelled cost-model when it is relation-collection/LA."
+  },
+  {
+   "id": "H062",
+   "reason": "The coupon-collector law and quotient saving formula describe the baseline. Only the steering arm is an algorithm change, and it is buried."
+  },
+  {
+   "id": "H074",
+   "reason": "The conversion-cost saving is a bookkeeping credit (<3% predicted) on composite n only. Prime n=131 is excluded."
+  },
+  {
+   "id": "H095",
+   "reason": "Work is identical by the idea's own statement. It is sharding and communication layout, not an algorithm change."
+  },
+  {
+   "id": "H064",
+   "reason": "Spot orchestration. The claim says it is not a mathematical speedup."
+  },
+  {
+   "id": "H093",
+   "reason": "Spot orchestration, engineering fault tolerance. It is a hardware-phase relabel of H064's mechanism."
+  },
+  {
+   "id": "H077",
+   "reason": "Process tooling for choosing autolab configs. It is not an IC improvement and it is mislabelled cost-model."
+  },
+  {
+   "id": "H058",
+   "reason": "Diagnostic only (core fraction equals density evolution). The improvement is conditional on finding hidden structure, which is not an algorithm change."
+  },
+  {
+   "id": "H083",
+   "reason": "Poisson audit of a spectrum already measured generic (tried-closed). A restatement, not an algorithm."
+  },
+  {
+   "id": "H075",
+   "reason": "Mislabelled cost-model. It is a decomposition-count variance model with no change to any algorithm."
+  },
+  {
+   "id": "H078",
+   "reason": "Mislabelled cost-model. It is a factor-base collision audit and the family is tried-closed."
+  },
+  {
+   "id": "H009",
+   "reason": "The idea itself notes Koblitz trace-zero policy already forces density 1. The gain exists only on non-Koblitz toys and vanishes at size."
+  },
+  {
+   "id": "H063",
+   "reason": "Mislabelled relation-filtering. It is hardware canonicalisation and identical to H092."
+  },
+  {
+   "id": "H048",
+   "reason": "Mislabelled relation-collection. It is the decomposition-indicator Walsh audit of H039."
+  }
+ ],
+ "duplicate_flags": [
+  {
+   "id": "H092",
+   "duplicate_of": "H063",
+   "reason": "Both are longest-zero-run clz/ctz necklace canonicalisation of 131-bit words, with near-identical text and tests. Merge them, and benchmark against H098's Booth arm in the same microbenchmark."
+  },
+  {
+   "id": "H048",
+   "duplicate_of": "H039",
+   "reason": "Both take the Walsh/FFT spectrum of the decomposability indicator D_V as a linear prefilter. Both also acknowledge the trace and weight prefilters were null."
+  },
+  {
+   "id": "H014",
+   "duplicate_of": "H004",
+   "reason": "Both are over-dispersion of N(V) across subspaces, exploited by best-of-M or hill-climb selection. The same brute-force N(V) on n=19..23 answers both."
+  },
+  {
+   "id": "H042",
+   "duplicate_of": "H013",
+   "reason": "Both rank Frobenius-invariant subspaces by exact N(V) or valid fraction. H042 adds only cross-curve transfer."
+  },
+  {
+   "id": "H008",
+   "duplicate_of": "H004",
+   "reason": "T(V), the S3 triple count over V^3, is the same statistic as N(V), with the same Poisson-dispersion test."
+  },
+  {
+   "id": "H010",
+   "duplicate_of": "H015",
+   "reason": "Both are best-of-T coset or scaling selection by liftable fraction, with the same 1/sqrt|V| shrinkage."
+  },
+  {
+   "id": "H009",
+   "duplicate_of": "H015",
+   "reason": "Both are best-of-T coset selection by on-curve density. This is the same Chernoff-tail mechanism with the same vanishing at size."
+  },
+  {
+   "id": "H001",
+   "duplicate_of": "H015",
+   "reason": "Best-of-K coset choice with a Walsh predictor reuses the same coset-bias mechanism, and A13 already measured it near-null."
+  },
+  {
+   "id": "H073",
+   "duplicate_of": "H015",
+   "reason": "This is H015 applied once per descent level. Its own text says it fails if the factor-base twin fails."
+  },
+  {
+   "id": "H072",
+   "duplicate_of": "H013",
+   "reason": "Per-level valid-fraction chain selection is H013 per level, and its own text predicts null from the factor-base twin."
+  },
+  {
+   "id": "H017",
+   "duplicate_of": "H015",
+   "reason": "This is the prime-field Kummer analogue of the same liftable-fraction best-of-T mechanism."
+  },
+  {
+   "id": "H054",
+   "duplicate_of": "H044",
+   "reason": "Both quotient by mu_3/mu_6 on j=0 curves for a 3x cut. H054 only adds lambda-lifted logs, which H044 needs anyway for consistent signs."
+  },
+  {
+   "id": "H087",
+   "duplicate_of": "H044",
+   "reason": "The crater walk is only a way to reach a curve with Aut order 6 or 4, then uses the H044 quotient. Keep it as a separate preprocessing arm, not a separate idea."
+  },
+  {
+   "id": "H031",
+   "duplicate_of": "H023",
+   "reason": "Both add the one-bit trace/halving character, either as a sieve or as a linear equation. H023 already records the leads as closed at <=0.2 bits."
+  },
+  {
+   "id": "H026",
+   "duplicate_of": "H024",
+   "reason": "Both enumerate the fixed-z Artin-Schreier structure with half-trace and 1/s^2 tables and promise the identical relation set at a few-x gain. One loop benchmark covers both."
+  },
+  {
+   "id": "H049",
+   "duplicate_of": "H045",
+   "reason": "Both stop collection on an online rank/left-kernel criterion. H049 uses rank B-1, H045 uses target-determined, and one replay of stored streams measures both."
+  },
+  {
+   "id": "H059",
+   "duplicate_of": "H057",
+   "reason": "Closed-form density-evolution core sizes recur in H057, H058 and H059."
+  },
+  {
+   "id": "H058",
+   "duplicate_of": "H057",
+   "reason": "Same density-evolution fixed point, used as a diagnostic instead of an overhead tuner."
+  },
+  {
+   "id": "H053",
+   "duplicate_of": "H046",
+   "reason": "Both walk R_{k+1}=R_k+P (Cayley walk) in place of scalar multiplication, with iid-equivalent yield and an autocorrelation guard."
+  },
+  {
+   "id": "H099",
+   "duplicate_of": "H097",
+   "reason": "Both are batch-affine addition with Montgomery trick versus projective, in binary GF(2^n). H099 only names the inversion method (Itoh-Tsujii)."
+  },
+  {
+   "id": "H043",
+   "duplicate_of": "H025",
+   "reason": "Both choose a sparse normal basis (ONB/Gauss period) to cut monomials of the Weil-restricted S3. H043 is the type-II special case."
+  },
+  {
+   "id": "H100",
+   "duplicate_of": "H018",
+   "reason": "Both are rotation/popcount membership in a normal basis for Frobenius-closed sets. H086 is the third copy."
+  },
+  {
+   "id": "H082",
+   "duplicate_of": "H080",
+   "reason": "Both are F4-cost predictors from Weil-restricted support or mixed volume, tested by Spearman against existing degree data."
+  },
+  {
+   "id": "H041",
+   "duplicate_of": "H038",
+   "reason": "Both exploit low-rank trace-form components of the fixed-s DO quadratic (MinRank). H027 is the same screen on invariant V, so merge the three rank-profile arms."
+  },
+  {
+   "id": "H029",
+   "duplicate_of": "H075",
+   "reason": "Both compare rank histograms of bilinear forms or matrices with closed-form rank-count laws, then use the excess as an overdispersion explanation."
+  },
+  {
+   "id": "H066",
+   "duplicate_of": "H065",
+   "reason": "Both reduce Wiedemann matvecs through the BM sequence. They are distinct knobs (2N+O(1) versus early stop) and should be one LA experiment."
+  },
+  {
+   "id": "H002",
+   "duplicate_of": "H088",
+   "reason": "Both re-ask the closed invariant-subspace census and window dimension. Both are tried-closed."
+  }
+ ],
+ "weak_flags": [
+  {
+   "id": "H020",
+   "reason": "Predicts and expects a negative that 'closes the route'. A successful run yields no improvement, and the cheapest test (n=18) is a random-function comparison."
+  },
+  {
+   "id": "H100",
+   "reason": "Predicts net <1.05x and 'likely null'. Membership is cheap whichever basis is used, and the 1-5% loop share cannot beat the A/A noise."
+  },
+  {
+   "id": "H065",
+   "reason": "Central prediction is 1% saving, 'null most likely'. The falsifier (<2%) matches the prediction, so the test cannot meaningfully discriminate."
+  },
+  {
+   "id": "H009",
+   "reason": "Gain exists only at k=8 toys and vanishes by k=16. A toy test cannot tell whether anything survives at n>=53. Koblitz already forces density 1."
+  },
+  {
+   "id": "H010",
+   "reason": "Toy-scale effect predicted at <0.1% for |V|>=2^20. The 0.5% falsifier is about a size irrelevant to the targets."
+  },
+  {
+   "id": "H015",
+   "reason": "The gain exists only at d=10, falling to 1.03 at d=20. The n=29 test cannot show whether a measurable gain exists at n>=53."
+  },
+  {
+   "id": "H017",
+   "reason": "Gain 1.39 at B=2^10 vanishes at production size. The slope test (-0.5+-0.15) checks a prediction already implied by the Chernoff formula, so it confirms the bound and says nothing about usefulness."
+  },
+  {
+   "id": "H073",
+   "reason": "Explicitly expected to fail if the factor-base twin fails. It is not independent evidence and the cost is a duplicate."
+  },
+  {
+   "id": "H072",
+   "reason": "Same as H073: stacks on a twin the text predicts null."
+  },
+  {
+   "id": "H001",
+   "reason": "A13 measured coset choice near-null and the idea is 'a predictor test only'. It cannot yield an improvement even if it passes."
+  },
+  {
+   "id": "H002",
+   "reason": "Tried-closed. The only new content (a 2x merge) is below the 4x falsifier threshold, so the test is built to confirm."
+  },
+  {
+   "id": "H078",
+   "reason": "Tried-closed. The 'defect' direction is declared uncertain, so there is no prediction to falsify beyond the Poisson baseline."
+  },
+  {
+   "id": "H083",
+   "reason": "Tried-closed. Variance/mean 1.00+-0.03 is the null, so a pass changes nothing."
+  },
+  {
+   "id": "H088",
+   "reason": "Tried-closed. The census is already done, and the yield test at n=73 compares against generic with a 10% band the text expects to be inside."
+  },
+  {
+   "id": "H089",
+   "reason": "Expected null. Even an anomaly in Tr(x(kG)) linear complexity would not translate into an IC speedup, and the nodal control only validates the detector."
+  },
+  {
+   "id": "H077",
+   "reason": "Process tooling with no IC measurement. The 'within 10% of best' score is about the config search, not about rho distance."
+  },
+  {
+   "id": "H080",
+   "reason": "Predictor accuracy (hit rate) is not an improvement. The falsifier (<=5 points over semi-regular) is a modelling test."
+  },
+  {
+   "id": "H082",
+   "reason": "Counts only if chosen parameters cut time, but the falsifier is Spearman, not time. This is the same flaw as H080."
+  },
+  {
+   "id": "H079",
+   "reason": "Cheapest test plugs microbenchmark constants into a model. It never measures the LA phase, so the claimed -15-30% LA cost is not verified."
+  },
+  {
+   "id": "H064",
+   "reason": "Simulation only, with no real Spot preemption. The maximum predicted gain is 1.4x at q=0.1 and none at q<0.03, and it is orchestration, not mathematics."
+  },
+  {
+   "id": "H093",
+   "reason": "Injected faults in a synthetic matrix. The overhead and detection claims are engineering and do not touch the baseline."
+  },
+  {
+   "id": "H095",
+   "reason": "Simulated byte counts, with work identical by the text. The wall-clock falsifier cannot be exercised by the stated test."
+  },
+  {
+   "id": "H091",
+   "reason": "Host without GFNI voids rather than refutes, so a null on a non-GFNI isolab host is uninformative. The predicted gain is below 1x at the n=131 target."
+  },
+  {
+   "id": "H094",
+   "reason": "CUDA kernel. The lab's authorised default is x86 CPU on EKS Spot, so the test may not be runnable under the protocol."
+  },
+  {
+   "id": "H096",
+   "reason": "The 'no PMU' fallback is a simulated miss reduction. The claim is cycle-level, and most cloud VMs have no PMU."
+  },
+  {
+   "id": "H081",
+   "reason": "Planted-control detector on a Koblitz toy. The tau-shift excess 'understating yield variance' is a cost-model statement, not an improvement."
+  },
+  {
+   "id": "H068",
+   "reason": "Confirms a Poisson coverage law. It sets a threshold but changes no algorithm."
+  },
+  {
+   "id": "H069",
+   "reason": "The threshold measured against a formula is a calibration, not a speedup. The conclusion that descent is cheap only for m>=4 is a negative."
+  },
+  {
+   "id": "H070",
+   "reason": "The falsifier is an error bound check (C<=4), and the prediction is that bias vanishes at size."
+  },
+  {
+   "id": "H011",
+   "reason": "Predicted end-to-end gain <2% and the falsifier is only yield within 10%. It cannot discriminate between a tiny gain and noise."
+  },
+  {
+   "id": "H021",
+   "reason": "Claimed total cost 2^(2n/3) is worse than rho's 2^(n/2). The linearisation drops the constraint pi=x1*x2, so false positives are not counted. 'Missed decomposition' does not test that, so 100x speedup versus enumeration may be a baseline artefact."
+  },
+  {
+   "id": "H067",
+   "reason": "Displacement rank <=8 is likely an artefact of the un-quotiented orbit structure, which the production run already removes. Whether the quotient wipes out the gain is not tested."
+  },
+  {
+   "id": "H004",
+   "reason": "The multiple-comparison correction is stated, but best-of-M gain of 1.2-1.6x contradicts the near-null A13 coset result. The falsifier would not separate selection from regression to the mean without a fresh-target retest."
+  },
+  {
+   "id": "H014",
+   "reason": "Hill-climbing on N(V) evaluates at brute-force cost, which is not priced against the saved relation work. The 'transfers to fresh targets' check is right, but the cost is missing from the falsifier."
+  },
+  {
+   "id": "H051",
+   "reason": "Gain exists only at >=10-20% saturation, which does not occur at n>=53. The 1% case predicts no difference, so the test is tuned to a regime outside production."
+  },
+  {
+   "id": "H085",
+   "reason": "Tests genus-3 over F_8, which is a generic covering-count formula. The falsifier 'real GHS family offers no choice of N' is the only relevant one and is not tested."
+  },
+  {
+   "id": "H074",
+   "reason": "Predicts <3% saving on composite n only, so it cannot be a first improvement on n=131."
+  }
+ ],
+ "top_ten": [
+  {
+   "id": "H044",
+   "why": "Order-6 (negation plus mu_3) quotient on j=0 curves cuts relations and LA about 3x, with a precise ratio falsifier (<2.5) and a log-consistency check. It reuses the existing IC and is a real algorithmic change. H054 and H087 are variants of it. Limited to j=0 prime-field curves and has no binary-curve effect."
+  },
+  {
+   "id": "H045",
+   "why": "Target-only left-kernel stopping at N_dep/B about 0.92 (m=3) and 0.5 (m=2) is a real cut in relation count. It can be tested by replaying stored relation streams, and the recovered t is verified directly. H049 can share the same replay."
+  },
+  {
+   "id": "H007",
+   "why": "Quotienting by Frobenius plus the 2-torsion translation iota halves unknown classes on even-order binary curves. The falsifier is sharp (class ratio >0.6, or code already quotients), and logs are brute-force checkable at n=18. First check whether 2-torsion saturation already does this."
+  },
+  {
+   "id": "H026",
+   "why": "Gray-code Artin-Schreier enumeration over Tr(s)=Tr(b/r^2) returns an identical m=2 relation set at a claimed 8-12x fewer multiplications. Set equality makes it a clean pass or fail on a real hot loop. H024 is the m=3 sibling, and H026's cache-bound caveat is the main risk."
+  },
+  {
+   "id": "H097",
+   "why": "Batch-affine versus projective addition in GF(2^131) with CLMUL is unmeasured on the binary side, which is the main target class. It is a pure speedup on the collection hot loop with an A/A arm, and H099 supplies the Itoh-Tsujii inversion arm."
+  },
+  {
+   "id": "H012",
+   "why": "Restricting the factor base to the cofactor image subgroup raises m=3 success by h (2 for Koblitz a=1, 4 for a=0). It is a mechanism change rather than accounting, with an explicit CI falsifier on yield ratio and a brute-force membership check. The matched rho in H is cheaper by sqrt(h), so the report must carry the net gap."
+  },
+  {
+   "id": "H059",
+   "why": "Peeling plus inactivation then block Wiedemann on the core predicts >=1.5x fewer modmuls than the unfiltered matrix. It is testable on saved toy matrices with a falsifier against structured GE plus Wiedemann. H060 is a related variant, and H057 provides the threshold model."
+  },
+  {
+   "id": "H066",
+   "why": "Reading kernel coordinates from the BM sequence cuts matvecs from 3N to 2N+O(1), a 33% cut with identical output. It is a deterministic check on 3000x3000 toy matrices, and the unquestioned LA phase is the weakest-covered one."
+  },
+  {
+   "id": "H041",
+   "why": "Isotropic block pairs kill the bilinear part on dim M coordinates and are predicted to lower first-fall degree by >=2 and F4 time about 5x. The falsifier is clear (dim M no larger than random, F4 ratio <1.5). This is the largest potential decomposition-phase gain, and it merges with H038/H027."
+  },
+  {
+   "id": "H098",
+   "why": "Booth/Duval canonical key at n=131 is claimed to give 1.6-3x fewer cycles than min-over-squarings, with identical orbit partition as a hard check. It addresses the key cost in the Frobenius-orbit loop. Merge H063/H092 into the same microbenchmark. Needs a PMU host."
+  }
+ ],
+ "missing_angles": [
+  "Linear-algebra is thin (4 ideas, 2 of them Spot logistics H064/H093). There is nothing on Pohlig-Hellman/CRT interplay with small prime factors of the group order, lower-precision modular arithmetic, structured elimination before Lanczos, or LA for the m=2 low-weight rows.",
+  "Decomposition and factor-base hold 43 of 100 ideas, and roughly 12 of them are variants of best-of-T subspace or coset selection (H001,H004,H008,H009,H010,H013,H014,H015,H017,H042,H072,H073). A13 already measured coset selection as near-null. This is oversupplied and unlikely to produce a first improvement.",
+  "Prime-field curves (ECCp-131, Curve25519-class) are covered only by H017, H044, H054, H087 and H097. The Weil-restriction, F4, and subspace ideas are binary-specific, and no idea covers prime-field decomposition (for example Gaudry/Diem-style degree-2 and index-calculus-for-prime-field-extension).",
+  "The large-prime / double-large-prime relation cost model has no idea, although large-prime variants are claimed integrated. There is no model for how the large-prime cut interacts with orbit quotients (H062, H057 only handle the full-rank threshold).",
+  "Nearly every cheapest_test is on n=17-31 toys while targets are n=53..131. Only H090/H097/H098/H099 touch n=53+. No idea has a scaling-extrapolation test (a fit over n with a prediction interval at n=131), so toy wins cannot be turned into a distance to rho.",
+  "No idea reports the matched-rho gap or prices unpriced native work at 0/0.1/1 GAE, apart from H049, H090 and H076. Per section 5a, each should name its rho reference.",
+  "Hybrid guess strategy for Gr\u00f6bner solving (how many variables to guess, with the bilinear structure) has only H019/H022/H071. Nothing covers dedicated solvers, such as SAT or XL with the Semaev structure over GF(2) and Frobenius-twisted equations, or specialised F4 linear algebra (H030 only touches the backend).",
+  "Handbook areas underused: Chapter 8-style zeta/L-function and point-count machinery beyond Weil bounds, Chapter 11.4 factorization (only H034), Chapter 13.4 sparse structured methods (used for PLE only), isogeny/endomorphism ideas outside j=0 (H087 only), and Chapters 16-17 coding/quantum (H091 aside). The Kloosterman/Walsh family (H001,H039,H048) is reused repeatedly with little diversity.",
+  "Curve-selection has six ideas, three are closed or null (H088,H089,H086), and none addresses GLV/GLS-compatible order policy or composite-order cofactor choice.",
+  "Cross-phase composition is missing: no idea tests that two accepted gains (for example the H007 iota quotient plus the H044 order-6 quotient, or the H045 stop rule plus the H059 core) compose multiplicatively on the same session."
+ ],
+ "summary": "The catalogue has 100 ideas, and three things limit it. First, coverage is lopsided: decomposition (25) and factor-base (18) hold 43 of the 100, linear-algebra has 4 (2 of them Spot logistics), and descent has 7. Second, many ideas measure a distribution or predictor rather than a changed algorithm: about 12 are best-of-T subspace or coset selection (H001,H004,H008,H009,H010,H013,H014,H015,H017,H042,H072,H073). A13 already measured coset selection as near-null, and their own predictions shrink to about 1.0x at production size. Third, about 8 are closed or admitted-null re-asks (H002,H020,H078,H083,H088,H089,H100,H065). I flagged 18 relabels, 27 duplicates (several of them chains, such as H015, H044, H024/H026 and H097/H099), and 36 weak ideas. Relabel examples are H050, H090, H086, H084, H076, H062, H064/H093, H095, H077. The strongest first-improvement candidates change something countable and have a checkable output: group-structure quotients (H044, H007), early stopping (H045), identical-output hot-loop rewrites (H026, H097, H098), the cofactor factor base (H012), core extraction before Wiedemann (H059), a 33% matvec cut (H066), and isotropic F4 pairs (H041). Merge the duplicate chains before spending runs. Add LA, prime-field, large-prime accounting and scale-extrapolation ideas. Every winner must report the gap to the matched rho with the section 5a pricing band.\"]"
+}

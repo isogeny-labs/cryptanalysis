@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T02:43:26Z",
+ "id": "PCC-20261123-a72186",
+ "kind": "measurement",
+ "producer": {
+  "commit": "59bd953e4d511aaa92850f489a1390b32699fb1b",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-metal-lifts/storage0.csv",
+    "sha256": "acddce2b4bac0562c891076500fb6f18cc97641bf8cda15166394c593a0506d2"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-metal-lifts/storage1.csv",
+    "sha256": "22f8b6cf16d8b5c1c5a15b2fbdc05e4f5e9cad214f258aab7a58617f6b529fe4"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Generating bound-89 M31 census inputs in shared Metal memory gave complete warm paired wall ratios 1.240 and 1.281 with a shared view and 1.177 and 1.247 with ordinary vector output against the previous GPU path."
+}

@@ -1,4 +1,5 @@
 #include "test_fixtures.h"
+#include <unistd.h>
 
 static void run_matrix(const ca_group *g, const ca_elem *gen, const char *name)
 {
@@ -41,8 +42,75 @@ int main(void)
     ca_group g;
     ca_elem gen;
     fx_zp_safe(&g, &gen, 2000000579ULL); /* 2q+1 with q = 1000000289 */
+    {
+        char dir[] = "/tmp/ca-bsgs-resume-XXXXXX";
+        CHECK(mkdtemp(dir) != NULL);
+        char path[128], progress[160];
+        snprintf(path, sizeof(path), "%s/table.ckpt", dir);
+        snprintf(progress, sizeof(progress), "%s.progress.json", path);
+        ca_elem target;
+        fx_instance(&g, &gen, 424242, &target);
+        ca_bsgs_params cp;
+        ca_bsgs_params_default(&cp);
+        cp.max_ops = 100;
+        uint64_t answer = 0;
+        ca_stats baby = {0}, giant = {0}, finished = {0};
+        CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+            &cp, path, 1, 1, 0, &answer, &baby) == CA_ERR_LIMIT);
+        CHECK(baby.table_entries > 0 && baby.iterations == 0);
+        CHECK(access(path, F_OK) == 0 && access(progress, F_OK) == 0);
+        cp.table_size = 17;
+        CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+            &cp, path, 1, 1, 0, &answer, NULL) == CA_ERR_INVALID);
+        cp.table_size = 0;
+        /* A limit inside the giant phase: the 1024 baby steps and the two
+         * set-ups end near 1180 operations, the solve near 1600.  (2400
+         * before baby steps stopped being counted twice.) */
+        cp.max_ops = 1300;
+        CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+            &cp, path, 1, 1, 0, &answer, &giant) == CA_ERR_LIMIT);
+        CHECK(giant.iterations > 0);
+        cp.max_ops = 100000;
+        CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+            &cp, path, 1, 1, 0, &answer, &finished) == CA_OK);
+        CHECK_EQ_U64(answer, 424242);
+        CHECK(finished.group_ops > giant.group_ops);
+        FILE *f = fopen(path, "rb+");
+        CHECK(f != NULL);
+        if (f) {
+            CHECK(fseek(f, -1, SEEK_END) == 0);
+            int last = fgetc(f);
+            CHECK(last != EOF);
+            CHECK(fseek(f, -1, SEEK_END) == 0);
+            CHECK(fputc(last ^ 1, f) != EOF);
+            CHECK(fclose(f) == 0);
+        }
+        CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 1u << 20,
+            &cp, path, 1, 1, 0, &answer, NULL) == CA_ERR_INVALID);
+        unlink(progress); unlink(path); rmdir(dir);
+    }
     run_matrix(&g, &gen, "zp");
     fx_ec(&g, &gen, 1000003, 1, 7);
+    {
+        char dir[] = "/tmp/ca-bsgs-ec-resume-XXXXXX";
+        CHECK(mkdtemp(dir) != NULL);
+        char path[128], progress[160];
+        snprintf(path, sizeof(path), "%s/table.ckpt", dir);
+        snprintf(progress, sizeof(progress), "%s.progress.json", path);
+        ca_elem target;
+        fx_instance(&g, &gen, 12345, &target);
+        ca_bsgs_params cp;
+        ca_bsgs_params_default(&cp);
+        cp.max_ops = 100;
+        uint64_t answer = 0;
+        CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 50000,
+            &cp, path, 1, 1, 0, &answer, NULL) == CA_ERR_LIMIT);
+        cp.max_ops = 100000;
+        CHECK(ca_bsgs_solve_checkpointed(&g, &gen, &target, 0, 50000,
+            &cp, path, 1, 1, 0, &answer, NULL) == CA_OK);
+        CHECK_EQ_U64(answer, 12345);
+        unlink(progress); unlink(path); rmdir(dir);
+    }
     run_matrix(&g, &gen, "ec");
     /* amortised table reuse */
     ca_bsgs_table *t;
@@ -66,6 +134,59 @@ int main(void)
     CHECK_EQ_U64(got, 123456);
     p.max_ops = 100;
     CHECK(ca_bsgs_solve(&g, &gen, &h, 0, 0, &p, &got, NULL) == CA_ERR_LIMIT);
+    /* The preflight's mathematical sum can exceed UINT64_MAX.  A finite
+     * budget must refuse it before attempting an unrepresentable table. */
+    {
+        ca_bsgs_params edge;
+        ca_bsgs_params_default(&edge);
+        edge.table_size = UINT64_MAX;
+        edge.max_ops = 1;
+        uint64_t answer = 123;
+        ca_stats st = {0};
+        CHECK(ca_bsgs_solve(&g, &gen, &h, 0, UINT64_MAX, &edge, &answer, &st) == CA_ERR_LIMIT);
+        edge.max_ops = UINT64_MAX;
+        CHECK(ca_bsgs_solve(&g, &gen, &h, 0, UINT64_MAX, &edge, &answer, &st) == CA_ERR_LIMIT);
+        CHECK_EQ_U64(answer, 123);
+        CHECK_EQ_U64(st.group_ops, 0);
+        ca_elem identity_target;
+        fx_instance(&g, &gen, 0, &identity_target);
+        edge.table_size = 8;
+        edge.max_ops = 15;
+        CHECK(ca_bsgs_solve(&g, &gen, &identity_target, 0, 63, &edge, &answer, NULL) == CA_OK);
+        CHECK_EQ_U64(answer, 0);
+        edge.max_ops = 14;
+        CHECK(ca_bsgs_solve(&g, &gen, &identity_target, 0, 63, &edge, &answer, NULL) ==
+              CA_ERR_LIMIT);
+    }
+    /* Counts are the one-step loops' at every table size around the batch
+     * width: x = lo + i m + j is found at giant step i, after m baby-step
+     * ops, the lo * base shift and i giant-step ops. */
+    {
+        const uint64_t sizes[] = {1, 2, 63, 64, 65, 127, 128, 129, 300};
+        ca_rng rng;
+        ca_rng_seed(&rng, 11);
+        for (size_t si = 0; si < sizeof sizes / sizeof sizes[0]; si++) {
+            ca_bsgs_params_default(&p);
+            p.table_size = sizes[si];
+            for (int k = 0; k < 40; k++) {
+                uint64_t lo = ca_rng_below(&rng, g.order / 2);
+                uint64_t x = lo + ca_rng_below(&rng, 64 * sizes[si] + 50);
+                uint64_t hi = x + ca_rng_below(&rng, 1000);
+                if (hi >= g.order) continue;
+                ca_stats st = {0};
+                fx_instance(&g, &gen, x, &h);
+                CHECK(ca_bsgs_solve(&g, &gen, &h, lo, hi, &p, &got, &st) == CA_OK);
+                CHECK_EQ_U64(got, x);
+                uint64_t i = (x - lo) / sizes[si];
+                /* plus the lo * base shift: popcount + bit length - 1 */
+                uint64_t shift =
+                    lo ? (uint64_t)__builtin_popcountll(lo) + (63 - __builtin_clzll(lo)) : 0;
+                CHECK_EQ_U64(st.iterations, i + 1);
+                CHECK_EQ_U64(st.group_ops, sizes[si] + shift + i);
+                CHECK_EQ_U64(st.table_entries, sizes[si]);
+            }
+        }
+    }
     /* full multiplicative group of Z_p^* (composite order) */
     CHECK(ca_group_zp_init(&g, 1000003, 0) == CA_OK);
     const uint64_t w[4] = {2, 0, 0, 0};
@@ -73,5 +194,25 @@ int main(void)
     fx_instance(&g, &gen, 999999, &h);
     CHECK(ca_bsgs_solve(&g, &gen, &h, 0, 0, NULL, &got, NULL) == CA_OK);
     CHECK_EQ_U64(got, 999999);
+    /* a base of order 3 stops the baby steps at j = 3, mid-block */
+    {
+        ca_elem b3;
+        ca_group_mul(&g, &b3, &gen, (1000003 - 1) / 3, NULL);
+        for (uint64_t x = 0; x < 3; x++) {
+            ca_stats st = {0};
+            fx_instance(&g, &b3, x, &h);
+            CHECK(ca_bsgs_solve(&g, &b3, &h, 0, 2, NULL, &got, &st) == CA_OK);
+            CHECK_EQ_U64(got, x);
+        }
+        ca_bsgs_table *t3;
+        ca_bsgs_params_default(&p);
+        CHECK(ca_bsgs_table_new(&g, &b3, 100, &t3) == CA_OK);
+        for (uint64_t x = 0; x < 3; x++) {
+            fx_instance(&g, &b3, x, &h);
+            CHECK(ca_bsgs_table_solve(t3, &h, 0, 2, &got, NULL) == CA_OK);
+            CHECK_EQ_U64(got, x);
+        }
+        ca_bsgs_table_free(t3);
+    }
     TEST_MAIN_END();
 }

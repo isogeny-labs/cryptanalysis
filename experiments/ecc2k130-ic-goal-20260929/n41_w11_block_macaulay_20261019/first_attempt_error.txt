@@ -1,0 +1,4 @@
+Command: python3 experiments/ecc2k130-ic-goal-20260929/n41_w11_block_macaulay_20261019/supervise.py
+Status: PRODUCER_FAILURE before child launch
+Traceback: ModuleNotFoundError: No module named 'psutil' at supervise.py line 9
+Correction: launch the same frozen supervisor through the checked repository Sage launcher, which provides psutil.

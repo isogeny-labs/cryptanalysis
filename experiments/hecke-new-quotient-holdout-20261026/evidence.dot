@@ -1,0 +1,19 @@
+digraph MixedFloor {
+  graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.3", ranksep="0.4"];
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=12, fillcolor="#eaf2fa"];
+  edge [fontname="Helvetica", fontsize=10];
+  scope [label="EXPLORATORY SAVED CASE\nX_0(11) / F23743; D_K=-2631; conductor 6\nPrior public preregistration is not established", fillcolor="#fff1d9"];
+  matrix [label="EXTERNAL EXACT MATRIX CHECKS\n768 rational points; 576 verified rows\n384 degree-2 rows + 192 degree-3 rows"];
+  full [label="Full relation rank: 480\nNonfloor projected rank: 426\nFloor-supported kernel dimension: 480-426=54"];
+  vectors [label="RECORDED INTEGER WITNESSES\n6 alternating cycle vectors + 48 pair differences\nEach cycle meets 8 pairs in both sign ratios"];
+  lean [label="CONDITIONAL LEAN IMPLICATION\nOpposite-sign coordinate equations force\nall 6 cycle and 48 pair coefficients to zero", fillcolor="#e8f4e9"];
+  basis [label="SAVED FINITE CONCLUSION\n54 independent floor vectors span the\n54-dimensional floor-supported row space", fillcolor="#e8f4e9"];
+  open [label="OPEN BRIDGES / LIMITS\nFull 768-column identities and class-action-to-rational-lift\ncorrespondence are not formalized in the Lean module\nNo end-to-end ECDLP or timing claim", fillcolor="#fff1d9"];
+  scope -> matrix;
+  matrix -> full;
+  matrix -> vectors;
+  vectors -> lean [label="concrete equations checked externally"];
+  full -> basis;
+  lean -> basis;
+  basis -> open [style=dashed];
+}

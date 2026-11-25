@@ -1,0 +1,10 @@
+import HasseSquareBounds
+
+theorem square_positive_application : (82:Nat) = 82 := by
+  exact CurveAudit.unique_multiple_from_hasse_squared_checks
+    101 41 82 82 2 2 (by decide) (by decide) (by decide) (by decide) (by decide)
+
+theorem square_sharp_boundary :
+    CurveAudit.unsignedDelta 0 (1+1) * CurveAudit.unsignedDelta 0 (1+1) ≤ 4*1 ∧
+    CurveAudit.unsignedDelta 4 (1+1) * CurveAudit.unsignedDelta 4 (1+1) ≤ 4*1 ∧
+    (4:Nat)*4 = 16*1 ∧ (0:Nat)=0*4 ∧ (4:Nat)=1*4 ∧ (0:Nat)≠4 := by decide

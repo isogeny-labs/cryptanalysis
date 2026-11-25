@@ -1,0 +1,20 @@
+{
+  "format": "normal-weil-exhaustive-audit-v1",
+  "date_utc": "2026-11-19",
+  "scope": "exact finite-field identities; no DLP solving",
+  "kernel_level": {
+    "identity": "F_P * T_P^*F_Q = F_(P+Q) on the isotropic kernel",
+    "pairs_checked": 729,
+    "failures": 0,
+    "second_evaluation_point_failures": {
+      "P-224": 0,
+      "Tian-523-control": 0
+    }
+  },
+  "quotient_level": {
+    "identity": "H_P * T_P^*H_Q = d_2(P,Q) H_(P+Q), with formal basis roots reduced through r_i^2=u_i",
+    "pairs_checked": 4096,
+    "failures": 0
+  },
+  "interpretation": "The multiplication normalizations are exact and all 64 squared theta nulls transform correctly. The later exhaustive sign audit identified the unique reduced-characteristic correction alpha_32,alpha_33 -> -alpha_32,-alpha_33, after which both Tian's published source control and the P-224 descent controls pass."
+}

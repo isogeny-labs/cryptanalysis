@@ -1,0 +1,45 @@
+{
+  "schema": "cryptanalysis.hasse_machine_review.v1",
+  "producer_commit": "dc73f9791dc7d2c61e0c77572d2c3aaeedb30436",
+  "toolchain": "leanprover/lean4:v4.34.1",
+  "cwd": "/tmp/hasse-native-review-20261027",
+  "inputs_before": {
+    "HasseUnique.lean": "0e0b14f032203329328910ac0bc0f03db88f508087c4fdb236fd1bbe6d7e49f7",
+    "lean-toolchain": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b",
+    "AuditAxioms.lean": "f97280b48f1846d13e7ed96d9691753811551864162086fb25e9fe05438aa7dc"
+  },
+  "inputs_after": {
+    "HasseUnique.lean": "0e0b14f032203329328910ac0bc0f03db88f508087c4fdb236fd1bbe6d7e49f7",
+    "lean-toolchain": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b",
+    "AuditAxioms.lean": "f97280b48f1846d13e7ed96d9691753811551864162086fb25e9fe05438aa7dc"
+  },
+  "steps": [
+    {
+      "name": "build",
+      "command": [
+        "lean",
+        "-o",
+        "HasseUnique.olean",
+        "HasseUnique.lean"
+      ],
+      "exit_code": 0,
+      "seconds": 11.814,
+      "stdout_sha256": "fa5ef807ccf40b36346a82fd3f4ff8d21d6ab02ecb4c9c946042eeb372c1ae41",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "audit",
+      "command": [
+        "lean",
+        "--run",
+        "AuditAxioms.lean",
+        "HasseUnique"
+      ],
+      "exit_code": 0,
+      "seconds": 34.742,
+      "stdout_sha256": "c392b0e56fe8a17d91548699bde857d8e2138be9d044934a0b5b9d489df6d97a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "trust_boundary": "Lean kernel and installed pinned toolchain; no independent binary rechecker"
+}

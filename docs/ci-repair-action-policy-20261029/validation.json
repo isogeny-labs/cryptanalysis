@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-29",
+  "base": "934bf8329bcff52d943e282be59e0c9b62275f66",
+  "cause": "Organization allows only enterprise-owned, GitHub-created or verified Marketplace actions.",
+  "observed_errors": {
+    "40825853426": "leanprover/lean-action@v1 is not allowed",
+    "40825857835": "dtolnay/rust-toolchain@stable is not allowed"
+  },
+  "sources": [
+    "https://github.com/isogeny-labs/cryptanalysis/actions/runs/40825853426",
+    "https://github.com/isogeny-labs/cryptanalysis/actions/runs/40825857835",
+    "https://github.com/leanprover/lean-action/blob/fe408643ea7367d8c0404a8be3975bb145f5fb64/action.yml"
+  ],
+  "preserved": [
+    "project-pinned Lean 4.34.1",
+    "exact three reviewed transitive axiom sets",
+    "Python pair lookup controls",
+    "stable Rust and rustfmt/clippy",
+    "all existing Rust format/lint/release-test commands",
+    "all experiment protocols and frozen evidence"
+  ],
+  "local_validation": {
+    "python_tests": 5,
+    "ghs_release_tests": 48,
+    "ghs_release_suites": 11,
+    "rust": "stable 1.99.1",
+    "lean": "4.34.1",
+    "actionlint_shellcheck": "pass",
+    "clippy_warnings_denied": "pass"
+  },
+  "pending": [],
+  "additional_active_workflows": [
+    "binary-genus2-cover.yml",
+    "certicom-devices.yml"
+  ],
+  "cache_replacement": "GitHub-owned actions/cache preserves Cargo registry/git caches and the selected workspace target directory.",
+  "active_workflow_audit": "The state-filtered audit removed all known unverified setup references from active definitions; retired definitions retain their existing state.",
+  "validation_limits": [
+    "Certicom CUDA compilation and real-device qualification require the existing hosted CI/device jobs; no hardware qualification is claimed locally.",
+    "Binary genus-two native and pinned Lean validation remain required on the published head."
+  ],
+  "published_validation": {
+    "head": "d393765005f00f144a0a8253101aa16b61fc9009",
+    "result": "All 10 emitted workflows successful at initial current-head audit on 2026-10-29 07:31 UTC",
+    "runs_source": "GitHub Actions runs for this exact head",
+    "workflow_sha256": {
+      "orbit-pair-index-lean.yml": "23b2f503b1819f4a2ab2c50a0c2ab6c01caeef8404d39940c353d2921a2e2b32",
+      "ghs-sweeper.yml": "83ae1cc6d5387c812eddfd12617acfe1864035b472096b94072ec5e92ce381cf",
+      "binary-genus2-cover.yml": "fe4ab05c5e88907ab94c73a71563ced2f69b694b31c23026f3ff0919050e55c3",
+      "certicom-devices.yml": "581ebddb64b823658dbfe361897e75b153ccfe750ee31f46fcd7fc9af5df3d58"
+    },
+    "merged_pr": 1290,
+    "merge_commit": "d3e11ad82c9c5e31e1f0406c08e203fae82e86cc"
+  }
+}

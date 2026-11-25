@@ -1,0 +1,23 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T02:09:20Z",
+ "id": "PCC-20261123-5830cb",
+ "kind": "theorem",
+ "producer": {
+  "commit": "a469452ad6c8694e936aa4c425b1123afbb03500",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "003387c49842539efc62de4ef9cf4d6326b21dfc25243f824643916789602166",
+   "kind": "lean",
+   "path": "experiments/prime-field-auxiliary-ic/m31-rotation-smoothness/partition-timing/BucketFilter.lean",
+   "sha256": "13e5ffdc2d198c54d0751b65b1c2b555afdb6e487f46251fd4b8fcefd06f4a30",
+   "theorem": "M31BucketFilter.preserves_pairs"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "For any hash function, retaining buckets containing both orientations preserves the exact set of two-orientation keys."
+}

@@ -1,0 +1,7 @@
+# Duplication cycles on M31 affine coordinates
+
+Run `gp -q -f census.gp` for the curve and twist group structures and cycle counts. Output columns are the constant coefficient, cyclic group order, point order d, least signed doubling period, and number of cycles at that order. For points of odd order d, the coordinate returns precisely when the doubled point equals the original point or its negative, equivalently when the multiplier is ±1 modulo d. A cyclic group has φ(d) points of order d. Discard infinity and divide by two for the sign identification. The twist coordinates transfer to the nonlifting coordinates on the comparison cubic by reflection, since the reflected cubic has the opposite sign and −1 is nonsquare in M31. The comparison cubic has no rational root.
+
+The Lean file certifies the least positive exponents with residue ±1 for the four specified point orders. Group structures are independently computed by PARI. The geometric interpretation of x-coordinates uses the standard sign identification on a short Weierstrass curve.
+
+Run `python3 smooth_hits.py` for the complete count of positive integer-smooth coordinates on the comparison side at each bound. On a single directed cycle of length L with H marked vertices, the forward gaps between successive marks sum to L including the wraparound, so their arithmetic mean is L/H. This prices a sequential full-cycle traversal in duplication steps. It does not price a random access or a jump procedure.

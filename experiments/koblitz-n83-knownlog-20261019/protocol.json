@@ -1,0 +1,392 @@
+{
+ "arms": {
+  "cL220": {
+   "binary": "ic_online_rankprobe_r770",
+   "columns": 220,
+   "kind": "ic_knownlog",
+   "role": "PRIMARY: the known-log base at the cost-model optimum K_opt = 220 (analysis/cost_model.json), the first 220 scalars of the same seeded stream"
+  },
+  "cL600": {
+   "binary": "ic_online_rankprobe_r770",
+   "columns": 600,
+   "kind": "ic_knownlog",
+   "role": "known-log base at K600 (the baseline's orbit count): 600 seeded scalar orbits R_j = [a_j]G, generated cold in every process, logs known by construction, read by the baseline's producer as a retained base with KIC_LOG_TABLE_IN; no rank stage, no LA"
+  },
+  "cLX": {
+   "binary": "ic_online_rankprobe_r770",
+   "columns": 220,
+   "kind": "ic_knownlog_planted",
+   "role": "planted control (Q0 only): cL220 with log column 1 moved off by one before the producer reads it; the producer must refuse it"
+  },
+  "cLaa": {
+   "binary": "ic_online_rankprobe_r770",
+   "columns": 220,
+   "kind": "ic_knownlog",
+   "role": "A/A control: a second process of cL220 on every point"
+  },
+  "cP": {
+   "binary": "ic_online_rankprobe_r770",
+   "kind": "ic_cold",
+   "role": "IC baseline cold arm, in this session for pairing: the rank-probe producer's cold path (koblitz-n83-rankprobe-20261019 arm cP, the n=83 baseline row) on B's K600 base with B's verified cached factor-log table, run by that experiment's arm.py unchanged",
+   "wrapper": "rankprobe"
+  },
+  "kP": {
+   "binary": "ic_online_rankprobe_r770",
+   "kind": "ic_rank",
+   "role": "IC baseline rank stage (arm kP of koblitz-n83-rankprobe-20261019: KIC_RANK_SOLVE=frame), run by that experiment's arm.py unchanged; its factor-log table must equal B's",
+   "wrapper": "rankprobe"
+  },
+  "rT": {
+   "binary": "rho_tuned_r770",
+   "kind": "rho_tuned",
+   "role": "tuned rho rT770 (Fold/64/DP6), the strongest one-target rho at n=83, same points",
+   "wrapper": "rankprobe"
+  }
+ },
+ "controls_pass_rule": {
+  "aa": "E2E cL220 / cLaa (ratio of means over the cold points, paired) inside [0.97, 1.03]",
+  "otherwise": "reading invalid",
+  "planted": "cLX on Q0: the producer refuses the table with column 1 off by one (nonzero exit, the panic 'factor log 1 does not map G to its representative', no scalar); and the independent verifier fails each of its three planted corruptions"
+ },
+ "design": {
+  "cold_arms": [
+   "cP",
+   "cL600",
+   "cL220",
+   "cLaa",
+   "rT"
+  ],
+  "cold_points": 40,
+  "cold_points_source": "analysis/power.json chosen_points",
+  "probe_law_arms": {
+   "cL220": 220,
+   "cL600": 600,
+   "cP": 600
+  },
+  "probe_law_band": {
+   "law": "r / (166 * 83 * K^2)",
+   "max_per_point": 20.0,
+   "mean_high": 1.5,
+   "mean_low": 0.5,
+   "note": "per arm over the 40 cold points: mean probes / law inside [0.5, 1.5] and no point above 20x the law (2,400 archived rank attempts average 0.9785 of the law with coefficient of variation 0.97; under an exponential law a 40-point mean leaves [0.5, 1.5] with probability below 0.01, and one point exceeds 20x with probability e^-20)"
+  },
+  "process_model": "one point per process, fresh processes per run, one pinned CPU, one runner",
+  "q0_arms": [
+   "cP",
+   "cL600",
+   "cL220",
+   "cLaa",
+   "cLX"
+  ],
+  "q0_point": [
+   "2655898345537166180532960",
+   "3881526307991673265292615"
+  ],
+  "rank_arms": [
+   "kP"
+  ],
+  "rank_blocks": [
+   {
+    "id": "K1",
+    "rank_seed": 901,
+    "unit": "s000"
+   },
+   {
+    "id": "K2",
+    "rank_seed": 902,
+    "unit": "s001"
+   },
+   {
+    "id": "K3",
+    "rank_seed": 903,
+    "unit": "s002"
+   },
+   {
+    "id": "K4",
+    "rank_seed": 904,
+    "unit": "s003"
+   }
+  ],
+  "rank_seeds_note": "901-904 are new (used so far: 101-102, 201-204, 301-304, 401-404, 501-504, 701, 801-816)",
+  "rho_seed_base": 990000,
+  "runtime_estimate": "from run 39214027289 and the cost model: build and tests about 15 min; a cold segment about 60 s (cP about 23 s, cL600 about 23 s, cL220 and cLaa about 6 s each, rT about 3 s); a rank block (one kP process) about 175 s; O1 about 80 s; total about 1.2 h",
+  "same_base_groups": [
+   [
+    "cP",
+    "kP"
+   ],
+   [
+    "cL220",
+    "cLaa"
+   ]
+  ],
+  "segment_order": [
+   "O1",
+   "C1",
+   "C2",
+   "C3",
+   "C4",
+   "C5",
+   "C6",
+   "C7",
+   "C8",
+   "C9",
+   "C10",
+   "K1",
+   "C11",
+   "C12",
+   "C13",
+   "C14",
+   "C15",
+   "C16",
+   "C17",
+   "C18",
+   "C19",
+   "C20",
+   "K2",
+   "C21",
+   "C22",
+   "C23",
+   "C24",
+   "C25",
+   "C26",
+   "C27",
+   "C28",
+   "C29",
+   "C30",
+   "K3",
+   "C31",
+   "C32",
+   "C33",
+   "C34",
+   "C35",
+   "C36",
+   "C37",
+   "C38",
+   "C39",
+   "C40",
+   "K4"
+  ],
+  "segment_upper_estimate_s": {
+   "C": 240,
+   "K": 600,
+   "O": 300
+  },
+  "time_guard": "skip a segment (rows skipped_time_guard) if elapsed + its estimate exceeds 200 min",
+  "timeout_s": {
+   "ic_cold": 600,
+   "ic_knownlog": 600,
+   "ic_knownlog_planted": 600,
+   "ic_rank": 2400,
+   "rho_tuned": 600
+  },
+  "within_segment_order": "random.Random(2026101930 + i).shuffle (C), random.Random(2026102030 + b) (K), random.Random(2026102130) (O)"
+ },
+ "frozen_at_utc": "2026-10-19T19:02:06+00:00",
+ "frozen_before_any_timing": true,
+ "gates": [
+  "every scheduled row valid (exit 0, verified, schedule match, no memory event)",
+  "before timing: check_knownlog.py (pinned pure-Python oracle, no shared code with the generator or the producer) verifies, for the runner-built generator's K600 and K_opt outputs, every log [a_j]G = R_j, the scalars against the declared rule, every base point as +-phi^s(R_j) with label +-lambda^s, distinct orbits and the base hash, and the files' SHA-256 against knownlog.bases; and detects all three planted corruptions",
+  "every known-log process: the files its own generator wrote hash to the verified ones; the producer reads them as a retained header, skips the rank stage and verifies every [L_j]G = R_j before target work (verified_columns = K); 83 K^2 logical states, (83 K^2 + K)/2 stored, the compact table with the slot count of the stored states, the frozen root-table entries and index digests of that base",
+  "per point: one scalar across every IC process (cP, kP, cL600, cL220, cLaa) and rT, replayed as [d]G = Q in the pinned oracle",
+  "per point: one relation and one probe count within each base (cP with kP on B's base; cL220 with cLaa)",
+  "Q0 (O1): cP gives the archived Feistel identity (1,987,852 probes); cL600, cL220 and cLaa give the frozen identity of their base",
+  "kP: full rank and the written factor-log table equal to B's archived table (the baseline arm's own checks)",
+  "probes inside the law band: for cP, cL600 and cL220, the mean over the cold points of probes / (r / (166 * 83 * K^2)) inside [0.5, 1.5], and no point above 20"
+ ],
+ "k_choice": {
+  "K_opt": 220,
+  "file": "analysis/cost_model.json",
+  "label": "prediction, not a measurement",
+  "model_A_K_star": 217,
+  "model_A_cost_ms_at_K600": 22595.91012775009,
+  "model_A_cost_ms_at_K_opt": 6037.790954281246,
+  "model_B_K_opt_over_its_minimum": 1.0202323886462585,
+  "model_B_K_star": 198,
+  "model_B_cost_ms_at_K_opt": 5154.723536601645,
+  "rule": "the even multiple of 10 nearest model A's integer minimum (multiples of 20)"
+ },
+ "kind": "n83-knownlog-reference-tier1",
+ "knownlog": {
+  "base_seed": 20261019,
+  "bases": {
+   "220": {
+    "base_hash": "e2b8d13f75587f7ae9a2dfa06a9760ed36deb7fed9dcc2bd6ccadeb8218bd088",
+    "base_sha256": "1045de01def6535ecf255435f92a9929cd7aa1ce794b8736034c18871e4c930c",
+    "index_digest": {
+     "logical_states": 4017200,
+     "logical_states_blake3": "196ad3a131fdc0ea91ecb26192dd5dbbbfa291d48b3867211589fba07f0d1b5a",
+     "table_entries": 4016540,
+     "table_map_sum64": "48ca2241816b3f6a",
+     "table_map_xor64": "b14d52cb55395544"
+    },
+    "log_table_sha256": "a567436a7f3076a858d30a5873e11c9e898a638fba5d39e52ace8ed7935ed6bc",
+    "q0_identity": {
+     "probes": 801863,
+     "relation": [
+      30585,
+      1963,
+      20417,
+      30373
+     ],
+     "scalar": "3141592653589793"
+    },
+    "root_table_entries": 4016540,
+    "source": "generated by knownlog_base 220 20261019; digests, index digests, root-table entries and the Q0 identity from the local smoke (smoke/smoke_local.json; exact, deterministic)"
+   },
+   "600": {
+    "base_hash": "730744637b87219e72d77e7a391e11845fdacc9b45357fcc16474a853b63fa3f",
+    "base_sha256": "8d2f3152432b235f64ccb448b38956c3d214456d9237830382cad0d7f3477a10",
+    "index_digest": {
+     "logical_states": 29880000,
+     "logical_states_blake3": "047c7294f01637dc879f5299e1a1ee9751174a9e89f58d71bc383594c93f8828",
+     "table_entries": 29878197,
+     "table_map_sum64": "ecd3c85419c411eb",
+     "table_map_xor64": "26bf95fd45e52505"
+    },
+    "log_table_sha256": "bf4aca722328f5524bb0ccc9ad3b0bc3e6b6e6ea333425727c9c6f8b8a1deb6e",
+    "q0_identity": {
+     "probes": 2155400,
+     "relation": [
+      25923,
+      52400,
+      11104,
+      19613
+     ],
+     "scalar": "3141592653589793"
+    },
+    "root_table_entries": 29878197,
+    "source": "generated by knownlog_base 600 20261019; digests, index digests, root-table entries and the Q0 identity from the local smoke (smoke/smoke_local.json; exact, deterministic)"
+   }
+  },
+  "generator_binary": "knownlog_base",
+  "generator_crate": "knownlog/",
+  "layout": "B's header layout: column j, s = 0..82: phi^s(R_j) [j, lambda^s mod r], -phi^s(R_j) [j, -lambda^s mod r]; checked against B's K600 header",
+  "planted_column": 1,
+  "primary_arm": "cL220",
+  "scalar_rule": "splitmix64(seed), rejection below floor(2^64/r)*r, mod r, 0 rejected; the base of K columns uses the first K scalars"
+ },
+ "lead": "survey lead L2 (known-log K600 base, LAnone); prior use experiments/koblitz-pair-claw-20260929/README.md:339-400",
+ "online": {
+  "base": "snapshots/r770/experiments/koblitz-single-target-n83-20261006/base_n83_K600.jsonl",
+  "base_hash": "d4a4da26d6e7cb09367de922d9806631fe49989f70d378cae76f347f8d76a9f7",
+  "curve_id": "EC1N83Ce1h35c7ced6b497",
+  "factor_log_table": "../koblitz-single-target-n83-tier1-20261014/tier1_github_38523707244/precompute/factor_logs_n83_K600.json",
+  "factor_log_table_sha256": "a771716f284bb826e7407e1e7b5ef882409c9e7e1df8b8a3ed5b60b421d9f17e",
+  "index_digest": {
+   "logical_states": 29880000,
+   "logical_states_blake3": "baf46d5a34732aa2aeba1fc0ca4f57036e3c324ade0bf8791431c838fe15d7ec",
+   "source": "B's unfolded index, protocol.json of koblitz-n83-state-fold-20261015; reproduced here by cP and cS on Q0 (smoke/)",
+   "table_entries": 29878182,
+   "table_map_sum64": "be14a80705232396",
+   "table_map_xor64": "8132bdcfd619010f"
+  },
+  "orbit_columns": 600,
+  "paths_relative_to": "../koblitz-n83-rankprobe-20261019 (the baseline's experiment directory)",
+  "q0_identity": {
+   "probes_folded": 1987852,
+   "probes_unfolded": 1988184,
+   "relation": [
+    77273,
+    22971,
+    54962,
+    62539
+   ],
+   "scalar": "3141592653589793",
+   "source": "inputs/archived_identities.json old17.q0 (run 38786433493); folded probes from koblitz-n83-state-fold-20261015 (Q0 smoke, cF) and smoke/ here"
+  },
+  "regular_states": 29880000,
+  "root_table_entries": 29878182,
+  "sqrt_r": 92573139.235,
+  "subgroup_order": "8569786107849059",
+  "tuned_rho_config": "snapshots/r770/research/n83_evaluation_20261012/optimization/selected_config.json"
+ },
+ "power": {
+  "at_chosen": {
+   "A": {
+    "coverage": 0.9325,
+    "median_relative_half_width": 0.1862567472431957,
+    "model": "A",
+    "p_lower_bound_above_1": 1.0,
+    "p_upper_bound_below_1": 0.0,
+    "points": 40,
+    "secondary_ratio_kP_cP_over_cL_median": 27.71335547120114,
+    "secondary_ratio_relative_spread_sd": 0.07227606856593989,
+    "true_e2e_ms": 5976.680485524997,
+    "true_gap": 2.304104122252887
+   },
+   "B": {
+    "coverage": 0.9475,
+    "median_relative_half_width": 0.18046053796704042,
+    "model": "B",
+    "p_lower_bound_above_1": 1.0,
+    "p_upper_bound_below_1": 0.0,
+    "points": 40,
+    "secondary_ratio_kP_cP_over_cL_median": 32.63474845084045,
+    "secondary_ratio_relative_spread_sd": 0.06812305023104169,
+    "true_e2e_ms": 5107.475726196151,
+    "true_gap": 1.9690120466597747
+   }
+  },
+  "chosen_points": 40,
+  "file": "analysis/power.json",
+  "rule": "smallest N in (20, 30, 40, 60) with median relative half-width <= 0.20 and P(lower bound > 1) >= 0.90 under both cost models"
+ },
+ "question": "What is the end-to-end cold cost (base and log-table generation, base load, index build, log verification, self-tests and the one-target online interval) of a known-log factor base of seeded scalar orbits on the n=83 a=1 Koblitz curve, at the baseline's K600 and at the cost-model optimum K_opt, on new public points, and how far is it from the tuned rho rT770 and from the IC baseline measured in the same session?",
+ "reading_rule": {
+  "invalid": "any gate or control fails, or any scheduled row is missing (including time-guard skips)",
+  "measured_above_rho": "the primary interval's lower bound exceeds 1",
+  "measured_below_rho": "its upper bound is below 1 (would contradict the DKM bound for this generic method: audit the accounting before any claim)",
+  "measured_not_separated_from_rho": "otherwise",
+  "never": "no outcome of this experiment is an IC improvement or replaces the IC baseline row"
+ },
+ "row_label": "SEPARATELY LABELLED REFERENCE ROW (owner's ruling 2026-10-19, 'Measure both, decide later'). It does not replace the n=83 index-calculus baseline row. Whether it may ever hold the IC row is decided after the L1 multiplier-closure result.",
+ "schema": 1,
+ "sources": {
+  "crypto_770f6a69": "770f6a6925a0d29b768bd79074f54a173e967fe7 (snapshots/r770 of ../koblitz-n83-rankprobe-20261019, restored by its restore.py)",
+  "local_sha256": {
+   "arm_wrapper": "fd3dfc398712f759d7495496751c60b39d3a2d7f7db7fdbb3dbe11372ba84003",
+   "cold_targets": "9a0282c2c7e5a06585bf8e32d0f566b4e1d07c7897d27f2ea83ff9e4bfcf1ccd",
+   "cost_model": "150a0286f09777390768eed7429f8d881f0a7a25bf9349b6060be22696d44e49",
+   "cost_model_result": "bc36db58f07ebdfaf475771e72f72c492d76575a0fef188eea3d1df9d34cc05f",
+   "generator_lock": "ff152778d798f1ee4ac8bb1360dd3cadbc7ab5dc80e2514bce11a6ff65038bb8",
+   "generator_manifest": "7081d89f15ac42bbdcb9f118790cbc868d78ea00c2e085895f96463498846607",
+   "generator_source": "6205d8bef05e1ed646e4ccaa249aad4b5c84384f2b3f1b0e8d27411d1fb6ca13",
+   "knownlog_checker": "718d18e1bad42e95771f68643450ad7a1c919613a30dafc44b380842358fd5af",
+   "power_check": "d156bbbc18a48297022d39f153135051de30e95f4246e51db4186d10c14e0a05",
+   "power_prior": "cbf97757faba632feeb17525644a308b3caf7d198d13f1e7e3d85a16ddf877ab",
+   "power_prior_builder": "d3204e71cc6ce19ab6677e7274a82923bedca52c9eb9ec7f89085d68774f438c",
+   "power_result": "8f314725aec516e157cab1948cf9536dd59138e7cfd6b35526e8b5afdbd5529d",
+   "protocol_builder": "bb880d3e1da3d85496b33090e54e279551fb4284b82e8301d4e584924ca2bd42",
+   "receipt_verifier": "5adc2b00e663a50715cd60ebe3764ef8fc2a733955b90bf028aafa8c0547d325",
+   "schedule_builder": "c5d5087bdf534918fcad2ac1226c46a9c50cab68033c085fcaac398a414c31a9",
+   "schedule_runner": "638d9313ce48d2e845fe5a98488a85ca77289a5a46124dcb5fb1b3e08d8e3fcd",
+   "smoke_identities": "e43a82f2727fa3f935e2310e608fa775fa51dd7847d941f8b62172d809f4b15d",
+   "targets_builder": "5dc77092c1af1d0330fc89dd9c6b8e029ed8b142193cdb2d235e24fc6a74c559"
+  },
+  "producer": "the rank-probe producer (koblitz-n83-rankprobe-20261019, the n=83 baseline row), unchanged",
+  "producer_source_sha256": "d4394df35d065afbfb05022eac3006492239cc64b94de16fba501322cb578bb5",
+  "upstream_sha256": {
+   "rankprobe_arm_wrapper": "655d24a78d3cd0b4a9fbdd6354034be69022ac61af2ec0b0e76f2cfe5c33c6a9",
+   "rankprobe_protocol": "86128a2d483fc535882c542e67c377190fc6d7eafe7b014da47c23e0f4d5a1a7",
+   "rankprobe_restore": "92b30b121d870d81b27f2658b58cc070c2489eedd905e6f423b6fc8f04bcf4c5"
+  }
+ },
+ "stage_tags": "factor base: seeded scalar orbits (166 K points, K signed-Frobenius columns); PDP: the baseline's S3 root index (PDP4s3rootindex); relation collection: none; linear algebra: LAnone (all factor-base logs known, no final matrix); target: TDsingle; ISO0. The IC1 candidate manifest is minted when the row lands, not at freeze",
+ "statistics": {
+  "e2e_cold": "known-log arms: gen_ms (the generator's own clock) + cold_in_process_ms (the producer's, process start .. recovery check) per point; cP: cold_in_process_ms per point; kP+cP: mean rank stage of kP over the blocks + mean cP cold over the points; rT: setup + online per point",
+  "multiplicity": "one primary estimate; every secondary is descriptive",
+  "primary": "the reference measurement itself: G = mean E2E(cL220) / mean cold(rT) over the 40 cold points, 95% bootstrap interval (points resampled, paired, 10,000 draws, seed 20261019); with it the end-to-end cold S of cL220 = mean E2E / (this run's rT ms per step * sqrt(r)) with its interval (points resampled, unit held fixed)",
+  "secondary": [
+   "E2E(kP+cP) / E2E(cL600), same label",
+   "end-to-end cold gaps to rT of kP+cP and cL600; cL600 / cL220",
+   "online gaps to rT of cL220, cL600 and cP; ns per probe per arm",
+   "mean phases per arm (generation, base load, index, self-test, log verification, online), peak RSS",
+   "probe-law ratios per arm; kP rank stage, attempts and ns per probe",
+   "the cost model's prediction beside the measurement (labelled a prediction)"
+  ],
+  "secondary_labelled": "E2E(kP+cP) / E2E(cL220), labelled 'reference, not an IC improvement' (blocks resampled, attempts resampled within blocks, points resampled paired)"
+ },
+ "success_criterion": "AGENTS.md 'Success criterion: iterative improvement of the index-calculus baseline': this row is a reference beside the ratchet, not a step of it",
+ "what_it_is": "With no relations, the known-log base reduces the method to generic baby-step giant-step on the Frobenius quotient: the index of pairs of base points is the baby-step table, the target scan the giant steps. It is bounded by the DKM non-adaptive line (crypto research/lit2026_w3_ggm_audit_20261011/README.md:177-183), so it can never beat rho. The measurement prices that limit; it is not an IC improvement."
+}

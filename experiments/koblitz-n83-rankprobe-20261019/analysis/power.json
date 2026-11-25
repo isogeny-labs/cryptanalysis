@@ -1,0 +1,108 @@
+{
+ "bootstrap": "rank blocks resampled; attempt indices resampled within each drawn block, paired across kR and kP; cold points resampled, paired; 300 draws per simulation (10,000 in the frozen verifier)",
+ "chosen_rank_blocks": 4,
+ "expected_e2e_ratio_under_local_profile": "about 1.06-1.10 if the local per-probe ratio (median about 1.10, smoke/, diagnostic) holds on the runner; not an input of this check",
+ "mean_cold_ms_prior": 22543.72260985,
+ "mean_rank_stage_ms_prior": 173150.92211875,
+ "min_blocks": 4,
+ "min_delta": 1.03,
+ "points": 20,
+ "power": {
+  "1.00": {
+   "by_blocks": {
+    "2": {
+     "mc_se": 0.023385358667337135,
+     "power": 0.125
+    },
+    "3": {
+     "mc_se": 0.01918332609325088,
+     "power": 0.08
+    },
+    "4": {
+     "mc_se": 0.01971991379291502,
+     "power": 0.085
+    }
+   },
+   "rank_stage_effect": 1.0
+  },
+  "1.02": {
+   "by_blocks": {
+    "2": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    },
+    "3": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    },
+    "4": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    }
+   },
+   "rank_stage_effect": 1.0226629520226242
+  },
+  "1.03": {
+   "by_blocks": {
+    "2": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    },
+    "3": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    },
+    "4": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    }
+   },
+   "rank_stage_effect": 1.0340388612959637
+  },
+  "1.05": {
+   "by_blocks": {
+    "2": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    },
+    "3": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    },
+    "4": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    }
+   },
+   "rank_stage_effect": 1.0568801286649065
+  },
+  "1.10": {
+   "by_blocks": {
+    "2": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    },
+    "3": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    },
+    "4": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    }
+   },
+   "rank_stage_effect": 1.1145105883597266
+  }
+ },
+ "prior": "inputs/power_prior.json",
+ "prior_source": "koblitz-n83-rankcut-20261016/run_github_38891404048 (arms kR, kRaa, cR, cS)",
+ "quick": false,
+ "schema": 1,
+ "simulations": 200,
+ "statistic": "R = E2E(kR, cR) / E2E(kP, cP), 95% lower bound > 1",
+ "type_i_at_1.00": {
+  "2": 0.125,
+  "3": 0.08,
+  "4": 0.085
+ }
+}

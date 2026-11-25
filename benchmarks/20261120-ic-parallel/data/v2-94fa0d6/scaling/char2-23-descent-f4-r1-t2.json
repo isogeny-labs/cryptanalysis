@@ -1,0 +1,507 @@
+{
+  "all_verified": true,
+  "calibration": {
+    "ns_per_add": 102.41738,
+    "ns_per_as_solve": 24.338475,
+    "ns_per_canon": null,
+    "ns_per_double": 102.347365,
+    "ns_per_frobenius": 16.185725,
+    "ns_per_inversion": null,
+    "ns_per_legendre": null,
+    "ns_per_lookup": 0.0,
+    "ns_per_row_op": 3.167240234375,
+    "ns_per_s4_pair": null,
+    "ns_per_sqrt": null,
+    "ns_per_word_xor": 0.4177923583984375,
+    "pinned_units": []
+  },
+  "calibration_pins": {
+    "measured": [
+      "ns_per_double",
+      "ns_per_lookup",
+      "ns_per_row_op",
+      "ns_per_as_solve",
+      "ns_per_word_xor",
+      "ns_per_frobenius"
+    ],
+    "pinned": []
+  },
+  "configurations_run": 2,
+  "configurations_skipped": [],
+  "elapsed_seconds": 2.7752294920000002,
+  "instance": "random-binary-n23-b20529e",
+  "markdown": "| instance | configuration | base | cols | pts/col | hit rate | trials | rows | rank | D_solve | D_sr | S | vs rho | correct |\n|:--|:--|--:|--:|--:|--:|--:|--:|--:|--:|:--|--:|--:|:--|\n| random-binary-n23-b20529e | binary-subspace[dimension=7] + descent-algebraic[m=2] + f4-f2 + walk | 132 | 66 | 2.0 | 0.001 | 37491 | 40 | 40 | 0.0 | 4 | 13621.589 | — | yes |\n| random-binary-n23-b20529e | binary-subspace[dimension=7] + descent-algebraic[m=2] + f4-f2 + walk | 132 | 66 | 2.0 | 0.002 | 21359 | 38 | 38 | 0.0 | 4 | 7300.748 | — | yes |\n",
+  "operation": "bench",
+  "regime": "char2",
+  "rho_reference": null,
+  "rho_reference_candidates": [],
+  "rho_reference_plain": null,
+  "rho_reference_rule": "negation map (A = 2): the only eligible automorphism of this curve",
+  "rows": [
+    {
+      "collector_wall_seconds": 1.8027779910000001,
+      "decomposition": {
+        "cost": {
+          "gae": 27898881.46832325,
+          "group_ops": {
+            "adds": 38387,
+            "doubles": 1332,
+            "scalar_mults": 66
+          },
+          "native": {
+            "canonicalisations": 0,
+            "direct_relations_skipped": 0,
+            "frobfold_mismatches": 0,
+            "inversions": 0,
+            "lift_failures": 6,
+            "lookups": 0,
+            "relations": 40,
+            "repeated_targets_skipped": 172,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "solver_budget_exceeded": 0,
+            "solver_calls": 37319,
+            "solver_ops": 6690967,
+            "sqrt_solves": 0,
+            "symbolic_descent_ns": 865914645,
+            "target_guard_probes": 37491,
+            "trials": 37491,
+            "unliftable_systems": 3,
+            "walk_jumps": 32,
+            "walk_pool_offsets": 16,
+            "walk_pool_ops": 974,
+            "walk_pool_restarts": 172,
+            "walk_restarts": 173,
+            "walk_steps": 37318
+          },
+          "wall_ns": 1802348442
+        },
+        "description": "Weil-descend S_3 over the base's abscissa subspace and solve with f4-f2",
+        "hit_rate": 0.001066922728121416,
+        "name": "descent-algebraic",
+        "relations_found": 40,
+        "setup": {
+          "gae": 440.0717925024054,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "symbolic_descent_ns": 45071
+          },
+          "wall_ns": 48173
+        },
+        "solver": {
+          "budget_exceeded": 0,
+          "calls": 37319,
+          "degree_over_bound": 0.0020632921568102037,
+          "extra": {
+            "basis_len": 37835,
+            "build_ns": 1330623136,
+            "divisor_tests": 7806463,
+            "eliminate_ns": 136607412,
+            "extraction_tests": 67466,
+            "field_pairs_reduced": 32358,
+            "matrix_cols_max": 441476,
+            "matrix_rows_max": 401216,
+            "matrix_rows_sum": 414919,
+            "new_elements": 1127,
+            "oversize": 0,
+            "pairs_chain_skipped": 184789,
+            "pairs_left": 0,
+            "pairs_product_skipped": 604076,
+            "pairs_reduced": 56668,
+            "reducer_rows": 268734,
+            "steps": 4589
+          },
+          "gae": 19404399.76105618,
+          "name": "f4-f2",
+          "ns_per_op": 297.0195166109772,
+          "op_unit": "word XORs (elimination only)",
+          "ops": 6690967,
+          "peak_bytes": 24136,
+          "priced_by": "measured",
+          "semi_regular_degree": 4,
+          "solving_degree_max": 2,
+          "solving_degree_mean": 0.008253168627240815,
+          "wall_ns": 1987347784
+        },
+        "summands": 2,
+        "system": {
+          "degrees": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "n_equations": 23,
+          "n_vars": 14,
+          "semi_regular_degree": 4
+        },
+        "targets_tried": 37491
+      },
+      "exhausted": false,
+      "factor_base": {
+        "abscissae": 66,
+        "columns": 66,
+        "cost": {
+          "gae": 30.18029093304281,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 127,
+            "as_solves": 127
+          },
+          "wall_ns": 54508
+        },
+        "description": "points whose abscissa lies in the 7-dimensional subspace spanned by {1, z, …}",
+        "name": "binary-subspace",
+        "points_per_column": 2.0,
+        "signed_points": 132
+      },
+      "group_order": 8390042,
+      "instance": "random-binary-n23-b20529e",
+      "label": "binary-subspace[dimension=7] + descent-algebraic[m=2] + f4-f2 + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 13.019354123996093,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 67,
+            "pinned_by_repeated_row": 0,
+            "rank": 40,
+            "repeated_column_rows": 0,
+            "row_ops": 421,
+            "rows": 40,
+            "single_column_rows": 0,
+            "two_column_rows": 40
+          },
+          "wall_ns": 257700
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 40,
+        "rows": 40,
+        "work": 421,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 22.000246602044108,
+      "parallel": {
+        "chunks": 295,
+        "decomposed": 37372,
+        "discarded": 53,
+        "largest_chunk": 256,
+        "mode": "parallel",
+        "note": "counts, rows and the logarithm are the serial run's; a counter priced in measured nanoseconds (symbolic_descent_ns, a solver priced `measured`) was timed while other threads ran and reads high under contention, so quote S for such an oracle from --threads 1",
+        "parallel_wall_ns": 1698244547,
+        "probe_decompose_ns": 73330,
+        "probe_draw_ns": 244,
+        "replayed": 75,
+        "threads": 2
+      },
+      "r": 4195021,
+      "recovered": 718711,
+      "rho_s": null,
+      "s": 13621.588573504849,
+      "s_over_rho": null,
+      "spec": {
+        "factor_base": "binary-subspace",
+        "factor_base_params": {
+          "dimension": "7"
+        },
+        "linalg": "incremental-gauss",
+        "max_trials": 2000000,
+        "oracle": "descent-algebraic",
+        "oracle_params": {
+          "m": "2"
+        },
+        "seed": 123212651130,
+        "solver": "f4-f2",
+        "solver_budget_seconds": 120,
+        "solver_params": {},
+        "targets": "Walk",
+        "threads": 2
+      },
+      "total_gae": 27899397.73976081,
+      "verified": true,
+      "verify": {
+        "gae": 33.0,
+        "group_ops": {
+          "adds": 14,
+          "doubles": 19,
+          "scalar_mults": 1
+        },
+        "native": {},
+        "wall_ns": 6104
+      },
+      "wall_seconds": 1.802927474
+    },
+    {
+      "collector_wall_seconds": 0.971977397,
+      "decomposition": {
+        "cost": {
+          "gae": 14952569.830506893,
+          "group_ops": {
+            "adds": 22246,
+            "doubles": 1316,
+            "scalar_mults": 66
+          },
+          "native": {
+            "canonicalisations": 0,
+            "direct_relations_skipped": 0,
+            "frobfold_mismatches": 0,
+            "inversions": 0,
+            "lift_failures": 0,
+            "lookups": 0,
+            "relations": 38,
+            "repeated_targets_skipped": 46,
+            "s4_hits": 0,
+            "s4_pairs": 0,
+            "solver_budget_exceeded": 0,
+            "solver_calls": 21313,
+            "solver_ops": 3865633,
+            "sqrt_solves": 0,
+            "symbolic_descent_ns": 463545668,
+            "target_guard_probes": 21359,
+            "trials": 21359,
+            "unliftable_systems": 0,
+            "walk_jumps": 32,
+            "walk_pool_offsets": 16,
+            "walk_pool_ops": 969,
+            "walk_pool_restarts": 46,
+            "walk_restarts": 47,
+            "walk_steps": 21312
+          },
+          "wall_ns": 971713798
+        },
+        "description": "Weil-descend S_3 over the base's abscissa subspace and solve with f4-f2",
+        "hit_rate": 0.0017791095088721383,
+        "name": "descent-algebraic",
+        "relations_found": 38,
+        "setup": {
+          "gae": 566.1441446754447,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "symbolic_descent_ns": 57983
+          },
+          "wall_ns": 58854
+        },
+        "solver": {
+          "budget_exceeded": 0,
+          "calls": 21313,
+          "degree_over_bound": 0.0025102050391779666,
+          "extra": {
+            "basis_len": 21771,
+            "build_ns": 714432782,
+            "divisor_tests": 4485174,
+            "eliminate_ns": 74520044,
+            "extraction_tests": 57858,
+            "field_pairs_reduced": 18722,
+            "matrix_cols_max": 252176,
+            "matrix_rows_max": 230035,
+            "matrix_rows_sum": 240053,
+            "new_elements": 791,
+            "oversize": 0,
+            "pairs_chain_skipped": 104072,
+            "pairs_left": 0,
+            "pairs_product_skipped": 341922,
+            "pairs_reduced": 31877,
+            "reducer_rows": 157142,
+            "steps": 2612
+          },
+          "gae": 10402962.85649955,
+          "name": "f4-f2",
+          "ns_per_op": 275.6195945140162,
+          "op_unit": "word XORs (elimination only)",
+          "ops": 3865633,
+          "peak_bytes": 25368,
+          "priced_by": "measured",
+          "semi_regular_degree": 4,
+          "solving_degree_max": 2,
+          "solving_degree_mean": 0.010040820156711866,
+          "wall_ns": 1065444200
+        },
+        "summands": 2,
+        "system": {
+          "degrees": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "n_equations": 23,
+          "n_vars": 14,
+          "semi_regular_degree": 4
+        },
+        "targets_tried": 21359
+      },
+      "exhausted": false,
+      "factor_base": {
+        "abscissae": 66,
+        "columns": 66,
+        "cost": {
+          "gae": 30.18029093304281,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "abscissae_scanned": 127,
+            "as_solves": 127
+          },
+          "wall_ns": 116991
+        },
+        "description": "points whose abscissa lies in the 7-dimensional subspace spanned by {1, z, …}",
+        "name": "binary-subspace",
+        "points_per_column": 2.0,
+        "signed_points": 132
+      },
+      "group_order": 8390042,
+      "instance": "random-binary-n23-b20529e",
+      "label": "binary-subspace[dimension=7] + descent-algebraic[m=2] + f4-f2 + walk",
+      "linear_algebra": {
+        "cost": {
+          "gae": 14.00894873674639,
+          "group_ops": {
+            "adds": 0,
+            "doubles": 0,
+            "scalar_mults": 0
+          },
+          "native": {
+            "columns": 67,
+            "pinned_by_repeated_row": 0,
+            "rank": 38,
+            "repeated_column_rows": 0,
+            "row_ops": 453,
+            "rows": 38,
+            "single_column_rows": 2,
+            "two_column_rows": 36
+          },
+          "wall_ns": 227307
+        },
+        "dependent": 0,
+        "name": "incremental-gauss",
+        "rank": 38,
+        "rows": 38,
+        "work": 453,
+        "work_unit": "row_ops"
+      },
+      "log2_r": 22.000246602044108,
+      "parallel": {
+        "chunks": 170,
+        "decomposed": 21372,
+        "discarded": 59,
+        "largest_chunk": 256,
+        "mode": "parallel",
+        "note": "counts, rows and the logarithm are the serial run's; a counter priced in measured nanoseconds (symbolic_descent_ns, a solver priced `measured`) was timed while other threads ran and reads high under contention, so quote S for such an oracle from --threads 1",
+        "parallel_wall_ns": 914083078,
+        "probe_decompose_ns": 101424,
+        "probe_draw_ns": 310,
+        "replayed": 69,
+        "threads": 2
+      },
+      "r": 4195021,
+      "recovered": 759214,
+      "rho_s": null,
+      "s": 7300.748159713635,
+      "s_over_rho": null,
+      "spec": {
+        "factor_base": "binary-subspace",
+        "factor_base_params": {
+          "dimension": "7"
+        },
+        "linalg": "incremental-gauss",
+        "max_trials": 2000000,
+        "oracle": "descent-algebraic",
+        "oracle_params": {
+          "m": "2"
+        },
+        "seed": 123212691633,
+        "solver": "f4-f2",
+        "solver_budget_seconds": 120,
+        "solver_params": {},
+        "targets": "Walk",
+        "threads": 2
+      },
+      "total_gae": 14953210.163891237,
+      "verified": true,
+      "verify": {
+        "gae": 30.0,
+        "group_ops": {
+          "adds": 11,
+          "doubles": 19,
+          "scalar_mults": 1
+        },
+        "native": {},
+        "wall_ns": 4287
+      },
+      "wall_seconds": 0.972187859
+    }
+  ],
+  "schema_version": 1,
+  "software": {
+    "arch": "x86_64",
+    "binary_blake3": "d53ab7c0843d7d2ece2672ca543f5274e21e28ef26e52a4d270064ba3545a678",
+    "git_commit": "f371746e38a5069e62c5c7f6cf192c62c4522205",
+    "os": "linux",
+    "version": "0.1.0"
+  },
+  "status": "complete",
+  "what_this_is": "Index-calculus configurations -- each a choice of factor base, target source, decomposition oracle, polynomial solver and relation matrix -- run end to end against a planted logarithm, with every stage's cost in group-addition equivalents and the total divided by sqrt(r).",
+  "what_this_is_not": [
+    "not a speed claim: a configuration on a toy instance is a measurement, and a comparison needs the matched reference rows AGENTS.md section 1 asks for",
+    "not a wall-clock benchmark: operation counts are the metric, wall time rides along",
+    "not a claim about any deployed curve"
+  ]
+}

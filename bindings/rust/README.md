@@ -7,6 +7,12 @@ Two crates in a Cargo workspace:
 | `cryptanalysis-sys` | raw `extern "C"` declarations for the flat ABI in `include/cryptanalysis/ca_ffi.h` (+ `ca_types.h`, `ca_indexcalc.h`); `build.rs` compiles the C sources with the [`cc`](https://crates.io/crates/cc) crate |
 | `cryptanalysis`     | safe, idiomatic wrapper: `Group`, `Elem`, `Options`, `Stats`, `Error`, the solvers, Cheon's attack, the `curve` GLV dispatch, `index_calculus`, number-theory helpers |
 
+`cryptanalysis::auxiliary_ic` re-exports the dependency-free native
+[prime-field auxiliary-map IC crate](../../crates/prime-field-auxiliary-ic/README.md).
+It supports bounded elliptic-curve relation collection over Mersenne prime
+fields, a direct IC control without auxiliary maps, and public recovery
+certificates. See that crate for the API and the `ca-ic auxiliary` command.
+
 ## Build requirements
 
 * A Rust toolchain (edition 2021; tested with 1.94).

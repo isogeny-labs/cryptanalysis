@@ -11,11 +11,12 @@ name: fpga
 
 on:
   push:
-    branches: ["**"]
+    branches: [main]
     paths:
       - "fpga/**"
       - ".github/workflows/fpga.yml"
   pull_request:
+    branches: [main]
     paths:
       - "fpga/**"
       - ".github/workflows/fpga.yml"
@@ -46,7 +47,7 @@ jobs:
         # a bug in the folding shows up in one before the other.
         digit: [1, 4, 16]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install Icarus Verilog
         run: |
@@ -65,7 +66,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install verilator
         run: |
           sudo apt-get update || true
@@ -80,7 +81,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install yosys
         run: |
           sudo apt-get update || true
@@ -92,7 +93,7 @@ jobs:
         run: |
           scripts/synth.sh 1 4
           scripts/synth.sh 4 4
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: synth-logs

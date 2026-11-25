@@ -1,0 +1,116 @@
+   Compiling ghs-sweeper v0.1.0 (/workspace/cryptanalysis/experiments/ghs-sweeper)
+    Finished `release` profile [optimized] target(s) in 4.45s
+     Running unittests src/lib.rs (experiments/ghs-sweeper/target/release/deps/ghs_sweeper-d88aa8ec0cfc17aa)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (experiments/ghs-sweeper/target/release/deps/ghs_sweeper-0cbc34133e386ada)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/sweeper.rs (experiments/ghs-sweeper/target/release/deps/sweeper-9c014054acdfe543)
+
+running 21 tests
+test canonical_comparison_keeps_lift_condition_and_koblitz_control ... ok
+test candidate_insertion_and_checkpoint_roll_back_together ... ok
+test configs_and_subfields_fail_closed ... ok
+test changed_engine_is_readable_but_cannot_extend_old_run ... ok
+test embeddings_preserve_subfield_products ... ok
+test abandoned_claim_is_recovered_without_duplicate_models ... ok
+test fast_fields_equal_independent_raw_fields ... ok
+test exclusive_writer_and_existing_file_are_protected ... ok
+test failed_jobs_require_explicit_retry ... ok
+test nonfree_affine_orbits_cover_all_irreducibles ... ok
+test local_history_flags_controls_isogeny_classes_and_twists ... ok
+test positives_and_elliptic_models_have_independent_counts ... ok
+test parallel_resume_limits_and_cancellation_preserve_coverage ... ok
+test review_gates_reject_novelty_shortcuts_and_escaping_references ... ok
+test python_journal_import_preserves_coverage_but_resets_verification ... ok
+test stale_retained_reference_reopens_review_gate ... ok
+test walsh_matches_defining_character_sum ... ok
+test source_matching_and_checks_resume_monotonically ... ok
+test worker_failures_are_retained_as_failed_jobs ... ok
+test native_cli_runs_without_python_and_refuses_clobbers ... ok
+test complete_saved_censuses_match_candidates_counts_and_survival ... ok
+
+test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.60s
+
+     Running unittests examples/cubic_cm.rs (experiments/ghs-sweeper/target/release/examples/cubic_cm-8dc74eb06b85de94)
+
+running 3 tests
+test tests::discriminant_obstruction_is_stronger_than_triangle ... ok
+test tests::fixed_norm_and_triangle_controls ... ok
+test tests::exact_two_source_modules ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/cubic_gluing.rs (experiments/ghs-sweeper/target/release/examples/cubic_gluing-5c06eb9840efa75c)
+
+running 3 tests
+test tests::split_scalar_jordan_and_irreducible ... ok
+test tests::input_validation_and_q_cubed ... ok
+test tests::all_positive_f11_constructions ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running unittests examples/five_gluing_geometry.rs (experiments/ghs-sweeper/target/release/examples/five_gluing_geometry-285b799e1ed93370)
+
+running 2 tests
+test tests::reductions_match_retained_primary_coefficients ... ok
+test tests::actual_modular_neighbors_and_inseparable_controls ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/hess_scope.rs (experiments/ghs-sweeper/target/release/examples/hess_scope-bb3afe104c8a570a)
+
+running 4 tests
+test tests::proper_subfield_koblitz_singular_and_trivial_inputs_are_outside_scope ... ok
+test tests::even_degree_and_historical_trace_one_controls ... ok
+test tests::quadratic_controls_cover_both_constant_traces ... ok
+test tests::cubic_fixed_control_has_the_expected_hess_parameters ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/quartic_automorphisms.rs (experiments/ghs-sweeper/target/release/examples/quartic_automorphisms-d966cdfffb6583b9)
+
+running 2 tests
+test tests::finite_group_control ... ok
+test tests::polynomial_substitution_control ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/quartic_cubic.rs (experiments/ghs-sweeper/target/release/examples/quartic_cubic-c231065aa2fcfd00)
+
+running 4 tests
+test tests::projective_lookup_counts_equal_direct_raw_counts ... ok
+test tests::cubic_norm_matches_the_published_normal_form ... ok
+test tests::smoothness_matches_all_seven_critical_fano_points ... ok
+test tests::three_cycle_orbits_and_invalid_inputs ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/three_gluing.rs (experiments/ghs-sweeper/target/release/examples/three_gluing-59645a4c8712167f)
+
+running 4 tests
+test tests::explicit_kernels_and_invalid_inputs ... ok
+test tests::odd_degree_trace_and_half_trace_certificate ... ok
+test tests::fixed_binary_coefficients_and_scope ... ok
+test tests::all_forty_eight_matrices_against_independent_subspaces ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running unittests examples/three_gluing_kernel.rs (experiments/ghs-sweeper/target/release/examples/three_gluing_kernel-c0540cd7c67f675a)
+
+running 5 tests
+test tests::fixed_source_orders_for_historical_overlap_check ... ok
+test tests::altered_certificates_and_bad_inputs_are_rejected ... ok
+test tests::structural_negative_controls_do_not_pass ... ok
+test tests::quadratic_twist_transports_the_same_kernel ... ok
+test tests::actual_kernel_on_both_fixed_twists ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+

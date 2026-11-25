@@ -1,0 +1,43 @@
+{
+  "accounting": {
+    "correctness": "first-witness lookup samples and same-point arithmetic replay; preserve each arm's index-state count and capped status",
+    "cpu_speedup_status": "exploratory without host-isolation receipt",
+    "index_build": "target-independent S3 roots, insertion, packed sort, and prefix-directory construction",
+    "target_query": "target-dependent S3 probes and relation checks"
+  },
+  "candidate_id": null,
+  "claim_boundary": "bounded root-index capacity at four million states and 1024 MiB peak RSS; cap failures remain measured outcomes, with no factor-base or online speedup selection",
+  "comparison_variable": "root-index storage: separate key/value open addressing versus one exact 16-byte split-u64 slot at four million sampled pair states",
+  "curve_id": "EC1N83Ckb1h876c2921cb64",
+  "inputs_sha256": {
+    "bridge": "7937fdbb7810c6fa25d3fe5872480970f5be6e40dcbe3e9419bd6427f95b5c99",
+    "cargo_lock": "a62aa7a2fb65c0e23b30b4d0bbba5a3a5a0cffbf81fb4432939924b33458f371",
+    "cargo_manifest": "648f205a827ebe8ad09844cb1d1e2bfe914e9755a177db32918ef1c71599af49",
+    "crypto_rust_source_tree": "096f22c18ddb8af81a5ec764be290f927e36f3612a820595730398f7677da5bf",
+    "native_source": "e2729e7a853300753f9c69ca1c8963490179fa7c616ffaf66c7bf7eef676a626",
+    "parent_manifest": "8a46edb5763b48aedb8dbf241c6f5840533ade184d83abbc80ae2877da13ca8c",
+    "representatives": "46e8431a2ab5c3be53679d136dbac572ebdfdc2c0860f5301a398f967433fb40",
+    "runner": "74d0f32bd153371b115d3f147b665aea5586bd6e2f5ba03fa2b83aaa72733202"
+  },
+  "kind": "paired_n83_packed_root_index_stage_protocol",
+  "limits": {
+    "hard_os_memory_limit": null,
+    "index_s3_window_size": 4096,
+    "memory_gate": "worker_samples_process_peak_RSS_after_each_4096_state_window",
+    "pair_state_cap": 4000000,
+    "peak_rss_cap_mib": 1024,
+    "target_orientations_per_state": 1,
+    "target_s3_window_schedule": [
+      4096
+    ]
+  },
+  "proposal_id": "Q2026101905",
+  "run_id": null,
+  "run_order": [
+    "hash",
+    "split-hash",
+    "split-hash",
+    "hash"
+  ],
+  "workload_id": "c2f3d05bb9e1"
+}

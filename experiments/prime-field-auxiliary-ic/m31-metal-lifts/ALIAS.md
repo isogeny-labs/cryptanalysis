@@ -1,0 +1,9 @@
+# Streamed M31 labels in caller-owned host pages
+
+From this directory run bash build.sh /tmp/m31-alias alias, then /tmp/m31-alias 0 and /tmp/m31-alias 1. Both processes run the same six sizes, in opposite order, with different coordinate seeds. Each batch contains canonical M31 inputs, with zero and p−1 forced at the ends. Arm 0 is signed NEON, arm 1 is the Metal copy-in/copy-back path, arm 2 creates a fresh Metal view of mapped input pages for each call, and arm 3 retains a view across calls. All GPU arms run the same shader, wait for completion and leave CPU-readable results in the caller's original storage.
+
+The alias arms require page-aligned storage and lengths rounded up to whole pages. The code verifies the Metal buffer's contents pointer, uses a separate mapping for each alias arm, keeps mappings alive past command completion and buffer release, and checks a sentinel after partial pages. Ordinary vectors cannot be substituted without satisfying the API's alignment and lifetime requirements.
+
+Each call begins with already populated host input. Generating test data, allocating the original host arrays, restoring input between in-place calls, and correctness checks are outside the clocks. Metal wall time covers encoding, submission, wait and any method-specific copies or wrapper creation. Device timestamps cover command execution. Setup and persistent wrapper creation are reported separately. This is a shared unpinned M4 Pro.
+
+All 16 rounds are retained. Warm summaries omit the first four rounds after collection to exclude one complete arm-order cycle, then take medians of paired ratios on rounds 4–15. For the largest-size setup-charged total, sum all 16 timed calls and add the process pipeline setup plus one largest-buffer registration to arm 3. That allocation of shared setup models an already-populated page-aligned caller; it does not measure a full collector run.

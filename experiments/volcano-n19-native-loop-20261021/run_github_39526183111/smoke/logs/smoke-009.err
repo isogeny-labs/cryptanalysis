@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/w/experiments/volcano-n19-native-loop-20261021/arm_n2x.sage.py", line 159, in <module>
+    main()
+  File "/w/experiments/volcano-n19-native-loop-20261021/arm_n2x.sage.py", line 107, in main
+    arm, out, lib, v3lib = opt('--arm'), opt('--out'), os.path.abspath(opt('--lib')), os.path.abspath(opt('--v3lib'))
+                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen posixpath>", line 415, in abspath
+TypeError: expected str, bytes or os.PathLike object, not NoneType

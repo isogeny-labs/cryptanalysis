@@ -1,0 +1,59 @@
+{
+ "crate_tests": "online-b cargo test --release --locked --bins: 41 passed, 0 failed (fieldops_tests: 4 of 4, fieldops2_tests: 3 of 3)",
+ "derivation": {
+  "check_inverse": true,
+  "diff_to_parent": "two if-blocks at the head of fmul and fsqr, a header comment, the pipeline name, the appended test module",
+  "edits": 5,
+  "fieldops2_source_sha256": "d923d63ab823353ceebd2dfe113baa2a4934beeb59c3859eb1604851c0a6b8fc",
+  "parent_source_sha256": "8dc428ea7d788b8041b5ce59dcff7e72ed0896f0a5a05571dd45d05e67fce772"
+ },
+ "label": "LOCAL EXACTNESS (shared cloud-agent VM; correctness only, timings are not evidence)",
+ "profile_identities": {
+  "cold_layout_and_index_digests_equal_A_B": true,
+  "rank_relations_probes_roots_equal_A_B": true
+ },
+ "smoke": {
+  "command": "run_schedule.py --one-per-arm (first run of every arm in every segment) through arm.py's gates, then verify_receipt.py --correctness-only",
+  "label": "LOCAL SMOKE (shared cloud-agent VM; correctness only, timings are not evidence)",
+  "processes": 102,
+  "processes_by_arm": {
+   "cM10FO": 1,
+   "cM10R1": 1,
+   "cM38FO": 13,
+   "cM38R1": 13,
+   "cM38R1X": 12,
+   "cM38R1aa": 12,
+   "cPFO": 1,
+   "cPR1": 1,
+   "kM38FO": 12,
+   "kM38R1": 12,
+   "kM38R1aa": 12,
+   "rT": 12
+  },
+  "processes_with_issues_or_unverified": 0,
+  "verifier_checks_passing": [
+   "all_executed_rows_valid",
+   "binaries_unchanged",
+   "every_ic_row_ran_its_arms_field_ops_pipeline",
+   "every_ic_row_ran_its_arms_rank_probe_pipeline",
+   "every_row_ran_its_arms_binary",
+   "host_cpu_identity_unchanged",
+   "one_index_and_layout_digest_set_per_base_equal_frozen",
+   "one_probe_count_per_point_and_base",
+   "one_relation_per_point_and_base",
+   "one_scalar_per_point_ic_and_rho",
+   "oracle_replay",
+   "placement_pinned_every_process",
+   "primary_probe_law_inside_frozen_band",
+   "q0_matches_archived_and_frozen_identities",
+   "rank_relations_probes_root_calls_and_counters_identical_per_seed",
+   "rank_tables_equal_frozen_verified_tables",
+   "receipt_matches_schedule",
+   "rows_in_schedule_order",
+   "runner_identity_matches_frozen_files"
+  ],
+  "verifier_checks_unknown_in_a_smoke": [
+   "pre_timing_tables_and_closure_bases_verified"
+  ]
+ }
+}

@@ -1,0 +1,115 @@
+{
+  "schema": "cryptanalysis.crax-sibling-bundle-s3-acceptance/v1",
+  "remote": "s3://setec-astronomy-artifacts/ic/v1/acceptance/crax-sibling-bundle-fresh/20261023T025903Z-9f539840",
+  "name": "acceptance/crax-sibling-bundle-fresh/20261023T025903Z-9f539840/input.txt",
+  "checks": {
+    "push": {
+      "command": "store",
+      "diagnostics_text": "",
+      "exit_code": 0,
+      "report": {
+        "bytes": 3,
+        "cached": true,
+        "name": "acceptance/crax-sibling-bundle-fresh/20261023T025903Z-9f539840/input.txt",
+        "replaced": false,
+        "sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+        "uploaded": true
+      },
+      "report_text": null,
+      "status": "ok"
+    },
+    "fresh_cache_initially_absent": true,
+    "fresh_cache_digest": {
+      "status": "ok",
+      "algorithm": "sha256",
+      "input_bytes": 3,
+      "output_bytes": 32,
+      "digest_hex": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+    },
+    "remote_verify": {
+      "command": "store",
+      "diagnostics_text": "1 entries verified\n",
+      "exit_code": 0,
+      "report": null,
+      "report_text": "acceptance/crax-sibling-bundle-fresh/20261023T025903Z-9f539840/input.txt: cache ok, remote bytes ok\n",
+      "status": "ok"
+    },
+    "pull_sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+    "objects_deleted": 1,
+    "prefix_empty": true
+  },
+  "source_revision": "bcbcd08aa927ae5154c2582da100c5baca07e7be",
+  "binary_sha256": {
+    "crax": "6a9389a23e9ab75ffe5356b60aeb45c70d1835da279d27acaa496d59af2d4884",
+    "crypto": "0c1d2a5b5f4339a4261e461b5bd263bc7fb19f8d4da492bb3304f5e9caab889a",
+    "ic": "b32c8d0dcdc5eb4874e16d2f893bed8460c65a504b0a01f0ac5ae4f3baac47a3",
+    "icx": "c4292ad431d94386060c11f86bae6971a504c997e9c2fb9af03c32a04c0cdbe5",
+    "isogeny_walk": "63087e0f28241f10b8bb875a9a086cd18b2fcec75bc81f5717baacf534d1b5c3"
+  },
+  "negative_note": "A direct crax isogeny-walk --help call before the adjacent-binary build failed because isogeny_walk was absent from PATH.",
+  "scope": "One co-located macOS release bundle, public p=271 prime target, one S3 object in one account/region, SHA-256 input abc; no claim for other platforms or arbitrary target sizes.",
+  "bridge_checks": {
+    "walker_exists_absent": {
+      "args": [
+        "isogeny-walk",
+        "exists",
+        "--from",
+        "s3://setec-astronomy-artifacts/ic/v1/acceptance/crax-sibling-bundle-absent-20261023",
+        "--run",
+        "custom-e193cd27a390fe52"
+      ],
+      "exit_code": 0,
+      "exists": false
+    },
+    "prime_file": {
+      "args": [
+        "ic",
+        "solve-prime-file",
+        "--input",
+        "/Volumes/SSD990/llm/tmp/crypto-cli-audit-20261017/docs/ic/fixtures/prime271_target_input_20261023.json",
+        "--seed",
+        "42",
+        "--extra-relations",
+        "16",
+        "--rho-steps",
+        "0",
+        "--json"
+      ],
+      "exit_code": 0,
+      "status": "complete",
+      "verified": true,
+      "scalar": "190"
+    },
+    "cubic_file": {
+      "args": [
+        "icx",
+        "solve-cubic",
+        "--input",
+        "/Volumes/SSD990/llm/tmp/crypto-cli-audit-20261017/docs/ic/fixtures/cubic_f7_public_target.json",
+        "--seed",
+        "1",
+        "--max-residuals",
+        "100000",
+        "--json"
+      ],
+      "exit_code": 0,
+      "status": "complete",
+      "verified": true,
+      "scalar": 5
+    },
+    "crypto_sha256": {
+      "args": [
+        "crypto",
+        "hash",
+        "sha256",
+        "abc"
+      ],
+      "exit_code": 0,
+      "digest_hex": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+    }
+  },
+  "public_input_sha256": {
+    "prime_file": "53b0107b06a528e8630d6f700c31578b4861c4e5181ff6bb791389bbcdae96a6",
+    "cubic_file": "0c25e85a200879a26e26692eebc866f5a88d72ece24c88033a34f54c72950a57"
+  }
+}

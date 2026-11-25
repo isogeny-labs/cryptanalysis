@@ -1,0 +1,23 @@
+libcryptanalysis 0.1.0 benchmark: gpu
+
+GPU rho kernel vs the CPU solver.  S = group ops / sqrt(n); "walks" is the
+number of concurrent walks (CPU: threads; GPU: threads x 8).
+CUDA compiled: no, devices: 0
+
+| grp | bits | solver             | S=ops/√n | seconds    |   walks | launches | ok  |
+|-----|------|--------------------|----------|------------|---------|----------|-----|
+| zp   |  24 | cpu-rho            |    1.849 |     0.0001 |       1 |      0.0 | 3/3 |
+| zp   |  24 | gpu-rho (emulate)  |    1.895 |     0.0002 |       8 |      3.7 | 3/3 |
+| ec   |  24 | cpu-rho            |    1.707 |     0.0003 |       1 |      0.0 | 3/3 |
+| ec   |  24 | gpu-rho (emulate)  |    1.844 |     0.0004 |       8 |      6.3 | 3/3 |
+| zp   |  28 | cpu-rho            |    2.578 |     0.0004 |       1 |      0.0 | 3/3 |
+| zp   |  28 | gpu-rho (emulate)  |    1.990 |     0.0002 |       8 |     18.0 | 3/3 |
+| ec   |  28 | cpu-rho            |    2.033 |     0.0023 |       1 |      0.0 | 3/3 |
+| ec   |  28 | gpu-rho (emulate)  |    1.504 |     0.0038 |      16 |      7.3 | 3/3 |
+| zp   |  32 | cpu-rho            |    2.045 |     0.0013 |       1 |      0.0 | 3/3 |
+| zp   |  32 | gpu-rho (emulate)  |    1.262 |     0.0007 |      40 |     14.0 | 3/3 |
+| ec   |  32 | cpu-rho            |    0.873 |     0.0022 |       1 |      0.0 | 3/3 |
+| ec   |  32 | gpu-rho (emulate)  |    1.857 |     0.0058 |      56 |     11.3 | 3/3 |
+
+The emulator runs the kernel body one thread at a time on the CPU, so its
+seconds column is not a GPU measurement; the operation counts are.

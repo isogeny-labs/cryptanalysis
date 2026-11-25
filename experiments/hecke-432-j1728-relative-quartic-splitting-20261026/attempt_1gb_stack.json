@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/Volumes/SSD990/cryptanalysis/sage",
+    "-python",
+    "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-relative-quartic-splitting-20261026/run_sage.py"
+  ],
+  "elapsed_seconds": 63.097,
+  "protocol_sha256": "708e2550c8a443ee8ced6fed8e15427b0066f2cbfb7ed111ae28bedee799bfbc",
+  "returncode": 1,
+  "source_sha256": "60e42c79e718b27b29779c4b405439570c6e41fbecee7db661dc90f20c0ee6ca",
+  "status": "SAGE_ERROR",
+  "stderr": "Traceback (most recent call last):\n  File \"/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-relative-quartic-splitting-20261026/run_sage.py\", line 109, in <module>\n    main()\n    ~~~~^^\n  File \"/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-relative-quartic-splitting-20261026/run_sage.py\", line 58, in main\n    rnf = nf.rnfinit(polynomial)\n  File \"cypari2/auto_gen.pxi\", line 32320, in cypari2.gen.Gen_base.rnfinit\n    sig_on()\n  File \"cypari2/handle_error.pyx\", line 211, in cypari2.handle_error._pari_err_handle\ncypari2.handle_error.PariError: the PARI stack overflows (current size: 1073741824; maximum size: 1073741824)\nYou can use pari.allocatemem() to change the stack size and try again\n",
+  "stdout": ""
+}

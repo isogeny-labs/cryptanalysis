@@ -1,0 +1,29 @@
+digraph origin_pencil {
+  graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.45", ranksep="0.55"];
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10,
+        color="#24425c", fillcolor="#eef5fa"];
+  edge [fontname="Helvetica", fontsize=9, color="#3d5f78"];
+
+  instance [label="One frozen source instance\nand optimized lifted cubic", fillcolor="#fff2cc"];
+  baseline_origin [label="Known-only chord origin\ncomplete |n_i| <= 2 box"];
+  target_origins [label="Every admissible target chord origin\ncomplete |n_i| <= 2 boxes"];
+  baseline_candidates [label="Baseline modular candidates\nSHA-256-bound set"];
+  pencil_candidates [label="Union of baseline + target-origin\nmodular candidates"];
+  transport [label="Transport every candidate\nto fixed-origin coefficients\nr = n + S e_u + S e_v", fillcolor="#fde9d9"];
+  order [label="Order by invertible effective target coefficient,\nL1, origin tag, vector"];
+  exact [label="Exact rational group-law checks\nin each candidate's own origin"];
+  replay [label="Fixed-origin source replay\nand target recovery", fillcolor="#e2f0d9"];
+  compare [label="Paired recovery counts + complete work\nNo timing or end-to-end claim", fillcolor="#d9eaf7"];
+
+  instance -> baseline_origin;
+  instance -> target_origins;
+  baseline_origin -> baseline_candidates;
+  baseline_origin -> pencil_candidates [label="included exactly"];
+  target_origins -> pencil_candidates;
+  baseline_candidates -> transport;
+  pencil_candidates -> transport;
+  transport -> order;
+  order -> exact;
+  exact -> replay;
+  replay -> compare;
+}

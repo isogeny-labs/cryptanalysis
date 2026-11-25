@@ -1,0 +1,295 @@
+{
+ "id": "volcano-n19-native-tau6-v3-20261020",
+ "kind": "n19-tau6-native-solve-e2e-cold-tier1-repeated-pairs",
+ "version": 3,
+ "supersedes": {
+  "protocol": "../volcano-n19-native-tau6-v2-20261019/protocol.json (v2, frozen 2026-10-19T22:47:22Z; unchanged)",
+  "run": "https://github.com/aburan28/cryptanalysis/actions/runs/39376405326 (invalid: S0, O1 and the field check passed; every timed IC row crashed after its interval)",
+  "root_cause": "v2 arm.sage relation_digests, line `row[col] = (row.get(col, 0) + sg * pow(int(lam), int(e), int(p))) % int(p)`: the Sage preparser rewrites the literal 0 of a .sage file as Integer(0); Integer + int and Integer % int are Sage Integers, so every value of `rows` was one and json.dumps(rows) raised \"TypeError: Object of type Integer is not JSON serializable\". The ordered and canonical digests before it were built with int() and passed. S0 and O1 never call relation_digests, and v2's local checks were pure Python, where the literal is an int. Evidence: diagnosis/README.md",
+  "changes": [
+   "relation_digests moves to relation_digest.py (plain Python, never preparsed), converts its inputs with operator.index and builds every value from Python ints; same digest definitions as v2",
+   "every row is serialized by relation_digest.plain (strict: Sage Integer -> int, Sage reals -> float, anything else raises) instead of jplain (str() fallback)",
+   "every IC row and O1 instance records its raw relations; the verifier recomputes every digest",
+   "each row is printed on stdout as raw_b64 + SHA-256; the verifier checks it against the row file and the schedule (hardened verifier, fail closed on unknown gates)",
+   "O1 computes the relation digests of all ten archived ECDLPs; S0 adds v2's 300 systems and 300 new ones",
+   "an untimed Sage smoke part (S0, O1, two points through B, N, Naa, NX and rho in the pinned image) runs as its own job and gates the timed job",
+   "repeated alternating pairs: 3 B/N pairs, 3 N/Naa pairs and 1 NX/N pair per point, seeded starts, two-stage paired bootstrap; 20 new points; Tier 1 isolation records per run",
+   "new panel (role n19-native-heldout-v3), new order, S0, power and bootstrap seeds"
+  ]
+ },
+ "status": "frozen",
+ "frozen_at_utc": "2026-10-20T07:08:28Z",
+ "frozen_before_any_timing": true,
+ "success_criterion": "AGENTS.md 'Success criterion: iterative improvement of the index-calculus baseline'",
+ "question": "On E0/F_2^19 (EC1N19Ckb1h01617b86df6c, r = 130873), does replacing the tau6 arm's per-shift PolyBoRi solve (TauField.system + ideal + groebner_basis + variety) by a native enumeration of the same variety lower the end-to-end cold CPU cost of one complete, verified ECDLP, with every target, every shift system, every relation and every log unchanged?",
+ "current_baseline": {
+  "row": "docs/ic/BASELINES.md n=19 (volcano-ic tau-orbit dim-6 base, Sage Groebner, arm tau6)",
+  "experiment": "experiments/volcano-ic/rho-arm-20261014 (protocol volcano-ic-n19-rho-arm-20261014)",
+  "run": "https://github.com/aburan28/cryptanalysis/actions/runs/38520305068",
+  "commit": "3f722e2e4897d956438c6bdf2becaf62dbde2f9e",
+  "code": "../volcano-ic/tau.sage TauField(19, MODULUS, 6), TauCurve, tauDlp, tauRelation",
+  "S_cold": 5154,
+  "S_online": "not separable (row)",
+  "cold_gap_vs_rho": "1.94e4 [1.69e4, 2.23e4]"
+ },
+ "cost_structure_of_the_baseline": {
+  "source": "../volcano-ic/rho-arm-20261014/results/arms.jsonl (10 tau6 rows) and results/runtime-info.json",
+  "tau6_total_cpu_s_sum": 404.593,
+  "gb_cpu_s_sum": 402.147,
+  "gb_share": 0.99395,
+  "relation_search_outside_gb_cpu_s_sum": 2.421,
+  "linalg_cpu_s_sum": 0.0249,
+  "gb_calls_sum": 54336,
+  "ms_per_gb_call": 7.401,
+  "targets_sum": 3057,
+  "relations_per_ecdlp": 39,
+  "setup_cpu_s_all_arms": 0.372,
+  "setup_note": "built once, outside every timed interval of that run",
+  "rank_stage": "none: relations are collected for one target (R = aP + bQ), there is no reusable table",
+  "reading": "the per-shift Groebner solve (system construction + PolyBoRi GB + variety, the interval gb_cpu_s) is 99.4% of the tau6 arm's CPU; it is the lever"
+ },
+ "curve": {
+  "id": "EC1N19Ckb1h01617b86df6c",
+  "model": "y^2 + x*y = x^3 + 1",
+  "field": "F_2[z]/(z^19 + z^18 + z^16 + z^11 + z^8 + z^6 + z^4 + z + 1)",
+  "order": 523492,
+  "cofactor": 4,
+  "r": 130873,
+  "lambda": 41811,
+  "generator": "run.sage generator(cur, \"E0\"); must equal the archived P of runtime-info.json",
+  "modulus_int": 854355
+ },
+ "change": {
+  "summary": "tauRelation's variety per shift j comes from native/src/lib.rs (Rust cdylib, ctypes) instead of Sage. Everything else is tau.sage's code: tauDlp (rng, targets, shift order, matrix, left kernel, verification) is called unchanged with the global tauRelation rebound to tauRelationNative, whose loop is tauRelation's line for line after the variety. Setup builds NativeTauField (no Boolean ring or shift systems) for TauCurve.",
+  "exactness_argument": "TauField.system(j, xR, b) is, coordinate by coordinate over GF(2^19), S3(x1, x2, xR) = (x1 x2)^2 + xR^2 (x1^2 + x2^2) + xR x1 x2 + b with x1 = sum u_i z^i and x2 = sigma^j(sum w_l z^l); its variety over F_2 is the set of (u, w) in F_2^6 x F_2^6 with S3 = 0. The native code decides all 4,096 pairs (S3 is affine-linear in w for fixed u, and its coefficients are affine in u), so it returns the whole variety. Order (v2): the native variety is returned ascending in (w, u), which is Sage's order: on every one of the 2,375 multi-solution systems of the field (all (xR, j); diagnosis/multi_systems.json) the untimed Sage diagnostic run 39329564781 (the baseline image) returned this order, and v1's ascending (u, w) differed on 2,199 of them (diagnosis/sage_run_39329564781, diagnosis/order_check.json). The v2 panel meets 3 non-swap multi-solution systems, 2 of them in an order v1 would have got wrong (smoke/local_v2.json), so B and N would have returned different relations there. With Sage's order B and N return the same relation from every system, and the gates compare the ordered decompositions as well as rows and multisets. S0 re-checks the order on all 2,375 on the runner.",
+  "native_source": "native/src/lib.rs",
+  "native_binding": "native_binding.py",
+  "native_tests": "cargo test (field mul == reference mul == the C ABI; solve == direct form == brute force S3 as sets; Sage's order on 15 recorded systems; the 7 v1 S0 systems over the field and, reproducing v1, over the reciprocal)",
+  "v3_digest_fix": "relation_digest.py (see supersedes.root_cause); the solve, the binding and lib.rs are byte-identical to v2's"
+ },
+ "arms": {
+  "B": "baseline: unmodified tau.sage (Sage Groebner per shift); its own process per point",
+  "N": "candidate: tau.sage tauDlp with tauRelationNative; its own process per point; v3: one process per primary pair, per A/A pair and per planted pair",
+  "Naa": "A/A control: a process of N in the A/A pairs (N against Naa)",
+  "NX": "planted positive control: N plus the work it removes, redone: every shift system is also built and solved by Sage (TauField.system, groebner_basis, variety) and compared with the native variety as a set (abort on any difference) and in order (counted; gated), then discarded; v3: one NX/N pair per point",
+  "rho": "matched signed-Frobenius rho of rho-arm-20261014 (rho_frob.py SageBackend, R = 16, 64 reps per point, walk seeds rho-arm-20261014:walk:k); S unit and gap only, never decides"
+ },
+ "design": {
+  "points": 20,
+  "primary_pairs_per_point": 3,
+  "aa_pairs_per_point": 3,
+  "planted_pairs_per_point": 1,
+  "panel": "inputs/panel.json (role n19-native-heldout-v3, make_panel.py, seed volcano-n19-native-tau6-v3-20261020:panel): 20 new scalars, none equal to, the negative of or a Frobenius image of an archived scalar, of a v1 or v2 panel scalar, or of each other",
+  "rng": "tauDlp rng = random.Random(point rng_seed) in every IC process of a point",
+  "schedule": "schedule.json (make_schedule.py), part timed: S0, O1, then P01..P20; per point a seeded (volcano-n19-native-tau6-v3-20261020:order:%d) start for each block and a shuffled order of the primary, A/A, planted and rho blocks; strict alternation inside each block",
+  "smoke": "schedule.json part smoke (untimed gate): S0, O1, v2 points p00 and p01 (the rows that crashed in run 39376405326) through B, N, Naa, NX and rho; job sage-smoke of the workflow; the timed job needs it and its library; the verifier re-derives its gates",
+  "process_model": "one fresh pinned Sage process per run (sched_setaffinity to one CPU, the lowest allowed, before exec), one runner per part",
+  "environment": "GitHub ubuntu-24.04 runner; sagemath/sagemath:10.10@sha256:310dfe23fc786f3a5a06a7b0387c60201ec79b32c0db941b7624505ee5edb565 (the baseline run's image); native library built on the runner by the pinned Rust toolchain before the schedule",
+  "time_guard": "part timed: before each segment, skip it and every later one (rows skipped_time_guard, verdict invalid) if elapsed job time + max(segment upper estimate, 1.1 x longest point segment so far) exceeds 175 min; a failed S0 or O1 stops the part before any timed row; job timeout 200 min",
+  "workflow": ".github/workflows/n19-native-tau6-v3.yml (workflow_dispatch; push trigger limited to branch claude/n19-native-v3 and the frozen, non-report paths of this experiment)",
+  "runtime_estimate": "smoke job about 10 min; timed job about 2 h (S0 2 min; per point 3 B and 1 NX at 60-100 s, 10 N/Naa at 2-8 s, rho 2 s; 20 points about 110 min); worst case with B at 100 s about 2.6 h; total about 2.2 h, under 3 h"
+ },
+ "isolation_records": [
+  "scripts/host_cpu_record.py at start and end (model, microcode, flags, caches, topology, kernel, THP)",
+  "scripts/isolated_bench.py host probe, cgroup counters and tier1 noise gate per run (throttling, memory events, steal, interrupts, thermal, major faults)",
+  "placement: Cpus_allowed_list / Cpus_allowed from /proc/<pid>/status and the arm's sched_getaffinity",
+  "scheduling: /proc/schedstat line of the execution CPU and /proc/stat ctxt, procs_running, procs_blocked, CPU line, before and after each run",
+  "getrusage of the child: user and system CPU, voluntary and involuntary switches, minor and major faults, peak RSS",
+  "allocation.json: provider, instance id, runner, image, CPU model, memory, THP, git sha, run URL"
+ ],
+ "intervals": {
+  "clock": "time.process_time() (CPU, the baseline row's measure); perf_counter wall co-reported; each row records time.get_clock_info(\"process_time\").resolution",
+  "setup": "target-independent construction: field (TauField for B and NX, NativeTauField for N/Naa), TauCurve (V' base and orbit representatives), the native context for N/Naa/NX (dlopen + tau6_new) and the generator",
+  "online": "tauDlp: first target-dependent operation (tauEigen, R = aP + bQ) .. verified log (s * P == Q); relation search, matrix, left kernel and verification",
+  "cold": "setup + online, one process, one point; Sage import and source loading precede it and are recorded by the launcher (launcher_wall_s), not charged to either arm",
+  "fixture": "Q = s * P is built between setup and online, outside both (as in rho-arm-20261014)",
+  "online_separability": "n = 19 has no reusable factor-log table: every relation contains Q, so the one-target pipeline is setup (target independent) + online (everything else). Both are timed separately in every process; online is the per-target cost and S_online is reported per arm. The repeated-batch measurement below covers the case where a per-process interval is too short to read",
+  "repeated_batch": "pre-registered secondary, labelled \"repeated-batch, warm\": every primary N process, after its cold interval is recorded, rebuilds setup 20 times and reruns the same point's tauDlp 3 times (the relations must repeat). It never decides"
+ },
+ "statistics": {
+  "primary": "R = sum over the 60 primary pairs of cold_cpu_s(B) / sum of cold_cpu_s(N)",
+  "interval": "two-stage paired bootstrap (points with replacement, then pairs within each drawn point; B and N of a pair together), 10,000 draws, random.Random(2026102003), 2.5% and 97.5% order statistics (stats.py)",
+  "bootstrap_seed": 2026102003,
+  "bootstrap_draws": 10000,
+  "primary_is": "the END-TO-END cold CPU ratio (setup + online) of one complete verified ECDLP",
+  "secondary": [
+   "geometric mean of pair ratios; online, setup, cold wall, gb (solve) CPU, launcher wall and child CPU ratios B/N, each with the same bootstrap",
+   "per-point ratios, ratio when B first / N first, ratio by pair position",
+   "mean per arm, solve ms per call, S = cpu / (u sqrt(r)) per arm with u the rho CPU per group operation of this run, cold gap N / rho (geometric, bootstrap)",
+   "phase shares of N; the warm batch means"
+  ]
+ },
+ "decision_rule": {
+  "improvement": "R 95% lower bound > 1 (the native tau6 solve becomes the n = 19 end-to-end cold baseline, Tier 1, this provider and host class)",
+  "regression": "R 95% upper bound < 1",
+  "not_separated": "otherwise",
+  "invalid": "any gate is false, missing or unknown, or a control fails"
+ },
+ "controls": {
+  "aa": "A/A: sum cold_cpu_s(N) / sum cold_cpu_s(Naa) over the 60 A/A pairs; pass iff the estimate is inside aa_window (the interval is reported)",
+  "aa_window": [
+   0.95,
+   1.05
+  ],
+  "planted": "R_plant = sum cold(NX) / sum cold(N) over the 20 planted pairs, same bootstrap: pass iff its 95% lower bound > 1"
+ },
+ "gates_required": {
+  "smoke": [
+   "receipt_rows_match_schedule",
+   "rows_in_schedule_order",
+   "every_scheduled_row_valid",
+   "raw_records_verified",
+   "relation_digests_recomputed",
+   "runner_identity_matches_frozen_files",
+   "schedule_and_panel_regenerate",
+   "native_library_one_digest",
+   "placement_pinned_every_process",
+   "host_cpu_identity_unchanged",
+   "tier1_counters_recorded",
+   "s0_passed",
+   "o1_passed",
+   "field_check_every_native_process",
+   "counts_and_log_identical_per_point",
+   "relations_identical_per_point",
+   "planted_compared_every_call",
+   "generator_equals_archived",
+   "rho_verified",
+   "warm_batch_reproduced"
+  ],
+  "timed": [
+   "receipt_rows_match_schedule",
+   "rows_in_schedule_order",
+   "every_scheduled_row_valid",
+   "raw_records_verified",
+   "relation_digests_recomputed",
+   "runner_identity_matches_frozen_files",
+   "schedule_and_panel_regenerate",
+   "native_library_one_digest",
+   "placement_pinned_every_process",
+   "host_cpu_identity_unchanged",
+   "tier1_counters_recorded",
+   "s0_passed",
+   "o1_passed",
+   "field_check_every_native_process",
+   "counts_and_log_identical_per_point",
+   "relations_identical_per_point",
+   "planted_compared_every_call",
+   "generator_equals_archived",
+   "rho_verified",
+   "warm_batch_reproduced",
+   "sage_smoke_gate_passed",
+   "all_primary_pairs_complete",
+   "all_aa_pairs_complete",
+   "all_planted_pairs_complete"
+  ]
+ },
+ "gates": {
+  "receipt_rows_match_schedule": "exactly one row per scheduled run and none unscheduled; serial, arm, point, role, pair, side, position, segment and the command line (arm, serial, point, scalar, rng seed, --warm) equal the schedule",
+  "rows_in_schedule_order": "rows were written and finished in serial order",
+  "every_scheduled_row_valid": "every scheduled run ran (no time-guard skip, no stop), exit 0, row file written, no memory event, library unchanged, arm reported correct",
+  "raw_records_verified": "each row's stdout raw_b64 record decodes, its SHA-256 equals the summary line's and the row file's bytes, and its serial, arm, point, scalar, rng seed and warm flag equal the schedule",
+  "relation_digests_recomputed": "every IC row's and every O1 instance's ordered, canonical and rows digests recompute from its raw relations (relation_digest.py, plain Python)",
+  "runner_identity_matches_frozen_files": "runner_start / runner_end record this part and the SHA-256 of the frozen files and baseline sources, unchanged at the end",
+  "schedule_and_panel_regenerate": "schedule.json and inputs/panel.json regenerate byte for byte",
+  "native_library_one_digest": "one native library digest at start and end, before and after every run, and in every native process",
+  "placement_pinned_every_process": "every child's Cpus_allowed_list and the arm's own sched_getaffinity are the one execution CPU",
+  "host_cpu_identity_unchanged": "host_cpu_record model, family, model, stepping, microcode and flags equal at start and end",
+  "tier1_counters_recorded": "isolated_bench counters and the execution CPU's /proc/schedstat line recorded before and after every run",
+  "s0_passed": "S0 on 2,982 systems (7 v1 mismatch systems, v2's 300 re-derived from v2's seed, 300 new from the v3 seed, all 2,375 multi-solution systems): Sage variety == native (as sets and in order) == brute force (as sets) on every system, direct S3 in Sage's field == native on the 607 non-multi systems, every system recorded and its detail digest recomputed",
+  "o1_passed": "O1: the candidate on the ten archived scalars reproduces run 38520305068's tau6 targets, gb_calls, spurious, relations and log, the archived P and lambda, and computes the relation digests of all ten (the code path that crashed in v2, before any timed row)",
+  "field_check_every_native_process": "every native process (selftest, O, N, Naa, NX): the native modulus equals Sage's F.modulus() = 854355 and 256 products equal Sage's",
+  "counts_and_log_identical_per_point": "per point, every IC process (B, N, Naa, NX) has the same targets, gb_calls, spurious, relations and log, and log == scalar mod r",
+  "relations_identical_per_point": "per point, every IC process has the same rows, canonical and ordered decomposition digests and relation count",
+  "planted_compared_every_call": "every NX process compared every shift system with Sage (checked_calls == gb_calls > 0), no mismatch, order agreed on every multi-solution call",
+  "generator_equals_archived": "every IC process's generator equals the archived P",
+  "rho_verified": "every rho process verified 64 of 64 repetitions",
+  "warm_batch_reproduced": "every warm (primary N) process repeated its cold relations in the warm batch, and no other process ran one",
+  "sage_smoke_gate_passed": "the untimed Sage smoke part (its own job, pinned image) passes every smoke gate, re-derived by the verifier from its raw rows, with the same native library digest",
+  "all_primary_pairs_complete": "20 x 3 B/N pairs complete",
+  "all_aa_pairs_complete": "20 x 3 N/Naa pairs complete",
+  "all_planted_pairs_complete": "20 x 1 NX/N pairs complete"
+ },
+ "s0": {
+  "systems": 2982,
+  "v1_systems": 7,
+  "v1_mismatch_systems": [
+   [
+    14743,
+    17
+   ],
+   [
+    400912,
+    3
+   ],
+   [
+    465769,
+    4
+   ],
+   [
+    59034,
+    9
+   ],
+   [
+    453846,
+    18
+   ],
+   [
+    480552,
+    5
+   ],
+   [
+    486489,
+    8
+   ]
+  ],
+  "v2_systems": 300,
+  "v2_seed": "volcano-n19-native-tau6-v2-20261019:selftest",
+  "new_systems": 300,
+  "new_seed": "volcano-n19-native-tau6-v3-20261020:selftest",
+  "multi_systems": 2375,
+  "multi_file": "inputs/multi_systems.json",
+  "multi_file_sha256": "230e103ed29fd4291c0b23f16e345c8e25833f491e55a6f26af3a3d097d6737b"
+ },
+ "multiplicity": "one primary statistic; every secondary is descriptive and never changes the verdict",
+ "power": {
+  "file": "analysis/power.json",
+  "model": {
+   "points": 20,
+   "primary_pairs_per_point": 3,
+   "aa_pairs_per_point": 3,
+   "statistic": "ratio of sums, two-stage paired bootstrap",
+   "sims": 200,
+   "bootstrap_draws": 1000
+  },
+  "power_at_min_delta_worst": 0.98,
+  "min_delta": 1.2,
+  "rejection_rate_at_no_effect_worst": 0.015,
+  "aa_false_fail_rate": {
+   "v2_runner_sigma0.10": 0.02,
+   "v2_runner_sigma0.20": 0.18,
+   "archived_sigma0.10": 0.01,
+   "archived_sigma0.20": 0.23
+  },
+  "note": "the expected effect is far above min_delta (v2 run 39376405326: B processes 57-99 s, N processes 1.8-2.2 s of launcher wall including about 1.5 s of Sage start-up); min_delta 1.20 is the smallest effect the design is sized to detect"
+ },
+ "tier": "Tier 1 (AGENTS.md \"CPU performance evidence tiers\"): one fresh GitHub-hosted ubuntu-24.04 runner, one pinned exposed CPU, one fresh process per run, repeated alternating pairs, 95% paired lower bound; CPU-only; not isolab; one host class; not replayed. A container affinity mask records placement, not host-wide exclusivity",
+ "what_is_not_claimed": [
+  "nothing about rho: the matched rho is the same Python/Sage walk as the baseline row and is not tuned for wall time",
+  "no advance in the exponent: the change is engineering (the same algorithm, the same relations); the counts of the IC are unchanged by construction",
+  "the smoke part's times are never used; nothing about v2's panel, whose IC rows have no record"
+ ],
+ "sources_sha256": {
+  "arm.sage": "596d8b6754e36058ae28e7cf1c4b1b24a65f5b03474c6774d776dbeb800c6963",
+  "native_binding.py": "6750000573fd1e259607923ae229396cdac7a8b0008111041c1b7aa7d4187671",
+  "relation_digest.py": "36e821f8974215b7fdb973586236e6d2cc13ece2ccf195670c93a189a7a67977",
+  "run_schedule.py": "0c6475326b6dee854741108837889a2bf50b2c69bc5005933faa883a7ecf5128",
+  "verify_receipt.py": "83a33b1e18fedf98191db494b251c44b1b1384f83ea4f11d5939452095360a87",
+  "stats.py": "4b5a5c50a89a1fe251c7acbb6df1fc6319b584e28006b00f3647e2ca97877a49",
+  "make_schedule.py": "9ddd892cee0a77ba1cb7930f68056c6b9681bdbfa59193649830261c145db92c",
+  "make_panel.py": "e5e511e1a718fc25e3261be687ad89b8c41514abfb0068dc7847c875b04fee83",
+  "inputs/panel.json": "314aac52bc989736b9ea066aa33f628d43b14a9ff188d535851b78e092ccb1b4",
+  "native/src/lib.rs": "9ef45a83e450b09345eb57fddb1562079cf7269a2490cde3481060b9dcec3ae1",
+  "native/Cargo.toml": "d5af2ac95985352600577099722092d2b57f57d8c26318ce141a999ff34772f2",
+  "native/Cargo.lock": "34ac663d4331bcc5f2e18135a00f3c8f64b04718c3c6b9250e4312724a8de46b"
+ }
+}

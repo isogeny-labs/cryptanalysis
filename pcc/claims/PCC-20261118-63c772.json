@@ -1,0 +1,51 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-18T01:54:31Z",
+ "id": "PCC-20261118-63c772",
+ "kind": "measurement",
+ "producer": {
+  "commit": "13ef68c420f0341d1c531d2de9502ceaca235bf9",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/analysis-setup-fresh.json",
+    "sha256": "e22451578afbe4820aa4e77d9005dc42685ccf0a9e95e14f2de693605b986169"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/independent-arithmetic-setup-fresh.json",
+    "sha256": "433e531e37cf5d9338e49526c0fcbd645fab27db9f74a883db90fe87387699bf"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/independent-states-setup-fresh.json",
+    "sha256": "a454a121ac1b0596fce661891a2f15e6f7ee6fbe00320f1b4e119e17682cad4e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/setup-fresh-snapshot-binding.json",
+    "sha256": "252ebb417283f1ad0b3bfb9c7ca405de5c31d5ee5c08e4c60adacb87aafb0a73"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/readback-timing-setup-001.json",
+    "sha256": "02796b4be183299a2659f21cacfef1cf7d0a77b1cee525899f50ee6b523faa60"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/ic-collector-counterfactual-20261117",
+ "statement": "Approved frozen eight-path timing completed 200 blocks with 1600 IC,400 matched rho and400 AA answers independently replayed, plus10240 arithmetic states;9failed AA controls and0capped IC arms retained. No new reserved/gathered primary interval excludes1 in favor of the candidate on any field; gathered N24 primary FI/G=0.936938[0.927190,0.950848] while collector FI/G=1.036745[1.025554,1.050368]. Both historical transfer bands fail jointly for every field. I/O additionally combines configuration-presence and opaque observation as disclosed in PCC-20261118-4f626b. Unsigned exploratory evidence, qualification null; no physical cause or performance breakthrough established."
+}

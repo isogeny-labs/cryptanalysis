@@ -1,0 +1,118 @@
+{
+  "schema": "lead-testing.verdict/v1",
+  "lead_id": "LEAD-prime-batched-mitm-20261121",
+  "phase": 3,
+  "verdict": "PASS",
+  "reasons": [
+    "lower 95% bound of the paired speed-up above 1 on every instance of the phase at m in ['2', '3']"
+  ],
+  "carried_m": [
+    "2",
+    "3"
+  ],
+  "next": "candidate for the baseline ratchet: freeze a protocol in cryptanalysis (docs/ic/BASELINES.md rules, Tier 1, pcc claim); this harness does not write rows",
+  "gated": "2026-11-23T05:17:14Z",
+  "registry_sha256": "d561f1826ea850e47b6f379be51d9064da9ae10ac0ae6daa60d6b9d00ac5b50a",
+  "cells": [
+    {
+      "id": "bench-prime-32",
+      "by_m": {
+        "2": {
+          "status": "ok",
+          "pairs": 3,
+          "lead_s": {
+            "575604615030": 20.240120259895534,
+            "575604655533": 23.994835760546344,
+            "575604696036": 24.979848641309847
+          },
+          "speedup_geomean": 3.909200550516511,
+          "speedup_ci": [
+            3.6828543716937134,
+            4.284488696303946
+          ],
+          "lead_s_over_rho": 29.465945732239746,
+          "peak_rss_gib": 0.0645,
+          "better": true
+        },
+        "3": {
+          "status": "ok",
+          "pairs": 3,
+          "lead_s": {
+            "575604615030": 35.876209379238624,
+            "575604655533": 35.249212935889865,
+            "575604696036": 32.28378702947584
+          },
+          "speedup_geomean": 2.6086432649943414,
+          "speedup_ci": [
+            2.4171607860985023,
+            2.849639191613417
+          ],
+          "lead_s_over_rho": 44.02309831910481,
+          "peak_rss_gib": 0.0624,
+          "better": true
+        },
+        "4": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "5": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "6": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "7": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "8": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "9": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        }
+      },
+      "arms": {
+        "baseline": {
+          "status": "ok",
+          "wall_seconds": 2.269,
+          "peak_rss_gib": 0.0956,
+          "killed_by": null
+        },
+        "lead-m2": {
+          "status": "ok",
+          "wall_seconds": 0.877,
+          "peak_rss_gib": 0.0645,
+          "killed_by": null
+        },
+        "lead-m3": {
+          "status": "ok",
+          "wall_seconds": 1.52,
+          "peak_rss_gib": 0.0624,
+          "killed_by": null
+        }
+      },
+      "instance": "generated-32bit-4219224463",
+      "rho_reference": {
+        "method": "negation-map r-adding walk: look-ahead, short-cycle escape by doubling, distinguished points, stride starts",
+        "automorphisms": 2,
+        "runs": 8,
+        "mean_s": 0.7829920601758856,
+        "min_s": 0.42851309382407976,
+        "max_s": 1.1857160832127245,
+        "all_verified": true
+      },
+      "baseline_s": {
+        "575604615030": 86.7185664653549,
+        "575604655533": 90.84438471507436,
+        "575604696036": 91.99714477289524
+      },
+      "baseline_s_over_rho": 114.75641949369299,
+      "status": "ok"
+    }
+  ]
+}

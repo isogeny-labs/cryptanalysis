@@ -1,0 +1,58 @@
+[
+  {
+    "command": [
+      "cargo",
+      "+1.98.0",
+      "fmt"
+    ],
+    "exit_code": 0,
+    "seconds": 0.29274292901391163,
+    "log": "/workspace/ca1325-final-native-format-retry2-0-20261030.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "command": [
+      "cargo",
+      "+1.98.0",
+      "fmt",
+      "--",
+      "--check"
+    ],
+    "exit_code": 0,
+    "seconds": 0.30129334900993854,
+    "log": "/workspace/ca1325-final-native-format-retry2-1-20261030.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "command": [
+      "cargo",
+      "+1.98.0",
+      "test",
+      "--release",
+      "--locked",
+      "--test",
+      "finite_extensions"
+    ],
+    "exit_code": 0,
+    "seconds": 3.461043143994175,
+    "log": "/workspace/ca1325-final-native-format-retry2-2-20261030.log",
+    "sha256": "6918440bafff809f23f29a1f4ae1e0894fc973c1cda729a5767e2e77108c0151"
+  },
+  {
+    "command": [
+      "cargo",
+      "+1.98.0",
+      "clippy",
+      "--release",
+      "--locked",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit_code": 0,
+    "seconds": 0.3406795489718206,
+    "log": "/workspace/ca1325-final-native-format-retry2-3-20261030.log",
+    "sha256": "f8806665bb77c234660789cf4dff344179c525e6fcdd55428da2c6553c5272ca"
+  }
+]

@@ -1,0 +1,165 @@
+{
+ "arm_cold_processes_s000": {
+  "indexbuild": {
+   "cold_in_process_ms": 10197.695503,
+   "index_build_ms": 8174.732889999999,
+   "index_build_pipeline": "row_batched_inverse+lookahead32_prefetch+selftest_lanes8",
+   "issues": [],
+   "layout": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "probes": 689786,
+   "relation": [
+    70661,
+    14707,
+    30317,
+    76964
+   ],
+   "scan_selftest_ms": 1403.037343
+  },
+  "parent": {
+   "cold_in_process_ms": 19135.395238,
+   "index_build_ms": 16391.243633,
+   "index_build_pipeline": null,
+   "issues": [],
+   "layout": {
+    "stored_states_blake3": "f7a8d6b85d2bb7197641f610a376eef5fd7aedfab7c95dc77de2df4e3b593a82",
+    "table_slots_blake3": "6c08c6c21fd4129a9d3b7d1de573fd4da42a3c5037f2eaa273013daae51ab174"
+   },
+   "probes": 689786,
+   "relation": [
+    70661,
+    14707,
+    30317,
+    76964
+   ],
+   "scan_selftest_ms": 2059.0751090000003
+  }
+ },
+ "base": "M38 closure header (608 orbits, 15,341,360 stored states, 30,366,551 root entries, 2^26 slots)",
+ "breakdown_median_ms": {
+  "index_build_total_ms": 16920.792108,
+  "scan_inverse_selftest_two_keys_ms": 2.156875,
+  "scan_selftest_full_two_keys_ms": 2125.1240980000002,
+  "state_loop_ms": 9389.430387999999,
+  "state_loop_parts_ms": {
+   "s3_field_inversion": 6463.502076,
+   "s3_finish": 1578.7772420000001,
+   "s3_prepare": 779.5761289999999,
+   "state_push_and_first_touch": 433.800741,
+   "to_normal_two_roots": 436.56384599999996
+  },
+  "state_minor_faults": 179782,
+  "stored_states": 15341360,
+  "table_allocation_ms": 0.017594000000000002,
+  "table_bytes": 1073741824,
+  "table_entries": 30366551,
+  "table_insert_loop_ms": 7223.382028999999,
+  "table_insert_parts_ms": {
+   "insert_with_first_touch_faults": 5262.709782,
+   "lift_scan_canonicalization": 1960.672247
+  },
+  "table_minor_faults": 524288,
+  "table_slots": 67108864
+ },
+ "candidate_processes": {
+  "1,32,plain": {
+   "candidate_index_ms": 8023.066326,
+   "layout_equal_to_parent": null,
+   "minor_faults": 704072,
+   "parent_index_ms_same_process": null,
+   "selftest_equal": true,
+   "selftest_full_ms": 2107.904502,
+   "selftest_lanes_ms": 1448.469722
+  },
+  "16,32,plain": {
+   "candidate_index_ms": 8188.6687170000005,
+   "layout_equal_to_parent": null,
+   "minor_faults": 704071,
+   "parent_index_ms_same_process": null,
+   "selftest_equal": true,
+   "selftest_full_ms": 2061.5745460000003,
+   "selftest_lanes_ms": 1415.7766359999998
+  },
+  "4,0,plain": {
+   "candidate_index_ms": 12136.843892,
+   "layout_equal_to_parent": null,
+   "minor_faults": 704072,
+   "parent_index_ms_same_process": null,
+   "selftest_equal": true,
+   "selftest_full_ms": 2065.007099,
+   "selftest_lanes_ms": 1381.252432
+  },
+  "4,16,plain": {
+   "candidate_index_ms": 8138.865862,
+   "layout_equal_to_parent": null,
+   "minor_faults": 704071,
+   "parent_index_ms_same_process": null,
+   "selftest_equal": true,
+   "selftest_full_ms": 2114.353844,
+   "selftest_lanes_ms": 1370.843292
+  },
+  "4,32,huge": {
+   "candidate_index_ms": 9828.087497,
+   "layout_equal_to_parent": null,
+   "minor_faults": 181829,
+   "parent_index_ms_same_process": null,
+   "selftest_equal": true,
+   "selftest_full_ms": 2010.1861959999999,
+   "selftest_lanes_ms": 1405.535527
+  },
+  "4,32,plain": {
+   "candidate_index_ms": 7969.845646,
+   "layout_equal_to_parent": true,
+   "minor_faults": 704073,
+   "parent_index_ms_same_process": 18260.17804,
+   "selftest_equal": true,
+   "selftest_full_ms": 2212.285595,
+   "selftest_lanes_ms": 1501.9627199999998
+  },
+  "4,32,prefault": {
+   "candidate_index_ms": 8166.494594999999,
+   "layout_equal_to_parent": null,
+   "minor_faults": 441928,
+   "parent_index_ms_same_process": null,
+   "selftest_equal": true,
+   "selftest_full_ms": 2130.608471,
+   "selftest_lanes_ms": 1347.144992
+  },
+  "4,64,plain": {
+   "candidate_index_ms": 8305.779778,
+   "layout_equal_to_parent": null,
+   "minor_faults": 704071,
+   "parent_index_ms_same_process": null,
+   "selftest_equal": true,
+   "selftest_full_ms": 2060.6901159999998,
+   "selftest_lanes_ms": 1372.0952379999999
+  }
+ },
+ "host": "cloud-agent VM, 4 vCPU Intel Xeon @ 2.10 GHz (KVM), kernel 6.18.44, THP madvise; taskset -c 2; rustc/cargo 1.97 (the workflow pins 1.99)",
+ "label": "LOCAL DIAGNOSTIC on the shared cloud-agent VM; ranks candidates and sizes the design, not evidence",
+ "modelled": {
+  "basis": "the derived producer's index build and self-test over the row producer's, one arm.py cold process each on the same point, run back to back (raw/cold_*_s000.stdout.txt)",
+  "index_build_factor": 0.49872560453814835,
+  "scan_selftest_factor": 0.6813920176430046
+ },
+ "profile_runs": 3,
+ "schema": 1,
+ "variant_median_ms": {
+  "insert_only": 6640.66014,
+  "insert_only_huge": 5552.107445,
+  "insert_only_prefaulted": 2121.0199909999997,
+  "insert_only_prefaulted:prefault": 458.03175600000003,
+  "insert_prefetch16": 2186.021324,
+  "insert_prefetch16_huge": 3908.678031,
+  "insert_prefetch32": 2204.175937,
+  "insert_prefetch32_huge": 1145.1086690000002,
+  "insert_prefetch8": 2154.871358,
+  "pipeline16_canon_prefetch_huge": 2660.4640870000003,
+  "pipeline32_canon_prefetch_huge": 2696.6885899999997,
+  "states_batched_rows1": 3927.222022,
+  "states_batched_rows16": 3642.3873200000003,
+  "states_batched_rows4": 3642.680593
+ }
+}

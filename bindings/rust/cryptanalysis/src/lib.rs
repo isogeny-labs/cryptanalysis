@@ -36,6 +36,8 @@
 //! * [`Elem`] is a `Copy` newtype over the `[u64; 4]` element words.
 //! * [`Options`] / [`Stats`] mirror the C option and statistics structs.
 //! * [`index_calculus`] holds the `(Z/pZ)^*`-only index-calculus API.
+//! * [`auxiliary_ic`] provides native bounded elliptic-curve IC over Mersenne
+//!   prime fields, with auxiliary maps, a direct control, and public certificates.
 //! * Free functions: [`cheon_best_divisor`], the number-theory helpers
 //!   ([`is_prime`], [`next_prime`], [`primitive_root`], [`powmod`],
 //!   [`invmod`], [`factorize`]) and [`version`].
@@ -50,7 +52,11 @@ pub mod curve;
 mod error;
 pub mod gpu;
 mod group;
+pub mod hashed_ecdl;
 pub mod index_calculus;
+/// Native Mersenne-prime elliptic-curve IC, auxiliary circuits, and certificates.
+/// This is separate from [`index_calculus`], which solves multiplicative-field logs.
+pub use prime_field_auxiliary_ic as auxiliary_ic;
 mod nt;
 mod options;
 
@@ -79,6 +85,68 @@ pub fn version() -> &'static str {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn hashed_ecdl_agrees_with_independent_c_arithmetic() {
+        let curve = hashed_ecdl::Curve::new(211, 0, 7, 199).unwrap();
+        let group = Group::ec(211, 0, 7, 199).unwrap();
+        let generator = Elem::ec(3, 33);
+        for scalar in 0..199 {
+            let point = group.mul(&generator, scalar).unwrap();
+            let affine = if point.is_infinity() {
+                None
+            } else {
+                Some((point.x(), point.y()))
+            };
+            assert_eq!(curve.mul(Some((3, 33)), scalar).unwrap(), affine);
+        }
+        let target = group.mul(&generator, 42).unwrap();
+        let certificate = hashed_ecdl::solve(
+            &curve,
+            Some((3, 33)),
+            Some((target.x(), target.y())),
+            &hashed_ecdl::Config::default(),
+        )
+        .unwrap();
+        assert_eq!(group.mul(&generator, certificate.scalar).unwrap(), target);
+    }
+
+    #[test]
+    fn tensor_curve_agrees_with_independent_c_arithmetic() {
+        use hashed_ecdl::tensor::{curve, BigUint, Limits, Meter};
+        let mut meter = Meter::new(Limits::default());
+        let generator = curve::Point::Affine {
+            x: 3u8.into(),
+            y: 33u8.into(),
+        };
+        let tensor_curve = curve::Curve::new(
+            211u16.into(),
+            0u8.into(),
+            7u8.into(),
+            199u8.into(),
+            generator.clone(),
+            &mut meter,
+        )
+        .unwrap();
+        let group = Group::ec(211, 0, 7, 199).unwrap();
+        for scalar in 0..199u64 {
+            let point = group.mul(&Elem::ec(3, 33), scalar).unwrap();
+            let expected = if point.is_infinity() {
+                curve::Point::Infinity
+            } else {
+                curve::Point::Affine {
+                    x: BigUint::from(point.x()),
+                    y: BigUint::from(point.y()),
+                }
+            };
+            assert_eq!(
+                tensor_curve
+                    .mul(&generator, &scalar.into(), &mut meter)
+                    .unwrap(),
+                expected
+            );
+        }
+    }
 
     #[test]
     fn version_is_semver_like() {

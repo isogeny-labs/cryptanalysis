@@ -1,0 +1,40 @@
+{
+ "identities": {
+  "cold_layout_and_index_digests_equal_A_B": true,
+  "rank_relations_probes_roots_equal_A_B": true
+ },
+ "label": "LOCAL DIAGNOSTIC: shared cloud-agent VM (4 vCPU Intel Xeon, hypervisor guest), one pinned CPU (taskset -c 2), rustc 1.97; ranks and sizes only, not evidence",
+ "means_ms": {
+  "cold_process": {
+   "A": 9142.46656625,
+   "B": 7855.713681499999
+  },
+  "index_build": {
+   "A": 6575.293188,
+   "B": 5609.3497035
+  },
+  "online": {
+   "A": 685.4575574999999,
+   "B": 537.2398735
+  },
+  "rank_stage": {
+   "A": 4750.358513,
+   "B": 4424.051464666667
+  },
+  "scan_selftest": {
+   "A": 1409.59952625,
+   "B": 1277.2459085
+  }
+ },
+ "modelled": {
+  "index_build_factor": 0.8530949941117668,
+  "online_factor": 0.7837682546814726,
+  "rank_stage_factor": 0.9313089638518125,
+  "selftest_factor": 0.9061055177124638
+ },
+ "notes": [
+  "The first B build computed the self-test table round count with a runtime division and ran the self-test slower (B/A 1.15 over 4 rounds); the frozen derivation iterates a fixed array of four tables. The rank and earlier cold runs used the same producer code otherwise.",
+  "Rank rounds were taken with the first B build; its rank stage code is identical to the frozen one (the edit touched only the self-test tables)."
+ ],
+ "source": "profile/run_cold.sh and profile/run_rank.sh (arm.py's ic_cold / ic_rank environment on M38, Q0 point, seed 7 cold, rank seed 1501), A = ic_online_rankfinder_r770 (online/), B = ic_online_fieldops_r770 (online-b/, +pclmulqdq), fresh process each, alternating A then B; cold 4 rounds, rank 3 rounds; raw summaries in profile/raw/"
+}

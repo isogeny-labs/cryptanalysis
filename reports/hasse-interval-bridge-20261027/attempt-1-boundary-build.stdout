@@ -1,0 +1,28 @@
+BoundaryControl.lean:1:55: error: unexpected token '='; expected ':=', 'where' or '|'
+BoundaryControl.lean:1:38: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  SDiff ?m.12
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+BoundaryControl.lean:1:41: error: Function expected at
+  u2227
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  (14 : Nat)
+
+Hint: The identifier `u2227` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+BoundaryControl.lean:2:54: error: unexpected token '='; expected ':=', 'where' or '|'
+BoundaryControl.lean:2:38: error(lean.synthInstanceFailed): failed to synthesize instance of type class
+  SDiff ?m.12
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+BoundaryControl.lean:2:41: error: Function expected at
+  u2227
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  (0 : Nat)
+
+Hint: The identifier `u2227` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.

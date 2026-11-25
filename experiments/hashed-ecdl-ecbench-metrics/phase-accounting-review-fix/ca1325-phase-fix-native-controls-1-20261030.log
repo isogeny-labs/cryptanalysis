@@ -1,0 +1,160 @@
+   Compiling hashed-ecdl-tensor v0.1.0 (/workspace/cryptanalysis-phase-accounting-repair/bindings/rust/hashed-ecdl-tensor)
+    Finished `release` profile [optimized] target(s) in 21.80s
+     Running unittests src/lib.rs (/workspace/native-phase-repair-target/release/deps/hashed_ecdl_tensor-5f760ac4f0075912)
+
+running 64 tests
+test arithmetic::tests::checked_hash_selection_preserves_the_candidate_and_rng_stream ... ok
+test arithmetic::tests::exact_small_primality_and_square_roots ... ok
+test arithmetic::tests::reused_roots_preserve_failures_and_enforce_each_new_meter ... ok
+test arithmetic::tests::limits_do_not_turn_unknown_primes_into_true_or_false ... ok
+test arithmetic::tests::root_setup_is_lazy_reused_and_charged_only_when_performed ... ok
+test arithmetic::tests::three_mod_four_roots_fit_a_single_exponentiation_budget ... ok
+test binary::tests::binary_fields_check_irreducibility_inverse_and_official_131_polynomial ... ok
+test arithmetic::tests::reused_square_roots_match_independent_residue_tables_in_both_orders ... ok
+test binary::tests::both_koblitz_coefficients_and_derived_eigenvalues_have_pinned_fixture_identities ... ok
+test binary::tests::binary_group_roundtrip_full_cardinality_associativity_and_frobenius ... ok
+test binary::tests::xor_hash_inverse_and_binary_selector_search_match_exhaustive_domains ... ok
+test binary::tests::orbit_coefficients_and_orbit_hash_enumeration_are_complete ... ok
+test arithmetic::tests::aks_cyclic_identity_and_large_prime_path ... ok
+test contraction::deformation::tests::integral_kernel_and_geometric_mode_series_match ... ok
+test contraction::deformation::tests::packet_entries_keep_creation_time_representatives ... ok
+test contraction::packing::tests::conditional_expectations_do_not_assume_disjoint_ports ... ok
+test arithmetic::tests::prime_fast_paths_complete_within_the_old_aks_work_budget ... ok
+test contraction::recursive::tests::forced_small_packet_recursion_matches_independent_direct_contraction ... ok
+test contraction::recursive::tests::tapered_hermite_recovers_the_constant_without_rounding ... ok
+test contraction::recursive::tests::weighted_enumeration_has_no_missing_or_repeated_monomials ... ok
+test contraction::tests::counts_and_prefix_witnesses_match_truth_tables ... ok
+test contraction::tests::dependency_pruning_handles_constant_failures_and_no_free_digits ... ok
+test contraction::tests::dependency_pruning_preserves_derived_pins_aliases_and_multiplicity ... ok
+test contraction::tests::dependency_pruning_skips_only_rejected_input_blocks ... ok
+test contraction::tests::exact_sampling_uses_counts_and_preserves_auxiliary_multiplicity ... ok
+test contraction::tests::functional_derived_interfaces_match_prefixes_for_all_output_pins ... ok
+test contraction::tests::functional_input_witness_preserves_prefix_order_without_recounts ... ok
+test contraction::tests::functional_leaf_count_equals_complete_edge_enumeration ... ok
+test contraction::tests::functional_witness_aliases_empty_unsat_and_limits_are_exact ... ok
+test contraction::tests::sampling_respects_pins_empty_languages_and_failure_boundaries ... ok
+test curve::tests::prime_order_certificate_and_point_encoding ... ok
+test contraction::recursive::coupled_controls::both_taper_levels_match_direct_counts_for_crossing_and_local_ports ... ok
+test encoding::tests::hash_membership_and_cofactor_clear_are_coordinate_predicates ... ok
+test encoding::tests::modular_words_are_canonical_and_invalid_inputs_have_no_witness ... ok
+test contraction::recursive::coupled_controls::coupled_nested_contraction_preserves_old_packet_creation_precision ... ok
+test encoding::tests::ripple_arithmetic_and_shared_word_copies ... ok
+test factoring::tests::complete_factorization_handles_primes_powers_and_identity ... ok
+test factoring::tests::invalid_inputs_and_exhaustion_never_become_zero_counts_or_partial_success ... ok
+test encoding::tests::fourier_products_match_independent_integer_products_and_size_bounds ... ok
+test metrics::tests::scoped_observer_keeps_exact_counters_separate_from_clocks_and_cleans_up ... ok
+test network::tests::incomplete_graphs_and_duplicate_interfaces_are_rejected ... ok
+test network::tests::parallel_edges_pins_and_isolated_scalars ... ok
+test primality::tests::automatic_proofs_enforce_caller_limits ... ok
+test factoring::tests::tensor_divisor_counts_match_independent_trial_division_for_every_prefix ... ok
+test primality::tests::automatic_proofs_replay_for_large_known_primes ... ok
+test primality::tests::challenge_proofs_verify_in_any_order_with_exact_u64_leaves ... ok
+test primality::tests::forged_and_incomplete_pocklington_proofs_are_rejected ... ok
+test primality::tests::large_composites_are_rejected_and_missing_proofs_remain_unknown ... ok
+test primality::tests::official_curve_and_target_validate_within_original_budget ... ok
+test primality::tests::parsed_public_proofs_never_bypass_a_new_callers_limits ... ok
+test primality::tests::published_bound_is_strict_and_the_65bit_cliff_is_removed ... ok
+test primality::tests::bounded_primality_matches_independent_sieve_and_handles_u64_edges ... ok
+test reduction::tests::exhausted_tensor_work_is_unknown_and_identity_has_an_exact_certificate ... ok
+test reduction::tests::factor_base_enumeration_reuses_square_root_setup ... ok
+test reduction::tests::inverse_hash_enumeration_matches_independent_subgroup_scan ... ok
+test encoding::tests::point_network_handles_every_pair_and_rejects_counterfeit_outputs ... ok
+test ring::tests::creation_precision_lifts_are_not_silently_ring_homomorphisms ... ok
+test ring::tests::units_and_interpolation_over_nonfields ... ok
+test weighted::tests::constants_unsat_and_limits_have_distinct_outcomes ... ok
+test weighted::tests::parity_check_profile_retains_zero_word_and_positive_distance ... ok
+test weighted::tests::triangle_maxcut_profile_has_two_constant_and_six_optimal_assignments ... ok
+test reduction::tests::cofactor_tensor_projection_finds_only_subgroup_points ... ok
+test contraction::recursive::coupled_controls::coupled_packets_match_direct_counts_with_parallel_ports_and_quadratic_modes ... ok
+test reduction::tests::tensor_relation_pipeline_recovers_and_replays_without_scalar_leakage has been running for over 60 seconds
+test reduction::tests::tensor_relation_pipeline_recovers_and_replays_without_scalar_leakage ... ok
+
+test result: ok. 64 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 73.87s
+
+     Running unittests src/bin/hashed-ecdl.rs (/workspace/native-phase-repair-target/release/deps/hashed_ecdl-fa395cf2a9647a33)
+
+running 5 tests
+test tests::input_reader_preserves_io_errors ... ok
+test tests::strict_json_problem_keeps_optional_defaults_and_required_target ... ok
+test tests::strict_json_problem_rejects_duplicates_even_after_null ... ok
+test tests::strict_json_receipt_rejects_duplicate_fields_and_nested_problems ... ok
+test tests::input_limit_applies_to_bytes_read_from_a_stream ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running unittests src/bin/hashed-ecdl-panel.rs (/workspace/native-phase-repair-target/release/deps/hashed_ecdl_panel-3dd565489fbf8de3)
+
+running 3 tests
+test tests::oracle_checks_full_cardinality_and_all_native_multiples ... ok
+test tests::panel_preserves_every_frozen_case_and_separates_answers ... ok
+test tests::preparation_is_complete_and_existing_evidence_is_never_replaced ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/bin/tensor-factor.rs (/workspace/native-phase-repair-target/release/deps/tensor_factor-980d9e5f423d1cc8)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/certified_hash_prime.rs (/workspace/native-phase-repair-target/release/deps/certified_hash_prime-267c624dfb6e752b)
+
+running 6 tests
+test cached_proofs_preserve_width_work_range_and_seed_checks ... ok
+test certified_hash_and_multiple_slot_bases_reuse_only_checked_proofs ... ok
+test an_uncovered_hash_prime_still_requires_the_exact_fallback ... ok
+test the_65bit_boundary_has_an_exact_bounded_pocklington_control ... ok
+test runner_preflight_checks_the_hash_prime_and_replay_enforces_its_pin ... ok
+test fixed_hash_solve_and_algebraic_replay_agree ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.99s
+
+     Running tests/factoring_cli.rs (/workspace/native-phase-repair-target/release/deps/factoring_cli-63cdc640ca3e2b24)
+
+running 1 test
+test runner_factors_public_fixture_and_emits_no_success_on_exhaustion ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/finite_extensions.rs (/workspace/native-phase-repair-target/release/deps/finite_extensions-c8bb7531c973b33a)
+
+running 11 tests
+test external_oracle_replay_has_independent_group_work_and_matrix_accounting ... ok
+test observed_explicit_partial_defaults_preserve_certificate_rng_and_work ... ok
+test partial_admission_limits_and_invalid_rows_fail_closed ... ok
+test partial_collection_recovers_from_bounded_random_label_queries ... ok
+test selector_cofactor_projection_has_unique_points_and_limits_are_unknown ... ok
+test selector_oracle_runs_full_reduction_and_rejects_forged_witnesses ... ok
+test optional_schoolbook_encodings_preserve_full_products ... ok
+test selector_cli_receipt_replays_with_the_original_verifier_and_is_exclusive ... ok
+test selectors_match_exhaustive_sets_including_invalid_codes_and_unsat ... ok
+test two_outer_points_cancel_with_odd_order_coefficients_and_replay_provenance ... ok
+test selector_tensor_counts_distinct_decoded_tuples_and_replays_edges ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.64s
+
+     Running tests/strict_json.rs (/workspace/native-phase-repair-target/release/deps/strict_json-d69918d81cb150c4)
+
+running 3 tests
+test strict_json_point_forms_reject_duplicate_variants_and_coordinates ... ok
+test strict_json_records_keep_required_fields_and_reject_unknown_fields ... ok
+test strict_json_rejects_duplicate_certificate_fields_and_nested_records ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/width_extensions.rs (/workspace/native-phase-repair-target/release/deps/width_extensions-86e377a37467ce4b)
+
+running 4 tests
+test isolated_false_scalar_is_unsat_with_no_free_edges ... ok
+test plans_reject_missing_duplicate_pinned_and_understated_edges ... ok
+test witness_only_does_not_require_count_precision_or_exponential_tables ... ok
+test exact_elimination_and_slicing_match_all_two_port_truth_tables_and_pins ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests hashed_ecdl_tensor
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

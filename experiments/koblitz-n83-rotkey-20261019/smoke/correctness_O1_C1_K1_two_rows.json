@@ -1,0 +1,74 @@
+{
+ "checks": {
+  "all_executed_rows_valid": true,
+  "one_probe_count_per_point_every_ic_process": true,
+  "one_relation_per_point_every_ic_process": true,
+  "one_scalar_per_point_ic_and_rho": true,
+  "oracle_replay": true,
+  "q0_matches_archived_feistel_identity": true,
+  "rank_relations_probes_root_calls_and_padd_counters_identical_per_block": true,
+  "rank_tables_equal_archived": true,
+  "receipt_matches_schedule": true,
+  "rotation_key_hits_identical_and_no_collisions_per_block": true
+ },
+ "detail": {
+  "invalid_rows": [],
+  "probe_failures": [],
+  "rank_failures": [],
+  "rank_frame_counters": {
+   "K1/kK": {
+    "builds": 600,
+    "plant_checked_inputs": 0
+   },
+   "K1/kKaa": {
+    "builds": 600,
+    "plant_checked_inputs": 0
+   }
+  },
+  "rank_padd_counters": {
+   "K1/kK": {
+    "fallback_states": 0,
+    "irregular_inputs": 0,
+    "plant_checked_inputs": 0,
+    "resolved_hits": 600,
+    "swapped_pairs": 311
+   },
+   "K1/kKaa": {
+    "fallback_states": 0,
+    "irregular_inputs": 0,
+    "plant_checked_inputs": 0,
+    "resolved_hits": 600,
+    "swapped_pairs": 311
+   }
+  },
+  "rank_rotkey_counters": {
+   "K1/kK": {
+    "build_ms": 5402.534025,
+    "builds": 1,
+    "clmul": 1,
+    "collisions": 0,
+    "compact_entries": 29878182,
+    "hit_verifies": 600,
+    "kernel": "pclmulqdq",
+    "plant_checked_probes": 0,
+    "table_entries": 29878182
+   },
+   "K1/kKaa": {
+    "build_ms": 3672.757731,
+    "builds": 1,
+    "clmul": 1,
+    "collisions": 0,
+    "compact_entries": 29878182,
+    "hit_verifies": 600,
+    "kernel": "pclmulqdq",
+    "plant_checked_probes": 0,
+    "table_entries": 29878182
+   }
+  },
+  "relation_failures": [],
+  "scalar_failures": [],
+  "units_seen": 2
+ },
+ "problems": [],
+ "rows": 6
+}

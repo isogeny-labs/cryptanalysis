@@ -1,0 +1,348 @@
+{
+ "arms": {
+  "cK": {
+   "binary": "ic_online_rotkey_r770",
+   "fold": true,
+   "kind": "ic_cold",
+   "role": "candidate cold: the rotation-key producer's cold path, which is the rank-probe producer's code (KIC_RANK_SOLVE is read only by the rank stage, which a cold process skips); its own processes, so the candidate's end-to-end cost is measured on its own rows",
+   "table": "compact"
+  },
+  "cP": {
+   "binary": "ic_online_rotkey_r770",
+   "fold": true,
+   "kind": "ic_cold",
+   "role": "baseline cold: the rank-probe producer's cold path (koblitz-n83-rankprobe-20261019 arm cP, the n=83 baseline, PR #980), setup + one-target online with the verified cached factor-log table",
+   "table": "compact"
+  },
+  "kK": {
+   "binary": "ic_online_rotkey_r770",
+   "fold": true,
+   "kind": "ic_rank",
+   "rank_canon": "lift",
+   "rank_order": "feistel",
+   "rank_probe": "target",
+   "rank_solve": "rotkey",
+   "role": "candidate rank stage: kP's loop keyed by the rotation-invariant key rotkey(v) = v^83 in F2[X]/(X^83+1) (KIC_RANK_SOLVE=rotkey): a rotation-key copy of the compact table built inside the rank-stage interval, keys of a state's partners in one carry-less batch, lift_scan only at a hit (verified against the compact table); the same partner words, probes and hits; then one target",
+   "table": "compact"
+  },
+  "kKX": {
+   "binary": "ic_online_rotkey_r770",
+   "fold": true,
+   "kind": "ic_rank",
+   "rank_canon": "lift",
+   "rank_order": "feistel",
+   "rank_probe": "target",
+   "rank_solve": "rotkey_plant",
+   "role": "planted positive control: kK plus the work it removes, redone: lift_scan of every partner word, its compact-table lookup and the rotation key of the canonical word, checked equal to kK's key and to its rotation-key lookup on every probe (panic on any difference) and discarded",
+   "table": "compact"
+  },
+  "kKaa": {
+   "binary": "ic_online_rotkey_r770",
+   "fold": true,
+   "kind": "ic_rank",
+   "rank_canon": "lift",
+   "rank_order": "feistel",
+   "rank_probe": "target",
+   "rank_solve": "rotkey",
+   "role": "A/A control: a second process of kK",
+   "table": "compact"
+  },
+  "kP": {
+   "binary": "ic_online_rotkey_r770",
+   "fold": true,
+   "kind": "ic_rank",
+   "rank_canon": "lift",
+   "rank_order": "feistel",
+   "rank_probe": "target",
+   "rank_solve": "frame",
+   "role": "baseline rank stage: the rank-probe producer's (lift_scan keys, Feistel, the 16-byte compact table over the folded index, the rank-cut loop in the target's Frobenius frame, KIC_RANK_SOLVE=frame), then one target",
+   "table": "compact"
+  },
+  "rT": {
+   "binary": "rho_tuned_r770",
+   "kind": "rho_tuned",
+   "role": "A's tuned rho rT770 (Fold/64/DP6), the strongest one-target rho at n=83, same points"
+  }
+ },
+ "controls_pass_rule": {
+  "aa": "E2E(kK, cK) / E2E(kKaa, cP) (blocks paired) and cold cK / cP (the same cold code) point estimates both inside [0.97, 1.03]",
+  "otherwise": "verdict invalid",
+  "planted": "rank stage kKX / kK (per-attempt cost, attempts paired within blocks), 95% bootstrap lower bound above 1"
+ },
+ "cost_structure_of_the_baseline": {
+  "attempts": 600,
+  "mean_probes_per_attempt": 1690645,
+  "ns_per_probe_rank": 141.54,
+  "rank": 600,
+  "reading": "the attempts and the probes per attempt are fixed by exactness (the gates keep them identical), so the lever is the wall time per probe; lift_scan of both partners is the largest piece of a probe in the rank-probe experiment's local profile (54-62 ns of 233)",
+  "source": "run 39214027289, arm kP (four processes, rank seeds 301-304)"
+ },
+ "current_baseline": "the rank-probe producer (koblitz-n83-rankprobe-20261019, run 39214027289, PR #980): end-to-end cold 166.0 s (rank stage 143.7 s + cold 22.3 s), R over the rank-cut producer 1.1033 [1.1010, 1.1056], S 6.390, gap to rT770 64.0 [53.7, 78.0]; its rank stage is 86.6% of end-to-end cold",
+ "decision_rule": {
+  "improvement": "R lower bound > 1 (the rotation-key producer becomes the new n=83 end-to-end cold baseline)",
+  "invalid": "any gate or control fails, or any scheduled row is missing (including time-guard skips)",
+  "not_separated": "otherwise",
+  "regression": "R upper bound < 1"
+ },
+ "design": {
+  "cold_arms": [
+   "cP",
+   "cK",
+   "rT"
+  ],
+  "cold_points": 20,
+  "process_model": "one point per process, fresh process per run, one pinned CPU, one runner",
+  "q0_arms": [
+   "cP",
+   "cK"
+  ],
+  "q0_point": [
+   "2655898345537166180532960",
+   "3881526307991673265292615"
+  ],
+  "rank_arms": [
+   "kP",
+   "kK",
+   "kKaa",
+   "kKX"
+  ],
+  "rank_blocks": [
+   {
+    "id": "K1",
+    "rank_seed": 501,
+    "unit": "s000"
+   },
+   {
+    "id": "K2",
+    "rank_seed": 502,
+    "unit": "s001"
+   },
+   {
+    "id": "K3",
+    "rank_seed": 503,
+    "unit": "s002"
+   },
+   {
+    "id": "K4",
+    "rank_seed": 504,
+    "unit": "s003"
+   }
+  ],
+  "rank_blocks_source": "analysis/power.json chosen_rank_blocks",
+  "rank_seeds_note": "501.. are new (the stacked run used 101 and 102, the rank-cut run 201-204, the rank-probe run 301-304, the parallel index-lift experiment registers 401-404); each seed fixes 600 new rank targets [a]G - R_j",
+  "rho_seed_base": 880000,
+  "runtime_estimate": "from run 39214027289: build and tests about 15 min; cold segment about 50 s (cP, cK about 23 s each, rT 3 s); rank block about 900 s (kP about 165 s, kK and kKaa less if the local per-probe ratio holds, kKX about 250 s); 4 blocks; total about 1.6 h, up to about 2.2 h on a slower runner",
+  "segment_order": [
+   "O1",
+   "C1",
+   "C2",
+   "C3",
+   "C4",
+   "C5",
+   "K1",
+   "C6",
+   "C7",
+   "C8",
+   "C9",
+   "C10",
+   "K2",
+   "C11",
+   "C12",
+   "C13",
+   "C14",
+   "C15",
+   "K3",
+   "C16",
+   "C17",
+   "C18",
+   "C19",
+   "C20",
+   "K4"
+  ],
+  "segment_upper_estimate_s": {
+   "C": 200,
+   "K": 1800,
+   "O": 200
+  },
+  "time_guard": "skip a segment (rows skipped_time_guard) if elapsed + its estimate exceeds 300 min",
+  "timeout_s": {
+   "ic_cold": 600,
+   "ic_rank": 2400,
+   "rho_tuned": 600
+  },
+  "within_segment_order": "random.Random(2026102010 + block).shuffle (C), random.Random(2026102110 + block) (K), random.Random(2026102210) (O)"
+ },
+ "design_inputs_local": {
+  "attempts": 600,
+  "collisions_on_the_k600_stored_set": 0,
+  "distinct_rotation_keys": 29878182,
+  "exactness_local": "every local rank stage (frame, rotkey twice, rotkey_plant) reproduced the archived kP row of run 39214027289 block K1: relation digest, all 600 per-attempt probe counts, root calls, point-addition counters, B's factor-log table, the target relation/probes/scalar and B's index digests",
+  "extra_memory": "one more 2^26 x 16-byte table (1 GiB): peak RSS of a rank process about 2.88 GB against 1.83 GB",
+  "hit_time_cost": "one lift_scan + one compact-table lookup per verified hit, 600 per rank stage (about 0.1 ms) against 1.0e9 probes",
+  "key": "rotkey(v) = v^83 in F2[X]/(X^83+1): 5 squarings + 3 multiplications, 19 pclmulqdq (Karatsuba), branch-free, 83-bit output",
+  "key_ns_per_word_batch": [
+   21.8,
+   22.26
+  ],
+  "label": "LOCAL DIAGNOSTICS (cloud-agent VM); exactness results exact, times not timing evidence; see smoke/README.md",
+  "lift_scan_ns_per_word_batch": [
+   38.48,
+   43.81
+  ],
+  "ns_per_probe_local_concurrent": {
+   "run1": {
+    "frame": 366.2775007720667,
+    "rotkey": 277.2077402405318
+   },
+   "run2": {
+    "frame": 309.7199215112817,
+    "rotkey": 270.01254937189265
+   }
+  },
+  "planted_probes_checked_false_hits": {
+   "mismatches": 0,
+   "probes_checked": 983094828
+  },
+  "rank_stage_s_local_concurrent": {
+   "run1_three_processes": {
+    "frame": 360.253641698,
+    "rotkey": 279.76359127,
+    "rotkey_plant": 718.678156797
+   },
+   "run2_two_processes_swapped_cpus": {
+    "frame": 304.648603197,
+    "rotkey": 274.407285048
+   }
+  },
+  "stored_canonical_keys": 29878182,
+  "table_build_ms_local": [
+   6968.314346,
+   7843.123393,
+   8772.677643
+  ],
+  "verified_hits_per_rank_stage": 600
+ },
+ "exactness_argument": "A normal-basis word v of GF(2^83) is an element of R = F2[X]/(X^83+1) and the Frobenius rotates it, i.e. multiplies it by a power of X. rotkey(v) = v^83 in R. Invariant: (X^s v)^83 = X^(83 s) v^83 = v^83. Complete: X^83+1 = (X+1) Phi_83 with coprime factors and Phi_83 irreducible over F2 (2 has order 82 mod 83: 2^41 = -1 mod 83), so R = F2 x F_{2^82}; v^83 = w^83 forces equal parity (a^83 = a in F2) and xi^83 = eta^83 in F_{2^82}, so xi = eta = 0 or xi/eta is an 83rd root of unity, and those are exactly the powers of X (order 83 in F_{2^82}^*); hence v = X^s w. So rotkey(v) = rotkey(w) iff lift_scan(v).0 = lift_scan(w).0, and the rotation-key table built from the compact table (key rotkey(c) for every stored canonical word c, the same packed value) is the same key -> value map: rotkey is injective on the stored canonical words, so no entry is merged or shadowed (the build reports compact entries - rotation-key entries, which the gate requires to be 0). The rotkey loop emits the frame loop's partner words in the frame loop's order (the same code) and looks up rotkey(partner) where the frame loop looks up lift_scan(partner).0, so every probe has the same hit status and, at a hit, the same packed value; the partner shift is then computed by lift_scan on the hit partner (the frame loop computed it for every partner), the hit is checked against the compact table (panic on a difference), and the frame loop's exact S3-order resolution, lift and relation check run unchanged. Hence the same first hit, lift, relation and probe count in every attempt, the same echelon and B's factor-log table. The definition of the probe count is unchanged: hits are resolved in the same order, so the probe-count identity is part of the gate, not an assumption. Tested: exhaustively at n = 11, 13, 19 (complete) and n = 7, 17 (2 not primitive: classes merge, the negative control); the carry-less kernel against the reference product and under rotation on random words; the rotation-key table against the compact table on every stored key of a 9-orbit base; the rotkey and rotkey_plant loops against the frame and S3 loops on 40 planted targets (both orders, folded and unfolded); and key by key against lift_scan and the compact table on every probe of every kKX rank stage.",
+ "frozen_at_utc": "2026-10-19T17:51:14+00:00",
+ "frozen_before_any_timing": true,
+ "gates": [
+  "every scheduled row valid (exit 0, verified, schedule match, no memory event)",
+  "every IC process: lift_scan, Feistel, prefetch; the 16-byte compact table with 2^26 slots over the folded index (14,940,300 stored of 29,880,000 logical states); 29,878,182 table entries; logical-state blake3 and table-map digests equal B's (online.index_digest); no root bloom",
+  "per point: one scalar across every IC process (cold and rank) and rT, replayed as [d]G = Q in the pinned oracle",
+  "per point: one relation (point indices) and one probe count across every IC process on the point",
+  "Q0 (O1): cP and cK give the archived Feistel relation and scalar with 1,987,852 probes",
+  "rank arms: full rank, the arm's KIC_RANK_SOLVE recorded, and the written factor-log table equal to B's archived table, log for log",
+  "per rank block: rank_relations_blake3, the per-attempt probe vector (600 entries), rank_root_calls_total and the point-addition counters (rank_padd_fallback_states, rank_padd_irregular_inputs, rank_padd_resolved_hits, rank_padd_swapped_pairs) identical across kP, kK, kKaa and kKX (the candidate keeps every relation, every probe and every pair order of the baseline, not only the table)",
+  "frame counters: every rank arm builds exactly one frame per rank attempt; rank_frame_plant_checked_inputs and rank_padd_plant_checked_inputs are 0 everywhere",
+  "rotation-key counters: kP builds no rotation-key table and verifies and checks nothing; kK, kKaa and kKX build exactly one table, with rank_rotkey_compact_entries = rank_rotkey_table_entries = 29,878,182 (rank_rotkey_collisions 0: no two stored classes share a key), the pclmulqdq kernel, and at least one verified hit per attempt (every rotation-key hit is checked against the compact table in the producer, panic otherwise); rank_rotkey_hit_verifies identical across kK, kKaa and kKX per block; kKX has rank_rotkey_plant_checked_probes > 0 (every probe of its rank stage compared with lift_scan and the compact table) and kK / kKaa have 0"
+ ],
+ "kind": "n83-rotkey-e2e-cold-tier1",
+ "multiplicity": "one primary statistic; every secondary is descriptive and never changes the verdict",
+ "online": {
+  "base": "snapshots/r770/experiments/koblitz-single-target-n83-20261006/base_n83_K600.jsonl",
+  "base_hash": "d4a4da26d6e7cb09367de922d9806631fe49989f70d378cae76f347f8d76a9f7",
+  "cold_interval": "producer's own clock: process start (main) .. recovery_check_end of the one target = setup_complete + the five online phases (cold_in_process_ms); in ic_cold the rank stage is skipped (verified cached table); the index digest runs after the target, outside every interval",
+  "cold_targets_file": "inputs/cold_targets.json (role rotkey-cold-v1; disjoint from Q0, B's panel and every earlier n=83 panel of the law, including rankcut-cold-v1, rankprobe-cold-v1, indexlift-cold-v1 (seeds 0..63) and the 64 eval points of n131-ref-walk-20261015)",
+  "curve_id": "EC1N83Ce1h35c7ced6b497",
+  "factor_log_table": "../koblitz-single-target-n83-tier1-20261014/tier1_github_38523707244/precompute/factor_logs_n83_K600.json",
+  "factor_log_table_sha256": "a771716f284bb826e7407e1e7b5ef882409c9e7e1df8b8a3ed5b60b421d9f17e",
+  "index_digest": {
+   "logical_states": 29880000,
+   "logical_states_blake3": "baf46d5a34732aa2aeba1fc0ca4f57036e3c324ade0bf8791431c838fe15d7ec",
+   "source": "B's unfolded index, protocol.json of koblitz-n83-state-fold-20261015; reproduced here by cP and cS on Q0 (smoke/)",
+   "table_entries": 29878182,
+   "table_map_sum64": "be14a80705232396",
+   "table_map_xor64": "8132bdcfd619010f"
+  },
+  "online_interval": "target_query_begin .. recovery_check_end, five exclusive phases (unchanged)",
+  "orbit_columns": 600,
+  "q0_identity": {
+   "probes_folded": 1987852,
+   "probes_unfolded": 1988184,
+   "relation": [
+    77273,
+    22971,
+    54962,
+    62539
+   ],
+   "scalar": "3141592653589793",
+   "source": "inputs/archived_identities.json old17.q0 (run 38786433493); folded probes from koblitz-n83-state-fold-20261015 (Q0 smoke, cF) and smoke/ here"
+  },
+  "rank_interval": "timing_ms.rank_stage of an ic_rank process: the guided rank stage to full rank (query, PDP, relation check per attempt, echelon insert); its process's cold_in_process_ms also includes setup, linear algebra and one target; in kK, kKaa and kKX it also holds the build of the rotation-key table (rank_rotkey_build_ms), so the candidate is charged for it",
+  "regular_states": 29880000,
+  "root_filter_log2_bits": 28,
+  "root_table_entries": 29878182,
+  "root_table_slots": {
+   "folded": 67108864,
+   "unfolded": 134217728
+  },
+  "sqrt_r": 92573139.235,
+  "stored_states_folded": 14940300,
+  "subgroup_order": "8569786107849059",
+  "tuned_rho_config": "snapshots/r770/research/n83_evaluation_20261012/optimization/selected_config.json"
+ },
+ "power": {
+  "chosen_rank_blocks": 4,
+  "file": "analysis/power.json",
+  "min_delta": 1.03,
+  "note": "type_i_at_1.00 is the simulated rejection rate at no end-to-end effect under the prior's paired A/A noise and per-process A/A drift (run 39214027289, kP / kPaa and cR / cP); where it exceeds the nominal 0.025 the excess is the process-level drift that the resampled blocks resolve only partly, and the frozen A/A control (E2E kK+cK / kKaa+cP inside [0.97, 1.03]) checks that drift on the run itself",
+  "power_at_min_delta": {
+   "mc_se": 7.071067811865476e-08,
+   "power": 1.0
+  },
+  "rejection_rate_at_no_effect": {
+   "2": 0.075,
+   "3": 0.045,
+   "4": 0.01
+  }
+ },
+ "question": "Does keying the rank-probe producer's rank-stage probes by a rotation-invariant key (rotkey(v) = v^83 in F2[X]/(X^83+1), a complete invariant of the Frobenius rotation class of the normal-basis word, computed by 5 squarings and 3 multiplications with pclmulqdq) instead of the least rotation (lift_scan), with lift_scan run only at a table hit, lower the END-TO-END cold cost (setup + index build + rank stage + linear algebra + one-target online) of the rank-probe n=83 K600 producer on new targets and new rank seeds, with every rank relation, every per-attempt probe count, every scalar and the factor-log table unchanged?",
+ "schema": 1,
+ "sources": {
+  "crypto_770f6a69": "770f6a6925a0d29b768bd79074f54a173e967fe7 (snapshots/r770 via ../koblitz-n83-reconcile-20261014/restore_sources.py)",
+  "local_sha256": {
+   "archived_identities": "7ed7e056e8d883378e4d4033ad9bf93acc84cb5441e6410fee70ac67cae258db",
+   "arm_wrapper": "667d9b4b655256a3d62097ac86c608a035825ca015db47a9b916e260c06ed94c",
+   "cold_targets": "f928f76a774ba1b3284d070873b1d0df6cde42a7d5f48496a148eed61713d098",
+   "combined_derivation": "1a62eabf4a86417c5777fdc69ab2812eaea872b92031eb9ed60af2364ce15356",
+   "lift2_lib": "606b8a58d225e93d73d8b26ffaf4080250b0c12a37f8bbf782254fbcf5145463",
+   "lift2_lock": "739272e490c3b4956ce8320c55b3350fddff7ae7d2b619976a1f0eb96110746e",
+   "lift2_manifest": "77b04fcaa11a3f9f015619612b3e36c1f31a1b20d76116c929e5429e46dc271c",
+   "lift2_tests": "69561fbf09e2137ad1490d5795df54f6f9a5646aeebf3ecf12f1af55a495c566",
+   "log_table_check": "78d9297d9c17367ba15f30ea6507fa8f6edfe7b2cfafe0433bd83777c4dc2496",
+   "online_derivation": "0c3b4040ae3caf714aa2f4c3c3a0366e21a6eb75c38f016741e7dc358ec30d2b",
+   "online_lock": "19f1d221a41b1f83849b50ecbc41c174f2b10fc57943303f52d777e8bb067964",
+   "online_manifest": "715bad03e5119ea0a1ea11a97943a4eec7a4c6edd6e4ea4600e6a569edc01a4b",
+   "power_check": "852aa98ee5da0b4356c952bb53611232604ba12d359fba8eb4fcf63c9620f4fb",
+   "power_prior": "740a1bc1e636e263b3485fc5c158af56c48fb5f67f4ef56e3a779b5c67e9c67f",
+   "power_prior_builder": "3e2ecf13ea4c677ef43fd1b15b76bf15b045e8f80a251a0f5713007a96a8d67f",
+   "power_result": "329fe73c41b6f32c6f35b0f821d82136ccc4561cc9cf958367e73ebe0b61ed4e",
+   "probepipe_derivation": "ce72f3e906d85c58ccc02b0e5d455e97c69c370e357162fbda166423ab8ce7f2",
+   "protocol_builder": "4f052cef4ebef4d78b1b1e8628b03db8798f26b37f8a049b2cfa569751b4549e",
+   "rankcut_derivation": "7e81a642ebccf9570dd2d882360e99925d5754357c83bb1aff5a8635ac1cf011",
+   "rankprobe_derivation": "804cc965882c44f85502afb927cc4f04c79d3ccff85d9aa73226dfc2c5ec2b0d",
+   "receipt_verifier": "76155b1dda61059f456feb5497c633e26cb32153aeddf4f262d800f8529a3b5d",
+   "schedule_builder": "306d5458340192ea2e99abea46458eca63f9c8d75d1449fef3198b8b29c487f1",
+   "schedule_runner": "5ff51c1517734110cec5055b397e4be9e471694b2905adc43c378f6b0f2d3a42",
+   "stacked_derivation": "a2011ef804becc5b01f3027cf47ec6f7cb154f510e468e2a261c66e09f830aab",
+   "tablefilter_derivation": "3b2aa83df4d1bf70a107464a0b7fdd1f8ac133683b23cf19dd22bfecf12095ab",
+   "targets_builder": "e841f831eb34fc56add7d91c35dc65e721e1f9c035edd060ae3db05af316276f"
+  },
+  "online_source_sha256": "a04a3232738b216de01eac9466cd2b01e777f292b37cdbd313b58cf1c6f2b1ea",
+  "rankprobe_producer": "koblitz-n83-rankprobe-20261019 make_online_source.py (make_rankprobe_source.py here, verbatim with its five parents), output sha256 d4394df35d065afbfb05022eac3006492239cc64b94de16fba501322cb578bb5"
+ },
+ "statistics": {
+  "end_to_end_cold": "E2E(k, c) = mean over the rank blocks of timing_ms.rank_stage of rank arm k + mean over the cold points of cold_in_process_ms of cold arm c; the cold processes hold setup + online, the rank processes the rank stage (with the rotation-key table build in kK), so E2E = setup + index build + rank stage + linear algebra + one-target online",
+  "primary": "R = E2E(kP, cP) / E2E(kK, cK). Bootstrap, 10,000 draws, seed 20261020: the rank blocks resampled with replacement; within each drawn block the attempt indices resampled with replacement and used for both kP and kK (the gate makes attempt i the same target with the same probes in both), each process's non-attempt time kept (it holds the rotation-key table build); the cold points resampled, paired across cP and cK",
+  "primary_is": "the END-TO-END cold ratio; the rank-stage and online ratios are co-reported and never decide",
+  "secondary": [
+   "rank stage kP/kK: whole-stage ratio and per-attempt cost ratio (paired bootstrap), ns per probe per arm, kK/kKaa",
+   "per-attempt ratio by probe-count tercile (does the gain depend on the attempt length)",
+   "the rotation-key table build time per rank process (rank_rotkey_build_ms)",
+   "cold without rank, setup, online and peak RSS cP/cK (expected 1: same code)",
+   "the point-addition, frame and rotation-key counters per rank process",
+   "rho ms/step from rT; S = cost / (rho ms/step) / sqrt(r) for E2E cold, cold without rank and online, per arm; delta S cP to cK; E2E cold gap IC / rT and online gaps to rT"
+  ]
+ },
+ "success_criterion": "AGENTS.md 'Success criterion: iterative improvement of the index-calculus baseline'"
+}

@@ -1,0 +1,417 @@
+{
+ "schema": "validator-report/lead-sweep-recompute/v1",
+ "status": "pass",
+ "what": "runner verdicts (baseline/lead priced-S ratios, paired by planted target, geomean and 95% percentile bootstrap, 10,000 resamples, seed 20261119) recomputed from the raw ca-ic arm JSONs by analyze.py; every row verified [d]G = Q",
+ "raw_data": [
+  {
+   "path": "ext/LEAD-prime-batched-mitm-20261121/20261123T051708Z-phase1/cells/bench-prime-24/baseline.json",
+   "sha256": "795ee131f2337dcd338fdc9e0cafc055595e297183ca019bc1ac2e507adee495"
+  },
+  {
+   "path": "ext/LEAD-prime-batched-mitm-20261121/20261123T051708Z-phase1/cells/bench-prime-24/lead-m2.json",
+   "sha256": "a3fdfd96696a5ab4871c6ef162707587d435c2527c328c636f954fe3a3c5c17b"
+  },
+  {
+   "path": "ext/LEAD-prime-batched-mitm-20261121/20261123T051708Z-phase1/cells/bench-prime-24/lead-m3.json",
+   "sha256": "7b1a0ca8603c01c4f0552020c0e759d9cc193271c6968b55c178f27069a9ba0c"
+  },
+  {
+   "path": "ext/LEAD-prime-batched-mitm-20261121/20261123T051708Z-phase1/verdict.json",
+   "sha256": "dd808ae1ff927b27618fd7742669b09ef15b8d409ba346dcf066e89132420e3a"
+  },
+  {
+   "path": "ext/LEAD-prime-batched-mitm-20261121/20261123T051709Z-phase2/cells/bench-prime-28/baseline.json",
+   "sha256": "6cd80766977971c7cc663ee1ffb65a33d58fa850bf2fbb97426f027bf91528ea"
+  },
+  {
+   "path": "ext/LEAD-prime-batched-mitm-20261121/20261123T051709Z-phase2/cells/bench-prime-28/lead-m2.json",
+   "sha256": "01ef3f10842c9a4447b66165f276750f0cdb7a737fdd8bde9843263e441124c5"
+  },
+  {
+   "path": "ext/LEAD-prime-batched-mitm-20261121/20261123T051709Z-phase2/cells/bench-prime-28/lead-m3.json",
+   "sha256": "64dbd554923227203050912a40c175bd5b9ec2ff99d6c913b3624485d318ad40"
+  },
+  {
+   "path": "ext/LEAD-prime-batched-mitm-20261121/20261123T051709Z-phase2/verdict.json",
+   "sha256": "b8944a8f8dbe9aab3f4a28ab1c17133931510a374d5eaf150e0bc274d3449f00"
+  },
+  {
+   "path": "ext/LEAD-prime-batched-mitm-20261121/20261123T051710Z-phase3/cells/bench-prime-32/baseline.json",
+   "sha256": "a8b3af4f516a487bf26fec42d5d190a2508e521ee91af650e59b448b506cb26a"
+  },
+  {
+   "path": "ext/LEAD-prime-batched-mitm-20261121/20261123T051710Z-phase3/cells/bench-prime-32/lead-m2.json",
+   "sha256": "0ae57cd426e003cb066c7598a4e2bddae2b9f3d0972f11517dc2433d2a48667b"
+  },
+  {
+   "path": "ext/LEAD-prime-batched-mitm-20261121/20261123T051710Z-phase3/cells/bench-prime-32/lead-m3.json",
+   "sha256": "75fe087ed7096cd2211d66c357901afbc5265a340f212380a06018fda7f99d17"
+  },
+  {
+   "path": "ext/LEAD-prime-batched-mitm-20261121/20261123T051710Z-phase3/verdict.json",
+   "sha256": "7b47e635abb91530382b0164364cf99b7511451a09eb73bec504790f518ec4e0"
+  },
+  {
+   "path": "fresh/LEAD-prime-batched-mitm-20261121/20261123T051408Z-phase1/cells/bench-prime-16/baseline.json",
+   "sha256": "306b638b1274e7e3ab2059ae6f86d503e6c8c25a0d82cbaa8e93f891b30bcbb1"
+  },
+  {
+   "path": "fresh/LEAD-prime-batched-mitm-20261121/20261123T051408Z-phase1/cells/bench-prime-16/lead-m2.json",
+   "sha256": "ce53862d47302dd316cd80f65b8fcabc8c17342fb9ba5b9dd4994d060d4b1cba"
+  },
+  {
+   "path": "fresh/LEAD-prime-batched-mitm-20261121/20261123T051408Z-phase1/cells/bench-prime-16/lead-m3.json",
+   "sha256": "9e7309cf79ff041ff82a3873e9b5da0911b213dfaa93db062670f027d4a7eb7b"
+  },
+  {
+   "path": "fresh/LEAD-prime-batched-mitm-20261121/20261123T051408Z-phase1/cells/bench-prime-18/baseline.json",
+   "sha256": "7bf41ed7d26229f544880695ad2992886c4b46689767e186c6e3e576f159a7b0"
+  },
+  {
+   "path": "fresh/LEAD-prime-batched-mitm-20261121/20261123T051408Z-phase1/cells/bench-prime-18/lead-m2.json",
+   "sha256": "29fe2ea2879978fcc7b31a0e5509f0f7a9c6d0b40b4af573b95aaf346ed74947"
+  },
+  {
+   "path": "fresh/LEAD-prime-batched-mitm-20261121/20261123T051408Z-phase1/cells/bench-prime-18/lead-m3.json",
+   "sha256": "723e100e87a65e19a21ae16af541b8c0454f5ff7a80609fbd63f4f9ccb5e8e85"
+  },
+  {
+   "path": "fresh/LEAD-prime-batched-mitm-20261121/20261123T051408Z-phase1/verdict.json",
+   "sha256": "5ba7a99c7432a1e118ca6e473b59fecb195cbe8918ff6e8359533f77fe79be65"
+  },
+  {
+   "path": "fresh/LEAD-prime-batched-mitm-20261121/20261123T051409Z-phase2/cells/bench-prime-20/baseline.json",
+   "sha256": "6270a1e9df5d8aa5ef3e91e970aaba6c543e721df909d1aa0db1f95ac67b9334"
+  },
+  {
+   "path": "fresh/LEAD-prime-batched-mitm-20261121/20261123T051409Z-phase2/cells/bench-prime-20/lead-m2.json",
+   "sha256": "17e4feda8506602ba1281cf722378f3d7d9983d48c3e7f8beb71cddc08e2a6c6"
+  },
+  {
+   "path": "fresh/LEAD-prime-batched-mitm-20261121/20261123T051409Z-phase2/cells/bench-prime-20/lead-m3.json",
+   "sha256": "49ed7552b2784742ded43f509f20aad7086de3ca7b8f0cbe1dbd62db7072b438"
+  },
+  {
+   "path": "fresh/LEAD-prime-batched-mitm-20261121/20261123T051409Z-phase2/cells/bench-prime-22/baseline.json",
+   "sha256": "84ebb43cee664b935f3016093d47625626d5a55002aa97f267a02f91f9b764f6"
+  },
+  {
+   "path": "fresh/LEAD-prime-batched-mitm-20261121/20261123T051409Z-phase2/cells/bench-prime-22/lead-m2.json",
+   "sha256": "7735733db11faa6bdc176be7bf9927b366d230cc8b2483268992e4a107ffc272"
+  },
+  {
+   "path": "fresh/LEAD-prime-batched-mitm-20261121/20261123T051409Z-phase2/cells/bench-prime-22/lead-m3.json",
+   "sha256": "8c8d7c4353c278ed73ff6bbdccd5c2b354be1d196b91bf2ff390efd56ff09192"
+  },
+  {
+   "path": "fresh/LEAD-prime-batched-mitm-20261121/20261123T051409Z-phase2/verdict.json",
+   "sha256": "fbb92dab7631b6dae97d4c16e34ed352a4f1a0a1190927dc5061f08f5810badd"
+  },
+  {
+   "path": "fresh/LEAD-prime-batched-mitm-20261121/20261123T051409Z-phase3/cells/bench-prime-24/baseline.json",
+   "sha256": "0de963b5933f92ba2cbdbbe6c18f9f680ec6c1200a25aab427ac7a4c140801a3"
+  },
+  {
+   "path": "fresh/LEAD-prime-batched-mitm-20261121/20261123T051409Z-phase3/cells/bench-prime-24/lead-m2.json",
+   "sha256": "5426e209db21bee2a52fbbc99ca7c685c9f775868793fe47b698ad611cefdabf"
+  },
+  {
+   "path": "fresh/LEAD-prime-batched-mitm-20261121/20261123T051409Z-phase3/cells/bench-prime-24/lead-m3.json",
+   "sha256": "c2e38c370c97ad9969eea5188196143ff5c7e0734ef9dafc4723508d270aba6c"
+  },
+  {
+   "path": "fresh/LEAD-prime-batched-mitm-20261121/20261123T051409Z-phase3/verdict.json",
+   "sha256": "a0948504aa0f548e168ac9746c6a26b1cef41a2b1df22b7445f51d59a913d9cf"
+  }
+ ],
+ "headline": [
+  {
+   "name": "ext bench-prime-24 m2 geomean S ratio",
+   "claimed": 4.568048009698441,
+   "recomputed": 4.568048009698441,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "ext bench-prime-24 m2 CI lo",
+   "claimed": 4.366054584921688,
+   "recomputed": 4.366054584921688,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "ext bench-prime-24 m2 CI hi",
+   "claimed": 4.730348487616962,
+   "recomputed": 4.730065203168366,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "ext bench-prime-24 m3 geomean S ratio",
+   "claimed": 4.3275726208966425,
+   "recomputed": 4.3275726208966425,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "ext bench-prime-24 m3 CI lo",
+   "claimed": 4.123096955425792,
+   "recomputed": 4.124529017315815,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "ext bench-prime-24 m3 CI hi",
+   "claimed": 4.5132862891487555,
+   "recomputed": 4.5132862891487555,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "ext bench-prime-28 m2 geomean S ratio",
+   "claimed": 4.884310995821405,
+   "recomputed": 4.884310995821405,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "ext bench-prime-28 m2 CI lo",
+   "claimed": 4.487031045925433,
+   "recomputed": 4.487031045925433,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "ext bench-prime-28 m2 CI hi",
+   "claimed": 5.317682544441433,
+   "recomputed": 5.317682544441433,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "ext bench-prime-28 m3 geomean S ratio",
+   "claimed": 3.9907614675630994,
+   "recomputed": 3.9907614675630994,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "ext bench-prime-28 m3 CI lo",
+   "claimed": 3.796437634639571,
+   "recomputed": 3.796437634639571,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "ext bench-prime-28 m3 CI hi",
+   "claimed": 4.195031928266719,
+   "recomputed": 4.195031928266719,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "ext bench-prime-32 m2 geomean S ratio",
+   "claimed": 3.909200550516511,
+   "recomputed": 3.909200550516511,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "ext bench-prime-32 m2 CI lo",
+   "claimed": 3.6828543716937134,
+   "recomputed": 3.6828543716937134,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "ext bench-prime-32 m2 CI hi",
+   "claimed": 4.284488696303946,
+   "recomputed": 4.284488696303946,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "ext bench-prime-32 m3 geomean S ratio",
+   "claimed": 2.6086432649943414,
+   "recomputed": 2.6086432649943414,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "ext bench-prime-32 m3 CI lo",
+   "claimed": 2.4171607860985023,
+   "recomputed": 2.4171607860985023,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "ext bench-prime-32 m3 CI hi",
+   "claimed": 2.849639191613417,
+   "recomputed": 2.849639191613417,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "fresh bench-prime-16 m2 geomean S ratio",
+   "claimed": 2.070012734794013,
+   "recomputed": 2.070012734794013,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "fresh bench-prime-16 m2 CI lo",
+   "claimed": 2.0033081119323635,
+   "recomputed": 2.0041874459258175,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "fresh bench-prime-16 m2 CI hi",
+   "claimed": 2.1539161562884273,
+   "recomputed": 2.1539161562884273,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "fresh bench-prime-16 m3 geomean S ratio",
+   "claimed": 1.69319880296049,
+   "recomputed": 1.69319880296049,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "fresh bench-prime-16 m3 CI lo",
+   "claimed": 1.5099576133825523,
+   "recomputed": 1.5114341977275305,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "fresh bench-prime-16 m3 CI hi",
+   "claimed": 1.8520612392467262,
+   "recomputed": 1.859303076860518,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "fresh bench-prime-18 m2 geomean S ratio",
+   "claimed": 2.7229424799821413,
+   "recomputed": 2.7229424799821413,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "fresh bench-prime-18 m2 CI lo",
+   "claimed": 2.575664306970635,
+   "recomputed": 2.575664306970635,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "fresh bench-prime-18 m2 CI hi",
+   "claimed": 2.8982313304061753,
+   "recomputed": 2.892072459597506,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "fresh bench-prime-18 m3 geomean S ratio",
+   "claimed": 2.0935420077974505,
+   "recomputed": 2.0935420077974505,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "fresh bench-prime-18 m3 CI lo",
+   "claimed": 1.887419925091641,
+   "recomputed": 1.8794862949411621,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "fresh bench-prime-18 m3 CI hi",
+   "claimed": 2.302427048791035,
+   "recomputed": 2.302427048791035,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "fresh bench-prime-20 m2 geomean S ratio",
+   "claimed": 3.0697606261600767,
+   "recomputed": 3.0697606261600767,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "fresh bench-prime-20 m2 CI lo",
+   "claimed": 2.7476275225922486,
+   "recomputed": 2.74133264971367,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "fresh bench-prime-20 m2 CI hi",
+   "claimed": 3.4363781096815518,
+   "recomputed": 3.434327532439271,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "fresh bench-prime-20 m3 geomean S ratio",
+   "claimed": 3.026373403265641,
+   "recomputed": 3.026373403265641,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "fresh bench-prime-20 m3 CI lo",
+   "claimed": 2.8273687131112832,
+   "recomputed": 2.83000830870437,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "fresh bench-prime-20 m3 CI hi",
+   "claimed": 3.2318115837765786,
+   "recomputed": 3.230234905993529,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "fresh bench-prime-22 m2 geomean S ratio",
+   "claimed": 4.590900876278098,
+   "recomputed": 4.590900876278098,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "fresh bench-prime-22 m2 CI lo",
+   "claimed": 4.5025545681502015,
+   "recomputed": 4.5025545681502015,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "fresh bench-prime-22 m2 CI hi",
+   "claimed": 4.696396373375366,
+   "recomputed": 4.695887489911601,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "fresh bench-prime-22 m3 geomean S ratio",
+   "claimed": 3.600751531635704,
+   "recomputed": 3.600751531635704,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "fresh bench-prime-22 m3 CI lo",
+   "claimed": 3.445125150911858,
+   "recomputed": 3.445125150911858,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "fresh bench-prime-22 m3 CI hi",
+   "claimed": 3.757451451064294,
+   "recomputed": 3.7573960781593314,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "fresh bench-prime-24 m2 geomean S ratio",
+   "claimed": 4.401320409099005,
+   "recomputed": 4.401320409099005,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "fresh bench-prime-24 m2 CI lo",
+   "claimed": 4.098214777957313,
+   "recomputed": 4.098281918121719,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "fresh bench-prime-24 m2 CI hi",
+   "claimed": 4.715902052155989,
+   "recomputed": 4.715249447965002,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "fresh bench-prime-24 m3 geomean S ratio",
+   "claimed": 3.7654706009131735,
+   "recomputed": 3.7654706009131735,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "fresh bench-prime-24 m3 CI lo",
+   "claimed": 3.6279165152911044,
+   "recomputed": 3.6279165152911044,
+   "rel_tol": 0.01
+  },
+  {
+   "name": "fresh bench-prime-24 m3 CI hi",
+   "claimed": 3.914892305212505,
+   "recomputed": 3.914892305212505,
+   "rel_tol": 0.01
+  }
+ ]
+}

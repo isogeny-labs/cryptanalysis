@@ -1,0 +1,282 @@
+{
+ "checks": {
+  "all_executed_rows_valid": false,
+  "one_relation_probe_count_root_calls_and_relation_checks_per_point_every_ic_process": true,
+  "one_scalar_per_point_ic_and_rho": true,
+  "oracle_replay": true,
+  "q0_matches_archived_feistel_identity": true,
+  "rank_table_equal_archived": true,
+  "receipt_matches_schedule": true
+ },
+ "detail": {
+  "identity_failures": [],
+  "invalid_rows": [
+   {
+    "arm": "cFX",
+    "issues": [
+     "nonzero exit 1",
+     "missing verified=1",
+     "arm: ic five phases do not sum to the online interval"
+    ],
+    "serial": 1
+   },
+   {
+    "arm": "cFX",
+    "issues": [
+     "nonzero exit 1",
+     "missing verified=1",
+     "arm: ic five phases do not sum to the online interval"
+    ],
+    "serial": 7
+   },
+   {
+    "arm": "cFX",
+    "issues": [
+     "nonzero exit 1",
+     "missing verified=1",
+     "arm: ic five phases do not sum to the online interval"
+    ],
+    "serial": 13
+   },
+   {
+    "arm": "cFX",
+    "issues": [
+     "nonzero exit 1",
+     "missing verified=1",
+     "arm: ic five phases do not sum to the online interval"
+    ],
+    "serial": 15
+   },
+   {
+    "arm": "cFX",
+    "issues": [
+     "nonzero exit 1",
+     "missing verified=1",
+     "arm: ic five phases do not sum to the online interval"
+    ],
+    "serial": 20
+   }
+  ],
+  "online_counters": {
+   "q0/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "q0/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 994008,
+    "s3plant_checked_states": 5988,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "q0/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s000/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s000/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 2276358,
+    "s3plant_checked_states": 13713,
+    "s3plant_swapped_pairs": 2276358,
+    "swapped_pairs": 1
+   },
+   "s000/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s000/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s001/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s001/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 1739680,
+    "s3plant_checked_states": 10480,
+    "s3plant_swapped_pairs": 1739680,
+    "swapped_pairs": 1
+   },
+   "s001/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s001/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s002/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s002/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 55112,
+    "s3plant_checked_states": 332,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s002/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s002/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s003/cF": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s003/cFX": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 153716,
+    "s3plant_checked_states": 926,
+    "s3plant_swapped_pairs": 153716,
+    "swapped_pairs": 1
+   },
+   "s003/cFaa": {
+    "fallback_states": 0,
+    "frame_builds": 1,
+    "irregular_inputs": 0,
+    "resolved_hits": 1,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 1
+   },
+   "s003/cS": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   },
+   "s031/kP": {
+    "fallback_states": 0,
+    "frame_builds": 0,
+    "irregular_inputs": 0,
+    "resolved_hits": 0,
+    "s3plant_checked_candidates": 0,
+    "s3plant_checked_states": 0,
+    "s3plant_swapped_pairs": 0,
+    "swapped_pairs": 0
+   }
+  },
+  "rank_frame_counters": {
+   "kP": {
+    "builds": 600,
+    "plant_checked_inputs": 0
+   }
+  },
+  "rank_padd_counters": {
+   "kP": {
+    "fallback_states": 0,
+    "irregular_inputs": 0,
+    "plant_checked_inputs": 0,
+    "resolved_hits": 600,
+    "swapped_pairs": 303
+   }
+  },
+  "scalar_failures": [],
+  "units_seen": 6
+ },
+ "problems": [],
+ "rows": 24
+}

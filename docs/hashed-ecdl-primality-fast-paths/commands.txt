@@ -1,0 +1,23 @@
+Baseline (before edits), from the crypto repository root:
+cargo test --locked --release --manifest-path crates/hashed-ecdl-tensor/Cargo.toml
+
+Candidate, from the crypto repository root:
+cargo test --locked --release --manifest-path crates/hashed-ecdl-tensor/Cargo.toml -- --nocapture
+cargo clippy --locked --manifest-path crates/hashed-ecdl-tensor/Cargo.toml --all-targets -- -D warnings
+cargo +1.78.0 check --locked --manifest-path crates/hashed-ecdl-tensor/Cargo.toml --all-targets
+cargo fmt --check --manifest-path crates/hashed-ecdl-tensor/Cargo.toml
+cargo run --locked --release --manifest-path crates/hashed-ecdl-tensor/Cargo.toml --bin hashed-ecdl -- validate crates/hashed-ecdl-tensor/examples/eccp131.json
+cargo test --locked --release --lib
+
+Peer, from the cryptanalysis repository root:
+cargo test --locked --release --manifest-path bindings/rust/hashed-ecdl-tensor/Cargo.toml -- --nocapture
+cargo test --locked --release --manifest-path bindings/rust/hashed-ecdl-tensor/Cargo.toml parsed_public_proofs_never_bypass -- --nocapture
+cargo clippy --locked --manifest-path bindings/rust/hashed-ecdl-tensor/Cargo.toml --all-targets -- -D warnings
+cargo +1.78.0 check --locked --manifest-path bindings/rust/hashed-ecdl-tensor/Cargo.toml --all-targets
+cargo fmt --check --manifest-path bindings/rust/hashed-ecdl-tensor/Cargo.toml
+cargo run --locked --release --manifest-path bindings/rust/hashed-ecdl-tensor/Cargo.toml --bin hashed-ecdl -- validate bindings/rust/hashed-ecdl-tensor/examples/eccp131.json
+
+Documents (rendering only; no research calculation uses Python):
+dot -Tsvg flow.dot -o flow.svg
+python -c 'import typst; typst.compile("report.typ", output="report.pdf")'
+pdftoppm -scale-to 1300 -png -singlefile report.pdf /tmp/primality-report

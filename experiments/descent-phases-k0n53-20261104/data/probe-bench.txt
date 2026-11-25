@@ -1,0 +1,18 @@
+pair table: tier folded, 1106640 sums, process RSS 17868 kB after build
+filter: 131072 words (1024 KiB), mask bits 23, rests 1106640 (4322 KiB), buckets 131073
+contains_key on 983404 filter-admitted keys: 58.17 ns each (124 hits)
+filter alone: 18.43 ns per probe, admit rate 0.1229
+contains_key with prefetch distance 16: 34.14 ns per probe
+contains_key: hot 5.43 ns, random 29.40 ns per probe (280 hits)
+pair table: tier folded, 1106640 sums, process RSS 17796 kB after build
+filter: 131072 words (1024 KiB), mask bits 23, rests 1106640 (4322 KiB), buckets 131073
+contains_key on 983404 filter-admitted keys: 111.76 ns each (124 hits)
+filter alone: 24.97 ns per probe, admit rate 0.1229
+contains_key with prefetch distance 16: 24.64 ns per probe
+contains_key: hot 5.47 ns, random 28.86 ns per probe (280 hits)
+pair table: tier folded, 1106640 sums, process RSS 17872 kB after build
+filter: 131072 words (1024 KiB), mask bits 23, rests 1106640 (4322 KiB), buckets 131073
+contains_key on 983404 filter-admitted keys: 68.31 ns each (124 hits)
+filter alone: 18.59 ns per probe, admit rate 0.1229
+contains_key with prefetch distance 16: 27.14 ns per probe
+contains_key: hot 2.21 ns, random 20.96 ns per probe (280 hits)

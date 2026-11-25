@@ -1,0 +1,6 @@
+all1440 actual original source guards verified
+Traceback (most recent call last):
+  File "/workspace/scratch/ct94_audit_complete_CI03_03.py", line 107, in <module>
+    assert equal(f,target),('source-mismatch',str(f),str(target))
+           ^^^^^^^^^^^^^^^
+AssertionError: ('source-mismatch', '/workspace/scratch/ct94-additive-original-full-CI-acceptance-01/whole-artifact/actual-compiled-source/paired-fourth-preflight/generated/custody.json', '/workspace/cryptanalysis/experiments/chained-transfer-public-target/paired-fourth-preflight/generated/custody.json')

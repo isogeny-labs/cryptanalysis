@@ -1,0 +1,198 @@
+{
+ "valid": false,
+ "performance_index": null,
+ "performance_index_ci95": null,
+ "areas": {
+  "dlp": {
+   "index": 0.9993829278012724,
+   "weight": 0.3333333333333333,
+   "kernels": 1
+  },
+  "pdp": {
+   "index": 0.9871987682720352,
+   "weight": 0.3333333333333333,
+   "kernels": 2
+  },
+  "relation": {
+   "index": 1.0039984565765563,
+   "weight": 0.3333333333333333,
+   "kernels": 5
+  }
+ },
+ "kernels": [
+  {
+   "id": "dlp/koblitz_signed_rho_k0_n41",
+   "area": "dlp",
+   "fingerprints": [
+    "b657682a398de120"
+   ],
+   "valid": true,
+   "base_median_ns": 336396339,
+   "cand_median_ns": 336604048,
+   "speedup": 0.9993829278012724,
+   "speedup_ci95": [
+    0.9993829278012724,
+    0.9993829278012724
+   ],
+   "aa_noise_ln": null,
+   "verdict": "neutral",
+   "d": [
+    -0.000617262666135655
+   ],
+   "n": []
+  },
+  {
+   "id": "pdp/mitm_m3_n31",
+   "area": "pdp",
+   "fingerprints": [
+    "eb766ab68929a6f6"
+   ],
+   "valid": true,
+   "base_median_ns": 374872036,
+   "cand_median_ns": 378152490,
+   "speedup": 0.991325049849599,
+   "speedup_ci95": [
+    0.991325049849599,
+    0.991325049849599
+   ],
+   "aa_noise_ln": null,
+   "verdict": "neutral",
+   "d": [
+    -0.00871279656660483
+   ],
+   "n": []
+  },
+  {
+   "id": "pdp/mitm_m4_n31",
+   "area": "pdp",
+   "fingerprints": [
+    "fa3ffdbaf613446a"
+   ],
+   "valid": true,
+   "base_median_ns": 121176604,
+   "cand_median_ns": 123260989,
+   "speedup": 0.9830896618880772,
+   "speedup_ci95": [
+    0.9830896618880772,
+    0.9830896618880772
+   ],
+   "aa_noise_ln": null,
+   "verdict": "neutral",
+   "d": [
+    -0.017054950493990487
+   ],
+   "n": []
+  },
+  {
+   "id": "relation/koblitz_collect_k0n41_w164_u4096",
+   "area": "relation",
+   "fingerprints": [
+    "5db139c2b89ef0f5"
+   ],
+   "valid": true,
+   "base_median_ns": 314626561,
+   "cand_median_ns": 309189516,
+   "speedup": 1.0175848297521188,
+   "speedup_ci95": [
+    1.0175848297521188,
+    1.0175848297521188
+   ],
+   "aa_noise_ln": null,
+   "verdict": "neutral",
+   "d": [
+    0.017432005623217183
+   ],
+   "n": []
+  },
+  {
+   "id": "relation/koblitz_collect_k0n53_w477_u1024",
+   "area": "relation",
+   "fingerprints": [
+    "cbaf6ffbd5aff92b"
+   ],
+   "valid": true,
+   "base_median_ns": 325690283,
+   "cand_median_ns": 321929305,
+   "speedup": 1.0116826208163932,
+   "speedup_ci95": [
+    1.0116826208163932,
+    1.0116826208163932
+   ],
+   "aa_noise_ln": null,
+   "verdict": "neutral",
+   "d": [
+    0.011614905883478443
+   ],
+   "n": []
+  },
+  {
+   "id": "relation/koblitz_descent_k0n53_m2_x4",
+   "area": "relation",
+   "fingerprints": [
+    "d83e70c7593c69d6"
+   ],
+   "valid": true,
+   "base_median_ns": 497264567,
+   "cand_median_ns": 501163647,
+   "speedup": 0.9922199464718956,
+   "speedup_ci95": [
+    0.9922199464718956,
+    0.9922199464718956
+   ],
+   "aa_noise_ln": null,
+   "verdict": "neutral",
+   "d": [
+    -0.007810476039796925
+   ],
+   "n": []
+  },
+  {
+   "id": "relation/koblitz_pair_table_k0n41_folded",
+   "area": "relation",
+   "fingerprints": [
+    "5b99148d77d29cb6",
+    "ad1429caee869059"
+   ],
+   "valid": false,
+   "base_median_ns": 163523166,
+   "cand_median_ns": 164717175,
+   "speedup": 0.9927511566416799,
+   "speedup_ci95": [
+    0.9927511566416799,
+    0.9927511566416799
+   ],
+   "aa_noise_ln": null,
+   "verdict": "INVALID",
+   "d": [
+    -0.007275243882882875
+   ],
+   "n": []
+  },
+  {
+   "id": "relation/koblitz_rung_k0n31",
+   "area": "relation",
+   "fingerprints": [
+    "7874561aa3c8630a"
+   ],
+   "valid": true,
+   "base_median_ns": 202550785,
+   "cand_median_ns": 201340885,
+   "speedup": 1.0060092116909092,
+   "speedup_ci95": [
+    1.0060092116909092,
+    1.0060092116909092
+   ],
+   "aa_noise_ln": null,
+   "verdict": "neutral",
+   "d": [
+    0.005991228386031418
+   ],
+   "n": []
+  }
+ ],
+ "rounds": 1,
+ "mode": "callgrind_ir",
+ "unit": "Ir",
+ "base": "/tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/pb-base/perfbench",
+ "cand": "/tmp/claude-0/-home-user/a473be4d-01cb-5509-b9a8-ebaa867004d0/scratchpad/pb-filter/perfbench"
+}

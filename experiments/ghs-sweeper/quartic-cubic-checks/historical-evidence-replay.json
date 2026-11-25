@@ -1,0 +1,64 @@
+{
+  "manifests": [
+    {
+      "manifest": "experiments/ghs-sweeper/scope-checks/artifact-manifest.json",
+      "sha256": "e33991acd83108abd2a857e3e577dd44ad22b5d2ba34256374d000497d21830a",
+      "entries": 32,
+      "live_byte_identical": 32
+    },
+    {
+      "manifest": "experiments/ghs-sweeper/three-gluing-checks/artifact-manifest.json",
+      "sha256": "2e51ce96d1b31346c5818056fec0f50ea136b12ab198f7fb90713f0430a0c6ad",
+      "entries": 30,
+      "live_byte_identical": 30
+    },
+    {
+      "manifest": "experiments/ghs-sweeper/kernel-checks/artifact-manifest.json",
+      "sha256": "a526633579a9a6de530a3165fdaa068b564f17649843428fe9f26f5d620adb1e",
+      "entries": 63,
+      "live_byte_identical": 63
+    },
+    {
+      "manifest": "experiments/ghs-sweeper/cubic-gluing-checks/artifact-manifest.json",
+      "sha256": "f83024343ffaf6f574f25016a6117045624c43f16613f8308d6faf4de62a1d91",
+      "entries": 89,
+      "live_byte_identical": 85
+    },
+    {
+      "manifest": "experiments/ghs-sweeper/cubic-gluing-checks/additional-artifact-manifest.json",
+      "sha256": "77d4e8c8d03622b4fc9aae0bead9330417a0a57196f542e5ae425e7091e73209",
+      "entries": 15,
+      "live_byte_identical": 15
+    }
+  ],
+  "explicit_version_transitions": [
+    {
+      "path": ".github/workflows/lean-proof-gate.yml",
+      "original_manifest": "experiments/ghs-sweeper/cubic-gluing-checks/artifact-manifest.json",
+      "original_commit": "9ddbe2c6",
+      "original_sha256": "33f54aca34e310dad1f9cbd416523ca73567aff70a8732957b0eea13f59e736c",
+      "new_sha256": "e5d268d8420daeb53bc50f195a2a36847f9bc2ea44ac52829b6b517568ef34b8"
+    },
+    {
+      "path": "problems/binary-cubic-gluing-target-and-novelty.md",
+      "original_manifest": "experiments/ghs-sweeper/cubic-gluing-checks/artifact-manifest.json",
+      "original_commit": "9ddbe2c6",
+      "original_sha256": "1f9bae537d419dca424fe229798f6cc6590ff82e671ea33c63d7188b507bbe35",
+      "new_sha256": "fcc05bff9a8db8b123097dc67ed899e5c36971690b6d94d58f609fb53f909182"
+    },
+    {
+      "path": "tools/lean/README.md",
+      "original_manifest": "experiments/ghs-sweeper/cubic-gluing-checks/artifact-manifest.json",
+      "original_commit": "9ddbe2c6",
+      "original_sha256": "5fe202341a8b963422b955154654839f2f4c7a435c2bc76f018fc915b53edbe0",
+      "new_sha256": "48b73369b713aa34d12bc25dc1485c64ca8cd4fbf27209528c00b82a513c92be"
+    },
+    {
+      "path": "tools/lean/current-corpus-gate.py",
+      "original_manifest": "experiments/ghs-sweeper/cubic-gluing-checks/artifact-manifest.json",
+      "original_commit": "9ddbe2c6",
+      "original_sha256": "0b1ab1e2acfde0a13dd528ffba7f3173288457336a62d3fb676f4776ce6bdc2b",
+      "new_sha256": "9615d45b805bd9442f59e88d1a20f6b9a3519439d1993be80ae379898030efb9"
+    }
+  ]
+}

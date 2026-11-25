@@ -1,0 +1,133 @@
+   Compiling hashed-ecdl-tensor v0.1.0 (/workspace/cryptanalysis/bindings/rust/hashed-ecdl-tensor)
+    Finished `release` profile [optimized] target(s) in 3.67s
+     Running unittests src/lib.rs (bindings/rust/target/release/deps/cryptanalysis-aeb2519aac7fab62)
+
+running 20 tests
+test gpu::tests::cuda_backend_reports_cleanly ... ok
+test gpu::tests::emulator_solves_curve ... ok
+test gpu::tests::emulator_solves_zp ... ok
+test gpu::tests::max_ops_is_enforced ... ok
+test gpu::tests::options_round_trip_and_defaults ... ok
+test hashed_ecdl::tests::exhausted_trials_and_empty_bases_are_not_successes ... ok
+test hashed_ecdl::tests::identity_and_bounds_are_explicit ... ok
+test hashed_ecdl::tests::inverse_hash_enumeration_matches_complete_group_scan ... ok
+test hashed_ecdl::tests::oracle_matches_cartesian_sum_for_every_target ... ok
+test hashed_ecdl::tests::overlapping_slots_keep_separate_columns ... ok
+test hashed_ecdl::tests::rejects_corrupt_oracle_instead_of_accepting_a_relation ... ok
+test hashed_ecdl::tests::small_curve_all_logarithms_and_uninformative_dependency ... ok
+test hashed_ecdl::tests::validates_curve_and_canonical_points ... ok
+test tests::error_display_includes_status ... ok
+test tests::group_is_send_and_sync ... ok
+test tests::options_default_matches_c_defaults ... ok
+test tests::hashed_ecdl_agrees_with_independent_c_arithmetic ... ok
+test tests::tensor_curve_agrees_with_independent_c_arithmetic ... ok
+test tests::version_is_semver_like ... ok
+test hashed_ecdl::tests::solves_and_replays_seeded_known_answers ... ok
+
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/ffi_parity.rs (bindings/rust/target/release/deps/ffi_parity-a0785a41fdcfb188)
+
+running 19 tests
+test curve_dispatch_and_glv ... ok
+test ec_curve_end_to_end ... ok
+test index_calculus_context_reuse ... ok
+test index_calculus_one_shot ... ok
+test index_calculus_random_exponent_method ... ok
+test number_theory_helpers ... ok
+test version_matches_header ... ok
+test zp_bsgs ... ok
+test zp_bsgs_interval_miss_is_not_found ... ok
+test zp_cheon ... ok
+test zp_construction_and_accessors ... ok
+test zp_element_ops ... ok
+test zp_grumpy_interval ... ok
+test zp_kangaroo_interval ... ok
+test zp_max_ops_limit ... ok
+test zp_dlog_every_solver ... ok
+test zp_rho_single_and_multi_thread ... ok
+test group_usable_from_multiple_threads ... ok
+test zp_precomp ... ok
+
+test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running unittests src/lib.rs (bindings/rust/target/release/deps/hashed_ecdl_tensor-11962db036771e70)
+
+running 27 tests
+test arithmetic::tests::exact_small_primality_and_square_roots ... ok
+test arithmetic::tests::limits_do_not_turn_unknown_primes_into_true_or_false ... ok
+test contraction::packing::tests::conditional_expectations_do_not_assume_disjoint_ports ... ok
+test contraction::deformation::tests::integral_kernel_and_geometric_mode_series_match ... ok
+test contraction::deformation::tests::packet_entries_keep_creation_time_representatives ... ok
+test arithmetic::tests::aks_cyclic_identity_and_large_prime_path ... ok
+test contraction::recursive::tests::tapered_hermite_recovers_the_constant_without_rounding ... ok
+test contraction::recursive::tests::weighted_enumeration_has_no_missing_or_repeated_monomials ... ok
+test contraction::tests::counts_and_prefix_witnesses_match_truth_tables ... ok
+test contraction::tests::functional_leaf_count_equals_complete_edge_enumeration ... ok
+test curve::tests::prime_order_certificate_and_point_encoding ... ok
+test contraction::recursive::tests::forced_small_packet_recursion_matches_independent_direct_contraction ... ok
+test encoding::tests::hash_membership_and_cofactor_clear_are_coordinate_predicates ... ok
+test encoding::tests::modular_words_are_canonical_and_invalid_inputs_have_no_witness ... ok
+test encoding::tests::point_network_handles_every_pair_and_rejects_counterfeit_outputs ... ok
+test encoding::tests::ripple_arithmetic_and_shared_word_copies ... ok
+test network::tests::incomplete_graphs_and_duplicate_interfaces_are_rejected ... ok
+test network::tests::parallel_edges_pins_and_isolated_scalars ... ok
+test contraction::recursive::coupled_controls::coupled_nested_contraction_preserves_old_packet_creation_precision ... ok
+test reduction::tests::exhausted_tensor_work_is_unknown_and_identity_has_an_exact_certificate ... ok
+test reduction::tests::inverse_hash_enumeration_matches_independent_subgroup_scan ... ok
+test encoding::tests::fourier_products_match_independent_integer_products_and_size_bounds ... ok
+test ring::tests::creation_precision_lifts_are_not_silently_ring_homomorphisms ... ok
+test ring::tests::units_and_interpolation_over_nonfields ... ok
+test contraction::recursive::coupled_controls::coupled_packets_match_direct_counts_with_parallel_ports_and_quadratic_modes ... ok
+test reduction::tests::cofactor_tensor_projection_finds_only_subgroup_points has been running for over 60 seconds
+test reduction::tests::tensor_relation_pipeline_recovers_and_replays_without_scalar_leakage has been running for over 60 seconds
+test reduction::tests::cofactor_tensor_projection_finds_only_subgroup_points ... ok
+test reduction::tests::tensor_relation_pipeline_recovers_and_replays_without_scalar_leakage ... ok
+
+test result: ok. 27 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 204.02s
+
+     Running unittests src/bin/hashed-ecdl.rs (bindings/rust/target/release/deps/hashed_ecdl-1adba597a2b08e12)
+
+running 5 tests
+test tests::input_reader_preserves_io_errors ... ok
+test tests::strict_json_problem_keeps_optional_defaults_and_required_target ... ok
+test tests::strict_json_problem_rejects_duplicates_even_after_null ... ok
+test tests::strict_json_receipt_rejects_duplicate_fields_and_nested_problems ... ok
+test tests::input_limit_applies_to_bytes_read_from_a_stream ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/strict_json.rs (bindings/rust/target/release/deps/strict_json-4061c2a98f2eb846)
+
+running 3 tests
+test strict_json_point_forms_reject_duplicate_variants_and_coordinates ... ok
+test strict_json_records_keep_required_fields_and_reject_unknown_fields ... ok
+test strict_json_rejects_duplicate_certificate_fields_and_nested_records ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests cryptanalysis
+
+running 14 tests
+test cryptanalysis/src/gpu.rs - gpu::Group::gpu_rho (line 127) ... ok
+test cryptanalysis/src/group.rs - group::Group::ec_count_points (line 197) ... ok
+test cryptanalysis/src/group.rs - group::Group::dlog (line 476) ... ok
+test cryptanalysis/src/group.rs - group::Group::zp (line 168) ... ok
+test cryptanalysis/src/group.rs - group::cheon_best_divisor (line 636) ... ok
+test cryptanalysis/src/index_calculus.rs - index_calculus (line 7) ... ok
+test cryptanalysis/src/nt.rs - nt::factorize (line 61) ... ok
+test cryptanalysis/src/lib.rs - (line 11) ... ok
+test cryptanalysis/src/nt.rs - nt::invmod (line 48) ... ok
+test cryptanalysis/src/nt.rs - nt::is_prime (line 7) ... ok
+test cryptanalysis/src/nt.rs - nt::next_prime (line 18) ... ok
+test cryptanalysis/src/nt.rs - nt::powmod (line 38) ... ok
+test cryptanalysis/src/options.rs - options::Options (line 46) ... ok
+test cryptanalysis/src/nt.rs - nt::primitive_root (line 28) ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.71s
+
+   Doc-tests hashed_ecdl_tensor
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

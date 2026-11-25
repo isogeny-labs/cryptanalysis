@@ -7,14 +7,56 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* a*b mod m for a, b < m (so the high word of the product is < m and the
+ * quotient fits 64 bits): one hardware 128/64 division on x86-64 instead of
+ * the __umodti3 call the compiler emits for a 128-bit '%'.  On ARM64 use the
+ * shared Barrett / Möller–Granlund path (no __udivmodti4).  Same residue. */
+static inline uint64_t mulmod_lt(uint64_t a, uint64_t b, uint64_t m)
+{
+#if defined(__x86_64__) && defined(__GNUC__)
+    const ca_u128 t = (ca_u128)a * b;
+    uint64_t q = (uint64_t)t, rem = (uint64_t)(t >> 64);
+    __asm__("divq %2" : "+a"(q), "+d"(rem) : "r"(m) : "cc");
+    return rem;
+#else
+    return ca_u128_mod((ca_u128)a * b, m);
+#endif
+}
+
+/* base^exp mod m; 0 when m is 0 or 1.  (Contract notes for a zero or
+ * composite modulus live here, not in ca_modarith.h: that header is pinned
+ * byte for byte by verification/pqc-assay/sources.sha256.) */
+/* Thread-local Montgomery context for the last odd modulus used by
+ * ca_powmod / ca_sqrtmod_prime.  Init is three multiplications; reusing it
+ * across Legendre / Tonelli / (p+1)/4 ladders on a fixed p removes that from
+ * every call.  Same residues (ca_mont_init is a function of p alone). */
+static _Thread_local ca_mont ca_pow_mont;
+static _Thread_local uint64_t ca_pow_mont_p;
+
+static ca_mont *ca_pow_mont_for(uint64_t m)
+{
+    if (ca_pow_mont_p != m) {
+        ca_mont_init(&ca_pow_mont, m);
+        ca_pow_mont_p = m;
+    }
+    return &ca_pow_mont;
+}
+
 uint64_t ca_powmod(uint64_t base, uint64_t exp, uint64_t m)
 {
-    if (m == 1) return 0;
+    if (m <= 1) return 0; /* m == 0 is not a modulus: 0, as ca_invmod answers it */
+    /* Odd modulus and more than a few squarings: Montgomery form, whose
+     * multiply has no 128-bit division.  Setting it up costs three, so
+     * short exponents stay on the plain ladder.  Same residue either way. */
+    if ((m & 1) && exp >= 16) {
+        const ca_mont *mo = ca_pow_mont_for(m);
+        return ca_mont_from(mo, ca_mont_pow(mo, ca_mont_to(mo, base), exp));
+    }
     uint64_t r = 1;
     base %= m;
     while (exp) {
-        if (exp & 1) r = ca_mulmod(r, base, m);
-        base = ca_mulmod(base, base, m);
+        if (exp & 1) r = mulmod_lt(r, base, m);
+        base = mulmod_lt(base, base, m);
         exp >>= 1;
     }
     return r;
@@ -30,16 +72,34 @@ uint64_t ca_gcd(uint64_t a, uint64_t b)
     return a;
 }
 
-uint64_t ca_invmod(uint64_t a, uint64_t m)
+#ifdef CA_GLV_FIELD_COUNT
+uint64_t ca_fc_cnt[CA_FC_PHASES][CA_FC_KINDS];
+uint64_t ca_fc_ev[CA_FC_EV_N];
+uint32_t ca_fc_phase;
+void ca_fc_reset(void)
 {
-    /* Extended Euclid with signed 128-bit coefficients so any 64-bit
-     * modulus is safe. */
-    if (m == 0) return 0;
-    a %= m;
-    if (a == 0) return 0;
+    memset(ca_fc_cnt, 0, sizeof(ca_fc_cnt));
+    memset(ca_fc_ev, 0, sizeof(ca_fc_ev));
+    ca_fc_phase = CA_FC_OUTSIDE;
+}
+void ca_fc_read(uint64_t *out)
+{
+    memcpy(out, ca_fc_cnt, sizeof(ca_fc_cnt));
+    memcpy(out + CA_FC_PHASES * CA_FC_KINDS, ca_fc_ev, sizeof(ca_fc_ev));
+}
+#endif
+
+/* Extended Euclid with signed 128-bit coefficients, so any 64-bit modulus
+ * (odd or even) is safe.  Precondition 0 < a < m.  This is the reference
+ * inversion: even moduli use it, and so do -DCA_GLV_FIELD_COUNT builds,
+ * where CA_FC_EUCLID counts its division steps (the counter keeps that
+ * meaning; see ca_invmod). */
+static uint64_t invmod_euclid(uint64_t a, uint64_t m)
+{
     ca_i128 t = 0, newt = 1;
     uint64_t r = m, newr = a;
     while (newr) {
+        CA_FC_ADD(CA_FC_EUCLID, 1);
         uint64_t q = r / newr;
         ca_i128 tmp = t - (ca_i128)q * newt;
         t = newt;
@@ -51,6 +111,134 @@ uint64_t ca_invmod(uint64_t a, uint64_t m)
     if (r != 1) return 0;
     if (t < 0) t += (ca_i128)m;
     return (uint64_t)t;
+}
+
+#ifndef CA_GLV_FIELD_COUNT
+/* m^{-1} mod 2^64, cached per odd modulus (affine EC, batch lift_x, benches). */
+static uint64_t odd_ninv(uint64_t m)
+{
+    static _Thread_local uint64_t ninv_m, ninv_val;
+    if (ninv_m == m) return ninv_val;
+    uint64_t ninv = (m * 3) ^ 2; /* m^-1 mod 2^5; Newton doubles the bits */
+    ninv *= 2 - m * ninv;
+    ninv *= 2 - m * ninv;
+    ninv *= 2 - m * ninv;
+    ninv *= 2 - m * ninv; /* m^-1 mod 2^64 */
+    ninv_m = m;
+    ninv_val = ninv;
+    return ninv;
+}
+
+/* Kaliski almost-inverse: 0 < a < m odd, returns s with a*s ≡ ±2^k (mod m)
+ * and writes k, or 0 if gcd(a, m) != 1. */
+static uint64_t almost_inv_odd(uint64_t a, uint64_t m, unsigned *k_out)
+{
+    uint64_t u = m, v = a, s = 1, r = 0, flip = 0;
+    unsigned k = (unsigned)__builtin_ctzll(v);
+    v >>= k;
+    for (;;) {
+        const uint64_t d = u - v, e = v - u;
+        if (d == 0) break;
+        const int lt = u < v;
+        const uint64_t sw = (uint64_t)0 - (uint64_t)lt;
+        const unsigned z = (unsigned)__builtin_ctzll(d); /* = ctz(e) */
+        const uint64_t big = lt ? e : d;                 /* |u - v| */
+        const uint64_t small = lt ? u : v;
+        const uint64_t cb = (s & ~sw) | (r & sw); /* larger's coefficient */
+        const uint64_t cs = (r & ~sw) | (s & sw);
+        u = big >> z;
+        v = small;
+        s = cb << z;
+        r = cs + cb;
+        flip ^= sw;
+        k += z;
+    }
+    if (u != 1) return 0;
+    *k_out = k;
+    return flip ? r : s; /* in [1, m) */
+}
+
+/* x * 2^{-k} mod m via exact Montgomery-style divisions by 2^j, j <= 63. */
+static uint64_t scale_pow2_inv(uint64_t x, unsigned k, uint64_t m, uint64_t neg_ninv)
+{
+    while (k) {
+        const unsigned j = k > 63 ? 63 : k;
+        const uint64_t t = (x * neg_ninv) & (((uint64_t)1 << j) - 1);
+        x = (uint64_t)(((ca_u128)t * m + x) >> j); /* < 2m */
+        if (x >= m) x -= m;
+        k -= j;
+    }
+    return x;
+}
+
+/* Division-free binary extended gcd for an odd modulus m >= 3 and
+ * 0 < a < m, entirely in 64-bit words (Kaliski's almost-inverse with the
+ * shifts batched by ctz, then one exact division by 2^k).
+ *
+ * The pairs (u, s) and (v, r) keep the integer identity u*s + v*r = m with
+ * u, v odd and all four values in [0, m], so nothing overflows, and
+ *     a*s = (-1)^f v 2^k,  a*r = -(-1)^f u 2^k   (mod m),
+ * where f counts label swaps.  One step replaces the larger odd value by
+ * |u - v| / 2^z (odd), shifts its coefficient left by z and adds it to the
+ * other coefficient; the smaller value is kept.  The loop ends at u == v ==
+ * gcd(a, m); if that is 1 then s + r = m and a^-1 = (f ? r : s) * 2^-k.
+ * The critical path is one subtract, ctz and shift per step; the swap and
+ * the coefficients are selected, not branched on.  k < 128 (each step
+ * removes at least one bit from u*v < 2^128), and 2^-k is applied in at most
+ * three exact Montgomery-style divisions by 2^j, j <= 63.  The inverse is
+ * unique, so the result equals invmod_euclid's. */
+static uint64_t invmod_binary_odd(uint64_t a, uint64_t m)
+{
+    /* Keep the almost-inverse loop in this function so ca_invmod stays a
+     * single hot leaf; ca_mont_inv reuses almost_inv_odd separately. */
+    const uint64_t neg_ninv = (uint64_t)0 - odd_ninv(m);
+    uint64_t u = m, v = a, s = 1, r = 0, flip = 0;
+    unsigned k = (unsigned)__builtin_ctzll(v);
+    v >>= k;
+    for (;;) {
+        const uint64_t d = u - v, e = v - u;
+        if (d == 0) break;
+        const int lt = u < v;
+        const uint64_t sw = (uint64_t)0 - (uint64_t)lt;
+        const unsigned z = (unsigned)__builtin_ctzll(d);
+        const uint64_t big = lt ? e : d;
+        const uint64_t small = lt ? u : v;
+        const uint64_t cb = (s & ~sw) | (r & sw);
+        const uint64_t cs = (r & ~sw) | (s & sw);
+        u = big >> z;
+        v = small;
+        s = cb << z;
+        r = cs + cb;
+        flip ^= sw;
+        k += z;
+    }
+    if (u != 1) return 0;
+    return scale_pow2_inv(flip ? r : s, k, m, neg_ninv);
+}
+#endif
+
+/* Inverse of a modulo m, or 0 when m == 0, a == 0 (mod m) or gcd(a, m) != 1.
+ *
+ * Since 2026-11-10 odd moduli use invmod_binary_odd (no 64-bit division, no
+ * 128-bit coefficients); even moduli use the extended Euclid.  The value is
+ * unchanged for every input (the inverse is unique; the zero cases are
+ * tested before either routine).  CA_FC_INV still counts one per nonzero
+ * inversion.  CA_FC_EUCLID ("division steps of the inversions' extended
+ * Euclid") keeps its meaning and its counts: -DCA_GLV_FIELD_COUNT builds use
+ * invmod_euclid for every modulus, so their field counts stay comparable
+ * with earlier diagnostic runs (experiments/glv-batch-escape-20261024). */
+uint64_t ca_invmod(uint64_t a, uint64_t m)
+{
+    if (m == 0) return 0;
+    if (a >= m) a %= m;
+    if (a == 0) return 0;
+    CA_FC_ADD(CA_FC_INV, 1);
+#ifdef CA_GLV_FIELD_COUNT
+    return invmod_euclid(a, m);
+#else
+    if ((m & 1) == 0) return invmod_euclid(a, m);
+    return invmod_binary_odd(a, m);
+#endif
 }
 
 uint64_t ca_isqrt(uint64_t n)
@@ -97,18 +285,54 @@ uint64_t ca_iroot(uint64_t n, unsigned k)
     return lo;
 }
 
+/* Legendre symbol; 0 when p is 0.  For odd p this is the Jacobi symbol
+ * via quadratic reciprocity (same value as a^((p-1)/2) when p is an odd
+ * prime, without a modular exponentiation).  p = 2 keeps the Euler
+ * criterion: 0 at even a, +1 at odd a. */
 int ca_legendre(uint64_t a, uint64_t p)
 {
+    if (p == 0) return 0;
     a %= p;
     if (a == 0) return 0;
-    uint64_t r = ca_powmod(a, (p - 1) / 2, p);
-    if (r == 1) return 1;
-    if (r == p - 1) return -1;
-    return 0; /* p not prime */
+    if (p == 2) return 1;
+    if ((p & 1) == 0) {
+        /* Even composite: Euler criterion still terminates and matches the
+         * historical powmod answers the robustness tests pin. */
+        uint64_t r = ca_powmod(a, (p - 1) / 2, p);
+        if (r == 1) return 1;
+        if (r == p - 1) return -1;
+        return 0;
+    }
+    int t = 1;
+    uint64_t n = a, m = p;
+    while (n) {
+        unsigned z = (unsigned)__builtin_ctzll(n);
+        n >>= z;
+        if (z & 1) {
+            uint64_t m8 = m & 7;
+            if (m8 == 3 || m8 == 5) t = -t;
+        }
+        /* Quadratic reciprocity on the odd parts. */
+        if ((n & 3) == 3 && (m & 3) == 3) t = -t;
+        uint64_t tmp = m % n;
+        m = n;
+        n = tmp;
+    }
+    return m == 1 ? t : 0;
 }
 
+/* Tonelli–Shanks non-residue and 2-adic data for the last p.  The least
+ * non-residue is unique for a given search order, so caching it (and q, s)
+ * does not change any root. */
+static _Thread_local uint64_t ca_ts_p, ca_ts_z, ca_ts_q;
+static _Thread_local unsigned ca_ts_s;
+
+/* Returns 0 when a is a non-residue or p is 0.  A composite p is outside the
+ * contract: the call terminates, and returns 0 unless p passes for a prime at
+ * the bases tried. */
 int ca_sqrtmod_prime(uint64_t a, uint64_t p, uint64_t *root)
 {
+    if (p == 0) return 0;
     a %= p;
     if (a == 0) { *root = 0; return 1; }
     if (p == 2) { *root = a & 1; return 1; }
@@ -117,38 +341,68 @@ int ca_sqrtmod_prime(uint64_t a, uint64_t p, uint64_t *root)
         *root = ca_powmod(a, (p + 1) / 4, p);
         return 1;
     }
-    /* Tonelli-Shanks */
-    uint64_t q = p - 1;
-    unsigned s = 0;
-    while ((q & 1) == 0) { q >>= 1; s++; }
-    uint64_t z = 2;
-    while (ca_legendre(z, p) != -1) z++;
-    uint64_t c = ca_powmod(z, q, p);
-    uint64_t r = ca_powmod(a, (q + 1) / 2, p);
-    uint64_t t = ca_powmod(a, q, p);
+    /* Tonelli-Shanks in Montgomery form: the inner squaring loop for
+     * p = 1 mod 2^k is the hot path, and mulmod_lt's Barrett reduction is
+     * heavier than REDC once the context is warm. */
+    uint64_t z, q;
+    unsigned s;
+    if (ca_ts_p == p) {
+        z = ca_ts_z;
+        q = ca_ts_q;
+        s = ca_ts_s;
+    } else {
+        q = p - 1;
+        s = 0;
+        while ((q & 1) == 0) { q >>= 1; s++; }
+        /* A prime p has a non-residue below p.  A composite p may have none, but
+         * its symbol is 0 at the first z sharing a factor with p (and at z = p),
+         * so stopping there bounds the search for every modulus. */
+        z = 2;
+        for (;;) {
+            int l = ca_legendre(z, p);
+            if (l == -1) break;
+            if (l == 0) return 0; /* p is not prime */
+            z++;
+        }
+        ca_ts_p = p;
+        ca_ts_z = z;
+        ca_ts_q = q;
+        ca_ts_s = s;
+    }
+    const ca_mont *mo = ca_pow_mont_for(p);
+    const uint64_t one = mo->r1;
+    uint64_t c = ca_mont_pow(mo, ca_mont_to(mo, z), q);
+    uint64_t r = ca_mont_pow(mo, ca_mont_to(mo, a), (q + 1) / 2);
+    uint64_t t = ca_mont_pow(mo, ca_mont_to(mo, a), q);
     unsigned m = s;
-    while (t != 1) {
+    while (t != one) {
         unsigned i = 0;
         uint64_t tt = t;
-        while (tt != 1) {
-            tt = ca_mulmod(tt, tt, p);
+        while (tt != one) {
+            tt = ca_mont_sqr(mo, tt);
             i++;
-            if (i == m) return 0;
+            if (i >= m) return 0;
         }
         uint64_t b = c;
-        for (unsigned j = 0; j + i + 1 < m; j++) b = ca_mulmod(b, b, p);
-        r = ca_mulmod(r, b, p);
-        c = ca_mulmod(b, b, p);
-        t = ca_mulmod(t, c, p);
+        for (unsigned j = 0; j + i + 1 < m; j++) b = ca_mont_sqr(mo, b);
+        r = ca_mont_mul(mo, r, b);
+        c = ca_mont_sqr(mo, b);
+        t = ca_mont_mul(mo, t, c);
         m = i;
     }
-    *root = r;
+    *root = ca_mont_from(mo, r);
     return 1;
 }
 
 uint64_t ca_crt2(uint64_t r1, uint64_t m1, uint64_t r2, uint64_t m2)
 {
-    /* x = r1 + m1 * ((r2 - r1) * m1^{-1} mod m2) */
+    /* Contract (the public header, ca_modarith.h, is pinned by digest, so it
+     * is stated here): a zero modulus is not a modulus, and the result is 0.
+     * Both reductions below divide by m1 and m2, which raised SIGFPE. */
+    if (m1 == 0 || m2 == 0) return 0;
+    /* x = r1 + m1 * ((r2 - r1) * m1^{-1} mod m2), with r1 reduced first:
+     * an unreduced r1 gave a result outside [0, m1 m2). */
+    r1 %= m1;
     uint64_t inv = ca_invmod(m1 % m2, m2);
     uint64_t d = ca_submod(r2 % m2, r1 % m2, m2);
     uint64_t k = ca_mulmod(d, inv, m2);
@@ -166,14 +420,28 @@ int ca_mont_init(ca_mont *m, uint64_t p)
     for (int i = 0; i < 6; i++) inv *= 2 - p * inv;
     m->pinv = (uint64_t)0 - inv;
     /* R mod p where R = 2^64 */
-    m->r1 = (uint64_t)((((ca_u128)1) << 64) % p);
-    m->r2 = (uint64_t)(((ca_u128)m->r1 * m->r1) % p);
-    m->r3 = (uint64_t)(((ca_u128)m->r2 * m->r1) % p);
+    m->r1 = ((uint64_t)0 - p) % p; /* 2^64 mod p, in 64-bit arithmetic */
+    m->r2 = mulmod_lt(m->r1, m->r1, p);
+    m->r3 = mulmod_lt(m->r2, m->r1, p);
     return 1;
 }
 
 uint64_t ca_mont_pow(const ca_mont *m, uint64_t a, uint64_t e)
 {
+    /* p < 2^62: lazy REDC ladder (residues in [0, 2p)), canonicalize once
+     * at the end.  Same class as ca_mont_mul; removes the final conditional
+     * subtract from every step of the exponentiation. */
+    const uint64_t p = m->p;
+    if (p < (1ULL << 62)) {
+        const uint64_t np = m->pinv;
+        uint64_t r = m->r1;
+        while (e) {
+            if (e & 1) r = ca_mont_mul_lazy(r, a, p, np);
+            a = ca_mont_sqr_lazy(a, p, np);
+            e >>= 1;
+        }
+        return ca_fp_canon(r, p);
+    }
     uint64_t r = m->r1;
     while (e) {
         if (e & 1) r = ca_mont_mul(m, r, a);
@@ -185,29 +453,98 @@ uint64_t ca_mont_pow(const ca_mont *m, uint64_t a, uint64_t e)
 
 uint64_t ca_mont_inv(const ca_mont *m, uint64_t a)
 {
-    /* a = x*R; invmod gives x^{-1} R^{-1}; multiply by R^3 with one REDC:
-     * x^{-1} R^{-1} * R^3 * R^{-1} = x^{-1} R. */
-    uint64_t inv = ca_invmod(a, m->p);
-    if (inv == 0) return 0;
-    return ca_mont_mul(m, inv, m->r3);
+    /* a = x*R in Montgomery form.  Classic path: invmod(a)*R^2 via REDC with
+     * R^3.  Fused Kaliski: almost-inverse a*s=±2^k, then s*2^{128-k} =
+     * a^{-1}*R^2 = x^{-1}*R — same residue, no separate invmod+mul. */
+    const uint64_t p = m->p;
+    if (a >= p) a %= p;
+    if (a == 0) return 0;
+    CA_FC_ADD(CA_FC_INV, 1);
+#ifdef CA_GLV_FIELD_COUNT
+    {
+        uint64_t inv = invmod_euclid(a, p);
+        if (inv == 0) return 0;
+        return ca_mont_mul(m, inv, m->r3);
+    }
+#else
+    if ((p & 1) == 0) {
+        uint64_t inv = invmod_euclid(a, p);
+        if (inv == 0) return 0;
+        return ca_mont_mul(m, inv, m->r3);
+    }
+    {
+        unsigned k;
+        uint64_t s = almost_inv_odd(a, p, &k);
+        if (!s) return 0;
+        /* s * 2^{128-k} = x^{-1} R.  Only the k >= 64 short-scale path is
+         * faster than classic full scale + *R^2; smaller k uses classic. */
+        if (k >= 64) {
+            uint64_t t = scale_pow2_inv(s, k - 64, p, (uint64_t)0 - odd_ninv(p));
+            return ca_mont_mul(m, t, m->r2);
+        }
+        uint64_t inv = scale_pow2_inv(s, k, p, (uint64_t)0 - odd_ninv(p));
+        return ca_mont_mul(m, inv, m->r3);
+    }
+#endif
 }
 
 /* ---- primality -------------------------------------------------------- */
 
-static int mr_witness(uint64_t n, uint64_t a, uint64_t d, unsigned s)
+/* One Miller-Rabin round in Montgomery form: 1 is r1 = R mod n there, and
+ * n - 1 is n - r1. */
+static int mr_after_pow(const ca_mont *m, uint64_t x, unsigned s)
 {
-    uint64_t x = ca_powmod(a, d, n);
-    if (x == 1 || x == n - 1) return 0;
+    const uint64_t one = m->r1, minus_one = m->p - m->r1;
+    if (x == one || x == minus_one) return 0;
     for (unsigned r = 1; r < s; r++) {
-        x = ca_mulmod(x, x, n);
-        if (x == n - 1) return 0;
+        x = ca_mont_sqr(m, x);
+        if (x == minus_one) return 0;
     }
     return 1; /* composite */
 }
 
+static int mr_witness(const ca_mont *m, uint64_t a, uint64_t d, unsigned s)
+{
+    return mr_after_pow(m, ca_mont_pow(m, ca_mont_to(m, a), d), s);
+}
+
+#ifndef CA_GLV_FIELD_COUNT
+/* Four ladders with the shared exponent d, interleaved: each is a chain of
+ * dependent Montgomery squarings, so four in lockstep keep the multiplier
+ * busy.  w[l] becomes w[l]^d (the same residue ca_mont_pow returns). */
+static void mont_pow4(const ca_mont *m, uint64_t w[4], uint64_t e)
+{
+    const uint64_t p = m->p;
+    uint64_t r[4] = {m->r1, m->r1, m->r1, m->r1};
+    if (p < (1ULL << 62)) {
+        const uint64_t np = m->pinv;
+        while (e) {
+            if (e & 1)
+                for (int l = 0; l < 4; l++) r[l] = ca_mont_mul_lazy(r[l], w[l], p, np);
+            e >>= 1;
+            if (e)
+                for (int l = 0; l < 4; l++) w[l] = ca_mont_sqr_lazy(w[l], p, np);
+        }
+        for (int l = 0; l < 4; l++) w[l] = ca_fp_canon(r[l], p);
+        return;
+    }
+    while (e) {
+        if (e & 1)
+            for (int l = 0; l < 4; l++) r[l] = ca_mont_mul(m, r[l], w[l]);
+        e >>= 1;
+        if (e)
+            for (int l = 0; l < 4; l++) w[l] = ca_mont_sqr(m, w[l]);
+    }
+    for (int l = 0; l < 4; l++) w[l] = r[l];
+}
+#endif
+
 int ca_is_prime(uint64_t n)
 {
     if (n < 2) return 0;
+    /* Small trial rejects obvious composites before the Montgomery setup.
+     * Hashed SPRP bases below may share larger factors with n; a % n == 0
+     * then skips that witness (the 7-base set stays deterministic for n < 2^64). */
     static const uint64_t small[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37};
     for (size_t i = 0; i < sizeof(small) / sizeof(small[0]); i++) {
         if (n == small[i]) return 1;
@@ -216,10 +553,41 @@ int ca_is_prime(uint64_t n)
     uint64_t d = n - 1;
     unsigned s = 0;
     while ((d & 1) == 0) { d >>= 1; s++; }
-    /* These 12 bases are deterministic for all n < 2^64. */
-    for (size_t i = 0; i < sizeof(small) / sizeof(small[0]); i++) {
-        if (mr_witness(n, small[i], d, s)) return 0;
+    /* n is odd here.  The 7 hashed bases are deterministic for all n < 2^64
+     * (https://miller-rabin.appspot.com/); fewer witnesses than the first
+     * twelve primes, same verdict. */
+    static const uint64_t bases[] = {2, 325, 9375, 28178, 450775, 9780504, 1795265022ull};
+    ca_mont m;
+    ca_mont_init(&m, n);
+    const size_t nb = sizeof(bases) / sizeof(bases[0]);
+#ifdef CA_GLV_FIELD_COUNT
+    for (size_t i = 0; i < nb; i++) {
+        uint64_t a = bases[i] % n;
+        if (a <= 1) continue;
+        if (mr_witness(&m, a, d, s)) return 0;
     }
+#else
+    /* Base 2 alone first: it already rejects nearly every composite.  A
+     * number that passes (a prime, almost always) needs all the other bases,
+     * which then run four at a time.  The verdict is the same: n is
+     * composite iff some base is a witness. */
+    if (mr_witness(&m, 2, d, s)) return 0;
+    for (size_t i = 1; i < nb; i += 4) {
+        uint64_t w[4];
+        size_t cnt = nb - i < 4 ? nb - i : 4;
+        for (size_t l = 0; l < 4; l++) {
+            uint64_t a = bases[i + (l < cnt ? l : cnt - 1)] % n;
+            if (a <= 1) a = 2; /* padding / n | base: inert under mont_pow4 */
+            w[l] = ca_mont_to(&m, a);
+        }
+        mont_pow4(&m, w, d);
+        for (size_t l = 0; l < cnt; l++) {
+            uint64_t a = bases[i + l] % n;
+            if (a <= 1) continue;
+            if (mr_after_pow(&m, w[l], s)) return 0;
+        }
+    }
+#endif
     return 1;
 }
 
@@ -236,28 +604,28 @@ uint64_t ca_next_prime(uint64_t n)
 
 /* ---- factoring -------------------------------------------------------- */
 
-static uint64_t pollard_brent(uint64_t n, uint64_t c, uint64_t seed)
+/* Brent's Pollard rho in Montgomery form, batched gcd.  m is for modulus n
+ * (odd composite); the caller owns it so retries for different (c, seed) do
+ * not re-init R, R^2, R^3. */
+static uint64_t pollard_brent(const ca_mont *m, uint64_t n, uint64_t c, uint64_t seed)
 {
-    /* Brent's variant of Pollard rho with Montgomery arithmetic, batched gcd. */
-    ca_mont m;
-    if (!ca_mont_init(&m, n)) return 0;
-    uint64_t cm = ca_mont_to(&m, c);
-    uint64_t y = ca_mont_to(&m, seed), q = m.r1, g = 1;
+    uint64_t cm = ca_mont_to(m, c);
+    uint64_t y = ca_mont_to(m, seed), q = m->r1, g = 1;
     uint64_t x, ys; /* both are set before first use inside the loop */
     uint64_t r = 1;
     const uint64_t batch = 128;
     do {
         x = y;
-        for (uint64_t i = 0; i < r; i++) y = ca_addmod(ca_mont_sqr(&m, y), cm, n);
+        for (uint64_t i = 0; i < r; i++) y = ca_addmod(ca_mont_sqr(m, y), cm, n);
         uint64_t k = 0;
         do {
             ys = y;
             uint64_t lim = (batch < r - k) ? batch : r - k;
             for (uint64_t i = 0; i < lim; i++) {
-                y = ca_addmod(ca_mont_sqr(&m, y), cm, n);
-                q = ca_mont_mul(&m, q, x > y ? x - y : y - x);
+                y = ca_addmod(ca_mont_sqr(m, y), cm, n);
+                q = ca_mont_mul(m, q, x > y ? x - y : y - x);
             }
-            g = ca_gcd(ca_mont_from(&m, q), n);
+            g = ca_gcd(ca_mont_from(m, q), n);
             k += lim;
         } while (k < r && g == 1);
         r <<= 1;
@@ -265,9 +633,71 @@ static uint64_t pollard_brent(uint64_t n, uint64_t c, uint64_t seed)
     } while (g == 1);
     if (g == n) {
         do {
-            ys = ca_addmod(ca_mont_sqr(&m, ys), cm, n);
-            g = ca_gcd(ca_mont_from(&m, x > ys ? x - ys : ys - x), n);
+            ys = ca_addmod(ca_mont_sqr(m, ys), cm, n);
+            g = ca_gcd(ca_mont_from(m, x > ys ? x - ys : ys - x), n);
         } while (g == 1);
+    }
+    return g;
+}
+
+/* Two Brent walks on the same n, stepped in lockstep so each Montgomery
+ * squaring of one walk overlaps the other's dependency.  The first
+ * nontrivial factor either walk finds is returned; factorization is unique,
+ * so any 1 < d < n is a correct split. */
+static uint64_t pollard_brent_dual(const ca_mont *m, uint64_t n, uint64_t c0, uint64_t seed0,
+                                  uint64_t c1, uint64_t seed1)
+{
+    uint64_t cm0 = ca_mont_to(m, c0), cm1 = ca_mont_to(m, c1);
+    uint64_t y0 = ca_mont_to(m, seed0), y1 = ca_mont_to(m, seed1);
+    /* One accumulator per lane; both start at Montgomery one. */
+    const uint64_t one = m->r1;
+    uint64_t q0 = one, q1 = one, g = 1;
+    uint64_t x0, x1, ys0, ys1;
+    uint64_t r = 1;
+    const uint64_t batch = 128;
+    int which = 0; /* 0 → walk0 found g, 1 → walk1 */
+    do {
+        x0 = y0;
+        x1 = y1;
+        for (uint64_t i = 0; i < r; i++) {
+            y0 = ca_addmod(ca_mont_sqr(m, y0), cm0, n);
+            y1 = ca_addmod(ca_mont_sqr(m, y1), cm1, n);
+        }
+        uint64_t k = 0;
+        do {
+            ys0 = y0;
+            ys1 = y1;
+            uint64_t lim = (batch < r - k) ? batch : r - k;
+            for (uint64_t i = 0; i < lim; i++) {
+                y0 = ca_addmod(ca_mont_sqr(m, y0), cm0, n);
+                y1 = ca_addmod(ca_mont_sqr(m, y1), cm1, n);
+                q0 = ca_mont_mul(m, q0, x0 > y0 ? x0 - y0 : y0 - x0);
+                q1 = ca_mont_mul(m, q1, x1 > y1 ? x1 - y1 : y1 - x1);
+            }
+            g = ca_gcd(ca_mont_from(m, q0), n);
+            if (g != 1) {
+                which = 0;
+            } else {
+                g = ca_gcd(ca_mont_from(m, q1), n);
+                which = 1;
+            }
+            k += lim;
+        } while (k < r && g == 1);
+        r <<= 1;
+        if (r > (1ULL << 40)) return 0;
+    } while (g == 1);
+    if (g == n) {
+        if (which == 0) {
+            do {
+                ys0 = ca_addmod(ca_mont_sqr(m, ys0), cm0, n);
+                g = ca_gcd(ca_mont_from(m, x0 > ys0 ? x0 - ys0 : ys0 - x0), n);
+            } while (g == 1);
+        } else {
+            do {
+                ys1 = ca_addmod(ca_mont_sqr(m, ys1), cm1, n);
+                g = ca_gcd(ca_mont_from(m, x1 > ys1 ? x1 - ys1 : ys1 - x1), n);
+            } while (g == 1);
+        }
     }
     return g;
 }
@@ -289,10 +719,17 @@ static void factor_rec(uint64_t n, ca_factorization *out, unsigned depth)
     if (n == 1) return;
     if (ca_is_prime(n)) { add_factor(out, n); return; }
     if (depth > 64) { add_factor(out, n); return; }
+    ca_mont mo;
+    if (!ca_mont_init(&mo, n)) { add_factor(out, n); return; }
     uint64_t d = 0;
-    for (uint64_t c = 1; c < 100 && (d == 0 || d == n); c++) {
-        d = pollard_brent(n, c, 2 + c);
+    /* Dual walks for (c, c+1): one Montgomery context, interleaved
+     * squarings.  Covers every c in 1..99; a single leftover uses the
+     * one-walk routine. */
+    for (uint64_t c = 1; c + 1 < 100 && (d == 0 || d == n); c += 2) {
+        d = pollard_brent_dual(&mo, n, c, 2 + c, c + 1, 3 + c);
     }
+    if (d == 0 || d == n)
+        d = pollard_brent(&mo, n, 99, 2 + 99);
     if (d == 0 || d == n) {
         /* fall back to trial division - should be unreachable for 64-bit */
         for (uint64_t q = 3; (ca_u128)q * q <= n; q += 2) {
@@ -312,6 +749,17 @@ static int cmp_factor(const void *a, const void *b)
 
 ca_status ca_factorize(uint64_t n, ca_factorization *out)
 {
+    /* The factorisation of n is unique and returned sorted, so the last
+     * one per thread can be handed out again.  Callers factor the same
+     * group order repeatedly (element orders, then Pohlig-Hellman, per
+     * target), and Pollard-Brent dominated those calls. */
+    static _Thread_local uint64_t memo_n;
+    static _Thread_local ca_factorization memo_f;
+    if (n > 1 && n == memo_n) {
+        *out = memo_f;
+        return CA_OK;
+    }
+    const uint64_t n_in = n;
     memset(out, 0, sizeof(*out));
     if (n == 0) return CA_ERR_INVALID;
     if (n == 1) return CA_OK;
@@ -324,11 +772,15 @@ ca_status ca_factorize(uint64_t n, ca_factorization *out)
     }
     factor_rec(n, out, 0);
     qsort(out->f, out->count, sizeof(ca_factor), cmp_factor);
+    memo_n = n_in;
+    memo_f = *out;
     return CA_OK;
 }
 
+/* 0 when p divides a or p is 0. */
 uint64_t ca_mult_order(uint64_t a, uint64_t p)
 {
+    if (p == 0) return 0;
     a %= p;
     if (a == 0) return 0;
     ca_factorization f;

@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T06:42:09Z",
+ "id": "PCC-20261115-288dc5",
+ "kind": "measurement",
+ "producer": {
+  "commit": "66b636486d04018aef499fb1ba92cee414fe1fa4",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "experiments/prime-field-auxiliary-ic/producer-recompute.json",
+   "sha256": "daa754c35e4bbc41fc62d7788902811a47e598cdf9f90d145d4cb7a1019b304d"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Unverified producer measurements, three search seeds on one already-known target, no signed replay, no isolation tier, no qualified online speedup.",
+ "statement": "The retrospective producer reports cold wall medians of 35.416334295, 15.083680401, 9.685107569 and 0.018318452 seconds for v1 IC, fused IC, batched IC and rho on one public 31-bit target."
+}

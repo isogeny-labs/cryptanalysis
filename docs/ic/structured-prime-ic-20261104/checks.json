@@ -1,0 +1,118 @@
+{
+  "schema": "structured-ic-consumer-checks/v1",
+  "standing": "producer_assertion",
+  "claim": "PCC-20261104-f011a3",
+  "checks": [
+    {
+      "name": "crypto-cli-initial",
+      "raw": "checks/crypto-cli-initial.txt.gz",
+      "test_summaries": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 19.37s"
+      ],
+      "role": "development_output"
+    },
+    {
+      "name": "crypto-cli-final",
+      "raw": "checks/crypto-cli-final.txt.gz",
+      "test_summaries": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 22.73s"
+      ],
+      "role": "development_output"
+    },
+    {
+      "name": "crypto-library",
+      "raw": "checks/crypto-library.txt.gz",
+      "test_summaries": [
+        "test result: ok. 67 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 95.22s"
+      ],
+      "role": "development_output"
+    },
+    {
+      "name": "crypto-clippy",
+      "raw": "checks/crypto-clippy.txt.gz",
+      "test_summaries": [],
+      "role": "development_output"
+    },
+    {
+      "name": "crypto-msrv",
+      "raw": "checks/crypto-msrv.txt.gz",
+      "test_summaries": [],
+      "role": "development_output"
+    },
+    {
+      "name": "bindings-build-initial",
+      "raw": "checks/bindings-build-initial.txt.gz",
+      "test_summaries": [],
+      "role": "retained_failure"
+    },
+    {
+      "name": "suite-build-initial",
+      "raw": "checks/suite-build-initial.txt.gz",
+      "test_summaries": [],
+      "role": "retained_failure"
+    },
+    {
+      "name": "bindings-cli",
+      "raw": "checks/bindings-cli.txt.gz",
+      "test_summaries": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 23.19s"
+      ],
+      "role": "development_output"
+    },
+    {
+      "name": "suite-cli",
+      "raw": "checks/suite-cli.txt.gz",
+      "test_summaries": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 23.27s"
+      ],
+      "role": "development_output"
+    },
+    {
+      "name": "suite-library",
+      "raw": "checks/suite-library.txt.gz",
+      "test_summaries": [
+        "test result: ok. 33 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 163.18s"
+      ],
+      "role": "development_output"
+    },
+    {
+      "name": "suite-clippy",
+      "raw": "checks/suite-clippy.txt.gz",
+      "test_summaries": [],
+      "role": "development_output"
+    },
+    {
+      "name": "suite-msrv",
+      "raw": "checks/suite-msrv.txt.gz",
+      "test_summaries": [],
+      "role": "development_output"
+    },
+    {
+      "name": "bindings-lock-correction",
+      "raw": "checks/bindings-lock-correction.txt.gz",
+      "test_summaries": [],
+      "role": "development_output"
+    },
+    {
+      "name": "bindings-controls",
+      "raw": "checks/bindings-controls.txt.gz",
+      "test_summaries": [
+        "test result: ok. 64 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 85.34s",
+        "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 183.20s"
+      ],
+      "role": "development_output"
+    },
+    {
+      "name": "bindings-clippy",
+      "raw": "checks/bindings-clippy.txt.gz",
+      "test_summaries": [],
+      "role": "development_output"
+    },
+    {
+      "name": "bindings-msrv",
+      "raw": "checks/bindings-msrv.txt.gz",
+      "test_summaries": [],
+      "role": "development_output"
+    }
+  ]
+}

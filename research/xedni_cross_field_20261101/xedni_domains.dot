@@ -1,0 +1,28 @@
+digraph xedni_domains {
+  graph [rankdir=LR, bgcolor="white", pad=0.25, nodesep=0.45, ranksep=0.65,
+         label="Xedni lift domains and current evidence gates", labelloc=t,
+         fontsize=20, fontname="DejaVu Sans"];
+  node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=11,
+        color="#355070", fillcolor="#f5f8fb", margin="0.13,0.08"];
+  edge [fontname="DejaVu Sans", fontsize=10, color="#52667a"];
+
+  input [label="ECDLP curve family", fillcolor="#e8f1fa"];
+  prime [label="Prime field E(F_p)\ncontrol: p256"];
+  binary [label="Random binary E(F_2^m)\ncontrol: sect163r1"];
+  koblitz [label="Binary Koblitz E/F_2\npoints in E(F_2^m)\ncontrol: sect163k1"];
+
+  qlift [label="Original Q lift applies structurally\nresidue degree 1", fillcolor="#fff2cc"];
+  jksst [label="JKSST Theorem 4.1\n< C0/p under stated assumptions\nplus negative experiments", fillcolor="#f4cccc"];
+
+  nflift [label="Global number-field lift required\nresidue degree m => [K:Q] >= m", fillcolor="#d9ead3"];
+  sourcegate [label="Kogure ISEC2002-10\ncharacteristic 2 / Koblitz\nfull text not obtained", style="rounded,filled,dashed", fillcolor="#fce5cd"];
+
+  input -> prime;
+  input -> binary;
+  input -> koblitz;
+  prime -> qlift [label="reduction mod p"];
+  qlift -> jksst [label="full analysis read"];
+  binary -> nflift [label="m = 163"];
+  koblitz -> nflift [label="point coordinates, m = 163"];
+  nflift -> sourcegate [label="primary-source gate", style=dashed];
+}

@@ -1,0 +1,218 @@
+⚠ [9039/9057] Replayed CoefficientFamily
+warning: CoefficientFamily.lean: imports `Mathlib` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: CoefficientFamily.lean:127:0: 'XedniCoefficientFamily.distinct_directions_force_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoefficientFamily.lean:128:0: 'XedniCoefficientFamily.zero_sum_pair_relation' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoefficientFamily.lean:129:0: 'XedniCoefficientFamily.relation_iff_second' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoefficientFamily.lean:130:0: 'XedniCoefficientFamily.line_hit_count' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoefficientFamily.lean:131:0: 'XedniCoefficientFamily.line_hit_admissible' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: CoefficientFamily.lean:132:0: 'XedniCoefficientFamily.admissible_hit_count' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [9040/9057] Replayed FamilyCount
+info: FamilyCount.lean:87:0: 'XedniPublicFirstLargeHoldout.family_event_count' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FamilyCount.lean:88:0: 'XedniPublicFirstLargeHoldout.eventToHitPair_injective' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FamilyCount.lean:89:0: 'XedniPublicFirstLargeHoldout.family_hit_pair_count' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [9041/9057] Replayed Panel
+info: Panel.lean:93:0: 'XedniPublicFirstLargeHoldout.panel293' depends on axioms: [propext, Quot.sound]
+info: Panel.lean:94:0: 'XedniPublicFirstLargeHoldout.panel313' depends on axioms: [propext, Quot.sound]
+info: Panel.lean:95:0: 'XedniPublicFirstLargeHoldout.panel331' depends on axioms: [propext, Quot.sound]
+info: Panel.lean:96:0: 'XedniPublicFirstLargeHoldout.panel353' depends on axioms: [propext, Quot.sound]
+info: Panel.lean:97:0: 'XedniPublicFirstLargeHoldout.panel419' depends on axioms: [propext, Quot.sound]
+info: Panel.lean:98:0: 'XedniPublicFirstLargeHoldout.panel439' depends on axioms: [propext, Quot.sound]
+info: Panel.lean:99:0: 'XedniPublicFirstLargeHoldout.panel571' depends on axioms: [propext, Quot.sound]
+info: Panel.lean:100:0: 'XedniPublicFirstLargeHoldout.panel599' depends on axioms: [propext, Quot.sound]
+info: Panel.lean:101:0: 'XedniPublicFirstLargeHoldout.panel_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Panel.lean:102:0: 'XedniPublicFirstLargeHoldout.count293' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Panel.lean:103:0: 'XedniPublicFirstLargeHoldout.count313' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Panel.lean:104:0: 'XedniPublicFirstLargeHoldout.count331' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Panel.lean:105:0: 'XedniPublicFirstLargeHoldout.count353' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Panel.lean:106:0: 'XedniPublicFirstLargeHoldout.count419' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Panel.lean:107:0: 'XedniPublicFirstLargeHoldout.count439' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Panel.lean:108:0: 'XedniPublicFirstLargeHoldout.count571' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Panel.lean:109:0: 'XedniPublicFirstLargeHoldout.count599' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9042/9057] Replayed AdmissiblePairs
+warning: AdmissiblePairs.lean:28:10: This simp argument is unused:
+  AdmissiblePair
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [s, Finset.mem_offDiag]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+info: AdmissiblePairs.lean:80:0: 'XedniPublicFirstLargeHoldout.admissible_pair_count' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AdmissiblePairs.lean:81:0: 'XedniPublicFirstLargeHoldout.family_density_cross_mul' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AdmissiblePairs.lean:82:0: 'XedniPublicFirstLargeHoldout.family_exact_fraction' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: AdmissiblePairs.lean:83:0: 'XedniPublicFirstLargeHoldout.family_fraction_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [9043/9057] Replayed FamilyBound
+info: FamilyBound.lean:66:0: 'XedniPublicFirstLargeHoldout.family_hit_card_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FamilyBound.lean:67:0: 'XedniPublicFirstLargeHoldout.family_fraction_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: FamilyBound.lean:68:0: 'XedniPublicFirstLargeHoldout.family_size_needed' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9044/9057] Replayed BoxBound
+warning: BoxBound.lean:17:22: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: BoxBound.lean:17:35: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: BoxBound.lean:17:22: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: BoxBound.lean:17:35: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: BoxBound.lean:82:0: 'XedniPublicFirstLargeHoldout.coeff_box_card' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: BoxBound.lean:83:0: 'XedniPublicFirstLargeHoldout.bounded_vector_card_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: BoxBound.lean:84:0: 'XedniPublicFirstLargeHoldout.bounded_vector_fraction_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: BoxBound.lean:85:0: 'XedniPublicFirstLargeHoldout.coefficient_height_needed' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [9045/9057] Replayed PublicRecovery
+info: PublicRecovery.lean:33:0: 'XedniPublicFirstLargeHoldout.public_relation_iff_recovered_scalar' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: PublicRecovery.lean:34:0: 'XedniPublicFirstLargeHoldout.public_relation_target_unique' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [9046/9057] Replayed PublicGroupRecovery
+info: PublicGroupRecovery.lean:33:0: 'XedniPublicFirstLargeHoldout.public_group_relation_iff_recovered_scalar' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+⚠ [9047/9057] Replayed PrimeOrderRecovery
+warning: PrimeOrderRecovery.lean: imports `Mathlib.Algebra.Module.ZMod` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: PrimeOrderRecovery.lean:49:2: Try this: 
+  letI̵
+
+The goal is a proposition, so `let` is preferred over `letI`.
+The difference between `let` and `letI` is that `letI` inlines the value.
+But this is not relevant for proofs because of proof irrelevance.
+
+Note: This linter can be disabled with `set_option linter.style.haveILetI false`
+info: PrimeOrderRecovery.lean:80:0: 'XedniPublicFirstLargeHoldout.prime_order_public_relation_iff_recovered_scalar' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: PrimeOrderRecovery.lean:81:0: 'XedniPublicFirstLargeHoldout.torsion_public_relation_iff_recovered_scalar' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: PrimeOrderRecovery.lean:82:0: 'XedniPublicFirstLargeHoldout.cyclic_torsion' depends on axioms: [propext]
+info: PrimeOrderRecovery.lean:83:0: 'XedniPublicFirstLargeHoldout.cyclic_public_relation_iff_recovered_scalar' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [9048/9057] Replayed ExceptionalRelation
+info: ExceptionalRelation.lean:49:0: 'XedniPublicFirstLargeHoldout.zero_sum_scalar_relation_iff' depends on axioms: [propext, Quot.sound]
+info: ExceptionalRelation.lean:50:0: 'XedniPublicFirstLargeHoldout.zero_sum_scalar_relation_iff_equal_offsets' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: ExceptionalRelation.lean:51:0: 'XedniPublicFirstLargeHoldout.zero_sum_group_relation_iff_equal_offsets' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+ℹ [9049/9057] Replayed DistinctOffsetRecovery
+info: DistinctOffsetRecovery.lean:36:0: 'XedniPublicFirstLargeHoldout.distinct_offset_public_hit_recovers_scalar' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: DistinctOffsetRecovery.lean:37:0: 'XedniPublicFirstLargeHoldout.distinct_offset_public_relation_iff_recovery' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+⚠ [9050/9057] Replayed ConcreteCurveRecovery
+warning: ConcreteCurveRecovery.lean: imports `Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+warning: ConcreteCurveRecovery.lean:34:2: Try this: 
+  letI̵
+
+The goal is a proposition, so `let` is preferred over `letI`.
+The difference between `let` and `letI` is that `letI` inlines the value.
+But this is not relevant for proofs because of proof irrelevance.
+
+Note: This linter can be disabled with `set_option linter.style.haveILetI false`
+warning: ConcreteCurveRecovery.lean:55:2: Try this: 
+  letI̵
+
+The goal is a proposition, so `let` is preferred over `letI`.
+The difference between `let` and `letI` is that `letI` inlines the value.
+But this is not relevant for proofs because of proof irrelevance.
+
+Note: This linter can be disabled with `set_option linter.style.haveILetI false`
+info: ConcreteCurveRecovery.lean:65:0: 'XedniPublicFirstLargeHoldout.panelCurve_discriminant' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ConcreteCurveRecovery.lean:66:0: 'XedniPublicFirstLargeHoldout.panelCurve_isElliptic' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ConcreteCurveRecovery.lean:67:0: 'XedniPublicFirstLargeHoldout.panelGenerator_nonzero' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: ConcreteCurveRecovery.lean:68:0: 'XedniPublicFirstLargeHoldout.panel_curve_public_relation_iff_recovery' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+⚠ [9051/9057] Replayed OrderArithmetic
+warning: OrderArithmetic.lean: imports `Mathlib.Tactic` from package `mathlib`, which is designed for use with the module system; consider adding `module` to the start of this file
+info: OrderArithmetic.lean:28:0: 'XedniPublicFirstLargeHoldout.mod313_tangent_slope' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: OrderArithmetic.lean:29:0: 'XedniPublicFirstLargeHoldout.mod313_double_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: OrderArithmetic.lean:30:0: 'XedniPublicFirstLargeHoldout.mod313_double_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9052/9057] Replayed PointDoubling
+warning: PointDoubling.lean:11:64: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PointDoubling.lean:11:64: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PointDoubling.lean:16:2: Try this: 
+  letI̵
+
+The goal is a proposition, so `let` is preferred over `letI`.
+The difference between `let` and `letI` is that `letI` inlines the value.
+But this is not relevant for proofs because of proof irrelevance.
+
+Note: This linter can be disabled with `set_option linter.style.haveILetI false`
+info: PointDoubling.lean:38:0: 'XedniPublicFirstLargeHoldout.panel313_good_prime' depends on axioms: [propext]
+info: PointDoubling.lean:39:0: 'XedniPublicFirstLargeHoldout.panel313_double' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [9053/9057] Replayed OrderArithmetic2
+info: OrderArithmetic2.lean:37:0: 'XedniPublicFirstLargeHoldout.mod313_second_tangent_slope' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: OrderArithmetic2.lean:38:0: 'XedniPublicFirstLargeHoldout.mod313_quadruple_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: OrderArithmetic2.lean:39:0: 'XedniPublicFirstLargeHoldout.mod313_quadruple_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9054/9057] Replayed PointDoubling2
+warning: PointDoubling2.lean:13:66: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PointDoubling2.lean:13:66: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PointDoubling2.lean:18:2: Try this: 
+  letI̵
+
+The goal is a proposition, so `let` is preferred over `letI`.
+The difference between `let` and `letI` is that `letI` inlines the value.
+But this is not relevant for proofs because of proof irrelevance.
+
+Note: This linter can be disabled with `set_option linter.style.haveILetI false`
+warning: PointDoubling2.lean:25:48: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PointDoubling2.lean:26:54: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PointDoubling2.lean:25:48: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PointDoubling2.lean:26:54: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PointDoubling2.lean:43:0: 'XedniPublicFirstLargeHoldout.panel313_second_double' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [9055/9057] Replayed OrderArithmetic3
+info: OrderArithmetic3.lean:37:0: 'XedniPublicFirstLargeHoldout.mod313_third_tangent_slope' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: OrderArithmetic3.lean:38:0: 'XedniPublicFirstLargeHoldout.mod313_octuple_x' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: OrderArithmetic3.lean:39:0: 'XedniPublicFirstLargeHoldout.mod313_octuple_y' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [9056/9057] Built PointDoubling3 (46s)
+warning: PointDoubling3.lean:13:66: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PointDoubling3.lean:13:66: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PointDoubling3.lean:18:2: Try this: 
+  letI̵
+
+The goal is a proposition, so `let` is preferred over `letI`.
+The difference between `let` and `letI` is that `letI` inlines the value.
+But this is not relevant for proofs because of proof irrelevance.
+
+Note: This linter can be disabled with `set_option linter.style.haveILetI false`
+warning: PointDoubling3.lean:25:47: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PointDoubling3.lean:26:54: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+warning: PointDoubling3.lean:25:47: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+warning: PointDoubling3.lean:26:54: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+info: PointDoubling3.lean:43:0: 'XedniPublicFirstLargeHoldout.panel313_third_double' depends on axioms: [propext, Classical.choice, Quot.sound]
+Build completed successfully (9057 jobs).

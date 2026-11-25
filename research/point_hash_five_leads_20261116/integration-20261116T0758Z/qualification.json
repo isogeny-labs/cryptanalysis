@@ -1,0 +1,44 @@
+{
+  "schema": "point-hash-integration-qualification/v1",
+  "observed_old_head": "ae5f7f05ce453159ef22a48ef71d61c010b9c668",
+  "native_manifest_sha256": "f3c569b346dd19a2233f4d511408cf8e4d53d9bab906a5862311d004566c157a",
+  "manifest_scope": "observed post-test native inputs; no native edit after corrected tests",
+  "qualified_crate": "bindings/rust/hashed-ecdl-tensor",
+  "full_locked_release_all_targets": {
+    "exit_code": 0,
+    "passed": 183,
+    "failed": 0,
+    "ignored": 0,
+    "raw": "corrected-full.txt"
+  },
+  "fmt": {
+    "exit_code": 0,
+    "raw": "corrected-fmt.txt"
+  },
+  "strict_all_targets_clippy": {
+    "exit_code": 0,
+    "raw": "corrected-clippy.txt"
+  },
+  "locked_all_targets_compile": {
+    "compiler": "1.88.0",
+    "exit_code": 0,
+    "raw": "corrected-compiler.txt"
+  },
+  "review_corrections": {
+    "scalar_stdout_echo": "removed from new optimized command; deliberate receipt output retained",
+    "partition_seed": "public-seed naming/contract clarified; caller RNG fill and deterministic fixtures retained",
+    "scanner_disposition": "new-head hosted scan/review acceptance pending; no suppression or alert dismissal"
+  },
+  "shared_changed_files_equal": [
+    "src/bin/hashed-ecdl.rs",
+    "src/target_walk.rs",
+    "tests/optimized_cli.rs",
+    "OPTIMIZED_PAIRS.md"
+  ],
+  "standing": "producer development controls only; no signed execution or performance verdict",
+  "scientific_jobs_launched": 0,
+  "not_qualified": [
+    "standalone wrapper: baseline and head locked metadata actually fail101",
+    "declared Rust1.85: inherited sha2 requires1.88; original failure retained"
+  ]
+}

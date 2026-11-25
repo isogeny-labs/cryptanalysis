@@ -1,0 +1,33 @@
+{
+  "curve": {
+    "p": 8582641,
+    "a": -3,
+    "b": 6723661,
+    "r": 8580037
+  },
+  "transfer_identity_checks": {
+    "trials": 200,
+    "passed": 200
+  },
+  "ap_constant_difference": true,
+  "ap_known_shift": true,
+  "x_distribution": {
+    "arithmetic_progression_scalars": {
+      "n": 4000,
+      "chi2_16bins_df15": 10.66,
+      "lag1_rank_corr": -0.0066
+    },
+    "iid_random_scalars": {
+      "n": 4000,
+      "chi2_16bins_df15": 21.95,
+      "lag1_rank_corr": -0.0098
+    },
+    "note": "chi-square with 15 df: mean 15, 95th percentile 25.0"
+  },
+  "sumset_B205": {
+    "progression_base_distinct_sums": 409,
+    "progression_bound_2B_minus_1": 409,
+    "random_base_distinct_sums": 21092,
+    "unordered_pairs_with_repetition": 21115
+  }
+}

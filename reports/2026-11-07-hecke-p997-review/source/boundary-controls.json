@@ -1,0 +1,35 @@
+[
+  {
+    "control": "invalid_kernel_root",
+    "mutation": {
+      "path": "census.rows[0].two_paths[0][0].kernel_x",
+      "old": 605,
+      "new": 606,
+      "division_polynomial_residual": 722
+    },
+    "audit_exit": 0,
+    "interpretation": "archive audit accepts this altered source/projection; not evidence that original record is false"
+  },
+  {
+    "control": "changed_source_j",
+    "mutation": {
+      "path": "image.rows[0].source_j",
+      "old": 17,
+      "new": 0
+    },
+    "audit_exit": 0,
+    "interpretation": "archive audit accepts this altered source/projection; not evidence that original record is false"
+  },
+  {
+    "control": "swapped_projections",
+    "mutation": {
+      "row_indices": [
+        0,
+        1
+      ],
+      "mutation": "swapped complete E/coset projections while keeping sources fixed"
+    },
+    "audit_exit": 0,
+    "interpretation": "archive audit accepts this altered source/projection; not evidence that original record is false"
+  }
+]

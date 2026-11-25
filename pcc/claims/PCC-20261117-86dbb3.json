@@ -1,0 +1,15 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-17T01:54:07Z",
+ "id": "PCC-20261117-86dbb3",
+ "kind": "statement",
+ "producer": {
+  "commit": "fa95ae69c9b57cb139931c693ee557c18fbd16f4",
+  "model": "",
+  "session": "ic-inverse-regression-20261116"
+ },
+ "proofs": [],
+ "schema": "pcc.claim/v1",
+ "scope": "Direct fixed-m2 source patch, local correctness/lint only",
+ "statement": "Profile-driven direct fixed-m2 PairTable.probe specialization in suite/src/cryptanalysis/ic_framework/batch_mitm.rs, SHA256 aa69fc9f2127b5801d437e62ec69b2bc8855edc2adfc2f084f469b05b698a8fb: local ARM cargo test --lib ic_framework passed27tests, strict cargo clippy --lib --example ic_affine_pipeline_probe -Dwarnings passed. Existing tests compare exact pipeline answers/work against reference oracles. No SIMD execution or native performance conclusion from these local checks. Native admission and fresh paired timing remain pending. Unsigned producer data."
+}

@@ -1,0 +1,297 @@
+{
+ "arms": {
+  "cF": {
+   "binary": "ic_online_onlineframe_r770",
+   "fold": true,
+   "kind": "ic_cold",
+   "online_solve": "frame",
+   "role": "candidate: the same cold path with the online target scan on the rank stage's frame loop (KIC_ONLINE_SOLVE=frame: x(T +- phi^s(R_k)) = phi^s(x(T_s +- R_k)), T_s = phi^(-s)(T) tabulated once per target, partner roots by point addition, the S3 order resolved at a hit)",
+   "table": "compact"
+  },
+  "cFX": {
+   "binary": "ic_online_onlineframe_r770",
+   "fold": true,
+   "kind": "ic_cold",
+   "online_solve": "frame_s3plant",
+   "role": "planted positive control: cF plus the work it removes, redone: the S3 loop (batched S3 solve of every candidate, its keys and its probe loop on a private counter) on every state the scan reaches, compared with the frame loop's relation, probe counter, root calls, relation checks and per-candidate keys (panic on any difference) and discarded",
+   "table": "compact"
+  },
+  "cFaa": {
+   "binary": "ic_online_onlineframe_r770",
+   "fold": true,
+   "kind": "ic_cold",
+   "online_solve": "frame",
+   "role": "A/A control: a second process of cF",
+   "table": "compact"
+  },
+  "cS": {
+   "binary": "ic_online_onlineframe_r770",
+   "fold": true,
+   "kind": "ic_cold",
+   "online_solve": "s3",
+   "role": "baseline: the rank-probe producer's cold path (koblitz-n83-rankprobe-20261019 arm cP, run 39214027289, the n=83 baseline row), setup + one-target online with the verified cached factor-log table; its online scan is the batched S3 solve per candidate (KIC_ONLINE_SOLVE=s3, the producer's default)",
+   "table": "compact"
+  },
+  "kP": {
+   "binary": "ic_online_onlineframe_r770",
+   "fold": true,
+   "kind": "ic_rank",
+   "online_solve": "s3",
+   "rank_canon": "lift",
+   "rank_order": "feistel",
+   "rank_probe": "target",
+   "rank_solve": "frame",
+   "role": "shared rank stage K for the end-to-end secondary only: the rank-probe producer's rank process (KIC_RANK_SOLVE=frame), unchanged code, one block; then one target with the baseline online scan",
+   "table": "compact"
+  },
+  "rT": {
+   "binary": "rho_tuned_r770",
+   "kind": "rho_tuned",
+   "role": "A's tuned rho rT770 (Fold/64/DP6), the strongest one-target rho at n=83, same points"
+  }
+ },
+ "controls_pass_rule": {
+  "aa": "online cF / cFaa and cold cF / cFaa point estimates both inside [0.97, 1.03]",
+  "otherwise": "verdict invalid",
+  "planted": "online cFX / cF (points paired), 95% bootstrap lower bound above 1"
+ },
+ "current_baseline": "the rank-probe producer (koblitz-n83-rankprobe-20261019, run 39214027289, PR #980): end-to-end cold 166.0 s (rank stage 143.7 s + cold 22.3 s, of which online 303.8 ms), S 6.390 / online 0.01169, gap to rT770 64.0 [53.7, 78.0] end to end, online 0.129 [0.085, 0.183]; online 221.4 ns per probe on the S3 loop against the rank stage's 141.5 ns per probe on the frame loop",
+ "decision_rule": {
+  "improvement": "R_on lower bound > 1: an online stage improvement; with the end-to-end secondary's upper bound >= 1 (no end-to-end regression) the candidate's online S and online gap replace the baseline row's, recorded as a stage improvement; a pipeline improvement only if the end-to-end lower bound also exceeds 1 (see success_criterion_reading)",
+  "invalid": "any gate or control fails, or any scheduled row is missing (including time-guard skips)",
+  "not_separated": "otherwise",
+  "regression": "R_on upper bound < 1"
+ },
+ "design": {
+  "cold_arms": [
+   "cS",
+   "cF",
+   "cFaa",
+   "cFX",
+   "rT"
+  ],
+  "cold_points": 64,
+  "process_model": "one point per process, fresh process per run, one pinned CPU, one runner",
+  "q0_arms": [
+   "cS",
+   "cF",
+   "cFX"
+  ],
+  "q0_point": [
+   "2655898345537166180532960",
+   "3881526307991673265292615"
+  ],
+  "rank_arms": [
+   "kP"
+  ],
+  "rank_blocks": [
+   {
+    "id": "K1",
+    "rank_seed": 701,
+    "unit": "s031"
+   }
+  ],
+  "rank_seeds_note": "701 is new (stacked 101-102, rank cut 201-204, rank probe 301-304, index lift and rotation key 401-404 / 501.., K899 diagnostic 8991); it fixes 600 new rank targets",
+  "rho_seed_base": 900000,
+  "runtime_estimate": "from run 39214027289: build and tests about 20 min; a cold segment about 95 s (cS, cF, cFaa, cFX about 22.5 s each, rT about 3 s); the rank block about 170 s; 64 points: about 1.7 h of schedule, about 2.1 h in all, up to about 2.8 h on a slower runner",
+  "segment_order": [
+   "O1",
+   "C1",
+   "C2",
+   "C3",
+   "C4",
+   "C5",
+   "C6",
+   "C7",
+   "C8",
+   "C9",
+   "C10",
+   "C11",
+   "C12",
+   "C13",
+   "C14",
+   "C15",
+   "C16",
+   "C17",
+   "C18",
+   "C19",
+   "C20",
+   "C21",
+   "C22",
+   "C23",
+   "C24",
+   "C25",
+   "C26",
+   "C27",
+   "C28",
+   "C29",
+   "C30",
+   "C31",
+   "C32",
+   "K1",
+   "C33",
+   "C34",
+   "C35",
+   "C36",
+   "C37",
+   "C38",
+   "C39",
+   "C40",
+   "C41",
+   "C42",
+   "C43",
+   "C44",
+   "C45",
+   "C46",
+   "C47",
+   "C48",
+   "C49",
+   "C50",
+   "C51",
+   "C52",
+   "C53",
+   "C54",
+   "C55",
+   "C56",
+   "C57",
+   "C58",
+   "C59",
+   "C60",
+   "C61",
+   "C62",
+   "C63",
+   "C64"
+  ],
+  "segment_upper_estimate_s": {
+   "C": 300,
+   "K": 1200,
+   "O": 300
+  },
+  "time_guard": "skip a segment (rows skipped_time_guard) if elapsed + its estimate exceeds 300 min",
+  "timeout_s": {
+   "ic_cold": 600,
+   "ic_rank": 2400,
+   "rho_tuned": 600
+  },
+  "within_segment_order": "random.Random(2026201910 + block).shuffle (C), random.Random(2026202010 + block) (K), random.Random(2026202110) (O)"
+ },
+ "exactness_argument": "The online scan and the rank stage call the same search, extract128::<CANON_LIFT, ORDER_FEISTEL, P> on one target point: the same folded index, the same Feistel state order keyed by the target's public hash, the same per-state candidates (shift outer, stored root inner), and a return at the first lifted relation. The online scan is a first hit for one target Q; a rank attempt is a first hit for one target [a]G - R_j. Only the probe loop P differs: PIPE_COMPACT (the S3 loop: x(R_{k,s}) mapped to the polynomial basis and the two roots of the third summation polynomial S3(x(R_{k,s}), x(T), X) solved in a batch) or PIPE_FRAME (the rank stage's loop). E is defined over F_2, so phi(x, y) = (x^2, y^2) is a group automorphism and T +- phi^s(R_k) = phi^s(T_s +- R_k) with T_s = phi^(-s)(T); the roots of S3(x(R_{k,s}), x(T), X) are exactly x(T + R_{k,s}) and x(T - R_{k,s}). The frame loop computes these two field elements by point addition from (x, y) of R_k and of T_s (tabulated once per target) and applies phi^s as a rotation of the normal-basis word, so each candidate's two partner words, canonical keys and shifts are the S3 loop's, possibly in the other order. The exceptional inputs (x(R_k) = x(T_s), x(R_k) = 0, x(T_s) = 0) and roots failing the curve check go to the S3 solver exactly as in the S3 loop. At a root-table hit the frame loop forms the S3 input, solves it and evaluates the pair in the S3 order at the S3 loop's probe positions, so the first lifted relation, its probe count, root calls and relation checks are the S3 loop's. This is the rank-probe experiment's exactness result for PIPE_FRAME against PIPE_COMPACT (its tests and four Tier 1 rank blocks), applied to the online target; here it is tested on a 9-orbit base through extract128, and cFX compares the S3 loop with the frame loop on every state of every scan it runs.",
+ "frozen_at_utc": "2026-10-19T18:32:46+00:00",
+ "frozen_before_any_timing": true,
+ "gates": [
+  "every scheduled row valid (exit 0, verified, schedule match, no memory event)",
+  "every IC process: lift_scan, Feistel, prefetch; the 16-byte compact table with 2^26 slots over the folded index (14,940,300 stored of 29,880,000 logical states); 29,878,182 table entries; logical-state blake3 and table-map digests equal B's (online.index_digest); no root bloom",
+  "every IC process records the arm's online_solve in the target record and the summary",
+  "per point: one scalar across every IC process and rT, replayed as [d]G = Q in the pinned oracle; one relation (point indices, x codes and pinned intermediates), one probe count, one root-call count and one relation-check count across every IC process on the point (cS, cF, cFaa, cFX, and kP on its unit)",
+  "Q0 (O1): cS, cF and cFX give the archived Feistel relation and scalar with 1,987,852 probes",
+  "online counters: cS builds no frame and every online counter is 0; cF, cFaa and cFX build exactly one frame; only cFX checks states and candidates against the S3 loop, and it checks at least one; cF and cFaa check none",
+  "the shared rank process kP: full rank, rank_solve frame, one frame per rank attempt, and the written factor-log table equal to B's archived table, log for log"
+ ],
+ "kind": "n83-onlineframe-online-tier1",
+ "multiplicity": "one primary statistic; every secondary (the end-to-end ratio included) is descriptive and never changes the verdict",
+ "online": {
+  "base": "snapshots/r770/experiments/koblitz-single-target-n83-20261006/base_n83_K600.jsonl",
+  "base_hash": "d4a4da26d6e7cb09367de922d9806631fe49989f70d378cae76f347f8d76a9f7",
+  "cold_interval": "producer's own clock: process start (main) .. recovery_check_end of the one target = setup_complete + the five online phases (cold_in_process_ms); in ic_cold the rank stage is skipped (verified cached table); the index digest runs after the target, outside every interval",
+  "cold_targets_file": "inputs/cold_targets.json (role onlineframe-v1, 64 points; disjoint from Q0, B's panel, every earlier n=83 panel of the law, the 64 eval points of n131-ref-walk-20261015, and the parallel branches' indexlift-cold-v1, rotkey-cold-v1 and k899-cold-v1)",
+  "curve_id": "EC1N83Ce1h35c7ced6b497",
+  "factor_log_table": "../koblitz-single-target-n83-tier1-20261014/tier1_github_38523707244/precompute/factor_logs_n83_K600.json",
+  "factor_log_table_sha256": "a771716f284bb826e7407e1e7b5ef882409c9e7e1df8b8a3ed5b60b421d9f17e",
+  "index_digest": {
+   "logical_states": 29880000,
+   "logical_states_blake3": "baf46d5a34732aa2aeba1fc0ca4f57036e3c324ade0bf8791431c838fe15d7ec",
+   "source": "B's unfolded index, protocol.json of koblitz-n83-state-fold-20261015; reproduced here by cP and cS on Q0 (smoke/)",
+   "table_entries": 29878182,
+   "table_map_sum64": "be14a80705232396",
+   "table_map_xor64": "8132bdcfd619010f"
+  },
+  "online_interval": "target_query_begin .. recovery_check_end, five exclusive phases (unchanged)",
+  "orbit_columns": 600,
+  "q0_identity": {
+   "probes_folded": 1987852,
+   "probes_unfolded": 1988184,
+   "relation": [
+    77273,
+    22971,
+    54962,
+    62539
+   ],
+   "scalar": "3141592653589793",
+   "source": "inputs/archived_identities.json old17.q0 (run 38786433493); folded probes from koblitz-n83-state-fold-20261015 (Q0 smoke, cF) and smoke/ here"
+  },
+  "rank_interval": "timing_ms.rank_stage of an ic_rank process: the guided rank stage to full rank (query, PDP, relation check per attempt, echelon insert); its process's cold_in_process_ms also includes setup, linear algebra and one target",
+  "regular_states": 29880000,
+  "root_filter_log2_bits": 28,
+  "root_table_entries": 29878182,
+  "root_table_slots": {
+   "folded": 67108864,
+   "unfolded": 134217728
+  },
+  "sqrt_r": 92573139.235,
+  "stored_states_folded": 14940300,
+  "subgroup_order": "8569786107849059",
+  "tuned_rho_config": "snapshots/r770/research/n83_evaluation_20261012/optimization/selected_config.json"
+ },
+ "power": {
+  "chosen_points": 64,
+  "file": "analysis/power.json",
+  "min_delta": 1.05,
+  "note": "prior: run 39214027289's cR / cP online times on its 20 cold points (two processes of the same online code, per-point A/A ratio 0.992-1.018); 64 points is the frozen minimum, more than power needs, so the A/A and planted controls and the exactness gates cover more targets",
+  "power_at_min_delta": 1.0,
+  "rejection_rate_at_no_effect": {
+   "128": 0.0,
+   "16": 0.0,
+   "32": 0.0,
+   "64": 0.0
+  }
+ },
+ "question": "Does running the one-target online scan of the rank-probe n=83 K600 producer on the rank stage's frame loop (partner roots of T +- phi^s(R_k) by point addition in the target's Frobenius frame, T_s = phi^(-s)(T) tabulated once, the S3 order resolved only at a root-table hit) instead of the batched S3 solve per candidate lower the ONLINE time on new public points, with every relation, probe count, root call, relation check and scalar unchanged?",
+ "schema": 1,
+ "sources": {
+  "crypto_770f6a69": "770f6a6925a0d29b768bd79074f54a173e967fe7 (snapshots/r770 via ../koblitz-n83-reconcile-20261014/restore_sources.py)",
+  "local_sha256": {
+   "archived_identities": "7ed7e056e8d883378e4d4033ad9bf93acc84cb5441e6410fee70ac67cae258db",
+   "arm_wrapper": "973acffbecaba3d1cfeebbccdf4e48f2648229838402ea8dfcc36d7f69ae82b2",
+   "cold_targets": "699b282f1246f5e4af161ecd05c13200e754659c3e480515d38e1cf410f0a782",
+   "combined_derivation": "1a62eabf4a86417c5777fdc69ab2812eaea872b92031eb9ed60af2364ce15356",
+   "lift2_lib": "606b8a58d225e93d73d8b26ffaf4080250b0c12a37f8bbf782254fbcf5145463",
+   "lift2_lock": "739272e490c3b4956ce8320c55b3350fddff7ae7d2b619976a1f0eb96110746e",
+   "lift2_manifest": "77b04fcaa11a3f9f015619612b3e36c1f31a1b20d76116c929e5429e46dc271c",
+   "lift2_tests": "69561fbf09e2137ad1490d5795df54f6f9a5646aeebf3ecf12f1af55a495c566",
+   "log_table_check": "78d9297d9c17367ba15f30ea6507fa8f6edfe7b2cfafe0433bd83777c4dc2496",
+   "online_derivation": "ca1de33b205b29a282329a525ebe7fec7f643e291f2b55a6225e4902a73babc5",
+   "online_lock": "259a81e192718962fabbe6df028aa1a78869b05a097b2f933566c2d4c8173204",
+   "online_manifest": "162d0a8d4e5306f2342f36f408ddc3349015aed321c1500660d41fdb49b708bd",
+   "power_check": "a6bdd98621773240883a8f96fc5d1652e0fad292eb43ff8dde7a1392bd94be65",
+   "power_prior": "460d788f021adad93b7b02383fba2c6ec04602e3baf210ebf5ed11ead1cc5c21",
+   "power_prior_builder": "a13cfa634b2d513bdbcd749aa6d41c2f402072a1371ac4b196c85a5e99eddf99",
+   "power_result": "690a1a30bbc01b50eb304cb11619e37d0fe452be74e353c960096d38c51e27da",
+   "probepipe_derivation": "ce72f3e906d85c58ccc02b0e5d455e97c69c370e357162fbda166423ab8ce7f2",
+   "protocol_builder": "aa75bf213d96ed962564673168740fddba4a8345f264a9b2605116c139eff84b",
+   "rankcut_derivation": "7e81a642ebccf9570dd2d882360e99925d5754357c83bb1aff5a8635ac1cf011",
+   "rankprobe_derivation": "804cc965882c44f85502afb927cc4f04c79d3ccff85d9aa73226dfc2c5ec2b0d",
+   "receipt_verifier": "23908259355a4b7f8247a0e0cfb2bf7c7a44ecb732f315fbec51e3bb15be1308",
+   "schedule_builder": "0d945b6275e4d964d1167533c8ee7950f67cef01b77a66c3ab4e5ba33c83da11",
+   "schedule_runner": "690eba57abf9195a871135e601f76060e4790b4dc38a055f18fd5693fe22dcc4",
+   "stacked_derivation": "a2011ef804becc5b01f3027cf47ec6f7cb154f510e468e2a261c66e09f830aab",
+   "tablefilter_derivation": "3b2aa83df4d1bf70a107464a0b7fdd1f8ac133683b23cf19dd22bfecf12095ab",
+   "targets_builder": "ab2114df5c3e551bfb02bda1a209fb34a1b847284c1ef137ba5bbe4c79899a68"
+  },
+  "online_source_sha256": "e6a944e6f2a47b80051f9a3767f783fcf305b9e3723e602b0cd80552f73ecc03",
+  "rankprobe_producer": "koblitz-n83-rankprobe-20261019 make_online_source.py (make_rankprobe_source.py here, verbatim with its five parents), output sha256 d4394df35d065afbfb05022eac3006492239cc64b94de16fba501322cb578bb5"
+ },
+ "statistics": {
+  "end_to_end_secondary": "E2E(c) = K + mean over the points of cold_in_process_ms(c), with the SAME shared rank stage K = timing_ms.rank_stage of the one kP process in the numerator and the denominator (the reasoning of koblitz-n83-indexlift-20261019, origin/claude/n83-indexlift, README 'The rank stage: shared, and why': the rank stage runs identical code over an identical index, so its cost is not a treatment effect, and per-arm rank processes would add only their process drift; here the rank stage's code is byte for byte the rank-probe producer's and KIC_ONLINE_SOLVE is read only by the online scan). R_e2e = E2E(cS) / E2E(cF); bootstrap 10,000 draws, seed 20261021: kP's 600 attempts resampled (its non-attempt time kept) and the points resampled, paired across cS and cF. Expected about 1.0006 (0.1 s of about 166 s); end-to-end regression iff its upper bound < 1",
+  "primary": "R_on = mean over the points of online_ms(cS) / mean over the points of online_ms(cF) (online_ms = the producer's target_query_begin .. recovery_check_end interval of the one target in its cold process). Bootstrap, 10,000 draws, seed 20261020: the points resampled with replacement, paired across cS and cF; percentile 95% interval",
+  "primary_is": "the ONLINE ratio; the end-to-end cold ratio is a pre-registered secondary that never decides",
+  "secondary": [
+   "online ns per probe per IC arm; online cS / cF by probe-count tercile of the points",
+   "cold, setup, index build and peak RSS cS / cF (expected 1: same setup code)",
+   "online cF / cFaa (A/A) and cFX / cF (planted) intervals",
+   "the online counters per arm (frames built, fallback states, exceptional inputs, resolved hits, swapped pairs, planted checks)",
+   "rho ms/step from rT; S = cost / (rho ms/step) / sqrt(r) per arm: online, cold, end-to-end cold with K; delta S online and end to end cS to cF; online gaps cS / rT and cF / rT and end-to-end gaps to rT"
+  ]
+ },
+ "success_criterion": "AGENTS.md, 'Success criterion: iterative improvement of the index-calculus baseline': \"the success criterion is a verified, measured improvement over the current index-calculus baseline. Every such improvement is a success and is reported as one.\" and, under 'Improvement': \"A stage-level win is reported as a stage improvement and becomes a pipeline improvement once it moves end-to-end `S`.\"",
+ "success_criterion_reading": "The primary decides a stage improvement of the online phase. Under the quoted rule an online improvement (primary lower bound > 1) is a verified, measured improvement over the baseline and a success; with no end-to-end regression (end-to-end secondary upper bound >= 1) it improves the baseline row's online S and online gap to rho and is recorded as a stage improvement. It is reported as a pipeline improvement only if the end-to-end secondary's lower bound also exceeds 1 ('once it moves end-to-end S'). An end-to-end regression (upper bound < 1) blocks promotion."
+}

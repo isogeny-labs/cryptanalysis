@@ -1,0 +1,236 @@
+{
+  "schema": "lead-testing.verdict/v1",
+  "lead_id": "LEAD-prime-batched-mitm-20261121",
+  "phase": 1,
+  "verdict": "PASS",
+  "reasons": [
+    "lower 95% bound of the paired speed-up above 1 on every instance of the phase at m in ['2', '3']"
+  ],
+  "carried_m": [
+    "2",
+    "3"
+  ],
+  "next": "promote: run phase 2",
+  "gated": "2026-11-23T05:13:40Z",
+  "registry_sha256": "312cd1dd6b49ea55276ef0195ad4290e176ffd6a812320a636b9998014374314",
+  "cells": [
+    {
+      "id": "bench-prime-16",
+      "by_m": {
+        "2": {
+          "status": "ok",
+          "pairs": 6,
+          "lead_s": {
+            "887597270407": 10.362595292734616,
+            "887597310910": 10.313925719256298,
+            "887597351413": 9.51063775614653,
+            "887597391916": 9.363834552479412,
+            "887597432419": 10.488918347028724,
+            "887597472922": 9.263633307289906
+          },
+          "speedup_geomean": 1.9793679419028691,
+          "speedup_ci": [
+            1.8879927125542773,
+            2.057136208530482
+          ],
+          "lead_s_over_rho": 6.857072816352187,
+          "peak_rss_gib": 0.0218,
+          "better": true
+        },
+        "3": {
+          "status": "ok",
+          "pairs": 6,
+          "lead_s": {
+            "887597270407": 13.154529867434631,
+            "887597310910": 10.950939618293306,
+            "887597351413": 10.356800437884521,
+            "887597391916": 8.797953219183311,
+            "887597432419": 9.87981637414691,
+            "887597472922": 9.646784517815556
+          },
+          "speedup_geomean": 1.8821762532597808,
+          "speedup_ci": [
+            1.6589249961314418,
+            2.069583663815933
+          ],
+          "lead_s_over_rho": 7.259832856464028,
+          "peak_rss_gib": 0.0218,
+          "better": true
+        },
+        "4": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "5": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "6": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "7": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "8": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "9": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        }
+      },
+      "arms": {
+        "baseline": {
+          "status": "ok",
+          "wall_seconds": 0.061,
+          "peak_rss_gib": 0.0218,
+          "killed_by": null
+        },
+        "lead-m2": {
+          "status": "ok",
+          "wall_seconds": 0.061,
+          "peak_rss_gib": 0.0218,
+          "killed_by": null
+        },
+        "lead-m3": {
+          "status": "ok",
+          "wall_seconds": 0.061,
+          "peak_rss_gib": 0.0218,
+          "killed_by": null
+        }
+      },
+      "instance": "bench-16bit",
+      "rho_reference": {
+        "method": "negation-map r-adding walk: look-ahead, short-cycle escape by doubling, distinguished points, stride starts",
+        "automorphisms": 2,
+        "runs": 8,
+        "mean_s": 1.4414203301033748,
+        "min_s": 0.7138462587178617,
+        "max_s": 2.1219276151997977,
+        "all_verified": true
+      },
+      "baseline_s": {
+        "887597270407": 18.558545240871247,
+        "887597310910": 19.878301517259782,
+        "887597351413": 19.552330475355905,
+        "887597391916": 19.05616691478873,
+        "887597432419": 20.64560662799024,
+        "887597472922": 19.599375438345085
+      },
+      "baseline_s_over_rho": 13.561892595918366,
+      "status": "ok"
+    },
+    {
+      "id": "bench-prime-18",
+      "by_m": {
+        "2": {
+          "status": "ok",
+          "pairs": 6,
+          "lead_s": {
+            "887597270407": 7.304971129566086,
+            "887597310910": 8.795595912294868,
+            "887597351413": 7.133740761157561,
+            "887597391916": 6.305834060254635,
+            "887597432419": 8.113366475714624,
+            "887597472922": 8.556305540159364
+          },
+          "speedup_geomean": 2.7413926896494982,
+          "speedup_ci": [
+            2.578846975509477,
+            2.940098471462959
+          ],
+          "lead_s_over_rho": 6.645065834849998,
+          "peak_rss_gib": 0.0218,
+          "better": true
+        },
+        "3": {
+          "status": "ok",
+          "pairs": 6,
+          "lead_s": {
+            "887597270407": 11.286227815610205,
+            "887597310910": 7.709305776702045,
+            "887597351413": 8.034073076647156,
+            "887597391916": 8.728820554524722,
+            "887597432419": 7.559835627369587,
+            "887597472922": 8.186764233045327
+          },
+          "speedup_geomean": 2.4671548481932604,
+          "speedup_ci": [
+            2.125819330663827,
+            2.765981111598999
+          ],
+          "lead_s_over_rho": 7.406528333858724,
+          "peak_rss_gib": 0.0218,
+          "better": true
+        },
+        "4": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "5": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "6": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "7": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "8": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        },
+        "9": {
+          "status": "unsupported",
+          "why": "the plug-in does not take this m"
+        }
+      },
+      "arms": {
+        "baseline": {
+          "status": "ok",
+          "wall_seconds": 0.082,
+          "peak_rss_gib": 0.0218,
+          "killed_by": null
+        },
+        "lead-m2": {
+          "status": "ok",
+          "wall_seconds": 0.082,
+          "peak_rss_gib": 0.0218,
+          "killed_by": null
+        },
+        "lead-m3": {
+          "status": "ok",
+          "wall_seconds": 0.061,
+          "peak_rss_gib": 0.0218,
+          "killed_by": null
+        }
+      },
+      "instance": "bench-18bit",
+      "rho_reference": {
+        "method": "negation-map r-adding walk: look-ahead, short-cycle escape by doubling, distinguished points, stride starts",
+        "automorphisms": 2,
+        "runs": 8,
+        "mean_s": 1.1590006537081021,
+        "min_s": 0.7741332639568349,
+        "max_s": 1.8708220545623508,
+        "all_verified": true
+      },
+      "baseline_s": {
+        "887597270407": 19.781513314560755,
+        "887597310910": 22.197250725494115,
+        "887597351413": 20.811023952396763,
+        "887597391916": 20.060418475018277,
+        "887597432419": 21.3805227589835,
+        "887597472922": 21.729416084079237
+      },
+      "baseline_s_over_rho": 18.1133267566238,
+      "status": "ok"
+    }
+  ]
+}

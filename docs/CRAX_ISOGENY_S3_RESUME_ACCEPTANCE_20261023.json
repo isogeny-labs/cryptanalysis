@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "kind": "crax-isogeny-s3-resume-acceptance",
+  "checked_at_utc": "2026-10-23T05:28:44.859231+00:00",
+  "remote": "s3://setec-astronomy-artifacts/ic/v1/acceptance/isogeny-resume-20261023T052844Z-a6a99982",
+  "run_id": "20261023T052844Z-a6a99982",
+  "binary_sha256": "51c5644b5c02ce5099ba8eb6acd56886c77b6a031b1311e0cc27076edfa39cc5",
+  "partial": {
+    "status": "partial",
+    "remote_generation": 1,
+    "remote_complete": false,
+    "identity_blake3": "140513ff692529bc965e89bd54290bba7116e7bbf2d053048728e5a8c585c65d"
+  },
+  "complete": {
+    "status": "complete",
+    "remote_generation": 2,
+    "remote_complete": true,
+    "report": {
+      "config": {
+        "bits": 9,
+        "num_curves": 2,
+        "primes": [
+          2
+        ],
+        "max_graph_nodes": 16,
+        "rho_max_iters": 1024,
+        "seed": 12648430
+      },
+      "per_curve": [
+        {
+          "start": [
+            521,
+            491,
+            155
+          ],
+          "class_size": 1,
+          "class": [
+            {
+              "curve": [
+                521,
+                491,
+                155
+              ],
+              "cm": {
+                "p": 521,
+                "trace": 27,
+                "order": 495,
+                "frobenius_disc": -1355,
+                "fundamental_disc": -1355,
+                "conductor": 1,
+                "endomorphism_disc": -1355,
+                "anomalous": false,
+                "supersingular": false
+              },
+              "rho_iters": 1,
+              "rho_success": true,
+              "embedding_degree": 10,
+              "mov_feasible": false,
+              "smart_applies": false,
+              "glv_speedup_available": false
+            }
+          ],
+          "mean_rho_iters": 1.0,
+          "median_rho_iters": 1.0,
+          "stddev_rho_iters": 0.0
+        },
+        {
+          "start": [
+            521,
+            218,
+            66
+          ],
+          "class_size": 2,
+          "class": [
+            {
+              "curve": [
+                521,
+                218,
+                66
+              ],
+              "cm": {
+                "p": 521,
+                "trace": -6,
+                "order": 528,
+                "frobenius_disc": -2048,
+                "fundamental_disc": -8,
+                "conductor": 16,
+                "endomorphism_disc": -2048,
+                "anomalous": false,
+                "supersingular": false
+              },
+              "rho_iters": 7,
+              "rho_success": true,
+              "embedding_degree": 10,
+              "mov_feasible": false,
+              "smart_applies": false,
+              "glv_speedup_available": false
+            },
+            {
+              "curve": [
+                521,
+                319,
+                346
+              ],
+              "cm": {
+                "p": 521,
+                "trace": -6,
+                "order": 528,
+                "frobenius_disc": -2048,
+                "fundamental_disc": -8,
+                "conductor": 16,
+                "endomorphism_disc": -2048,
+                "anomalous": false,
+                "supersingular": false
+              },
+              "rho_iters": 5,
+              "rho_success": true,
+              "embedding_degree": 10,
+              "mov_feasible": false,
+              "smart_applies": false,
+              "glv_speedup_available": false
+            }
+          ],
+          "mean_rho_iters": 6.0,
+          "median_rho_iters": 7.0,
+          "stddev_rho_iters": 1.4142135623730951
+        }
+      ],
+      "aggregate": {
+        "total_curves": 2,
+        "total_isogenous_vertices": 3,
+        "curves_with_smart_applicable": 0,
+        "curves_with_mov_feasible": 0,
+        "curves_with_glv": 0,
+        "overall_mean_rho_iters": 4.333333333333333
+      }
+    }
+  },
+  "resumed_equals_fresh": true,
+  "fresh_cache_restore_equals_fresh": true,
+  "stale_local_restore_equals_fresh": true,
+  "changed_config_error": "error: remote isogeny head identity differs",
+  "crax_json_inner_status": "complete",
+  "head_etag_changed": true,
+  "head_generation_after_partial": 1,
+  "head_generation_after_complete": 2,
+  "head_complete": true,
+  "stray_generation_ignored": true,
+  "remote_keys_before_cleanup": [
+    "ic/v1/acceptance/isogeny-resume-20261023T052844Z-a6a99982/_isogeny_head.json",
+    "ic/v1/acceptance/isogeny-resume-20261023T052844Z-a6a99982/generations/000000/checkpoint.json",
+    "ic/v1/acceptance/isogeny-resume-20261023T052844Z-a6a99982/generations/000001/checkpoint.json",
+    "ic/v1/acceptance/isogeny-resume-20261023T052844Z-a6a99982/generations/000002/checkpoint.json",
+    "ic/v1/acceptance/isogeny-resume-20261023T052844Z-a6a99982/generations/000003/checkpoint.json"
+  ],
+  "head_sha256": "1920c928930cc805038cdab844653200197d9d0f2c5253ad840821dfc319ff12",
+  "scope": "Two deterministic curves over F_521 with degree-2 graph edges and rho cap 1024; isolated Setec S3 prefix.",
+  "cleanup": {
+    "keys_deleted": [
+      "ic/v1/acceptance/isogeny-resume-20261023T052844Z-a6a99982/_isogeny_head.json",
+      "ic/v1/acceptance/isogeny-resume-20261023T052844Z-a6a99982/generations/000000/checkpoint.json",
+      "ic/v1/acceptance/isogeny-resume-20261023T052844Z-a6a99982/generations/000001/checkpoint.json",
+      "ic/v1/acceptance/isogeny-resume-20261023T052844Z-a6a99982/generations/000002/checkpoint.json",
+      "ic/v1/acceptance/isogeny-resume-20261023T052844Z-a6a99982/generations/000003/checkpoint.json"
+    ],
+    "head_not_found": true
+  }
+}

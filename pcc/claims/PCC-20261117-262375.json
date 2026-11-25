@@ -1,0 +1,44 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-17T16:16:31Z",
+ "id": "PCC-20261117-262375",
+ "kind": "measurement",
+ "producer": {
+  "commit": "0c3e791087b39b273f7cc0d5d01d1494a9130c18",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/analysis-fresh.json",
+    "sha256": "81d4ee06fb2480c2cc2c0f4854c587f107f4e1507700685e00ffa73347194a0e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/independent-arithmetic-fresh.json",
+    "sha256": "8f3195b35df5f9f23f3dbda2f8c41db487454968803a1ef04b4f0c8a2384acff"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/independent-states-fresh.json",
+    "sha256": "32293ebe11bfea23843d702fb5182dcb9ea9025af168642012aabd4ade1d746f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/ic-collector-counterfactual-20261117/fresh-snapshot-binding.json",
+    "sha256": "b313f9681970c83a691acb28559890dc445c6b5055180ab20cf19e2243d2b876"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "ic-collector-counterfactual-20261117",
+ "statement": "Frozen collector panel20261117-154829-472b completed210blocks with1470IC,420matched-rho and420A/A answers,0capped IC arms. Existing independent Python arithmetic checked2310answers and10240states. All42rows perfield remain in all9predeclared contrasts for primary/collector/setup with10000resample pointwise95 intervals; no filtering, host replacement or cross-panel products. Failed A/A controls={\"N15\": 7, \"N18\": 5, \"N21\": 1, \"N24\": 0, \"N27\": 0}. All15controller/input source bindings and prepublished identities match clean source0c3e791087b39b273f7cc0d5d01d1494a9130c18. Exact numerical analysis/replay/binding artifacts are pinned as unsigned attestation subjects. Qualification remains null and this panel is invalid for promotion because A/A failures are retained. No signed performance verdict or historical allocator/cache cause is established. Fresh raw archive readback remains a separate pending custody check."
+}

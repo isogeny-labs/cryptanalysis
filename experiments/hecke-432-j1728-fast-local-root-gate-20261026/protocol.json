@@ -1,0 +1,28 @@
+{
+  "claim_rule": "For each listed prime, enumerate rational source-j=1728 C points from the original source equation. At each point count rational x_E roots by gcd(R,z^p-z) and E lifts by gcds with the quadratic-character polynomial and z^3+432. Preserve a degenerate-zero-resolvent or undefined source-j map as an explicit status. Compare pair counts with frozen direct receipts; do not treat operation counts as wall-time speedups.",
+  "curve_C": "y^2+y=x^3-7",
+  "curve_E": "y^2=x^3+432",
+  "expected_rational_CE_pairs": {
+    "11": 2,
+    "131": 4,
+    "179": 0,
+    "227": 2,
+    "251": 0,
+    "419": 0,
+    "491": 0,
+    "1523": 2,
+    "148139": 2,
+    "182339": 2,
+    "1237499": 0
+  },
+  "input_sha256": {
+    "bad_prime_audit": "db1d52dac95364dded8aa517b26c99a4c6d551eebbb9524dadbde50d943b703f",
+    "coordinate_map": "f244804792e0527781be5cedd78522b470bb34ed75545cc6bd7179f52b85eae1",
+    "field_certificate": "fe66edf2fba62c79d84f2c5906b4212bbafcce85beb8d9b49d2f1ca3602c2918",
+    "million_exception_result": "6daa3b7113913e37fea677a8393c11aae0bd3ba1bd8c40caefe583dc135383fe",
+    "resolvent": "3b127f8d71971b2a54c85137992cc1db560c5dab982fae0ec52146114b1fcc6b",
+    "ten_million_exception_result": "d3c2aab5a0d78ad33a3ee4ab48a81184176eea98fdfbc572eb9302b27af2a037"
+  },
+  "prime_cells": [11, 131, 179, 227, 251, 419, 491, 1523, 148139, 182339, 1237499],
+  "status": "FROZEN_BEFORE_FAST_LOCAL_GATE_IMPLEMENTATION"
+}

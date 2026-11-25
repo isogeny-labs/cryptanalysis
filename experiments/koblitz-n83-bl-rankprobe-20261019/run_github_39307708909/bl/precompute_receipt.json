@@ -1,0 +1,113 @@
+{
+  "binary_sha256": "0178d1bcbf4ee3d1d2b012b38fa6b009dbfb85448602a03182f227193ffe851b",
+  "budget_ms": 172919.811755,
+  "budget_source": "/home/runner/work/_temp/n83-bl-rankprobe/ic_budget/precompute_receipt.json",
+  "checks": {
+    "blake3_recorded": true,
+    "budget_not_overrun_by_more_than_1pct": true,
+    "budget_reached": true,
+    "entries_equal_new_points": true,
+    "exit_zero": true,
+    "size_matches_entries": true,
+    "summary_present": true,
+    "table_written": true
+  },
+  "command": [
+    "/home/runner/work/_temp/n83-bl-rankprobe-cargo-bl/release/bl_sg",
+    "precompute",
+    "--curve",
+    "83,1",
+    "--field",
+    "fold",
+    "--lanes",
+    "64",
+    "--dp-bits",
+    "6",
+    "--bl-jump-seed",
+    "20261014",
+    "--precompute-seed",
+    "20261015",
+    "--table-out",
+    "/home/runner/work/_temp/n83-bl-rankprobe/bl/table.bin",
+    "--budget-ms",
+    "172919.811755"
+  ],
+  "cpu": 0,
+  "dp_bits": 6,
+  "env": {
+    "KIC_RHO_THREADS": "1",
+    "KIC_THREADS": "1",
+    "RAYON_NUM_THREADS": "1"
+  },
+  "exit_code": 0,
+  "implementation": "rT770",
+  "implementation_overridden_for_smoke": false,
+  "precompute_over_budget": 1.0000112454610046,
+  "process_wall_s": 177.979160085,
+  "producer": {
+    "abandoned_walk_steps": 9268238,
+    "bl_jump_seed": 20261014,
+    "capped": 2967,
+    "covered_points": 648782602,
+    "duplicate_points": 4154,
+    "duplicate_walk_steps": 511883,
+    "escapes": 0,
+    "family": "sg",
+    "fruitless": 119965,
+    "group_additions": 658694260,
+    "identity": {
+      "a": 1,
+      "automorphism_size": 166,
+      "field": "fold",
+      "lambda": "2998004823950457",
+      "n": 83,
+      "rho_params": {
+        "dp_bits": 6,
+        "escape_fruitless": false,
+        "lanes": 64,
+        "step_cap_factor": 2000
+      },
+      "subgroup_order": "8569786107849059",
+      "walk": "StrongRhoG<F,u64> (library koblitz_strong_rho, crypto 770f6a69)"
+    },
+    "infinity_points": 0,
+    "jump_seed_derived": 1722507604927258462,
+    "kind": "bl_precompute",
+    "new_points": 10282240,
+    "ns_per_step": 266.73730071473057,
+    "peak_rss_bytes": 1641447424,
+    "precompute_ms": 172921.756318,
+    "precompute_seed": 20261015,
+    "record_bytes": 40,
+    "rounds": 10290176,
+    "scalar_multiplications": 2,
+    "setup_ms_excluded": 320.719269,
+    "steps": 648284870,
+    "stop_rule": {
+      "budget_ms": 172919.811755,
+      "stop_rounds": null,
+      "stop_steps": null
+    },
+    "table_blake3": "80f4b051cd9d300d3a7cbfc55f49fb24a81977f7b56e8e77926294ae34decb97",
+    "table_entries": 10282240,
+    "table_write_ms": 4398.769730999999,
+    "walks": 10409390
+  },
+  "spec": {
+    "binary": "bl_sg",
+    "family": "sg",
+    "field": "fold",
+    "kind": "bl_sg",
+    "lanes": 64,
+    "plain_kind": "bl_plain_sg",
+    "source": "as rA770, field fold"
+  },
+  "status": "PASS",
+  "table_bytes": 411289600,
+  "table_sha256": "1f95c7cd209970fc02c0c4d0953106edca401b651d1c7e604a36a38369d75777",
+  "usage": {
+    "max_rss_kib_children": 1602976,
+    "system_s": 0.5819489999999999,
+    "user_s": 175.115903
+  }
+}

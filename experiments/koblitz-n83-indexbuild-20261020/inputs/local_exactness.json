@@ -1,0 +1,170 @@
+{
+ "all_pass": true,
+ "bases_covered": [
+  "K600",
+  "M10",
+  "M38"
+ ],
+ "label": "LOCAL CORRECTNESS on the cloud-agent VM before the protocol froze; no timing claim",
+ "parent_protocol_sha256": "ff5b4cbfba8097cf1c1125f500f4f75ac82bd2d6518fae5da4976e5eec64a9c1",
+ "processes": {
+  "new-cM10I-q0": {
+   "arm": "cM10I",
+   "base": "M10",
+   "binary": "derived",
+   "index_build_ms_local": 8394.675881,
+   "index_build_pipeline": "row_batched_inverse+lookahead32_prefetch+selftest_lanes8",
+   "index_digests_equal_frozen": true,
+   "layout_digests_equal_frozen": true,
+   "probes": 2130165,
+   "q0_identity_equal_frozen": true,
+   "relation": [
+    48498,
+    93721,
+    54127,
+    78333
+   ],
+   "scalar": "3141592653589793",
+   "scan_selftest": {
+    "bijection": true,
+    "mode": "full",
+    "ms": 1390.942403
+   },
+   "wrapper_issues": []
+  },
+  "new-cM38I-q0": {
+   "arm": "cM38I",
+   "base": "M38",
+   "binary": "derived",
+   "index_build_ms_local": 8565.189352000001,
+   "index_build_pipeline": "row_batched_inverse+lookahead32_prefetch+selftest_lanes8",
+   "index_digests_equal_frozen": true,
+   "layout_digests_equal_frozen": true,
+   "probes": 1612533,
+   "q0_identity_equal_frozen": true,
+   "relation": [
+    81344,
+    53967,
+    13071,
+    42373
+   ],
+   "scalar": "3141592653589793",
+   "scan_selftest": {
+    "bijection": true,
+    "mode": "full",
+    "ms": 1566.645466
+   },
+   "wrapper_issues": []
+  },
+  "new-cPI-q0": {
+   "arm": "cPI",
+   "base": "K600",
+   "binary": "derived",
+   "index_build_ms_local": 8203.14396,
+   "index_build_pipeline": "row_batched_inverse+lookahead32_prefetch+selftest_lanes8",
+   "index_digests_equal_frozen": true,
+   "layout_digests_equal_frozen": true,
+   "probes": 1987852,
+   "q0_identity_equal_frozen": true,
+   "relation": [
+    77273,
+    22971,
+    54962,
+    62539
+   ],
+   "scalar": "3141592653589793",
+   "scan_selftest": {
+    "bijection": true,
+    "mode": "full",
+    "ms": 1394.446899
+   },
+   "wrapper_issues": []
+  },
+  "new-kM10I-301": {
+   "arm": "kM10I",
+   "base": "M10",
+   "binary": "derived",
+   "index_build_ms_local": 8010.79094,
+   "index_build_pipeline": "row_batched_inverse+lookahead32_prefetch+selftest_lanes8",
+   "index_digests_equal_frozen": true,
+   "layout_digests_equal_frozen": true,
+   "probes": 2130165,
+   "q0_identity_equal_frozen": true,
+   "rank_table_equal_frozen": true,
+   "relation": [
+    48498,
+    93721,
+    54127,
+    78333
+   ],
+   "scalar": "3141592653589793",
+   "scan_selftest": {
+    "bijection": true,
+    "mode": "full",
+    "ms": 1367.8399100000001
+   },
+   "wrapper_issues": []
+  },
+  "new-kM38I-1201": {
+   "arm": "kM38I",
+   "base": "M38",
+   "binary": "derived",
+   "index_build_ms_local": 8159.862038,
+   "index_build_pipeline": "row_batched_inverse+lookahead32_prefetch+selftest_lanes8",
+   "index_digests_equal_frozen": true,
+   "layout_digests_equal_frozen": true,
+   "probes": 689786,
+   "rank_table_equal_frozen": true,
+   "relation": [
+    70661,
+    14707,
+    30317,
+    76964
+   ],
+   "scalar": "5707124544314160",
+   "scan_selftest": {
+    "bijection": true,
+    "mode": "full",
+    "ms": 1434.609964
+   },
+   "wrapper_issues": []
+  },
+  "old-kM38I-1201": {
+   "arm": "kM38I",
+   "base": "M38",
+   "binary": "row",
+   "index_build_ms_local": 17982.642641,
+   "index_build_pipeline": null,
+   "index_digests_equal_frozen": true,
+   "layout_digests_equal_frozen": true,
+   "probes": 689786,
+   "rank_table_equal_frozen": true,
+   "relation": [
+    70661,
+    14707,
+    30317,
+    76964
+   ],
+   "scalar": "5707124544314160",
+   "scan_selftest": {
+    "bijection": true,
+    "mode": "full",
+    "ms": 2120.318672
+   },
+   "wrapper_issues": []
+  }
+ },
+ "schema": 1,
+ "seed_1201_m38_rank_stage_identical_row_vs_derived": {
+  "rank": true,
+  "rank_attempt_probes": true,
+  "rank_attempts": true,
+  "rank_frame_builds": true,
+  "rank_padd_fallback_states": true,
+  "rank_padd_irregular_inputs": true,
+  "rank_padd_resolved_hits": true,
+  "rank_padd_swapped_pairs": true,
+  "rank_relations_blake3": true,
+  "rank_root_calls_total": true
+ }
+}

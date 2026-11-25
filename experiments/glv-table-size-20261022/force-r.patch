@@ -1,0 +1,12 @@
+--- src/curve.c	2026-10-18 00:36:08.726760160 +0000
++++ src/curve.c	2026-10-22 06:56:34.208512259 +0000
+@@ -599,6 +599,9 @@
+     uint64_t rbudget = sqrt_nm / (48u * (uint64_t)lg);
+     uint32_t rr = 8;
+     while ((uint64_t)rr * 2 <= rbudget && rr * 2 <= 32) rr *= 2;
++#ifdef CA_GLV_FORCE_R
++    rr = CA_GLV_FORCE_R;
++#endif
+     c.r = rr;
+     uint64_t wcap = sqrt_nm / (24u * (uint64_t)lg);
+     uint32_t W = wcap < 1 ? 1 : (wcap > GLV_MAX_WALKS ? GLV_MAX_WALKS : (uint32_t)wcap);

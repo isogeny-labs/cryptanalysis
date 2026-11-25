@@ -1,0 +1,124 @@
+name: CT172 native 48-public-packet replay source gate
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct172-native48-source.yml'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT172_SELECTED48_NATIVE_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT172_NATIVE48_REPLAY_REPORT.md'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT172_SESSION_LOG.md'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct172-replay/**'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct171_selected_coverage.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct172_static_native_binding.py'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT176_*'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct176_*'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/test_ct176_*'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT179_*'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct179_*'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/test_ct179_*'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT181_*'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct181_*'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/test_ct181_*'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/CT182_*'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/ct182_*'
+      - 'experiments/chained-transfer-public-target/primitive-pricing-01/test_ct182_*'
+      - 'experiments/chained-transfer-public-target/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  protocol-and-rust-parse-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Frozen original public 48-vector fixture and eight prior mutations
+        run: |
+          set -euo pipefail
+          python3 -S experiments/chained-transfer-public-target/primitive-pricing-01/ct171_selected_coverage.py --self-test > /tmp/ct172-ct171-normal.json
+          python3 -O -S experiments/chained-transfer-public-target/primitive-pricing-01/ct171_selected_coverage.py --self-test > /tmp/ct172-ct171-optimized.json
+          cmp /tmp/ct172-ct171-normal.json /tmp/ct172-ct171-optimized.json
+          cat /tmp/ct172-ct171-normal.json
+          sha256sum /tmp/ct172-ct171-normal.json
+      - name: Independent CT125 Calls schema and all 144 real frozen counter objects
+        run: |
+          set -euo pipefail
+          python3 -S experiments/chained-transfer-public-target/primitive-pricing-01/ct172_static_native_binding.py --self-test > /tmp/ct172-binding-normal.json
+          python3 -O -S experiments/chained-transfer-public-target/primitive-pricing-01/ct172_static_native_binding.py --self-test > /tmp/ct172-binding-optimized.json
+          cmp /tmp/ct172-binding-normal.json /tmp/ct172-binding-optimized.json
+          cat /tmp/ct172-binding-normal.json
+          sha256sum /tmp/ct172-binding-normal.json
+      - name: Pin the real CT125 derivative and source model used by CT172
+        run: |
+          set -euo pipefail
+          test "$(git hash-object experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-02/derived/lib.rs)" = b80eb91a39ae1e87f0fcde95e52ea3d3634558bc
+          test "$(git hash-object experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-02/Cargo.toml)" = 4df33ba24e4dc58f95a253800df4c28d035f6a52
+          test "$(git hash-object experiments/chained-transfer-public-target/fixed-jacobian-chain-01/src/lib.rs)" = b2b703347e9452a1ca4c366c2130781e11231f49
+          echo 'CT125 derivative/lib and fixed-model source Git blobs exact; generated siblings remain unmaterialized'
+      - name: Parse Rust and package manifest without compilation or native evaluation
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target/primitive-pricing-01/ct172-replay
+          rustc --version
+          rustfmt --version
+          rustfmt --edition 2021 --emit stdout "$root/src/main.rs" >/dev/null
+          cargo read-manifest --manifest-path "$root/Cargo.toml" >/tmp/ct172-manifest.json
+          python3 -S - <<'PY'
+          import json
+          with open('/tmp/ct172-manifest.json') as f:
+              j=json.load(f)
+          assert j['name']=='ct172-real48-public-replay'
+          assert [v['name'] for v in j['targets']]==['ct172-replay']
+          print('CT172 manifest/target parsed; NO TYPECHECK, LINK, EXECUTION, TIMING OR SCIENTIFIC VERIFICATION')
+          PY
+      - name: CT176 exact-fixture process-collector static and mock-negative tests (no native runtime)
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target/primitive-pricing-01
+          fixture=experiments/chained-transfer-public-target/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json
+          python3 -S -m py_compile "$root/ct176_cold_process_collector.py" "$root/test_ct176_cold_process_collector.py"
+          python3 -S -m unittest discover -s "$root" -p 'test_ct176_cold_process_collector.py' -v
+          python3 -O -S -m unittest discover -s "$root" -p 'test_ct176_cold_process_collector.py' -v
+          python3 -S "$root/ct176_cold_process_collector.py" --fixture "$fixture" > /tmp/ct176-plan-normal.json
+          python3 -O -S "$root/ct176_cold_process_collector.py" --fixture "$fixture" > /tmp/ct176-plan-optimized.json
+          cmp /tmp/ct176-plan-normal.json /tmp/ct176-plan-optimized.json
+          python3 -S - <<'PY'
+          import json
+          j=json.load(open('/tmp/ct176-plan-normal.json'))
+          assert j['plan_only'] is True
+          assert j['processes']==2304 and j['packets']==48 and j['blocks']==8
+          assert j['fixture_git_blob']=='9ac741668dd1ffa9632ff0d58e6f4dd9f2dd18c3'
+          print('CT176 source and complete original fixture plan tested; NO native pricing or ECDLP execution')
+          PY
+      - name: CT179 original-fixture offline panel adjudicator synthetic mutation gates (no native runtime)
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target/primitive-pricing-01
+          python3 -S -m py_compile "$root/ct179_panel_adjudicator.py" "$root/test_ct179_panel_adjudicator.py"
+          python3 -S -m unittest discover -s "$root" -p 'test_ct179_panel_adjudicator.py' -v
+          python3 -O -S -m unittest discover -s "$root" -p 'test_ct179_panel_adjudicator.py' -v
+          echo 'CT179 tests contain only synthetic child evidence on frozen public metadata; NO native Rust or ECDLP execution'
+      - name: CT181 position-confounding negative and balanced-order controls (no native runtime)
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target/primitive-pricing-01
+          python3 -S -m py_compile "$root/ct181_order_design.py" "$root/test_ct181_order_design.py"
+          python3 -S -m unittest discover -s "$root" -p 'test_ct181_order_design.py' -v
+          python3 -O -S -m unittest discover -s "$root" -p 'test_ct181_order_design.py' -v
+          python3 -S "$root/ct181_order_design.py" > /tmp/ct181-normal.json
+          python3 -O -S "$root/ct181_order_design.py" > /tmp/ct181-optimized.json
+          cmp /tmp/ct181-normal.json /tmp/ct181-optimized.json
+          cat /tmp/ct181-normal.json
+          echo 'CT181 synthetic design only, no native measurement or ECDLP advantage'
+      - name: CT182 balanced-panel v2 offline adjudication and strict mutation gates (synthetic)
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target/primitive-pricing-01
+          python3 -S -m py_compile "$root/ct182_v2_panel_adjudicator.py" "$root/test_ct182_v2_panel_adjudicator.py"
+          python3 -S -m unittest discover -s "$root" -p 'test_ct182_v2_panel_adjudicator.py' -v
+          python3 -O -S -m unittest discover -s "$root" -p 'test_ct182_v2_panel_adjudicator.py' -v
+          echo 'CT182 v2 reader tested on synthetic full panels only; NO native transfer timings or complete ECDLP solver'
+      - name: Explicit scope
+        run: echo 'SOURCE AND PARSE ONLY [pcc:unverified]; no native run, no 695/701 whole corpus, no paid benchmark, no ECDLP speedup'

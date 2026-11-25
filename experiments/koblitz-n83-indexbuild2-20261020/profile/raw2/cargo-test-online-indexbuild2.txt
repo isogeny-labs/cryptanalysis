@@ -1,0 +1,38 @@
+   Compiling n83-closure-indexlift-online v0.1.0 (<scratch>/ib2-prof/online)
+    Finished `release` profile [optimized] target(s) in 2m 37s
+     Running unittests <scratch>/n83-ib2/experiments/koblitz-n83-indexbuild2-20261020/snapshots/r770/examples/koblitz_orbit_dlp_fast_online_indexbuild2.rs (<scratch>/ib2-target/release/deps/ic_online_indexbuild2_r770-43aee089a483dc51)
+running 32 tests
+test pair_symmetry_tests::unordered_pair_orbits_preserve_every_index_root ... ok
+test root_bloom_table_tests::screened_lookup_matches_exact_table ... ok
+test wide::closure_tests::closure_multiplier_is_its_label ... ok
+test wide::indexbuild2_tests::derived_states_and_lane_keys_reproduce_the_parent_index ... ok
+test wide::indexbuild2_tests::linear_canonicalizer_equals_lift_scan_on_every_word_of_small_two_limb_geometries ... ok
+test wide::indexbuild2_tests::index_keys8_equal_index_canonical128_in_every_mode ... ok
+test wide::indexbuild2_tests::linear_canonicalizer_equals_the_full_scan_on_every_word_of_3_to_20_bits ... ok
+test wide::indexbuild2_tests::linear_canonicalizer_equals_lift_scan_on_random_and_structured_n83_words ... ok
+test wide::indexbuild2_tests::sum_inverses_are_field_inverses_for_every_count ... ok
+test wide::indexbuild2_tests::roots_from_inverses_equal_the_scalar_solver ... ok
+test wide::indexbuild_tests::batched_states_and_lookahead_inserts_reproduce_the_parent_index ... ok
+test wide::indexbuild_tests::lanes_selftest_equals_the_parent_on_every_small_length_and_key ... ok
+test wide::indexbuild_tests::lanes_selftest_rejects_every_planted_non_bijection_the_parent_rejects ... ok
+test wide::indexlift_tests::every_index_canonicalizer_builds_the_same_layout ... ok
+test pair_symmetry_tests::n53_pair_quotient_preserves_the_complete_root_table ... ok
+test wide::indexlift_tests::lift_scan_equals_the_selected_canonicalizer_with_its_shift ... ok
+test wide::rankcut_tests::point_addition_pairs_are_the_s3_roots ... ok
+test wide::rankprobe_tests::frame_conjugates_commute_with_point_addition ... ok
+test wide::rankprobe_tests::frame_keys_are_the_rankcut_keys ... ok
+test wide::indexbuild_tests::lanes_selftest_equals_the_parent_on_the_frozen_n83_state_counts ... ok
+test wide::scan_order_tests::feistel_order_depends_on_the_key ... ok
+test wide::scan_order_tests::feistel_order_is_a_bijection_on_every_small_length ... ok
+test wide::scan_order_tests::feistel_order_is_a_bijection_on_the_n83_k600_state_count ... ok
+test wide::rankcut_tests::padd_loops_find_the_s3_relation_with_the_s3_probes ... ok
+test wide::stacked_tests::every_stacked_index_holds_the_reference_states_and_map ... ok
+test wide::stacked_tests::feistel_invert_undoes_apply_on_the_whole_domain ... ok
+test wide::stacked_tests::fold_counts_match_the_unordered_classes ... ok
+test wide::table_filter_tests::compact_slot_round_trips_every_field_and_rejects_overflow ... ok
+test wide::rankprobe_tests::frame_loops_find_the_rankcut_relation_with_the_rankcut_probes ... ok
+test wide::table_filter_tests::layouts_store_the_same_map_and_the_filter_has_no_false_negatives ... ok
+test wide::table_filter_tests::every_layout_finds_the_pipelines_relation_with_the_same_probes ... ok
+test wide::stacked_tests::every_stacked_arm_finds_the_reference_relation has been running for over 60 seconds
+test wide::stacked_tests::every_stacked_arm_finds_the_reference_relation ... ok
+test result: ok. 32 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 81.45s

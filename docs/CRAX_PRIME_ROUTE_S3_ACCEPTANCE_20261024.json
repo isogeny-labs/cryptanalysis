@@ -1,0 +1,122 @@
+{
+  "schema": "crax.prime-route-s3-acceptance/v1",
+  "checked_at_utc": "2026-10-24T05:44:45.096434+00:00",
+  "crax_source_commit": "fb7cc194c8c5442e4f04870e3b50689d8613f4e6",
+  "crypto_source_commit": "440169d0b8541bac4948f613edfd733186ac4864",
+  "binary_sha256": {
+    "crax": "4e5cb94e09b14ed1845b1f9239a52300df17a9b3c070d29314e67b557baa2230",
+    "crypto": "8cfb04fa2aa4c1ff8b56fe40fb46e3631e2af285328c61f20d240be8c858f8e4",
+    "ic": "5f9b27188bc60441aad55d50e116a4e9a61fed51ecd9ac6c1f2538633018d0f3"
+  },
+  "remote": "s3://setec-astronomy-artifacts/ic/v1/acceptance/crax-prime-route-20261024T054445Z-3daca078",
+  "checks": {
+    "input_push": {
+      "status": "ok",
+      "report": {
+        "bytes": 95,
+        "cached": true,
+        "name": "crax-prime-route/input.json",
+        "replaced": false,
+        "sha256": "53b0107b06a528e8630d6f700c31578b4861c4e5181ff6bb791389bbcdae96a6",
+        "uploaded": true
+      },
+      "source_sha256": "53b0107b06a528e8630d6f700c31578b4861c4e5181ff6bb791389bbcdae96a6"
+    },
+    "route_push": {
+      "status": "ok",
+      "report": {
+        "bytes": 4103,
+        "cached": true,
+        "name": "crax-prime-route/routes.json",
+        "replaced": false,
+        "sha256": "0670adb35b443841c5974ada7b37fb6f4d8cd9ab60746b7622264abe05a53af7",
+        "uploaded": true
+      },
+      "source_sha256": "0670adb35b443841c5974ada7b37fb6f4d8cd9ab60746b7622264abe05a53af7"
+    },
+    "input_remote_verify": {
+      "checked": 1,
+      "download_checked": true,
+      "entries": [
+        {
+          "bytes": 95,
+          "cache": {
+            "status": "ok"
+          },
+          "name": "crax-prime-route/input.json",
+          "remote": {
+            "status": "bytes_ok"
+          },
+          "sha256": "53b0107b06a528e8630d6f700c31578b4861c4e5181ff6bb791389bbcdae96a6"
+        }
+      ],
+      "problems": 0,
+      "remote_checked": true,
+      "status": "ok"
+    },
+    "route_remote_verify": {
+      "checked": 1,
+      "download_checked": true,
+      "entries": [
+        {
+          "bytes": 4103,
+          "cache": {
+            "status": "ok"
+          },
+          "name": "crax-prime-route/routes.json",
+          "remote": {
+            "status": "bytes_ok"
+          },
+          "sha256": "0670adb35b443841c5974ada7b37fb6f4d8cd9ab60746b7622264abe05a53af7"
+        }
+      ],
+      "problems": 0,
+      "remote_checked": true,
+      "status": "ok"
+    },
+    "input_fresh_pull": {
+      "bytes": 95,
+      "cache_path": "/Volumes/SSD990/llm/tmp/crax-prime-s3-tws7tne5/cache-b/sha256/53/53b0107b06a528e8630d6f700c31578b4861c4e5181ff6bb791389bbcdae96a6",
+      "copied": false,
+      "fetched": true,
+      "name": "crax-prime-route/input.json",
+      "path": "/Volumes/SSD990/llm/tmp/crax-prime-s3-tws7tne5/cache-b/sha256/53/53b0107b06a528e8630d6f700c31578b4861c4e5181ff6bb791389bbcdae96a6",
+      "sha256": "53b0107b06a528e8630d6f700c31578b4861c4e5181ff6bb791389bbcdae96a6",
+      "status": "ok"
+    },
+    "route_fresh_pull": {
+      "bytes": 4103,
+      "cache_path": "/Volumes/SSD990/llm/tmp/crax-prime-s3-tws7tne5/cache-b/sha256/06/0670adb35b443841c5974ada7b37fb6f4d8cd9ab60746b7622264abe05a53af7",
+      "copied": false,
+      "fetched": true,
+      "name": "crax-prime-route/routes.json",
+      "path": "/Volumes/SSD990/llm/tmp/crax-prime-s3-tws7tne5/cache-b/sha256/06/0670adb35b443841c5974ada7b37fb6f4d8cd9ab60746b7622264abe05a53af7",
+      "sha256": "0670adb35b443841c5974ada7b37fb6f4d8cd9ab60746b7622264abe05a53af7",
+      "status": "ok"
+    },
+    "crax_ic_solve": {
+      "envelope_status": "ok",
+      "exit_code": 0,
+      "child_status": "complete",
+      "scalar": "190",
+      "verified": true,
+      "route_id": "IW1E11h1h1a619f4ab250",
+      "edges_verified": 2,
+      "input_sha256": "53b0107b06a528e8630d6f700c31578b4861c4e5181ff6bb791389bbcdae96a6",
+      "route_sha256": "0670adb35b443841c5974ada7b37fb6f4d8cd9ab60746b7622264abe05a53af7",
+      "report_sha256": "d08ea86f72c92ab90fcc353c1debb8215ad9cb28c1e92436eeca15dcb27c5a10"
+    }
+  },
+  "cleanup": {
+    "objects_before": 2,
+    "keys": [
+      "ic/v1/acceptance/crax-prime-route-20261024T054445Z-3daca078/sha256/06/0670adb35b443841c5974ada7b37fb6f4d8cd9ab60746b7622264abe05a53af7",
+      "ic/v1/acceptance/crax-prime-route-20261024T054445Z-3daca078/sha256/53/53b0107b06a528e8630d6f700c31578b4861c4e5181ff6bb791389bbcdae96a6"
+    ],
+    "objects_after": 0
+  },
+  "names": {
+    "input": "crax-prime-route/input.json",
+    "route": "crax-prime-route/routes.json"
+  }
+}

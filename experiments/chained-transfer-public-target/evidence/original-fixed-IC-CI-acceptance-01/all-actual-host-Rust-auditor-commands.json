@@ -1,0 +1,348 @@
+[
+  {
+    "name": "original-ic-whole-positive",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-original-ic-auditor.bin",
+      "--compare",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-ic-whole-frozen.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-ic-native.txt",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-ic-whole-positive.json"
+    ],
+    "actual_exit": 0
+  },
+  {
+    "name": "original-ic-historical-positive",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-historical-auditor.bin",
+      "--compare",
+      "original-ic",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-ic-expected.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-ic-whole-frozen.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-ic-historical-positive.json"
+    ],
+    "actual_exit": 0
+  },
+  {
+    "name": "original-ic-historical-missing-record-class",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-historical-auditor.bin",
+      "--compare",
+      "original-ic",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-ic-historical-controls/missing-record-class.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-ic-whole-frozen.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-ic-missing-record-class-accepted.json"
+    ],
+    "actual_exit": 1
+  },
+  {
+    "name": "original-ic-historical-changed-scalar",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-historical-auditor.bin",
+      "--compare",
+      "original-ic",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-ic-historical-controls/changed-scalar.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-ic-whole-frozen.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-ic-changed-scalar-accepted.json"
+    ],
+    "actual_exit": 1
+  },
+  {
+    "name": "original-ic-historical-changed-counter",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-historical-auditor.bin",
+      "--compare",
+      "original-ic",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-ic-historical-controls/changed-counter.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-ic-whole-frozen.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-ic-changed-counter-accepted.json"
+    ],
+    "actual_exit": 1
+  },
+  {
+    "name": "original-ic-historical-unexpected-report-field",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-historical-auditor.bin",
+      "--compare",
+      "original-ic",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-ic-historical-controls/unexpected-report-field.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-ic-whole-frozen.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-ic-unexpected-report-field-accepted.json"
+    ],
+    "actual_exit": 1
+  },
+  {
+    "name": "original-ic-historical-timing-only",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-historical-auditor.bin",
+      "--compare",
+      "original-ic",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-ic-historical-controls/timing-only.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-ic-whole-frozen.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-ic-timing-only-accepted.json"
+    ],
+    "actual_exit": 0
+  },
+  {
+    "name": "original-ic-N4_ORIGINAL_MODEL_IC_SETUP-omission",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-original-ic-auditor.bin",
+      "--compare",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-ic-whole-frozen.json",
+      "/dev/fd/4",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-ic-N4_ORIGINAL_MODEL_IC_SETUP-must-not-accept.json"
+    ],
+    "actual_exit": 101,
+    "whole_decoder_exit": 0
+  },
+  {
+    "name": "original-ic-N4_ORIGINAL_MODEL_IC_INPUT-omission",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-original-ic-auditor.bin",
+      "--compare",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-ic-whole-frozen.json",
+      "/dev/fd/4",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-ic-N4_ORIGINAL_MODEL_IC_INPUT-must-not-accept.json"
+    ],
+    "actual_exit": 101,
+    "whole_decoder_exit": 0
+  },
+  {
+    "name": "original-ic-N4_ORIGINAL_MODEL_IC_ATTEMPT-omission",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-original-ic-auditor.bin",
+      "--compare",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-ic-whole-frozen.json",
+      "/dev/fd/4",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-ic-N4_ORIGINAL_MODEL_IC_ATTEMPT-must-not-accept.json"
+    ],
+    "actual_exit": 101,
+    "whole_decoder_exit": 0
+  },
+  {
+    "name": "original-ic-N4_ORIGINAL_MODEL_IC_CASE-omission",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-original-ic-auditor.bin",
+      "--compare",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-ic-whole-frozen.json",
+      "/dev/fd/4",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-ic-N4_ORIGINAL_MODEL_IC_CASE-must-not-accept.json"
+    ],
+    "actual_exit": 101,
+    "whole_decoder_exit": 0
+  },
+  {
+    "name": "original-ic-N4_ORIGINAL_MODEL_IC_REJECTIONS-omission",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-original-ic-auditor.bin",
+      "--compare",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-ic-whole-frozen.json",
+      "/dev/fd/4",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-ic-N4_ORIGINAL_MODEL_IC_REJECTIONS-must-not-accept.json"
+    ],
+    "actual_exit": 101,
+    "whole_decoder_exit": 0
+  },
+  {
+    "name": "original-ic-N4_ORIGINAL_MODEL_IC_TARGET-omission",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-original-ic-auditor.bin",
+      "--compare",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-ic-whole-frozen.json",
+      "/dev/fd/4",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-ic-N4_ORIGINAL_MODEL_IC_TARGET-must-not-accept.json"
+    ],
+    "actual_exit": 101,
+    "whole_decoder_exit": 0
+  },
+  {
+    "name": "original-ic-N4_ORIGINAL_MODEL_IC_SCOPE-omission",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-original-ic-auditor.bin",
+      "--compare",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-ic-whole-frozen.json",
+      "/dev/fd/4",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-ic-N4_ORIGINAL_MODEL_IC_SCOPE-must-not-accept.json"
+    ],
+    "actual_exit": 101,
+    "whole_decoder_exit": 0
+  },
+  {
+    "name": "original-sampler-whole-positive",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-original-sampler-auditor.bin",
+      "--compare",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-sampler-whole-frozen.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-sampler-native.txt",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-sampler-whole-positive.json"
+    ],
+    "actual_exit": 0
+  },
+  {
+    "name": "original-sampler-historical-positive",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-historical-auditor.bin",
+      "--compare",
+      "original-sampler",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-sampler-expected.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-sampler-whole-frozen.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-sampler-historical-positive.json"
+    ],
+    "actual_exit": 0
+  },
+  {
+    "name": "original-sampler-historical-missing-record-class",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-historical-auditor.bin",
+      "--compare",
+      "original-sampler",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-sampler-historical-controls/missing-record-class.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-sampler-whole-frozen.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-sampler-missing-record-class-accepted.json"
+    ],
+    "actual_exit": 1
+  },
+  {
+    "name": "original-sampler-historical-changed-scalar",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-historical-auditor.bin",
+      "--compare",
+      "original-sampler",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-sampler-historical-controls/changed-scalar.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-sampler-whole-frozen.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-sampler-changed-scalar-accepted.json"
+    ],
+    "actual_exit": 1
+  },
+  {
+    "name": "original-sampler-historical-changed-counter",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-historical-auditor.bin",
+      "--compare",
+      "original-sampler",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-sampler-historical-controls/changed-counter.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-sampler-whole-frozen.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-sampler-changed-counter-accepted.json"
+    ],
+    "actual_exit": 1
+  },
+  {
+    "name": "original-sampler-historical-unexpected-report-field",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-historical-auditor.bin",
+      "--compare",
+      "original-sampler",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-sampler-historical-controls/unexpected-report-field.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-sampler-whole-frozen.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-sampler-unexpected-report-field-accepted.json"
+    ],
+    "actual_exit": 1
+  },
+  {
+    "name": "original-sampler-historical-timing-only",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-historical-auditor.bin",
+      "--compare",
+      "original-sampler",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-sampler-historical-controls/timing-only.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-sampler-whole-frozen.json",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-sampler-timing-only-accepted.json"
+    ],
+    "actual_exit": 0
+  },
+  {
+    "name": "original-sampler-N4_ORIGINAL_FIXED_SAMPLER_SETUP-omission",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-original-sampler-auditor.bin",
+      "--compare",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-sampler-whole-frozen.json",
+      "/dev/fd/4",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-sampler-N4_ORIGINAL_FIXED_SAMPLER_SETUP-must-not-accept.json"
+    ],
+    "actual_exit": 101,
+    "whole_decoder_exit": 0
+  },
+  {
+    "name": "original-sampler-N4_ORIGINAL_FIXED_SAMPLER_PROVENANCE-omission",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-original-sampler-auditor.bin",
+      "--compare",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-sampler-whole-frozen.json",
+      "/dev/fd/4",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-sampler-N4_ORIGINAL_FIXED_SAMPLER_PROVENANCE-must-not-accept.json"
+    ],
+    "actual_exit": 101,
+    "whole_decoder_exit": 0
+  },
+  {
+    "name": "original-sampler-N4_ORIGINAL_FIXED_SAMPLER_INPUT-omission",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-original-sampler-auditor.bin",
+      "--compare",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-sampler-whole-frozen.json",
+      "/dev/fd/4",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-sampler-N4_ORIGINAL_FIXED_SAMPLER_INPUT-must-not-accept.json"
+    ],
+    "actual_exit": 101,
+    "whole_decoder_exit": 0
+  },
+  {
+    "name": "original-sampler-N4_ORIGINAL_FIXED_SAMPLER_SCALARS-omission",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-original-sampler-auditor.bin",
+      "--compare",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-sampler-whole-frozen.json",
+      "/dev/fd/4",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-sampler-N4_ORIGINAL_FIXED_SAMPLER_SCALARS-must-not-accept.json"
+    ],
+    "actual_exit": 101,
+    "whole_decoder_exit": 0
+  },
+  {
+    "name": "original-sampler-N4_ORIGINAL_FIXED_SAMPLER_ATTEMPT-omission",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-original-sampler-auditor.bin",
+      "--compare",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-sampler-whole-frozen.json",
+      "/dev/fd/4",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-sampler-N4_ORIGINAL_FIXED_SAMPLER_ATTEMPT-must-not-accept.json"
+    ],
+    "actual_exit": 101,
+    "whole_decoder_exit": 0
+  },
+  {
+    "name": "original-sampler-N4_ORIGINAL_FIXED_SAMPLER_CASE-omission",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-original-sampler-auditor.bin",
+      "--compare",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-sampler-whole-frozen.json",
+      "/dev/fd/4",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-sampler-N4_ORIGINAL_FIXED_SAMPLER_CASE-must-not-accept.json"
+    ],
+    "actual_exit": 101,
+    "whole_decoder_exit": 0
+  },
+  {
+    "name": "original-sampler-N4_ORIGINAL_FIXED_SAMPLER_TARGET-omission",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-original-sampler-auditor.bin",
+      "--compare",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-sampler-whole-frozen.json",
+      "/dev/fd/4",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-sampler-N4_ORIGINAL_FIXED_SAMPLER_TARGET-must-not-accept.json"
+    ],
+    "actual_exit": 101,
+    "whole_decoder_exit": 0
+  },
+  {
+    "name": "original-sampler-N4_ORIGINAL_FIXED_SAMPLER_SCOPE-omission",
+    "command": [
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/executables/actual-runtime-original-sampler-auditor.bin",
+      "--compare",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/whole-artifact/original-sampler-whole-frozen.json",
+      "/dev/fd/4",
+      "/workspace/scratch/ct100-original-fixed-IC-CI-acceptance-01/actual-host-auditor-replays/original-sampler-N4_ORIGINAL_FIXED_SAMPLER_SCOPE-must-not-accept.json"
+    ],
+    "actual_exit": 101,
+    "whole_decoder_exit": 0
+  }
+]

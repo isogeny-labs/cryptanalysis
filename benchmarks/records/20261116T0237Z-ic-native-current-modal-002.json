@@ -1,0 +1,113 @@
+{
+  "branch": "codex/ic-rational-current-20261115",
+  "closed_utc": "2026-11-16T02:45:39+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--apt",
+        "numactl",
+        "--out",
+        "experiments/ic-native-current-20261115/run-001",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-native-current-20261115/run.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-16T02:39:01+00:00",
+      "wall_s": 25.385
+    }
+  ],
+  "commit": "37de354a7a97b1abefacf7ca6f144ceed6a16312",
+  "commit_dirty": true,
+  "created_utc": "2026-11-16T02:37:36+00:00",
+  "curve_uid": null,
+  "entries": [],
+  "host": {
+    "cpu": "arm",
+    "cpus_online": 14,
+    "hostname": "Mac.attlocal.net",
+    "isolation": "unstated",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O"
+  },
+  "id": "20261116T0237Z-ic-native-current-modal-002",
+  "metrics": [],
+  "problem": "ic:zp-current-native",
+  "raw": [
+    {
+      "bytes": 1657,
+      "path": "experiments/ic-native-current-20261115/launch-002/remote.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/69/69e67767a2dc9e61f86f4b812a6ffb162474de8fe8dda8cd80f342c13cbcd8bf",
+      "sha256": "69e67767a2dc9e61f86f4b812a6ffb162474de8fe8dda8cd80f342c13cbcd8bf",
+      "uploaded": false
+    },
+    {
+      "bytes": 1020,
+      "path": "experiments/ic-native-current-20261115/launch-002/provider.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/8c/8c3288601db6e605a8df024b43fce9b5a5b379e338afe28c884a0dd9b6467424",
+      "sha256": "8c3288601db6e605a8df024b43fce9b5a5b379e338afe28c884a0dd9b6467424",
+      "uploaded": false
+    },
+    {
+      "bytes": 4181,
+      "path": "experiments/ic-native-current-20261115/launch-002/launcher.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/22/22085fa90e47fe99264610703bbc80736c718d2343efc50a86808d7e3d36afda",
+      "sha256": "22085fa90e47fe99264610703bbc80736c718d2343efc50a86808d7e3d36afda",
+      "uploaded": false
+    },
+    {
+      "bytes": 22716,
+      "path": "experiments/ic-native-current-20261115/run-001/host.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/f9/f9ccd84f69b658e2460e96eb54aab1640d08987722a0fd12baeb9fdaa82cf513",
+      "sha256": "f9ccd84f69b658e2460e96eb54aab1640d08987722a0fd12baeb9fdaa82cf513",
+      "uploaded": false
+    },
+    {
+      "bytes": 2318,
+      "path": "experiments/ic-native-current-20261115/run-001/build-2.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/b4/b4517e615d6ec15cb46243585a653c5eba47c86bb6ba26218a651274190d920d",
+      "sha256": "b4517e615d6ec15cb46243585a653c5eba47c86bb6ba26218a651274190d920d",
+      "uploaded": false
+    },
+    {
+      "bytes": 568,
+      "path": "experiments/ic-native-current-20261115/run-001/build-0.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/9f/9fa874a0686f3088e66ab3506c4e485e26c2cc4eebaf34ca148b6e7ad288e588",
+      "sha256": "9fa874a0686f3088e66ab3506c4e485e26c2cc4eebaf34ca148b6e7ad288e588",
+      "uploaded": false
+    },
+    {
+      "bytes": 4940,
+      "path": "experiments/ic-native-current-20261115/run-001/build-1.log",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/9e/9ef8a0781fd8e5e3e4e7f7daa0fa3ee05164a4430cb727a22f6bd7857304aa6b",
+      "sha256": "9ef8a0781fd8e5e3e4e7f7daa0fa3ee05164a4430cb727a22f6bd7857304aa6b",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": null,
+    "png": [],
+    "svg": []
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-native-current-modal-002",
+  "status": "invalid",
+  "summary": "Native x86-64 GNU build and all 22 CTest checks passed on Modal L4. Benchmark wrapper compilation failed before any timing input ran because strict C11 omitted POSIX clock declarations. Add POSIX feature macro and use a new run/output directory.",
+  "validation": null
+}

@@ -9,8 +9,158 @@
  */
 #include "gpu_internal.h"
 #include "dlog_internal.h"
+#include "dlog_checkpoint_internal.h"
 
+#include <math.h>
 #include <stdio.h>
+
+static void gpu_rho_checkpoint_identity(gpu_rho_checkpoint_header *h,
+                                         const ca_group *g, const ca_elem *base,
+                                         const ca_elem *target, const ca_gpu_rho_args *a,
+                                         uint32_t tpb, uint32_t requested_steps,
+                                         int dp_bits)
+{
+    memset(h, 0, sizeof(*h));
+    memcpy(h->magic, "CAGPUDP1", 8);
+    h->p = g->p; h->a = g->a; h->b = g->b; h->order = g->order;
+    h->cofactor = g->cofactor;
+    ca_group_decode(g, h->base, base);
+    ca_group_decode(g, h->target, target);
+    h->kind = a->kind; h->negmap = a->negmap; h->r = a->r;
+    h->nthreads = a->nthreads; h->dp_bits = (uint32_t)dp_bits;
+    h->tpb = tpb; h->requested_steps = requested_steps;
+    h->walks_per_thread = CA_GPU_W; h->aux_words = CA_GPU_AUX;
+    h->entry_size = sizeof(ca_htab_entry);
+}
+
+static int gpu_rho_checkpoint_same_run(const gpu_rho_checkpoint_header *a,
+                                        const gpu_rho_checkpoint_header *b)
+{
+    return memcmp(a->magic, b->magic, 8) == 0 && a->p == b->p &&
+           a->a == b->a && a->b == b->b && a->order == b->order &&
+           a->cofactor == b->cofactor &&
+           memcmp(a->base, b->base, sizeof(a->base)) == 0 &&
+           memcmp(a->target, b->target, sizeof(a->target)) == 0 &&
+           a->kind == b->kind && a->negmap == b->negmap && a->r == b->r &&
+           a->nthreads == b->nthreads && a->dp_bits == b->dp_bits &&
+           a->tpb == b->tpb && a->requested_steps == b->requested_steps &&
+           a->walks_per_thread == b->walks_per_thread &&
+           a->aux_words == b->aux_words && a->entry_size == b->entry_size;
+}
+
+static int gpu_rho_checkpoint_probe(const char *path,
+                                     const gpu_rho_checkpoint_header *identity,
+                                     uint64_t requested_seed,
+                                     gpu_rho_checkpoint_header *saved)
+{
+    if (!path) return 0;
+    FILE *f = fopen(path, "rb");
+    if (!f) {
+        if (errno == ENOENT) return 0;
+        ca_set_error("gpu rho: cannot open checkpoint");
+        return -1;
+    }
+    int ok = fread(saved, 1, sizeof(*saved), f) == sizeof(*saved) &&
+             gpu_rho_checkpoint_same_run(saved, identity) && saved->seed &&
+             (!requested_seed || saved->seed == requested_seed) && saved->resolved_steps &&
+             saved->entries <= SIZE_MAX / sizeof(ca_htab_entry) &&
+             isfinite(saved->elapsed_seconds) && saved->elapsed_seconds >= 0 &&
+             saved->solved <= 1 && saved->resumes < UINT64_MAX && saved->launches <= saved->ops &&
+             saved->dps <= saved->ops && saved->restarts <= saved->dps;
+    fclose(f);
+    if (!ok) ca_set_error("gpu rho: checkpoint identity, format or seed does not match");
+    return ok ? 1 : -1;
+}
+
+static int gpu_rho_checkpoint_load(const char *path,
+                                    const gpu_rho_checkpoint_header *expected,
+                                    ca_htab *tab, const ca_group *g,
+                                    const ca_elem *base, const ca_elem *target)
+{
+    FILE *f = fopen(path, "rb");
+    if (!f) { ca_set_error("gpu rho: cannot reopen checkpoint"); return 0; }
+    gpu_rho_checkpoint_header h = {0};
+    int ok = fread(&h, 1, sizeof(h), f) == sizeof(h) &&
+             /* Both headers are raw fread() bytes of the same file, including padding. */
+             // NOLINTNEXTLINE(bugprone-suspicious-memory-comparison,cert-exp42-c,cert-flp37-c)
+             memcmp(&h, expected, sizeof(h)) == 0;
+    uint64_t checksum = h.checksum;
+    h.checksum = 0;
+    uint64_t hash = dlog_ckpt_hash(&h, sizeof(h), UINT64_C(14695981039346656037));
+    for (uint64_t i = 0; ok && i < h.entries; i++) {
+        ca_htab_entry e;
+        ok = fread(&e, 1, sizeof(e), f) == sizeof(e);
+        if (ok) {
+            hash = dlog_ckpt_hash(&e, sizeof(e), hash);
+            ok = e.key && e.v0 < g->order && e.v1 < g->order &&
+                 ca_htab_insert(tab, e.key, e.v0, e.v1, NULL, NULL) == 0;
+        }
+    }
+    if (ok) ok = fgetc(f) == EOF && hash == checksum && tab->count == h.entries;
+    fclose(f);
+    if (ok && h.solved) ok = ca_verify_log(g, base, target, h.result);
+    if (!ok) ca_set_error("gpu rho: checkpoint is damaged or incompatible");
+    return ok;
+}
+
+static int gpu_rho_checkpoint_save(const char *path,
+                                    const gpu_rho_checkpoint_header *identity,
+                                    const ca_htab *tab, uint64_t seed, uint64_t resumes,
+                                    uint64_t ops, uint64_t launches, uint64_t dps,
+                                    uint64_t restarts, double elapsed, uint64_t result,
+                                    int solved)
+{
+    if (!path) return 1;
+    dlog_ckpt_file w;
+    if (!dlog_ckpt_begin(&w, path)) {
+        dlog_ckpt_finish(&w, 0);
+        ca_set_error("gpu rho: cannot create checkpoint"); return 0;
+    }
+    gpu_rho_checkpoint_header h = *identity;
+    h.seed = seed; h.resumes = resumes; h.ops = ops;
+    h.launches = launches; h.dps = dps; h.restarts = restarts;
+    h.entries = tab->count; h.elapsed_seconds = elapsed;
+    h.result = result; h.solved = solved;
+    uint64_t hash = dlog_ckpt_hash(&h, sizeof(h), UINT64_C(14695981039346656037));
+    int ok = fwrite(&h, 1, sizeof(h), w.f) == sizeof(h);
+    for (size_t i = 0; ok && i < tab->cap; i++) {
+        const ca_htab_entry *e = &tab->e[i];
+        if (!e->key) continue;
+        hash = dlog_ckpt_hash(e, sizeof(*e), hash);
+        ok = fwrite(e, 1, sizeof(*e), w.f) == sizeof(*e);
+    }
+    if (ok) {
+        h.checksum = hash;
+        ok = fseek(w.f, 0, SEEK_SET) == 0 && fwrite(&h, 1, sizeof(h), w.f) == sizeof(h);
+    }
+    ok = dlog_ckpt_finish(&w, ok);
+    if (!ok) ca_set_error("gpu rho: cannot persist checkpoint");
+    return ok;
+}
+
+static int gpu_rho_progress(const char *path, const char *backend, const char *status,
+                             double elapsed, uint64_t ops, uint64_t launches,
+                             uint64_t dps, uint64_t restarts, size_t entries, int verbose)
+{
+    if (verbose) fprintf(stderr, "[gpu-rho/%s] %.1fs launches=%" PRIu64
+                         " ops=%" PRIu64 " dps=%" PRIu64 " entries=%zu restarts=%" PRIu64 "\n",
+                         backend, elapsed, launches, ops, dps, entries, restarts);
+    if (!path) return 1;
+    char *progress_path = dlog_ckpt_path(path, ".progress.json");
+    if (!progress_path) { ca_set_error("gpu rho: cannot allocate progress path"); return 0; }
+    dlog_ckpt_file w;
+    int ok = dlog_ckpt_begin(&w, progress_path);
+    if (ok) ok = fprintf(w.f,
+        "{\"status\":\"%s\",\"backend\":\"%s\",\"elapsed_seconds\":%.3f,"
+        "\"group_ops\":%" PRIu64 ",\"launches\":%" PRIu64
+        ",\"distinguished_points\":%" PRIu64 ",\"restarts\":%" PRIu64
+        ",\"table_entries\":%zu}\n",
+        status, backend, elapsed, ops, launches, dps, restarts, entries) > 0;
+    ok = dlog_ckpt_finish(&w, ok);
+    free(progress_path);
+    if (!ok) ca_set_error("gpu rho: cannot persist progress");
+    return ok;
+}
 
 void ca_gpu_rho_params_default(ca_gpu_rho_params *p)
 {
@@ -80,8 +230,11 @@ static int gpu_try_solve(const ca_group *g, const ca_elem *base, const ca_elem *
     return 0;
 }
 
-ca_status ca_gpu_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem *target,
-                           const ca_gpu_rho_params *params, uint64_t *x, ca_stats *st)
+static ca_status gpu_rho_solve(const ca_group *g, const ca_elem *base,
+                               const ca_elem *target, const ca_gpu_rho_params *params,
+                               const char *checkpoint_path, uint32_t progress_interval,
+                               uint32_t checkpoint_interval, int verbose,
+                               uint64_t *x, ca_stats *st)
 {
     ca_gpu_rho_params def;
     if (!params) {
@@ -94,6 +247,7 @@ ca_status ca_gpu_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem
     }
     double t0 = ca_now();
     uint64_t n = g->order;
+    if (!ca_check_members(g, base, target, n, "gpu rho")) return CA_ERR_NOT_FOUND;
 
     /* Backend selection happens before the shortcuts below, so that asking
      * explicitly for CUDA fails predictably when CUDA is unavailable instead
@@ -151,7 +305,7 @@ ca_status ca_gpu_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem
     a.n = n;
     a.kind = g->kind == CA_GROUP_EC ? CA_GPU_KIND_EC : CA_GPU_KIND_ZP;
     a.negmap = params->negation_map && g->kind == CA_GROUP_EC;
-    a.seed = ca_seed_or_random(params->seed);
+    a.seed = params->seed;
     /* internal (Montgomery) words of base and target */
     a.base_x = base->w[0];
     a.base_y = base->w[1];
@@ -190,6 +344,13 @@ ca_status ca_gpu_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem
     } else {
         nthreads = (uint64_t)params->blocks * tpb;
     }
+    /* Kernel walk IDs are uint32_t; reject dimensions before truncation or
+     * any per-walk allocation. The largest buffer has CA_GPU_AUX words. */
+    if (nthreads > UINT32_MAX / CA_GPU_W ||
+        nthreads > SIZE_MAX / CA_GPU_W / CA_GPU_AUX / sizeof(uint64_t)) {
+        ca_set_error("GPU rho launch exceeds 32-bit walk IDs or host buffer sizes");
+        return CA_ERR_INVALID;
+    }
     a.nthreads = (uint32_t)nthreads;
     uint64_t nwalks = (uint64_t)a.nthreads * CA_GPU_W;
     /* distinguished points: ~32 per walk over the expected run, at most 2^24 total */
@@ -207,10 +368,29 @@ ca_status ca_gpu_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem
      * is undefined, so clamp it.  (Anything near this makes distinguished
      * points so rare that a work limit is essential; see ca_gpu.h.) */
     if (dp > 63) dp = 63;
+    {
+        /* As in rho.c: a walk's post-collision cycle has about sqrt(n)
+         * steps, and with distinguished points rarer than that it holds
+         * none, so the collision is never reported and the runaway guard
+         * (which grows with 2^dp) ends a solvable search with
+         * CA_ERR_NOT_FOUND, or never fires.  Cap dp at floor(log2 n)/2 - 2
+         * (2^dp <= sqrt(n)/4); the automatic choice is always below it. */
+        int dp_cap = ilog2u(n) / 2 - 2;
+        if (dp_cap < 0) dp_cap = 0;
+        if (dp > dp_cap) dp = dp_cap;
+    }
     a.dp_mask = dp ? ((1ULL << dp) - 1) : 0;
     a.abandon_shift = (uint32_t)dp;
+    gpu_rho_checkpoint_header identity, saved;
+    gpu_rho_checkpoint_identity(&identity, g, base, target, &a, tpb,
+                                 params->steps_per_launch, dp);
+    int existing = gpu_rho_checkpoint_probe(checkpoint_path, &identity,
+                                             params->seed, &saved);
+    if (existing < 0) return CA_ERR_INTERNAL;
+    a.seed = existing ? saved.seed : ca_seed_or_random(params->seed);
     uint32_t steps = params->steps_per_launch;
-    if (steps == 0) {
+    if (existing) steps = saved.resolved_steps;
+    else if (steps == 0) {
         /* Aim at about 1/16 of the expected work per launch, but run at least
          * long enough that the herd is likely to report a distinguished point
          * (one per 2^dp steps, spread over nwalks walks). */
@@ -232,15 +412,26 @@ ca_status ca_gpu_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem
         steps = per < 1 ? 1 : (uint32_t)per;
     }
     a.steps = steps;
+    identity.resolved_steps = steps;
+    /* Work limit: the caller's max_ops (CA_ERR_LIMIT), else the runaway
+     * guard of the CPU solver (rho.c), which ends a search whose target is
+     * not a power of the base with CA_ERR_NOT_FOUND.  It allows 64 times the
+     * sqrt(n) of a solvable run, the 2^dp steps each walk takes to a
+     * distinguished point, and whole launches (the limit is only checked
+     * between them). */
+    uint64_t op_limit = params->max_ops;
+    const ca_status limit_rc = op_limit ? CA_ERR_LIMIT : CA_ERR_NOT_FOUND;
+    if (op_limit == 0) {
+        double guard = 64.0 * (double)sqrt_n +
+                       64.0 * (double)nwalks * ((double)(1ULL << dp) + (double)steps) + 1048576.0;
+        op_limit = guard < 0x1p63 ? (uint64_t)guard : UINT64_MAX;
+    }
     /* DP buffer for one launch: twice the expected count plus slack, and
      * hard-capped so that a large group cannot ask for a huge allocation.
      * Overflowing the buffer is safe by construction: the kernel drops the
      * excess (it only writes slots below dp_cap) and the host clamps the
      * count, so an overflow costs work, never correctness. */
-    double exp_dps = (double)nwalks * steps / (double)(1ULL << dp);
-    uint64_t cap = (uint64_t)(exp_dps * 2) + 4096;
-    if (cap > (1u << 20)) cap = 1u << 20;
-    a.dp_cap = (uint32_t)cap;
+    a.dp_cap = ca_gpu_dp_capacity((uint32_t)nwalks, steps, (uint32_t)dp);
 
     /* multipliers (host) */
     uint64_t *mult = malloc((size_t)a.r * 4 * sizeof(uint64_t));
@@ -250,7 +441,7 @@ ca_status ca_gpu_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem
     uint64_t setup_ops = 0;
     for (uint32_t i = 0; i < a.r; i++) {
         uint64_t al = ca_rng_below(&rng, n), be = ca_rng_below(&rng, n);
-        ca_elem t1, t2, m;
+        ca_elem t1 = {{0}}, t2 = {{0}}, m = {{0}};
         ca_group_mul(g, &t1, base, al, &setup_ops);
         ca_group_mul(g, &t2, target, be, &setup_ops);
         ca_group_op(g, &m, &t1, &t2);
@@ -261,6 +452,10 @@ ca_status ca_gpu_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem
         slot[3] = be;
     }
     a.mult = mult;
+    uint64_t resumes = existing ? saved.resumes + 1 : 0;
+    /* Keep multiplier coefficients fixed, but give every resumed run fresh
+     * walk starts. Earlier distinguished points remain valid for this table. */
+    if (existing) a.seed = ca_mix64(a.seed ^ ca_mix64(resumes));
 
     void *ctx = NULL;
     ca_status rc = ops->create(&a, tpb, params->device, &ctx);
@@ -275,8 +470,43 @@ ca_status ca_gpu_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem
         return CA_ERR_NOMEM;
     }
     uint64_t total_ops = setup_ops, launches = 0, dps_total = 0, restarts = 0;
+    double elapsed_prior = 0;
+    int checkpoint_ready = !existing;
+    int monitor = checkpoint_path || verbose;
     rc = CA_ERR_INTERNAL;
+    if (existing) {
+        if (!gpu_rho_checkpoint_load(checkpoint_path, &saved, &tab, g, base, target))
+            goto finish;
+        if (saved.ops > UINT64_MAX - total_ops) {
+            ca_set_error("gpu rho: resumed operation count exceeds counter capacity");
+            goto finish;
+        }
+        total_ops += saved.ops;
+        launches = saved.launches;
+        dps_total = saved.dps;
+        restarts = saved.restarts;
+        elapsed_prior = saved.elapsed_seconds;
+        checkpoint_ready = 1;
+        if (saved.solved) { *x = saved.result; rc = CA_OK; goto finish; }
+    }
+    double next_progress = ca_now() + (progress_interval ? progress_interval : 5);
+    double next_checkpoint = ca_now() + (checkpoint_interval ? checkpoint_interval : 60);
+    if (monitor && !gpu_rho_progress(checkpoint_path, ops->name, "running",
+                                      elapsed_prior + ca_now() - t0, total_ops,
+                                      launches, dps_total, restarts, tab.count, verbose))
+        goto finish;
+    if (total_ops > op_limit) {
+        rc = limit_rc;
+        goto finish;
+    }
     for (;;) {
+        /* Dimensions above bound this product below UINT64_MAX. Stop before
+         * launching work whose cumulative operation charge cannot be stored. */
+        if (nwalks * steps > UINT64_MAX - total_ops) {
+            ca_set_error("gpu rho: operation counter capacity reached");
+            rc = CA_ERR_LIMIT;
+            break;
+        }
         const uint64_t *dps;
         uint32_t count;
         ca_status lrc = ops->launch(ctx, &dps, &count);
@@ -318,10 +548,42 @@ ca_status ca_gpu_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem
             }
         }
         if (done) break;
-        if (params->max_ops && total_ops > params->max_ops) {
-            rc = CA_ERR_LIMIT;
+        double now = monitor ? ca_now() : 0;
+        if (monitor && now >= next_progress) {
+            if (!gpu_rho_progress(checkpoint_path, ops->name, "running",
+                                  elapsed_prior + now - t0, total_ops, launches,
+                                  dps_total, restarts, tab.count, verbose)) {
+                rc = CA_ERR_INTERNAL;
+                break;
+            }
+            next_progress = now + (progress_interval ? progress_interval : 5);
+        }
+        if (checkpoint_path && now >= next_checkpoint) {
+            if (!gpu_rho_checkpoint_save(checkpoint_path, &identity, &tab,
+                                         existing ? saved.seed : a.seed, resumes,
+                                         total_ops, launches, dps_total, restarts,
+                                         elapsed_prior + now - t0, 0, 0)) {
+                rc = CA_ERR_INTERNAL;
+                break;
+            }
+            next_checkpoint = now + (checkpoint_interval ? checkpoint_interval : 60);
+        }
+        if (total_ops > op_limit) {
+            rc = limit_rc;
             break;
         }
+    }
+finish:
+    if (checkpoint_ready) {
+        double elapsed = elapsed_prior + ca_now() - t0;
+        if (checkpoint_path && !gpu_rho_checkpoint_save(checkpoint_path, &identity,
+                &tab, existing ? saved.seed : a.seed, resumes, total_ops,
+                launches, dps_total, restarts, elapsed, rc == CA_OK ? *x : 0,
+                rc == CA_OK)) rc = CA_ERR_INTERNAL;
+        if (monitor && !gpu_rho_progress(checkpoint_path, ops->name,
+                rc == CA_OK ? "ok" : "stopped", elapsed, total_ops,
+                launches, dps_total, restarts, tab.count, verbose))
+            rc = CA_ERR_INTERNAL;
     }
     if (st) {
         st->group_ops += total_ops;
@@ -332,10 +594,27 @@ ca_status ca_gpu_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem
             ca_max_u64(st->bytes_peak, ca_htab_bytes(&tab) + nwalks * 96 + (uint64_t)a.dp_cap * 32);
         st->threads = a.nthreads;
         st->reserved = (uint32_t)launches;
-        st->seconds += ca_now() - t0;
+        st->seconds += elapsed_prior + ca_now() - t0;
     }
     ca_htab_free(&tab);
     ops->destroy(ctx);
     free(mult);
     return rc;
+}
+
+ca_status ca_gpu_rho_solve(const ca_group *g, const ca_elem *base, const ca_elem *target,
+                            const ca_gpu_rho_params *params, uint64_t *x, ca_stats *st)
+{
+    return gpu_rho_solve(g, base, target, params, NULL, 0, 0, 0, x, st);
+}
+
+ca_status ca_gpu_rho_solve_checkpointed(const ca_group *g, const ca_elem *base,
+                                         const ca_elem *target, const ca_gpu_rho_params *params,
+                                         const char *checkpoint_path,
+                                         uint32_t progress_interval,
+                                         uint32_t checkpoint_interval, int verbose,
+                                         uint64_t *x, ca_stats *st)
+{
+    return gpu_rho_solve(g, base, target, params, checkpoint_path,
+                          progress_interval, checkpoint_interval, verbose, x, st);
 }

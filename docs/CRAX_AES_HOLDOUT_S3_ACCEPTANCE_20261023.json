@@ -1,0 +1,78 @@
+{
+  "schema": "cryptanalysis.crax-aes-holdout-s3-acceptance/v1",
+  "checked_at_utc": "2026-10-24T04:28:28.691114+00:00",
+  "source_base_commit": "b6370a50b32e34a303f7698d342d5385072f9df0",
+  "source_state": "committed AES holdout implementation",
+  "binary_sha256": {
+    "crax": "66535e862ac77c8f1167e8d2457d53148d119bd1d329ebb0e747d0335d5eb348",
+    "crypto_store_bridge": "b9cc06b8da10d090bea8d93e3b094c56817fb47d4f42a954ff218456561d4114"
+  },
+  "bucket": "setec-astronomy-artifacts",
+  "region": "us-east-2",
+  "aws_profile": "ecc-challenges-new",
+  "remote": "s3://setec-astronomy-artifacts/ic/v1/acceptance/20261024T042811Z-e5194332",
+  "cases": {
+    "differential": {
+      "pairs": 24,
+      "objects": [
+        {
+          "name": "evidence/crax-aes-holdout/20261024T042811Z-e5194332/differential-train.json",
+          "sha256": "2c66b10b0c74ad2752bdaa6d00c4fe693c0c4e671772929187f248f752786897",
+          "bytes": 5043
+        },
+        {
+          "name": "evidence/crax-aes-holdout/20261024T042811Z-e5194332/differential-hold.json",
+          "sha256": "6e6732ada3107ba76b9ceca3be815c2bfc8a65ced1df847e452647b95d63997c",
+          "bytes": 5043
+        }
+      ],
+      "fresh_cache_replay": "candidate",
+      "holdout_check": true,
+      "remote_download_status": "bytes_ok"
+    },
+    "linear": {
+      "pairs": 64,
+      "objects": [
+        {
+          "name": "evidence/crax-aes-holdout/20261024T042811Z-e5194332/linear-train.json",
+          "sha256": "e817c5045fae7df5ab652b6b8b49d55ac6f6b38aec4a20b187913895ff4c37a5",
+          "bytes": 8013
+        },
+        {
+          "name": "evidence/crax-aes-holdout/20261024T042811Z-e5194332/linear-hold.json",
+          "sha256": "e3cac3d119f181be8119b890c860d6462fb19f3990f63f14a78ac2c27f1e2abe",
+          "bytes": 8013
+        }
+      ],
+      "fresh_cache_replay": "solved",
+      "holdout_check": true,
+      "remote_download_status": "bytes_ok"
+    }
+  },
+  "local_negative_controls": {
+    "tampered_holdout_rejected": [
+      "differential",
+      "linear"
+    ],
+    "overlapping_plaintexts_rejected": [
+      "differential",
+      "linear"
+    ]
+  },
+  "limits": {
+    "differential_recovery": "four last-round key bytes; holdout checks differential constraints",
+    "linear_recovery": "complete key for the one-round model; holdout checks encryption replay"
+  },
+  "cleanup": {
+    "objects_deleted": 4,
+    "prefix_empty": true,
+    "errors": []
+  },
+  "source_commit": "f4abca54d",
+  "checks": {
+    "release_library_tests_passed": 3023,
+    "release_library_tests_failed": 0,
+    "release_library_tests_ignored": 90,
+    "cli_integration_tests_passed": 1
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "kind": "n41_sixpair_two_code_audit_precheck_failure_v1",
+  "status": "PRECHECK_ASSERTION_FAILURE",
+  "pair_codes": [2, 2],
+  "producer_status": "CONFLICT",
+  "full_scan_status": "CONFLICT",
+  "producer_assignments_before_conflict": 1424,
+  "full_scan_assignments_before_conflict": 1214,
+  "reason": "The two propagation orders detect the same contradiction after different numbers of assignments. The corrected audit compares semantic conflict status; it compares exact fixed-point counts only for open pairs."
+}

@@ -1,0 +1,664 @@
+{
+ "checks": {
+  "all_executed_rows_valid": true,
+  "all_points_complete": true,
+  "all_rank_blocks_complete": true,
+  "bl_and_blaa_steps_identical": true,
+  "bl_positive_control_pass": true,
+  "bl_positive_control_rows_equal_archived": true,
+  "bl_precompute_pass_at_this_jobs_P_IC": true,
+  "bl_rows_loaded_this_jobs_table": true,
+  "bl_step_identity_q0_831000": true,
+  "bl_table_checks_pass": true,
+  "every_scheduled_row_present": true,
+  "ic_budget_pass": true,
+  "one_probe_count_per_point_every_ic_process": true,
+  "one_relation_per_point_every_ic_process": true,
+  "one_scalar_per_point_every_arm": true,
+  "oracle_replay": true,
+  "q0_every_arm_recovers_the_sidecar_scalar": true,
+  "q0_ic_matches_archived_feistel_identity": true,
+  "rank_tables_equal_archived": true,
+  "receipt_matches_schedule": true
+ },
+ "classification": "MEASUREMENT of the distance to precomputation rho (AGENTS.md 'Success criterion', 'Distance to rho': report the gap to Bernstein-Lange where setup is excluded). It is not an index-calculus improvement, it changes no IC code, and it never replaces or promotes a baseline row; its figures fill the n=83 row's 'Online / BL' column.",
+ "contention_flags": [],
+ "controls": {
+  "bl_aa_interval_inside_0.9_1.1": true,
+  "ic_aa_cold_inside_0.97_1.03": true,
+  "ic_aa_online_inside_0.95_1.05": true
+ },
+ "decision": "bl_online_faster_than_ic",
+ "detail": {
+  "bl_aa_failures": [],
+  "bl_table_failures": [],
+  "invalid_rows": [],
+  "probe_failures": [],
+  "relation_failures": [],
+  "scalar_failures": [],
+  "sidecars": {
+   "budget": {
+    "P_IC_ms": 172919.811755,
+    "cold_in_process_ms": 175614.82272999999,
+    "definition": "P_IC_ms = timing_ms.rank_stage + timing_ms.setup_total",
+    "row_status": "valid",
+    "setup_complete_ms": 175196.544206,
+    "source": "run_schedule.py --phase budget: K1's kP process (serial 1)",
+    "status": "PASS",
+    "timing_ms": {
+     "base_load": 364.242724,
+     "index_build": 20160.740182,
+     "linear_algebra": 80.794405,
+     "normal_basis_and_selftest": 8.612279000000001,
+     "process_total": 175615.10386099998,
+     "rank_stage": 152386.216074,
+     "setup_total": 20533.595681000003,
+     "target_median": 418.278524,
+     "targets_total": 418.559038
+    }
+   },
+   "control": {
+    "controls": [
+     {
+      "bl": [
+       [
+        131072,
+        0.8664,
+        4.516,
+        4.119
+       ],
+       [
+        262144,
+        0.7982,
+        8.68,
+        7.293
+       ]
+      ],
+      "checks": {
+       "all_verified": true,
+       "plain_matches_model": true,
+       "speedup_matches_model_131072": true,
+       "speedup_matches_model_262144": true,
+       "tables_verified": true
+      },
+      "id": "pc69-rT770",
+      "plain": 0.9499537805600268,
+      "status": "PASS"
+     }
+    ],
+    "kind": "bl_positive_control_summary",
+    "note": "step counts only; no timing is read or claimed",
+    "status": "PASS",
+    "targets_override": null
+   },
+   "control_rows_sha256": "3397ade042d653d214a1a03f79557f423ba323cfe765be486af5c9209dacd779",
+   "precompute": {
+    "binary_sha256": "0178d1bcbf4ee3d1d2b012b38fa6b009dbfb85448602a03182f227193ffe851b",
+    "budget_ms": 172919.811755,
+    "budget_source": "/home/runner/work/_temp/n83-bl-rankprobe/ic_budget/precompute_receipt.json",
+    "checks": {
+     "blake3_recorded": true,
+     "budget_not_overrun_by_more_than_1pct": true,
+     "budget_reached": true,
+     "entries_equal_new_points": true,
+     "exit_zero": true,
+     "size_matches_entries": true,
+     "summary_present": true,
+     "table_written": true
+    },
+    "cpu": 0,
+    "dp_bits": 6,
+    "env": {
+     "KIC_RHO_THREADS": "1",
+     "KIC_THREADS": "1",
+     "RAYON_NUM_THREADS": "1"
+    },
+    "exit_code": 0,
+    "implementation": "rT770",
+    "implementation_overridden_for_smoke": false,
+    "precompute_over_budget": 1.0000112454610046,
+    "process_wall_s": 177.979160085,
+    "producer": {
+     "abandoned_walk_steps": 9268238,
+     "bl_jump_seed": 20261014,
+     "capped": 2967,
+     "covered_points": 648782602,
+     "duplicate_points": 4154,
+     "duplicate_walk_steps": 511883,
+     "escapes": 0,
+     "family": "sg",
+     "fruitless": 119965,
+     "group_additions": 658694260,
+     "identity": {
+      "a": 1,
+      "automorphism_size": 166,
+      "field": "fold",
+      "lambda": "2998004823950457",
+      "n": 83,
+      "rho_params": {
+       "dp_bits": 6,
+       "escape_fruitless": false,
+       "lanes": 64,
+       "step_cap_factor": 2000
+      },
+      "subgroup_order": "8569786107849059",
+      "walk": "StrongRhoG<F,u64> (library koblitz_strong_rho, crypto 770f6a69)"
+     },
+     "infinity_points": 0,
+     "jump_seed_derived": 1722507604927258462,
+     "kind": "bl_precompute",
+     "new_points": 10282240,
+     "ns_per_step": 266.73730071473057,
+     "peak_rss_bytes": 1641447424,
+     "precompute_ms": 172921.756318,
+     "precompute_seed": 20261015,
+     "record_bytes": 40,
+     "rounds": 10290176,
+     "scalar_multiplications": 2,
+     "setup_ms_excluded": 320.719269,
+     "steps": 648284870,
+     "stop_rule": {
+      "budget_ms": 172919.811755,
+      "stop_rounds": null,
+      "stop_steps": null
+     },
+     "table_blake3": "80f4b051cd9d300d3a7cbfc55f49fb24a81977f7b56e8e77926294ae34decb97",
+     "table_entries": 10282240,
+     "table_write_ms": 4398.769730999999,
+     "walks": 10409390
+    },
+    "spec": {
+     "binary": "bl_sg",
+     "family": "sg",
+     "field": "fold",
+     "kind": "bl_sg",
+     "lanes": 64,
+     "plain_kind": "bl_plain_sg",
+     "source": "as rA770, field fold"
+    },
+    "status": "PASS",
+    "table_bytes": 411289600,
+    "table_sha256": "1f95c7cd209970fc02c0c4d0953106edca401b651d1c7e604a36a38369d75777",
+    "usage": {
+     "max_rss_kib_children": 1602976,
+     "system_s": 0.5819489999999999,
+     "user_s": 175.115903
+    }
+   },
+   "table_checks": {
+    "checks": {
+     "every_record_verified_by_producer": true,
+     "oracle_sample_verified": true,
+     "regeneration_byte_identical": true,
+     "regeneration_same_counts": true
+    },
+    "status": "PASS",
+    "wall_s": 320.5372335910797
+   }
+  },
+  "units_seen": 65
+ },
+ "host_class": "INTEL(R) XEON(R) PLATINUM 8573C | avx512=y gfni=y vpclmulqdq=y avx2=y bmi2=y",
+ "host_cpu_record": {
+  "all_cpus_uniform": {
+   "flags": true,
+   "microcode": true,
+   "model_name": true
+  },
+  "avx512_flags_present": [
+   "avx512_bitalg",
+   "avx512_vbmi2",
+   "avx512_vnni",
+   "avx512_vpopcntdq",
+   "avx512bw",
+   "avx512cd",
+   "avx512dq",
+   "avx512f",
+   "avx512ifma",
+   "avx512vbmi",
+   "avx512vl"
+  ],
+  "bugs": [
+   "spectre_v1",
+   "spectre_v2",
+   "spec_store_bypass",
+   "swapgs",
+   "taa",
+   "retbleed",
+   "bhi",
+   "spectre_v2_user",
+   "its"
+  ],
+  "cache_size_cpuinfo": "266240 KB",
+  "caches": [
+   {
+    "coherency_line_size": "64",
+    "index": "index0",
+    "level": "1",
+    "number_of_sets": "64",
+    "shared_cpu_list": "0-1",
+    "size": "48K",
+    "type": "Data",
+    "ways_of_associativity": "12"
+   },
+   {
+    "coherency_line_size": "64",
+    "index": "index1",
+    "level": "1",
+    "number_of_sets": "64",
+    "shared_cpu_list": "0-1",
+    "size": "32K",
+    "type": "Instruction",
+    "ways_of_associativity": "8"
+   },
+   {
+    "coherency_line_size": "64",
+    "index": "index2",
+    "level": "2",
+    "number_of_sets": "2048",
+    "shared_cpu_list": "0-1",
+    "size": "2048K",
+    "type": "Unified",
+    "ways_of_associativity": "16"
+   },
+   {
+    "coherency_line_size": "64",
+    "index": "index3",
+    "level": "3",
+    "number_of_sets": "212992",
+    "shared_cpu_list": "0-3",
+    "size": "266240K",
+    "type": "Unified",
+    "ways_of_associativity": "20"
+   }
+  ],
+  "cpu_family": "6",
+  "cpu_mhz": "3002.816",
+  "execution_cpu": 0,
+  "flags": [
+   "3dnowprefetch",
+   "abm",
+   "adx",
+   "aes",
+   "aperfmperf",
+   "apic",
+   "arch_capabilities",
+   "avx",
+   "avx2",
+   "avx512_bitalg",
+   "avx512_vbmi2",
+   "avx512_vnni",
+   "avx512_vpopcntdq",
+   "avx512bw",
+   "avx512cd",
+   "avx512dq",
+   "avx512f",
+   "avx512ifma",
+   "avx512vbmi",
+   "avx512vl",
+   "bmi1",
+   "bmi2",
+   "clflush",
+   "clflushopt",
+   "clwb",
+   "cmov",
+   "constant_tsc",
+   "cpuid",
+   "cx16",
+   "cx8",
+   "de",
+   "ept",
+   "erms",
+   "f16c",
+   "fma",
+   "fpu",
+   "fsgsbase",
+   "fsrm",
+   "fxsr",
+   "gfni",
+   "hle",
+   "ht",
+   "hypervisor",
+   "invpcid",
+   "la57",
+   "lahf_lm",
+   "lm",
+   "mca",
+   "mce",
+   "mmx",
+   "movbe",
+   "msr",
+   "mtrr",
+   "nonstop_tsc",
+   "nopl",
+   "nx",
+   "pae",
+   "pat",
+   "pcid",
+   "pclmulqdq",
+   "pdpe1gb",
+   "pge",
+   "pni",
+   "popcnt",
+   "pse",
+   "pse36",
+   "rdpid",
+   "rdrand",
+   "rdseed",
+   "rdtscp",
+   "rep_good",
+   "rtm",
+   "sep",
+   "sha_ni",
+   "smap",
+   "smep",
+   "ss",
+   "sse",
+   "sse2",
+   "sse4_1",
+   "sse4_2",
+   "ssse3",
+   "syscall",
+   "tpr_shadow",
+   "tsc",
+   "tsc_adjust",
+   "tsc_deadline_timer",
+   "tsc_known_freq",
+   "tsc_reliable",
+   "umip",
+   "vaes",
+   "vme",
+   "vmx",
+   "vnmi",
+   "vpclmulqdq",
+   "vpid",
+   "x2apic",
+   "xgetbv1",
+   "xsave",
+   "xsavec",
+   "xsaveopt",
+   "xsaves",
+   "xtopology"
+  ],
+  "flags_of_interest": {
+   "adx": true,
+   "aes": true,
+   "avx": true,
+   "avx2": true,
+   "avx512_bf16": false,
+   "avx512_bitalg": true,
+   "avx512_fp16": false,
+   "avx512_vbmi2": true,
+   "avx512_vnni": true,
+   "avx512_vp2intersect": false,
+   "avx512_vpopcntdq": true,
+   "avx512bw": true,
+   "avx512cd": true,
+   "avx512dq": true,
+   "avx512f": true,
+   "avx512ifma": true,
+   "avx512vbmi": true,
+   "avx512vl": true,
+   "bmi1": true,
+   "bmi2": true,
+   "fma": true,
+   "gfni": true,
+   "hypervisor": true,
+   "pclmulqdq": true,
+   "popcnt": true,
+   "sha_ni": true,
+   "vaes": true,
+   "vpclmulqdq": true
+  },
+  "flags_sha256": "683cb162bb33fa8aac0b9de2306dff7a7348e2f2cb5de91ba7a4328d1089afa0",
+  "host_class": "INTEL(R) XEON(R) PLATINUM 8573C | avx512=y gfni=y vpclmulqdq=y avx2=y bmi2=y",
+  "kernel": {
+   "cmdline": "BOOT_IMAGE=/vmlinuz-6.17.0-1022-azure root=PARTUUID=d8f74b2e-a58d-4539-8b59-53da6417ef90 ro console=tty1 console=ttyS0 earlyprintk=ttyS0 nvme_core.io_timeout=240 rootflags=nobarrier,data=writeback,journal_async_commit,commit=30 panic=-1",
+   "machine": "x86_64",
+   "proc_version": "Linux version 6.17.0-1022-azure (buildd@lcy02-amd64-020) (x86_64-linux-gnu-gcc-13 (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, GNU ld (GNU Binutils for Ubuntu) 2.42) #22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026",
+   "release": "6.17.0-1022-azure",
+   "transparent_hugepage": {
+    "defrag": "always defer defer+madvise [madvise] never",
+    "enabled": "[always] madvise never"
+   },
+   "version": "#22-Ubuntu SMP Mon Jul 27 17:24:03 UTC 2026"
+  },
+  "lscpu": {
+   "Address sizes": "48 bits physical, 57 bits virtual",
+   "Architecture": "x86_64",
+   "BogoMIPS": "4600.00",
+   "Byte Order": "Little Endian",
+   "CPU family": "6",
+   "CPU max MHz": "2300.0000",
+   "CPU min MHz": "800.0000",
+   "CPU op-mode(s)": "32-bit, 64-bit",
+   "CPU(s)": "4",
+   "CPU(s) scaling MHz": "131%",
+   "Core(s) per socket": "2",
+   "Hypervisor vendor": "Microsoft",
+   "L1d cache": "96 KiB (2 instances)",
+   "L1i cache": "64 KiB (2 instances)",
+   "L2 cache": "4 MiB (2 instances)",
+   "L3 cache": "260 MiB (1 instance)",
+   "Model": "207",
+   "Model name": "INTEL(R) XEON(R) PLATINUM 8573C",
+   "NUMA node(s)": "1",
+   "NUMA node0 CPU(s)": "0-3",
+   "On-line CPU(s) list": "0-3",
+   "Socket(s)": "1",
+   "Stepping": "2",
+   "Thread(s) per core": "2",
+   "Vendor ID": "GenuineIntel",
+   "Virtualization": "VT-x",
+   "Virtualization type": "full",
+   "Vulnerability Gather data sampling": "Not affected",
+   "Vulnerability Ghostwrite": "Not affected",
+   "Vulnerability Indirect target selection": "Mitigation; Aligned branch/return thunks",
+   "Vulnerability Itlb multihit": "Not affected",
+   "Vulnerability L1tf": "Not affected",
+   "Vulnerability Mds": "Not affected",
+   "Vulnerability Meltdown": "Not affected",
+   "Vulnerability Mmio stale data": "Not affected",
+   "Vulnerability Old microcode": "Not affected",
+   "Vulnerability Reg file data sampling": "Not affected",
+   "Vulnerability Retbleed": "Vulnerable",
+   "Vulnerability Spec rstack overflow": "Not affected",
+   "Vulnerability Spec store bypass": "Vulnerable",
+   "Vulnerability Spectre v1": "Mitigation; usercopy/swapgs barriers and __user pointer sanitization",
+   "Vulnerability Spectre v2": "Mitigation; Retpolines; STIBP disabled; RSB filling; PBRSB-eIBRS Not affected; BHI Retpoline",
+   "Vulnerability Srbds": "Not affected",
+   "Vulnerability Tsa": "Not affected",
+   "Vulnerability Tsx async abort": "Vulnerable: Clear CPU buffers attempted, no microcode; SMT Host state unknown",
+   "Vulnerability Vmscape": "Not affected"
+  },
+  "microcode": "0xffffffff",
+  "model": "207",
+  "model_name": "INTEL(R) XEON(R) PLATINUM 8573C",
+  "recorded_at_utc": "2026-10-19T21:30:02.577483+00:00",
+  "schema": "host-cpu-record-v1",
+  "source": "scripts/host_cpu_record.py (/proc/cpuinfo, /sys/devices/system/cpu, uname, lscpu -J)",
+  "stepping": "2",
+  "topology": {
+   "affinity": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "cores_per_socket": "2",
+   "cpu_cores": "2",
+   "logical_cpus_in_cpuinfo": 4,
+   "online": "0-3",
+   "siblings": "4",
+   "sockets": "1",
+   "threads_per_core": "2"
+  },
+  "vendor_id": "GenuineIntel"
+ },
+ "kind": "n83-bl-rankprobe-online-gap-tier1",
+ "problems": [],
+ "schedule_override": null,
+ "skipped_time_guard": 0,
+ "statistics": {
+  "S_cold": {
+   "BL": 7.531812352363437,
+   "IC (kP+cP)": 7.416814367257258,
+   "rT": 0.10948945979583119
+  },
+  "S_online": {
+   "BL": 0.0008086811405972931,
+   "cP": 0.01823855561170711,
+   "rT": 0.09605254486188108
+  },
+  "aa_bl_online_geo_BL_over_BLaa": {
+   "ci95": [
+    0.994744817555034,
+    1.004150782737453
+   ],
+   "estimate": 0.999563108459626,
+   "n": 64
+  },
+  "aa_ic_cold_cP_over_cPaa": {
+   "ci95": [
+    0.9978843237045613,
+    1.0008470315048448
+   ],
+   "estimate": 0.9993706135952898,
+   "n": 64
+  },
+  "aa_ic_online_cP_over_cPaa": {
+   "ci95": [
+    0.9975975434149159,
+    1.0031072566343668
+   ],
+   "estimate": 1.0004362336402541,
+   "n": 64
+  },
+  "bl_mean_steps": 74793.890625,
+  "bl_model_check": {
+   "class": "model check, secondary",
+   "mean_steps": 74793.890625,
+   "measured_over_model": 0.8940361360902306,
+   "model_steps": 83658.68850904191
+  },
+  "bl_solved_by": {
+   "online_self_collision": 0,
+   "precomputed_table": 128
+  },
+  "bl_table": {
+   "alpha": 1.2746936316175798e-05,
+   "budget_ms": 172919.811755,
+   "covered_points": 648782602,
+   "duplicate_points": 4154,
+   "entries": 10282240,
+   "ns_per_step": 266.73730071473057,
+   "precompute_ms": 172921.756318,
+   "rounds": 10290176,
+   "steps": 648284870
+  },
+  "cold_gap_BL_over_rT": {
+   "ci95": [
+    61.295031899096635,
+    78.33482884605041
+   ],
+   "estimate": 68.79029603770326,
+   "n": 64
+  },
+  "cold_ic_over_bl": {
+   "bootstrap": "rank blocks resampled, attempts resampled within each drawn block, points resampled; 10000 draws",
+   "ci95": [
+    0.9480810165211452,
+    1.0215221814649358
+   ],
+   "estimate": 0.9847316980659917,
+   "n_points": 64,
+   "rank_blocks": 4
+  },
+  "cold_ic_over_bl_point": 0.9847316980659917,
+  "complete_points": 64,
+  "e2e_cold_gap_IC_over_rT": {
+   "bootstrap": "rank blocks resampled, attempts resampled within each drawn block, points resampled; 10000 draws",
+   "ci95": [
+    59.98882751515649,
+    77.45815417019703
+   ],
+   "estimate": 67.73998502766979,
+   "n_points": 64,
+   "rank_blocks": 4
+  },
+  "e2e_cold_ms": {
+   "BL": 177071.7490831406,
+   "BL_median_process_setup": 4130.980796,
+   "BL_precompute": 172921.756318,
+   "IC (kP+cP)": 174368.16415415626,
+   "IC_rank_stage_mean": 151361.68323075,
+   "rT": 2574.080346828125
+  },
+  "matched_fraction_P_IC_over_e2e_minus_online": 0.9941383787113465,
+  "mean_cold_ms_cP": 23006.48092340625,
+  "mean_online_ms": {
+   "BL": 19.011969140625,
+   "BLaa": 18.99490628125,
+   "cP": 428.78563509375,
+   "cPaa": 428.5986659375,
+   "rT": 2258.180544984375
+  },
+  "mean_rho_cold_ms": 2574.080346828125,
+  "mean_setup_ms_cP": 22577.6952883125,
+  "median_bl_setup_ms": 4130.980796,
+  "median_bl_table_load_ms": 3816.0930075,
+  "median_online_ms": {
+   "BL": 11.298805999999999,
+   "BLaa": 11.374569000000001,
+   "cP": 289.67655149999996,
+   "cPaa": 291.43552250000005,
+   "rT": 2075.4934555
+  },
+  "online_gap_BL_over_rT": {
+   "ci95": [
+    0.00624184292655318,
+    0.011035840787480001
+   ],
+   "estimate": 0.00841915372216465,
+   "n": 64
+  },
+  "online_gap_cP_over_rT": {
+   "ci95": [
+    0.14323992046334383,
+    0.24527294645109124
+   ],
+   "estimate": 0.18988102436987245,
+   "n": 64
+  },
+  "primary_online_gap_cP_over_BL": {
+   "ci95": [
+    16.233832142328033,
+    31.442668004199575
+   ],
+   "estimate": 22.553457346904473,
+   "n": 64
+  },
+  "q0_online_ms": {
+   "BL": 19.490296,
+   "BLplain": 3301.080906,
+   "cP": 443.09342499999997,
+   "rT": 3643.281201
+  },
+  "rank_stage_ms": {
+   "K1": 152386.216074,
+   "K2": 154077.310812,
+   "K3": 146769.145912,
+   "K4": 152214.060125
+  },
+  "rho_ms_per_step": 0.00025395969361138686,
+  "rho_online_over_BL": {
+   "ci95": [
+    90.52465458556246,
+    159.21533822197404
+   ],
+   "estimate": 118.77678362937526,
+   "n": 64
+  },
+  "rows_bl_faster_than_cP": 60
+ }
+}

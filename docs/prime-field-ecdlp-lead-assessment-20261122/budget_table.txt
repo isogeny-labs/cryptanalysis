@@ -1,0 +1,29 @@
+BUDGET TABLE  C_dec(m,p) = max per-decomposition oracle cost to beat negation-rho
+Entries are log2(C_dec_max)  (i.e. the oracle may cost up to 2^entry ops).
+A NEGATIVE entry => IC cannot beat rho at that (m,p) for ANY oracle (budget < 1 op).
+'LA' column: does the linear-algebra phase alone stay sub-rho? (needs a<1/4)
+
+### policy a=1/(m+1) [balanced]
+  m |  a      | IC-exp |  LA-ok | p=2^64   | p=2^128  | p=2^192  | p=2^256 
+  -------------------------------------------------------------------------
+  3 | 0.2500 | 0.500  |  NO   |     13.2 |     29.2 |     45.2 |     61.2
+  4 | 0.2000 | 0.400  |  yes  |     14.4 |     33.6 |     52.8 |     72.0
+  5 | 0.1667 | 0.333  |  yes  |     14.3 |     35.6 |     56.9 |     78.3
+  6 | 0.1429 | 0.286  |  yes  |     13.2 |     36.0 |     58.9 |     81.8
+  7 | 0.1250 | 0.250  |  yes  |     11.5 |     35.5 |     59.5 |     83.5
+  8 | 0.1111 | 0.222  |  yes  |      9.4 |     34.3 |     59.2 |     84.1
+
+### policy a=1/m [Semaev]
+  m |  a      | IC-exp |  LA-ok | p=2^64   | p=2^128  | p=2^192  | p=2^256 
+  -------------------------------------------------------------------------
+  3 | 0.3333 | 0.667  |  NO   |      7.9 |     18.6 |     29.2 |     39.9
+  4 | 0.2500 | 0.500  |  NO   |     11.2 |     27.2 |     43.2 |     59.2
+  5 | 0.2000 | 0.400  |  yes  |     12.1 |     31.3 |     50.5 |     69.7
+  6 | 0.1667 | 0.333  |  yes  |     11.7 |     33.0 |     54.3 |     75.7
+  7 | 0.1429 | 0.286  |  yes  |     10.4 |     33.2 |     56.1 |     79.0
+  8 | 0.1250 | 0.250  |  yes  |      8.5 |     32.5 |     56.5 |     80.5
+
+Reference: known concrete oracle costs to compare against the budget --
+  * reported in-house F4 per decomposition ~ 5e8..5e9 ops = log2 ~ 28.9..32.2
+  * M2's Graeffe/iterated-norm estimate at m=3,fp32,N=2^8 ~ 1e6..1e7 = log2 ~ 20..23
+Read: an oracle 'passes' cell (m,p) iff its log2(cost) < the table entry.

@@ -1,0 +1,19 @@
+{
+  "what": "Provenance of this directory: the unzipped contents of the GitHub Actions artifact below, copied byte for byte. Added files: ARTIFACT.json, SHA256SUMS (the sha256 of every other file here) and analysis_v2/ (the output of analyze_v2.py run on a copy of panel/ after download; panel/ itself is unchanged).",
+  "repository": "aburan28/cryptanalysis",
+  "workflow": ".github/workflows/n83-opcounts.yml",
+  "run_id": 39882571652,
+  "run_url": "https://github.com/aburan28/cryptanalysis/actions/runs/39882571652",
+  "job_id": 120183169810,
+  "job_conclusion": "success",
+  "head_sha": "1a6067f63dcb27a7d6ab6394704e842d394dec3c",
+  "head_ref": "refs/heads/claude/n83-opcounts-run",
+  "artifact_name": "n83-opcounts-39882571652-1",
+  "artifact_id": 12472682483,
+  "artifact_zip_bytes": 396291,
+  "artifact_zip_sha256": "b1e43f3795e52af074920d4beb0d3c182b86b8014c2802903f566654283a3554",
+  "downloaded": "2026-10-23 via the GitHub API; the zip's sha256 equals the digest GitHub reports for the artifact",
+  "protocol": "experiments/koblitz-n83-opcounts-20261023/PROTOCOL.md (frozen at commit 765061e1, before the workflow commit 1a6067f6 and the run)",
+  "in_run_analysis": "the frozen v1 analyzer (opcounts.py analyze): analyze-stdout.txt, panel/opcounts_result.json, panel/band.md; superseded for acceptance by analyze_v2.py (ANALYSIS_V2.md, commit ad1fbc64)",
+  "v2_analysis": "python3 experiments/koblitz-n83-opcounts-20261023/analyze_v2.py --receipt-dir <copy of panel/> at analyze_v2.py sha256 426351930389235b0178ba00a2a762ab1533c3c2f1a9eeb40f021fed8a2c8493 (default 10,000 draws); outputs in analysis_v2/, reproduced byte for byte by a second run"
+}

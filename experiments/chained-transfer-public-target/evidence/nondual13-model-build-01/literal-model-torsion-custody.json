@@ -1,0 +1,42 @@
+{
+  "protocol": "23ab48, published cf9ca8f5 before phaseA/B source",
+  "scope": "literal original generic model/source/even and pure torsion helper prefixes; original tests audit_all not included, new comprehensive phaseB test appended",
+  "original_bytes_unchanged": [
+    {
+      "original": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/odd-product-models/src/lib.rs",
+      "whole_original_sha256": "8fced75dbdef1fbc6cf08014ad201d4f2cdd650bb514f58ceb94d5172ca9f095",
+      "literal_prefix_bytes": 23341,
+      "literal_prefix_sha256": "71cfc21f4d608c84dc6cde2d2632f9a42360478bcd3c3d9d97b5d2cabfa88d3d",
+      "only_added_suffix": "\n#[path=\"torsion_original.rs\"]\npub mod transported;\ninclude!(\"../src/model_append.rs\");\n",
+      "generated": "lib.rs",
+      "generated_sha256": "dd511ccbb941793ce2bb73e859b1b6e0773bd19a50d606299635e12fbe1837dc"
+    },
+    {
+      "original": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/odd-product-models/src/source.rs",
+      "whole_original_sha256": "1c3f5e1d038f735af32c6b50c107c9b1596364abc34f1e59cd32c86dfa1bb24f",
+      "literal_prefix_bytes": 4161,
+      "literal_prefix_sha256": "1c3f5e1d038f735af32c6b50c107c9b1596364abc34f1e59cd32c86dfa1bb24f",
+      "only_added_suffix": "\ninclude!(\"../src/source_append.rs\");\n",
+      "generated": "source.rs",
+      "generated_sha256": "2e4dbfdcf4a38aab7ea3187ee4825fe055eab23afc390b45ab223b3e25fc41df"
+    },
+    {
+      "original": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/odd-product-models/src/even.rs",
+      "whole_original_sha256": "b819c2e24ca56736ff02fd0e689a606a43e04c8ba30cae00815c8e0cb1123466",
+      "literal_prefix_bytes": 4829,
+      "literal_prefix_sha256": "b819c2e24ca56736ff02fd0e689a606a43e04c8ba30cae00815c8e0cb1123466",
+      "only_added_suffix": "",
+      "generated": "even.rs",
+      "generated_sha256": "b819c2e24ca56736ff02fd0e689a606a43e04c8ba30cae00815c8e0cb1123466"
+    },
+    {
+      "original": "/workspace/cryptanalysis/experiments/chained-transfer-public-target/odd-product-refinements/src/kernels.rs",
+      "whole_original_sha256": "5d21960d676e84d3ce3a994f942f406c4cd2281fd311c6f68c3040e10cc9322c",
+      "literal_prefix_bytes": 3648,
+      "literal_prefix_sha256": "18609321772c153132fab9836f3323407086884fd3c8b386650bbe486195ed9c",
+      "only_added_suffix": "\ninclude!(\"../src/torsion_append.rs\");\n",
+      "generated": "torsion_original.rs",
+      "generated_sha256": "a1b4ecb602c7b64a29be3c174d80075af4edc203ab402a34e04237d4eb692170"
+    }
+  ]
+}

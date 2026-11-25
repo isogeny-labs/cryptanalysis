@@ -1,0 +1,5 @@
+/w/experiments/volcano-n19-native-tau6-v3-20261020/diagnosis/digest_repro.sage.py:38: DeprecationWarning: Use sage.version.version instead.
+See https://github.com/sagemath/sage/issues/39015 for details.
+  out = {'kind': 'untimed Sage diagnostic (digest crash of v2 run 39376405326)', 'sage_version': version()}
+{"v2_reproduced": true, "mechanism_ok": true, "fix_ok": true, "ok": true}
+{"v2_line": "row[col] = (row.get(col, 0) + sg * pow(int(lam), int(e), int(p))) % int(p)", "preparsed": "row[col] = (row.get(col, Integer(0)) + sg * pow(int(lam), int(e), int(p))) % int(p)", "type_of_literal_0_in_a_sage_file": "Integer", "type_of_get_default_plus_int_mod_int": "Integer", "json_dumps_of_it": "TypeError: Object of type Integer is not JSON serializable"}

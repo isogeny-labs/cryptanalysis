@@ -1,0 +1,35 @@
+{
+ "checks": {
+  "all_executed_rows_valid": true,
+  "all_points_complete": true,
+  "all_rank_blocks_complete": true,
+  "every_knownlog_process_ran_the_verified_files": true,
+  "every_scheduled_row_present": true,
+  "independent_verification_of_every_base_log": true,
+  "independent_verifier_planted_cases_detected": true,
+  "one_probe_count_per_point_within_each_base": false,
+  "one_relation_per_point_within_each_base": false,
+  "one_scalar_per_point_every_ic_process_and_rho": false,
+  "oracle_replay": false,
+  "planted_table_refused_by_the_producer": true,
+  "probes_inside_the_law_band": true,
+  "q0_matches_archived_and_frozen_identities": false,
+  "rank_tables_equal_archived": true,
+  "receipt_matches_schedule": true
+ },
+ "controls": {
+  "aa_e2e_inside_0.97_1.03": false,
+  "independent_verifier_planted_detected": true,
+  "planted_table_refused": true
+ },
+ "decision": "invalid",
+ "label": "LOCAL: verify_receipt.py on a synthetic receipt (archived run 39214027289's cP, kP and rT rows and this smoke's known-log rows with fabricated exponential online times on the 40 scheduled points). It checks that the statistics path runs; the scalar, relation and Q0 gates fail by construction, so the reading is invalid.",
+ "primary": {
+  "ci95": [
+   2.33126608745845,
+   3.219587242757464
+  ],
+  "estimate": 2.7510345926160173,
+  "n": 40
+ }
+}

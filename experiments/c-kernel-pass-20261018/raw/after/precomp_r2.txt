@@ -1,0 +1,29 @@
+libcryptanalysis 0.1.0 benchmark: precomp
+
+Discrete logs with precomputation (Bernstein-Lange).  One table per (group, base);
+P = precomputation ops (paid once), T = per-target online ops over --reps targets.
+Build threads: 4.  Each table ends with the measured build (n^2/3) and online
+(n^1/3) exponents.
+
+| grp | bits |  t |   chains | precomp ops | P/n^2/3 | build s | online ops | T/n^1/3 | sqrtN/T | ok  |
+|-----|-----:|---:|---------:|------------:|--------:|--------:|-----------:|--------:|--------:|-----|
+| zp   |  24 |  7 |      198 |       39337 |   1.512 |   0.0049 |      224.4 |   1.391 |     9.1 | 5/5 |
+| zp   |  28 |  9 |      188 |      130521 |   0.790 |   0.0160 |     1158.8 |   2.852 |     7.1 | 5/5 |
+| zp   |  32 | 10 |      772 |     1016626 |   0.970 |   0.1204 |     1796.6 |   1.754 |    18.2 | 5/5 |
+| zp   |  36 | 11 |     3064 |     8265019 |   1.241 |   0.8129 |     6901.8 |   2.675 |    19.0 | 5/5 |
+  zp: fitted cost ~ C * n^alpha (the measured exponent)
+  | algorithm      | theory  | fitted alpha |  R^2   | const @ n^theory |
+  |----------------|---------|--------------|--------|------------------|
+  | precomp build  | n^0.667 |        0.653 | 0.9859 |            1.128 |
+  | precomp online | n^0.333 |        0.387 | 0.9591 |            2.168 |
+| grp | bits |  t |   chains | precomp ops | P/n^2/3 | build s | online ops | T/n^1/3 | sqrtN/T | ok  |
+|-----|-----:|---:|---------:|------------:|--------:|--------:|-----------:|--------:|--------:|-----|
+| ec   |  24 |  8 |      122 |       40923 |   0.991 |   0.0010 |     3934.2 |  19.360 |     0.7 | 5/5 |
+| ec   |  28 |  9 |      479 |      268029 |   1.022 |   0.0037 |     2276.8 |   4.447 |     5.1 | 5/5 |
+| ec   |  32 | 10 |     1742 |     2156374 |   1.295 |   0.0242 |     3177.6 |   2.463 |    14.6 | 5/5 |
+| ec   |  36 | 11 |     6305 |    16933584 |   1.602 |   0.1719 |     4423.4 |   1.361 |    41.9 | 5/5 |
+  ec: fitted cost ~ C * n^alpha (the measured exponent)
+  | algorithm      | theory  | fitted alpha |  R^2   | const @ n^theory |
+  |----------------|---------|--------------|--------|------------------|
+  | precomp build  | n^0.667 |        0.727 | 0.9995 |            1.228 |
+  | precomp online | n^0.333 |        0.025 | 0.0920 |            6.908 |

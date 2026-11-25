@@ -1,0 +1,56 @@
+{
+  "classification": "engineering port and fixed-fixture correctness replay",
+  "implementation": "native Rust CLI and library; bundled SQLite; no Python or Sage subprocesses",
+  "platform": {
+    "os": "Linux",
+    "architecture": "x86_64",
+    "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)"
+  },
+  "checks": {
+    "cargo_fmt": "passed",
+    "cargo_clippy_all_targets_deny_warnings": "passed",
+    "cargo_test_release_locked": {
+      "passed": 21,
+      "failed": 0
+    },
+    "native_cli_test_PATH_empty": true,
+    "fixed_census_models": 5645604,
+    "fixture_hashes_verified": true
+  },
+  "native_control_replay": {
+    "normalized_models": 22782,
+    "spectral_matches": 1032,
+    "independent_count_checks": 1032,
+    "independently_order_checked_source_trace_classes": 60,
+    "same_model_ids_equations_traces_and_counts_as_prototype": true,
+    "local_isogeny_or_twist_overlap_candidates": 174
+  },
+  "historical_import": {
+    "complete_jobs_retained": 1,
+    "pending_jobs": 355,
+    "native_verification_reset": true,
+    "original_journal_modified": false
+  },
+  "engine_fingerprint": "f9ed73359616e7e5b4f6ee0353d5c79a2f1407a8d502e786caf94714ed255bf4",
+  "binary_sha256": "d4e03526d19c6cfa687c09ccad5f35b27c5d6514f1f6a61ed6a80cc54f8b4cc0",
+  "new_catalogue_entries": 0,
+  "novel_affected_family_established": false,
+  "rho_is_acceptance_gate": false,
+  "timing_claim": "correctness only; no IC attack timing, calibrated comparison, or speedup claim",
+  "evidence_sha256": {
+    "validation/tests.txt": "c3b6b1fce0467f78b889aa95540b874c6a5c228776415551259faf839791d714",
+    "validation/smoke-status.json": "3bb5c2eb88895672a838404437b0a67864e8275a7a7a6123ca699421ce6af054",
+    "validation/import-check.json": "db4a666714576903dd304d3b827edd9844c8c59c42a602432ff95b6a283a5858",
+    "reference/PROVENANCE.json": "f9692a0b1ccf657b95b7f80265796559b35982d8f1eb3d24009f1b4226a76166",
+    "Cargo.lock": "df93b955e3d679518c5baed83f4ca72a87a1efaa067bd5635f67cd1e9b17e12e",
+    "validation/positive-import-check.json": "ffd009a46bfaa215326830ffbc67aa38d0f53d453ed8ddce7a6212e244b3cfd3"
+  },
+  "local_untracked_replay_artifact_sha256": {
+    "runs/smoke-candidates.jsonl": "d13a624f96af77944ea2cbf72d712911f72ab61f787f8f152e9951b2be32dcb2"
+  },
+  "historical_positive_import": {
+    "complete_jobs_retained": 9,
+    "spectral_models_retained": 1032,
+    "verification_and_source_flags_reset": true
+  }
+}

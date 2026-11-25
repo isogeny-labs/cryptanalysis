@@ -1,0 +1,14 @@
+digraph PrimeReference {
+  graph [rankdir=TB, bgcolor="white", nodesep=0.3, ranksep=0.35, pad=0.15];
+  node [shape=box, style="rounded,filled", fillcolor="#eef4fa", color="#30516c", fontname="DejaVu Sans", fontsize=11, margin="0.15,0.1"];
+  edge [color="#30516c", arrowsize=0.7];
+  source [label="Official Certicom ECCp-131\np, a, b, n, h=1, public P and Q"];
+  arithmetic [label="Validated prime-field arithmetic\nCanonical compression: 2x + (y mod 2)"];
+  field [label="Field constraints\na*b = q*p + r; canonical ranges; carry guards"];
+  points [label="Point validity and addition constraints\nIdentity, inverse, doubling, generic cases"];
+  hashes [label="Slot hash membership and point sum = published Q\nTwo slots, seed 1: 1,564,506 edges; degree 1,032"];
+  tensor [label="Shared scalar Boolean-tensor engine\nDefault u0=0: exact-leaf budget exhausted", fillcolor="#fff1d6", color="#916315"];
+  pending [label="Challenge relations and recovered scalar\nUNRESOLVED", fillcolor="#fff1d6", color="#916315"];
+  source -> arithmetic -> field -> points -> hashes -> tensor;
+  tensor -> pending [style=dashed, label="pending", fontname="DejaVu Sans", fontsize=10];
+}

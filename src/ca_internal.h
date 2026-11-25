@@ -19,6 +19,30 @@ static inline double ca_now(void)
     return (double)ts.tv_sec + (double)ts.tv_nsec * 1e-9;
 }
 
+/* ---- multiplication by a fixed factor (Shoup) --------------------------- */
+
+/* For a fixed w < q < 2^63, wp = floor(w * 2^64 / q) turns a * w mod q into
+ * two multiplications and one conditional subtraction, for any a < 2^64:
+ * a*w - floor(a*wp / 2^64)*q lies in [0, 2q) (Shoup; Harvey 2014), and
+ * 2q < 2^64, so the wrapped 64-bit difference is exact.  The result equals
+ * ca_mulmod(a, w, q).  Callers must check q < 2^63 (ca_shoup_ok) and fall
+ * back to ca_mulmod otherwise.  src/linalg.c keeps its own identical
+ * file-local shoup_pre/shoup_mul for now (duplicated deliberately while
+ * that file is being edited elsewhere); fold it onto these later. */
+static inline int ca_shoup_ok(uint64_t q) { return q > 1 && q < ((uint64_t)1 << 63); }
+
+static inline uint64_t ca_shoup_pre(uint64_t w, uint64_t q)
+{
+    return (uint64_t)(((ca_u128)w << 64) / q);
+}
+
+static inline uint64_t ca_shoup_mul(uint64_t a, uint64_t w, uint64_t wp, uint64_t q)
+{
+    uint64_t qhat = (uint64_t)(((ca_u128)a * wp) >> 64);
+    uint64_t r = a * w - qhat * q;
+    return r >= q ? r - q : r;
+}
+
 /* ---- xoshiro256** PRNG ------------------------------------------------- */
 typedef struct ca_rng {
     uint64_t s[4];
@@ -35,7 +59,10 @@ static inline uint64_t ca_splitmix64(uint64_t *x)
 static inline void ca_rng_seed(ca_rng *r, uint64_t seed)
 {
     uint64_t x = seed;
-    for (int i = 0; i < 4; i++) r->s[i] = ca_splitmix64(&x);
+    r->s[0] = ca_splitmix64(&x);
+    r->s[1] = ca_splitmix64(&x);
+    r->s[2] = ca_splitmix64(&x);
+    r->s[3] = ca_splitmix64(&x);
     if ((r->s[0] | r->s[1] | r->s[2] | r->s[3]) == 0) r->s[0] = 1;
 }
 
@@ -85,6 +112,179 @@ static inline uint64_t ca_mix64(uint64_t x)
     return x;
 }
 
+/* ca_addmod's value for every input (a + b, minus m when that wraps or
+ * reaches m), computed with a mask instead of a branch.  The walks add
+ * random exponent coefficients, so the reduction is a coin flip on walk
+ * data and gcc's branch for ca_addmod mispredicts about half the time.
+ * ca_addmod itself keeps its form: verification/pqc-assay proves that exact
+ * code (SAW and Lean) and pins the header by hash. */
+static inline uint64_t ca_addmod_sel(uint64_t a, uint64_t b, uint64_t m)
+{
+    const uint64_t s = a + b;
+    const uint64_t c = (uint64_t)(s < a) | (uint64_t)(s >= m);
+    return s - (m & ((uint64_t)0 - c));
+}
+
+/* ---- the EC walk step, shared by group_ec.c and rho.c ------------------ */
+struct ca_group;
+/* Points of a ca_group_ec_init group are w[0] = x, w[1] = y in Montgomery
+ * form and w[2] = 1 at infinity (group_ec.c).  The rho walk reads these
+ * through the group's vtable in general; for the native EC group it calls
+ * the two helpers below directly (ec_hash and ec_canonicalize are these
+ * same functions, so every value agrees) and its batched step adds the
+ * table entries where they lie instead of copying them first. */
+
+/* zp_hash on the residue word: the vtable's zp_hash calls this, and the
+ * rho walk inlines it for the native (Z/pZ)^* group.  Lazy Montgomery
+ * paths may leave x in [0, 2p); hash the canonical representative. */
+static inline uint64_t ca_zp_hash_word(uint64_t x) { return ca_mix64(x ^ 0x5bd1e995ULL); }
+static inline uint64_t ca_zp_hash_residue(uint64_t x, uint64_t p)
+{
+    return ca_zp_hash_word(ca_fp_canon(x, p));
+}
+
+/* ec_hash: equal points hash equal; the walk's index and distinguished-
+ * point test read it. */
+static inline uint64_t ca_ec_hash_words(uint64_t x, uint64_t y, uint64_t inf)
+{
+    if (inf) return 0x9e3779b97f4a7c15ULL;
+    return ca_mix64(x * 0x9E3779B97F4A7C15ULL ^ ca_mix64(y));
+}
+
+/* ec_canonicalize: the representative of {P, -P} with the smaller Montgomery
+ * y; 1 when y was replaced by p - y.  The comparison is a coin flip on walk
+ * data, so the result is selected rather than branched on.  y == 0 gives
+ * p - y = p > y and no flip, so it needs no test of its own; the point at
+ * infinity is left as it is. */
+static inline int ca_ec_canon_words(uint64_t p, uint64_t *y, uint64_t inf)
+{
+    uint64_t yy = *y, ny = p - yy;
+    uint64_t flip = (uint64_t)(ny < yy) & (uint64_t)(inf == 0);
+    /* a mask, not `flip ? ny : yy`: gcc 13 at -O3 turned that into a branch */
+    *y = yy ^ ((yy ^ ny) & ((uint64_t)0 - flip));
+    return (int)flip;
+}
+
+/* Whether g is the native E(F_p) group of ca_group_ec_init (not a user
+ * group of the same kind), so that the helpers here describe it. */
+int ca_ec_group_is_native(const struct ca_group *g);
+/* Whether g is the library's own (Z/pZ)^* group, whose rho step the walk
+ * performs inline (one Montgomery product per walk, no staging copies). */
+int ca_zp_group_is_native(const struct ca_group *g);
+
+/* The field constants the affine group law reads, copied out of the group
+ * once per batch.  The stores of a batch (points, denominators, products)
+ * are all uint64_t lvalues, so through the group pointer the compiler would
+ * have to assume each may overwrite p or the Montgomery context and reload
+ * them, recomputing p^{-1}, at every multiplication. */
+typedef struct ca_ec_consts {
+    uint64_t p;      /* the modulus */
+    uint64_t npi;    /* p^{-1} mod 2^64, which is -ca_mont.pinv */
+    uint64_t a_mont; /* the curve coefficient a in Montgomery form */
+    uint64_t one;    /* 1 in Montgomery form */
+} ca_ec_consts;
+ca_ec_consts ca_ec_consts_of(const struct ca_group *g);
+
+/* Montgomery product with the modulus and p^{-1} in registers: the
+ * reduction of ca_mont_redc, so the same residue. */
+static inline uint64_t ca_ec_bmul(uint64_t a, uint64_t b, uint64_t p, uint64_t pinv_pos)
+{
+    ca_u128 t = (ca_u128)a * b;
+    uint64_t u = (uint64_t)t * pinv_pos;
+    uint64_t hi = (uint64_t)(t >> 64);
+    uint64_t mh = (uint64_t)(((ca_u128)u * p) >> 64);
+    uint64_t rr = hi - mh;
+    if (hi < mh) rr += p;
+    return rr;
+}
+
+/* The denominator the affine law a + b inverts: x_b - x_a, or 2 y_a for a
+ * doubling, or 1 when no inversion is needed (a point at infinity, an
+ * inverse pair), so that Montgomery's trick can invert a batch of them with
+ * one field inversion.  No field multiplication is counted here. */
+static inline uint64_t ca_ec_add_den(const ca_ec_consts *c, const ca_elem *a, const ca_elem *b)
+{
+    if (a->w[2] || b->w[2]) return c->one;
+    if (a->w[0] == b->w[0]) {
+        if (a->w[1] == b->w[1] && a->w[1] != 0) return ca_addmod(a->w[1], a->w[1], c->p);
+        return c->one;
+    }
+    return ca_submod(b->w[0], a->w[0], c->p);
+}
+
+/* Denominator for a + (bx, by) when the addend is known affine (jump /
+ * multiplier tables): same cases as ca_ec_add_den with b->w[2] == 0. */
+static inline uint64_t ca_ec_add_den_xy(const ca_ec_consts *c, const ca_elem *a, uint64_t bx,
+                                       uint64_t by)
+{
+    if (a->w[2]) return c->one;
+    if (a->w[0] == bx) {
+        if (a->w[1] == by && a->w[1] != 0) return ca_addmod(a->w[1], a->w[1], c->p);
+        return c->one;
+    }
+    return ca_submod(bx, a->w[0], c->p);
+}
+
+/* r = a + (bx, by) for a known-affine addend (SoA jump / multiplier tables).
+ * Same residues as ca_ec_add_with_di with an affine b.  r may alias a. */
+static inline void ca_ec_add_with_di_xy(const ca_ec_consts *c, ca_elem *r, const ca_elem *a,
+                                        uint64_t bx, uint64_t by, uint64_t di)
+{
+    if (a->w[2]) {
+        r->w[0] = bx;
+        r->w[1] = by;
+        r->w[2] = 0;
+        r->w[3] = 0;
+        return;
+    }
+    const uint64_t P = c->p, NPI = c->npi;
+    const uint64_t ax = a->w[0], ay = a->w[1];
+    uint64_t lam;
+    if (ax == bx) {
+        if (ay == by && ay != 0) {
+            CA_FC_ADD(CA_FC_SQR, 1);
+            uint64_t x2 = ca_ec_bmul(ax, ax, P, NPI);
+            uint64_t num = ca_addmod(ca_addmod(ca_addmod(x2, x2, P), x2, P), c->a_mont, P);
+            CA_FC_ADD(CA_FC_MUL, 1);
+            lam = ca_ec_bmul(num, di, P, NPI);
+        } else {
+            r->w[0] = r->w[1] = 0; /* the point at infinity */
+            r->w[2] = 1;
+            r->w[3] = 0;
+            return;
+        }
+    } else {
+        CA_FC_ADD(CA_FC_MUL, 1);
+        lam = ca_ec_bmul(ca_submod(by, ay, P), di, P, NPI);
+    }
+    CA_FC_ADD(CA_FC_SQR, 1);
+    uint64_t x3 = ca_submod(ca_submod(ca_ec_bmul(lam, lam, P, NPI), ax, P), bx, P);
+    CA_FC_ADD(CA_FC_MUL, 1);
+    uint64_t y3 = ca_submod(ca_ec_bmul(lam, ca_submod(ax, x3, P), P, NPI), ay, P);
+    r->w[0] = x3;
+    r->w[1] = y3;
+    r->w[2] = 0;
+    r->w[3] = 0;
+}
+
+/* r = a + b given di, the inverse of ca_ec_add_den(c, a, b): the affine
+ * group law with its special cases (the same points ca_group_op gives), its
+ * multiplications and squarings counted as ec_batch_op counts them.  r may
+ * alias a or b. */
+static inline void ca_ec_add_with_di(const ca_ec_consts *c, ca_elem *r, const ca_elem *a,
+                                     const ca_elem *b, uint64_t di)
+{
+    if (a->w[2]) {
+        *r = *b;
+        return;
+    }
+    if (b->w[2]) {
+        *r = *a;
+        return;
+    }
+    ca_ec_add_with_di_xy(c, r, a, b->w[0], b->w[1], di);
+}
+
 /* ---- open addressing hash table: u64 key to two u64 values ------------- */
 typedef struct ca_htab_entry {
     uint64_t key; /* 0 = empty */
@@ -110,10 +310,76 @@ int ca_htab_insert(ca_htab *t, uint64_t key, uint64_t v0, uint64_t v1,
 int ca_htab_find(const ca_htab *t, uint64_t key, uint64_t *v0, uint64_t *v1);
 size_t ca_htab_bytes(const ca_htab *t);
 
+/* ---- open addressing hash table: u64 key to one u64 value ------------- */
+/* The single-value tables (BSGS, Cheon, Mestre) take 16 bytes an entry
+ * instead of 24, so there is a third less to zero and to walk.  Keys are
+ * element hashes, already well mixed, so they index the table directly.
+ * Semantics as ca_htab: key 0 is stored as 1, and inserting a present key
+ * reports its value without replacing it. */
+typedef struct ca_htab1_entry {
+    uint64_t key; /* 0 = empty */
+    uint64_t v0;
+} ca_htab1_entry;
+
+typedef struct ca_htab1 {
+    ca_htab1_entry *e;
+    size_t cap; /* power of two */
+    size_t count;
+    size_t max_count;
+} ca_htab1;
+
+ca_status ca_htab1_init(ca_htab1 *t, size_t expected);
+void ca_htab1_free(ca_htab1 *t);
+/* Drop every entry; keep the allocation.  For a second BSGS pass of the
+ * same size (Mestre retries) this is a warm memset instead of free+calloc. */
+void ca_htab1_clear(ca_htab1 *t);
+int ca_htab1_insert(ca_htab1 *t, uint64_t key, uint64_t v0, uint64_t *old0);
+int ca_htab1_find(const ca_htab1 *t, uint64_t key, uint64_t *v0);
+size_t ca_htab1_bytes(const ca_htab1 *t);
+/* Start loading the slot a key probes first.  A hint only: the table may
+ * be resized or modified before the access that follows, and nothing about
+ * the table's contents or the order of operations changes.  Lets a block of
+ * independent lookups overlap their cache misses. */
+static inline void ca_htab1_prefetch(const ca_htab1 *t, uint64_t key)
+{
+    if (key == 0) key = 1;
+    if (t->cap) __builtin_prefetch(&t->e[(size_t)key & (t->cap - 1)], 0, 1);
+}
+
 /* ---- misc -------------------------------------------------------------- */
 static inline uint64_t ca_max_u64(uint64_t a, uint64_t b) { return a > b ? a : b; }
 static inline uint64_t ca_min_u64(uint64_t a, uint64_t b) { return a < b ? a : b; }
 
 void ca_set_error(const char *fmt, ...);
+
+/* Whether n * base = n * target = O, i.e. both lie in the order-n subgroup.
+ * When n is prime and base is not the identity this is exactly target in
+ * <base>; a walk started without it never collides and never stops.  Sets
+ * the error message and returns 0 on failure. */
+struct ca_group;
+/* k*a on a curve made by ca_group_ec_init, in Jacobian coordinates with one
+ * inversion; returns 0 (and does nothing) for any other vtable. */
+/* k*a in a group made by ca_group_zp_init, without the vtable; returns 0
+ * (and does nothing) for any other vtable. */
+int ca_zp_group_mul(const struct ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k);
+int ca_ec_group_mul(const struct ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k);
+/* r = the sum of pows1[b] over the set bits b of k1 plus the sum of pows2[b]
+ * over the set bits of k2, for the native E(F_p) group: the affine point
+ * the same additions with ca_group_op give (the group law has one result),
+ * accumulated in Jacobian coordinates with one field inversion at the end
+ * instead of one per addition.  Returns 0 (r untouched) for any other group.
+ * Counts no group operations; the caller charges them. */
+int ca_ec_fb_sum(const struct ca_group *g, ca_elem *r, const ca_elem *pows1, uint64_t k1,
+                 const ca_elem *pows2, uint64_t k2);
+/* r = a P + b Q for the native E(F_p) group, by Shamir's joint
+ * double-and-add in Jacobian coordinates with PQ = P + Q given (affine),
+ * and one inversion: the affine point ca_group_mul and ca_group_op give.
+ * Returns 0 (r untouched) for another group or when P, Q or PQ is the
+ * point at infinity.  Counts no group operations. */
+int ca_ec_group_mul2(const struct ca_group *g, ca_elem *r, const ca_elem *P, uint64_t a,
+                     const ca_elem *Q, uint64_t b, const ca_elem *PQ);
+
+int ca_check_members(const struct ca_group *g, const ca_elem *base, const ca_elem *target,
+                     uint64_t n, const char *solver);
 
 #endif /* CA_INTERNAL_H */

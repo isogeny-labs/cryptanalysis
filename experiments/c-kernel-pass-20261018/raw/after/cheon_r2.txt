@@ -1,0 +1,8 @@
+libcryptanalysis 0.1.0 benchmark: cheon
+
+Cheon's attack (d | p-1) vs Pollard rho on the same instance.
+
+| bits | p | d | cheon exps | cheon ops | cheon s | rho ops | rho s | speedup | ok |
+|------|---|---|------------|-----------|---------|---------|-------|---------|----|
+|  32 | 4295294977 |      65536 |      826 |      37602 |    0.000 |      70533 |    0.001 |  1.88 | ok |
+|  40 | 1099516870657 |    1048576 |     3007 |     171491 |    0.001 |     727779 |    0.014 |  4.24 | ok |

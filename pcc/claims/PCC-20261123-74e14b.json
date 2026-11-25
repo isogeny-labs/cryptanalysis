@@ -1,0 +1,23 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T02:13:52Z",
+ "id": "PCC-20261123-74e14b",
+ "kind": "theorem",
+ "producer": {
+  "commit": "db6d32b77db952341b0cddfb7caee11dd836d3f1",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "eef071d79cfee348adb6b7e25d30becea428028f12c57e6cf6074e66bd036ef0",
+   "kind": "lean",
+   "path": "experiments/prime-field-auxiliary-ic/m31-rotation-smoothness/partition-timing/MulWord.lean",
+   "sha256": "7d6839c7324854fc2a85f941f1ba5cdd04e54fcb89780f954b8cb34ad940c4f3",
+   "theorem": "M31CensusWord.fold_correct"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "The M31 mixed-width fold produces the canonical residue for every unsigned wide input below 2^62-1."
+}

@@ -1,0 +1,88 @@
+{
+  "recorded_at": "2026-10-30T07:09:51.174059+00:00",
+  "old_source_head": "7f1bad49bb3eef8f0413945603083897bb4223c0",
+  "sealed_originals_byte_verified": [
+    {
+      "path": "experiments/xedni-lattice-obstruction-20261028/RESULT.md",
+      "sha256": "68e01d6b6d7371fae941bdf2158924075848baced54636ad3d905072d2e39784",
+      "bytes": 6903,
+      "unchanged": true
+    },
+    {
+      "path": "experiments/xedni-lattice-obstruction-20261028/formal/DEPENDENCIES.json",
+      "sha256": "683ad6fe482141251cb4b1e064125aee498ce764d2c9436bacd91e6de9cbcd88",
+      "bytes": 772,
+      "unchanged": true
+    },
+    {
+      "path": "experiments/xedni-lattice-obstruction-20261028/formal/XedniObstruction.lean",
+      "sha256": "44901382d5e92d7f708e39585982a887897688cc722246d13ffdbb75c52aa2bb",
+      "bytes": 10830,
+      "unchanged": true
+    },
+    {
+      "path": "experiments/xedni-lattice-obstruction-20261028/formal/build-command.txt",
+      "sha256": "7ed8ad912864ee571dbac83e35a3df4bed55f73c9d755dbd84f60cce731d1cc1",
+      "bytes": 139,
+      "unchanged": true
+    },
+    {
+      "path": "experiments/xedni-lattice-obstruction-20261028/formal/build-output.txt",
+      "sha256": "2d00b018ae43d95b28bab9db3ec32ecbe7d73c04e1f3b248f3b41d2ffe074b97",
+      "bytes": 3192,
+      "unchanged": true
+    },
+    {
+      "path": "experiments/xedni-lattice-obstruction-20261028/formal/lake-manifest.json",
+      "sha256": "47af1da86329fd961aed48007fe7e29b9aad28ecbb6f2835938656ecfdb30756",
+      "bytes": 3170,
+      "unchanged": true
+    },
+    {
+      "path": "experiments/xedni-lattice-obstruction-20261028/formal/lakefile.toml",
+      "sha256": "6ae783510affedd5b3300c2c9f372c0466d50b44d541fde5382666056180ec24",
+      "bytes": 265,
+      "unchanged": true
+    },
+    {
+      "path": "experiments/xedni-lattice-obstruction-20261028/formal/lean-toolchain",
+      "sha256": "8f89aa44fccdb1a0b6cc768c7c9f54b94cd40e47a08d582f82d1235f13075cf7",
+      "bytes": 29,
+      "unchanged": true
+    },
+    {
+      "path": "experiments/xedni-lattice-obstruction-20261028/verify.py",
+      "sha256": "41264bbddf84d1cf51429de210494129fb551481f13ba74c1adb43a4b99ab956",
+      "bytes": 1879,
+      "unchanged": true
+    }
+  ],
+  "successor_theorems": [
+    "relation_reduces",
+    "no_dependent_lift",
+    "all_compatible_lifts_blocked",
+    "zero_tuple_has_bounded_witness",
+    "zero_tuple_has_unbounded_relations"
+  ],
+  "successor_declared_print_audits": "5/5 matched; static guard only",
+  "successor_native_verification": "PENDING; no new build receipt manufactured",
+  "old_verify_py": "PASS14source-bound historical declarations; not validation of successor",
+  "primary_source": {
+    "url": "https://pages.cpsc.ucalgary.ca/~jacobs/PDF/xedni.pdf",
+    "section": "4, Lemma4.1",
+    "finding": "Dependence implies existence of a nontrivial bounded relation under the stated height/Lang assumptions, not a universal bound on all relations."
+  },
+  "visuals": {
+    "editable": "implication.dot",
+    "vector": "implication.svg",
+    "report": "report.pdf",
+    "pages": 2,
+    "visually_inspected": "Both pages inspected after vector embedding and font repair."
+  },
+  "requirement_status": {
+    "circular_hypothesis": "Corrected successor implemented; fresh native verification pending",
+    "archived_originals": "All9sealed files preserved byte-exact",
+    "reported_scope": "Height witness bridge and actual curve-selection sampling law remain open",
+    "research_execution": "No scientific trial executed"
+  }
+}

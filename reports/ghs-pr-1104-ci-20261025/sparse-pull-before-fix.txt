@@ -1,0 +1,21 @@
+E
+======================================================================
+ERROR: test_pull_recreates_parent_outside_sparse_checkout (tools.artifacts.test_artifacts.RoundTrip.test_pull_recreates_parent_outside_sparse_checkout)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/cryptanalysis/tools/artifacts/test_artifacts.py", line 143, in test_pull_recreates_parent_outside_sparse_checkout
+    self.art("pull", "research/r1/runs/a.jsonl")
+  File "/workspace/cryptanalysis/tools/artifacts/test_artifacts.py", line 53, in art
+    return sh(cwd or self.repo, sys.executable, str(TOOL), *a, check=check, env=self.env)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/cryptanalysis/tools/artifacts/test_artifacts.py", line 22, in sh
+    return subprocess.run(argv, cwd=cwd, capture_output=True, text=True, check=check, env=env)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '('/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3', '/workspace/cryptanalysis/tools/artifacts/artifacts.py', 'pull', 'research/r1/runs/a.jsonl')' returned non-zero exit status 1.
+
+----------------------------------------------------------------------
+Ran 1 test in 0.448s
+
+FAILED (errors=1)

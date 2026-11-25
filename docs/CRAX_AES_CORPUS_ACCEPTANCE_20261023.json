@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "kind": "crax-aes-corpus-acceptance",
+  "checked_at_utc": "2026-10-23T17:10:05.718685+00:00",
+  "run_id": "20261023T170952Z-c643459f",
+  "remote": "s3://setec-astronomy-artifacts/ic/v1/acceptance/crax-aes-corpus-20261023T170952Z-c643459f",
+  "object_key": "ic/v1/acceptance/crax-aes-corpus-20261023T170952Z-c643459f/sha256/e8/e817c5045fae7df5ab652b6b8b49d55ac6f6b38aec4a20b187913895ff4c37a5",
+  "name": "evidence/crax-aes-corpus/20261023T170952Z-c643459f/linear.json",
+  "binary_sha256": {
+    "crax": "90b53970d5afbbc93c02db8384b077460362040524a171681a4a29b6619a69ee",
+    "crypto": "427fe8748681d76c6179a1186b11c2740806d99e687aa5dc60cf0d6c87587e04"
+  },
+  "corpora": {
+    "differential": {
+      "sha256": "2c66b10b0c74ad2752bdaa6d00c4fe693c0c4e671772929187f248f752786897",
+      "pairs": 24,
+      "generated": {
+        "accepted": true,
+        "constraints_verified": true,
+        "pairs_used": 24,
+        "recovered_last_round_key_bytes": [
+          [
+            0,
+            186
+          ],
+          [
+            13,
+            199
+          ],
+          [
+            10,
+            211
+          ],
+          [
+            7,
+            12
+          ]
+        ],
+        "recovery_scope": "four_last_round_bytes",
+        "rounds": 2,
+        "source": "generated",
+        "status": "solved",
+        "technique": "differential",
+        "trials": 2120,
+        "verified": true
+      },
+      "imported": {
+        "accepted": true,
+        "constraints_verified": true,
+        "pairs_used": 24,
+        "recovered_last_round_key_bytes": [
+          [
+            0,
+            186
+          ],
+          [
+            13,
+            199
+          ],
+          [
+            10,
+            211
+          ],
+          [
+            7,
+            12
+          ]
+        ],
+        "recovery_scope": "four_last_round_bytes",
+        "rounds": 2,
+        "source": "external_corpus",
+        "status": "candidate",
+        "technique": "differential",
+        "trials": 2120,
+        "verified": null
+      }
+    },
+    "linear": {
+      "sha256": "e817c5045fae7df5ab652b6b8b49d55ac6f6b38aec4a20b187913895ff4c37a5",
+      "pairs": 64,
+      "generated": {
+        "accepted": true,
+        "pairs_used": 64,
+        "recovered_master_key_hex": "914f6da1c78305bb2957ee104d826cfa",
+        "reference_verified": null,
+        "replay_verified": true,
+        "rounds": 1,
+        "source": "generated",
+        "status": "solved",
+        "technique": "linear",
+        "verified": true
+      },
+      "imported": {
+        "accepted": true,
+        "pairs_used": 64,
+        "recovered_master_key_hex": "914f6da1c78305bb2957ee104d826cfa",
+        "reference_verified": null,
+        "replay_verified": true,
+        "rounds": 1,
+        "source": "external_corpus",
+        "status": "solved",
+        "technique": "linear",
+        "verified": true
+      }
+    }
+  },
+  "checks": {
+    "local_differential_round_trip": true,
+    "local_linear_round_trip": true,
+    "head_size": true,
+    "remote_byte_equality": true,
+    "fresh_cache_store_name": true,
+    "fresh_cache_digest_reference": true
+  },
+  "scope": "Two-round reduced AES differential four-byte candidate and one-round reduced AES linear full-key replay, with one public linear corpus in isolated Setec S3 prefix.",
+  "cleanup": {
+    "delete_exit": 0,
+    "head_after_delete_404": true
+  },
+  "negative_checks": {
+    "wrong_plaintext_difference": {
+      "exit_code": 1,
+      "status": "error",
+      "message": "differential corpus has a pair with the wrong plaintext difference"
+    },
+    "inactive_ciphertext_changed": {
+      "exit_code": 1,
+      "status": "verification_failed",
+      "message": null
+    },
+    "wrong_round_count": {
+      "exit_code": 1,
+      "status": "error",
+      "message": "AES corpus schema, model, technique, or round count differs"
+    },
+    "wrong_cipher_model": {
+      "exit_code": 1,
+      "status": "error",
+      "message": "AES corpus schema, model, technique, or round count differs"
+    },
+    "malformed_block": {
+      "exit_code": 1,
+      "status": "error",
+      "message": "each AES corpus block must be exactly 32 hex digits"
+    },
+    "wrong_reference_key": {
+      "exit_code": 1,
+      "status": "verification_failed",
+      "message": null
+    }
+  },
+  "source_heads": {
+    "cryptanalysis_parent": "f89e9dec79d46929a8ee42343e36f81b706ee886",
+    "crypto_sibling": "25d703e714e5f1a917266d1b89ed0bb7c9e863bf"
+  },
+  "validation": {
+    "dev_cargo_check": "pass",
+    "aes_library_tests": {
+      "passed": 117,
+      "failed": 0,
+      "ignored": 7
+    },
+    "differential_targeted_tests": {
+      "passed": 9,
+      "failed": 0
+    },
+    "rustfmt_check": "pass",
+    "json_parse": "pass",
+    "diff_whitespace": "pass"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "schema": "xedni-adaptive-stage-sum-protocol-v1",
+  "field": "additive Z/7Z",
+  "input_scalar_law": "all w in Z/7Z except w=1, once per encoding",
+  "encoding_law": "all 7! bijections from group elements to labels 0..6",
+  "initial_forms": [[0, 1], [1, 0]],
+  "commands": [
+    "stage 0: if label(G)<label(Q), append G+Q; else append G-Q",
+    "stage 1: append G-G",
+    "stage 2: append G-G again"
+  ],
+  "first_hit": "the earliest appended point equal to an old point with a distinct affine form",
+  "bucket_key": "stage index plus complete visible prefix label tuple",
+  "bucket_prediction": "all scalars outside old-form informative collision set have equal encoding weight (7 - distinct old point count)! for each compatible label tuple; next hits are eligible new-form roots",
+  "claim_boundary": "exhaustive finite adaptive execution and bucket-identity control; aggregate q-minus-m-squared factor is zero for this field and maximum prefix length"
+}

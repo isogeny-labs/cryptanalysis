@@ -1,0 +1,44 @@
+{
+ "kind": "local emulation (no Sage); the exact reproduction is diagnosis/digest_repro.sage on the runner",
+ "point": {
+  "id": "p00",
+  "scalar": 65888,
+  "rng_seed": "n19-native-tau6-v2:00"
+ },
+ "relations": 39,
+ "log_ok": true,
+ "gb_calls": 5397,
+ "v2_plain_python": {
+  "ordered_sha256": "e5bbfa1d3b94c790e7d6831c26c02f3daf1d2409724ee16c4c57a83e28b05edd",
+  "canonical_sha256": "319b84efeb7ed3c0f59b86e8eb26a6443d7f22611e6beaa03282c91f3e121f1f",
+  "rows_sha256": "2b2e9df8dcbb30845223662ace71952c0878ba4804c741881a12c6bcbc25f0d9",
+  "count": 39
+ },
+ "v2_plain_python_json_calls": 3,
+ "v2_preparsed_source": "def relation_digests(rels, lam, p):\n    \"\"\"ordered: the decompositions as returned; canonical: each decomposition as a\n    sorted multiset of (column, sign, Frobenius power) (R = sum of its terms, so\n    the order of two terms is not part of the decomposition); rows: the matrix\n    rows tauDlp builds from them (column -> sum sign * lambda^e mod p).\"\"\"\n    ordered = [[list(map(int, t)) for t in r] for r in rels]\n    canon = [sorted(r) for r in ordered]\n    rows = []\n    for r in ordered:\n        row = {}\n        for col, sg, e in r:\n            row[col] = (row.get(col, Integer(0)) + sg * pow(int(lam), int(e), int(p))) % int(p)\n        rows.append(sorted(row.items()))\n    h = lambda o: hashlib.sha256(json.dumps(o, separators=(',', ':')).encode()).hexdigest()\n    return {'ordered_sha256': h(ordered), 'canonical_sha256': h(canon), 'rows_sha256': h(rows), 'count': len(rels)}",
+ "v2_preparsed": {
+  "raised": "TypeError: Object of type Integer is not JSON serializable",
+  "json_dumps_calls_before_failure": 2,
+  "failing_call_is": "rows",
+  "leaf_types_of_failing_object": [
+   "Integer",
+   "int"
+  ],
+  "first_failing_row": "[(15, Integer(30942))]"
+ },
+ "v3_plain_ints": {
+  "ordered_sha256": "e5bbfa1d3b94c790e7d6831c26c02f3daf1d2409724ee16c4c57a83e28b05edd",
+  "canonical_sha256": "319b84efeb7ed3c0f59b86e8eb26a6443d7f22611e6beaa03282c91f3e121f1f",
+  "rows_sha256": "2b2e9df8dcbb30845223662ace71952c0878ba4804c741881a12c6bcbc25f0d9",
+  "count": 39
+ },
+ "v3_with_Integer_inputs": {
+  "ordered_sha256": "e5bbfa1d3b94c790e7d6831c26c02f3daf1d2409724ee16c4c57a83e28b05edd",
+  "canonical_sha256": "319b84efeb7ed3c0f59b86e8eb26a6443d7f22611e6beaa03282c91f3e121f1f",
+  "rows_sha256": "2b2e9df8dcbb30845223662ace71952c0878ba4804c741881a12c6bcbc25f0d9",
+  "count": 39
+ },
+ "v3_equals_v2_plain": true,
+ "v3_strict_dumps_rejects_unknown": "$.x: object of type object is not a JSON value (convert it explicitly)",
+ "ok": true
+}

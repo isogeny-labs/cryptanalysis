@@ -1,0 +1,118 @@
+{
+  "beat_id": "koblitz.compact_orbit.n83_single_target",
+  "disjoint_from": [
+    "q0",
+    "eval (B's panel_b, 16 points)",
+    "scanorder-heldout (384 points)",
+    "combined-primary-v1 (576 points)",
+    "probepipe-primary-v1 (384 points)",
+    "statefold-cold-v1 (16 points)",
+    "tablefilter-primary-v1 (384 points)",
+    "stacked-cold-v1 (20 points)",
+    "rankcut-cold-v1 (20 points)",
+    "eval (64 points)",
+    "rankprobe-cold-v1 (20 points)",
+    "indexlift-cold-v1 (20 points)",
+    "k899-cold-v1 (20 points)",
+    "rotkey-cold-v1 (20 points)",
+    "onlineframe-v1 (64 points)",
+    "closure-cold-v1 (20 points)",
+    "knownlog-cold-v1 (40 points)",
+    "blrankprobe-cold-v1 (64 points)",
+    "closureindexlift-cold-v1 (20 points)",
+    "closureindexlift-rep-cold-v1 (10 points)",
+    "indexbuild-cold-v1 (12 points)"
+  ],
+  "domain": "kic-n83-single-target-public-point-v1",
+  "input_law": "public hash-to-curve: x = SHA-256('kic-n83-single-target-public-point-v1|indexbuild2-cold-v1|<seed>|<counter>')[0:8] little-endian mod 2^n for the first counter whose x lifts; y by half-trace, sign by bit 0 of digest byte 8; Q = [h]P. No scalar is known to either arm.",
+  "points": [
+    {
+      "point": [
+        "5879586875970256047848022",
+        "5251319765412703563406190"
+      ],
+      "seed": 0
+    },
+    {
+      "point": [
+        "2338462854199503934247308",
+        "316550471485435540049118"
+      ],
+      "seed": 1
+    },
+    {
+      "point": [
+        "9460104588442089946819347",
+        "3964559785548669613269897"
+      ],
+      "seed": 2
+    },
+    {
+      "point": [
+        "5061157992052079303308941",
+        "1766464591972719762690626"
+      ],
+      "seed": 3
+    },
+    {
+      "point": [
+        "6443601152427060326691487",
+        "9398683175114122682108604"
+      ],
+      "seed": 4
+    },
+    {
+      "point": [
+        "7817876654148071512238964",
+        "808346456652409773757097"
+      ],
+      "seed": 5
+    },
+    {
+      "point": [
+        "8076560060070024903194851",
+        "7459702806125456946080595"
+      ],
+      "seed": 6
+    },
+    {
+      "point": [
+        "7682875971621881945520068",
+        "6940885454033250895965617"
+      ],
+      "seed": 7
+    },
+    {
+      "point": [
+        "8537610657928002637114252",
+        "4387353528682026497034319"
+      ],
+      "seed": 8
+    },
+    {
+      "point": [
+        "9664783819763564945255671",
+        "5373985201367878855545263"
+      ],
+      "seed": 9
+    },
+    {
+      "point": [
+        "237883873387602884647769",
+        "4068300696714884996473272"
+      ],
+      "seed": 10
+    },
+    {
+      "point": [
+        "8006744232486010788897389",
+        "339148566851139551857460"
+      ],
+      "seed": 11
+    }
+  ],
+  "role": "indexbuild2-cold-v1",
+  "scalar_known_to_anyone": false,
+  "schema": 1,
+  "sized_by": "fixed 12 points x 3 alternating primary pairs (power_check.py checks the design)"
+}

@@ -1,0 +1,2227 @@
+//! # Batched Boolean Macaulay decisions on a GPU.
+//!
+//! The device kernel is `suite/cuda/f4_gf2_device.cuh`: one thread block
+//! decides one system — builds its Macaulay matrix over the occurring
+//! variables with a rank bitmap and prefix counts, applies the size caps in
+//! the reference builder's units, eliminates the high-degree columns by
+//! leading-column pivoting, and reduces the linear block — exactly the
+//! algorithm of [`f4_gf2::decide`].  The matrices of the splitting search
+//! are small (a few hundred rows), so a launch pays only when it carries
+//! thousands of them; [`super::f4_batch::solve_lockstep`] supplies them by
+//! running a batch of searches in lockstep.
+//!
+//! Three [`BatchDecider`]s answer the same batches:
+//!
+//! - [`super::f4_batch::CpuDecider`], the host kernel;
+//! - `EmulatorDecider` (feature `gpu-emulator`), the **device source**
+//!   compiled as C and run on the host one emulated block at a time — how
+//!   the kernel is tested on machines without a GPU;
+//! - [`CudaDecider`], the kernel on an NVIDIA device through the CUDA driver
+//!   API.  `libcuda` and NVRTC are opened at run time, so the crate builds
+//!   and links everywhere and nothing here runs unless it is asked for.
+//!   NVRTC compiles the source to SASS for the device found, falling back
+//!   to PTX, or the PTX is loaded from `CA_F4_PTX`.
+//!
+//! A system the kernel cannot hold — degree above 7, more than 256
+//! equations, or more scratch than a block was given — comes back as
+//! `F4_STATUS_FALLBACK` and is decided on the host, so every backend
+//! answers every request.
+
+use super::f4_batch::{BatchDecider, CpuDecider, DecisionRequest};
+use super::f4_gf2::{self, Decision, KernelCounters, MacaulayCaps};
+use rayon::prelude::*;
+
+/// Result of one system; mirrors `F4Result` in `cuda/f4_gf2_device.cuh`.
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct F4Result {
+    /// One of the `STATUS_*` codes.
+    pub status: u32,
+    /// The ideal contains `1`.
+    pub refuted: u32,
+    /// Variables pinned by a row `v` or `v + 1`.
+    pub forced_mask: u64,
+    /// Their values: bit set for `v + 1`, i.e. `v = 1`.
+    pub forced_vals: u64,
+    /// Rows in reference units.
+    pub ref_rows: u64,
+    /// Columns in reference units.
+    pub ref_cols: u64,
+    /// 64-bit word XORs the kernel performed.
+    pub word_ops: u64,
+    /// Rows eliminated.
+    pub rows: u32,
+    /// Columns eliminated.
+    pub cols: u32,
+    /// Nonempty rows the F5 mask left out of elimination.
+    pub f5_skipped: u32,
+    /// Padding; zero.
+    pub reserved: u32,
+}
+
+/// Decided; the decision is in the result.
+pub const STATUS_DECIDED: u32 = 0;
+/// Over the caps, in reference units.
+pub const STATUS_OVERSIZE: u32 = 1;
+/// A matrix with no nonempty row.
+pub const STATUS_EMPTY: u32 = 2;
+/// No equations: nothing built.
+pub const STATUS_NO_POLYS: u32 = 3;
+/// Beyond the kernel's limits: decide on the host.
+pub const STATUS_FALLBACK: u32 = 4;
+
+/// Highest Macaulay degree the kernel handles (`F4_DMAX`).
+pub const KERNEL_MAX_DEGREE: u32 = 7;
+/// Most equations per system the kernel handles (`F4_MAX_POLYS`).
+pub const KERNEL_MAX_POLYS: usize = 256;
+
+/// The kernel as NVRTC compiles it: the device header, then the entry
+/// point.
+pub fn kernel_source() -> String {
+    format!(
+        "{}\n{}\n{}",
+        include_str!("../../cuda/f4_gf2_device.cuh"),
+        include_str!("../../cuda/f4_gf2_echelon.cuh"),
+        include_str!("../../cuda/f4_gf2_kernel.cu")
+    )
+}
+
+/// A batch in the kernel's input layout.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct PackedBatch {
+    /// Every term of every equation, as a monomial mask.
+    pub terms: Vec<u64>,
+    /// Start of each equation in `terms`, plus one end offset.
+    pub poly_start: Vec<u32>,
+    /// Start of each system in the equation list, plus one end offset.
+    pub sys_poly_start: Vec<u32>,
+    /// `n_vars | degree << 8` per system.
+    pub sys_meta: Vec<u32>,
+    /// F5 row masks ([`f4_gf2::f5_row_mask`]), concatenated.
+    pub skip_bits: Vec<u32>,
+    /// Start of each system's mask in `skip_bits`, plus one end offset; an
+    /// empty range means no mask.
+    pub skip_start: Vec<u32>,
+    /// Scratch words the most demanding system needs (an upper bound).
+    pub scratch_words: u64,
+}
+
+impl PackedBatch {
+    /// Pack `requests`, with F5 masks when [`f4_gf2::default_options`] has
+    /// F5 on.  Zero equations are dropped (they build no rows).
+    pub fn pack(requests: &[DecisionRequest<'_>]) -> Self {
+        Self::pack_with(requests, f4_gf2::default_options().f5)
+    }
+
+    /// Pack `requests`, computing each system's F5 row mask on the host
+    /// when `f5` is set — the symbolic preprocessing half of F5, the
+    /// kernel doing the elimination half.  Systems are prepared on every
+    /// core and concatenated in order; one host thread packs more slowly
+    /// than a GPU decides.
+    pub fn pack_with(requests: &[DecisionRequest<'_>], f5: bool) -> Self {
+        let parts: Vec<(Vec<u64>, Vec<u32>, Vec<u32>, u64)> = requests
+            .par_iter()
+            .map(|r| {
+                let mut terms = Vec::new();
+                let mut lens = Vec::new();
+                for p in r.polys.iter().filter(|p| !p.is_zero()) {
+                    terms.extend(p.terms.iter().map(|t| t.mask));
+                    lens.push(p.terms.len() as u32);
+                }
+                let mask = if f5 {
+                    f4_gf2::f5_row_mask(r.polys, r.n_vars, r.degree).unwrap_or_default()
+                } else {
+                    Vec::new()
+                };
+                (terms, lens, mask, scratch_bound(r))
+            })
+            .collect();
+        let mut b = PackedBatch {
+            terms: Vec::with_capacity(parts.iter().map(|p| p.0.len()).sum()),
+            poly_start: Vec::with_capacity(1 + parts.iter().map(|p| p.1.len()).sum::<usize>()),
+            sys_poly_start: Vec::with_capacity(requests.len() + 1),
+            sys_meta: Vec::with_capacity(requests.len()),
+            skip_bits: Vec::with_capacity(parts.iter().map(|p| p.2.len()).sum()),
+            skip_start: Vec::with_capacity(requests.len() + 1),
+            scratch_words: 0,
+        };
+        b.sys_poly_start.push(0);
+        b.poly_start.push(0);
+        b.skip_start.push(0);
+        for (r, (terms, lens, mask, scratch)) in requests.iter().zip(parts) {
+            let mut end = b.terms.len() as u32;
+            for len in lens {
+                end += len;
+                b.poly_start.push(end);
+            }
+            b.terms.extend_from_slice(&terms);
+            b.sys_poly_start.push((b.poly_start.len() - 1) as u32);
+            b.sys_meta
+                .push((r.n_vars.min(255) as u32) | (r.degree.min(255) << 8));
+            b.scratch_words = b.scratch_words.max(scratch);
+            b.skip_bits.extend_from_slice(&mask);
+            b.skip_start.push(b.skip_bits.len() as u32);
+        }
+        b
+    }
+
+    /// Systems in the batch.
+    pub fn len(&self) -> usize {
+        self.sys_meta.len()
+    }
+
+    /// Whether the batch holds no system.
+    pub fn is_empty(&self) -> bool {
+        self.sys_meta.is_empty()
+    }
+}
+
+/// Scratch words the kernel's layout needs for `r`, from the shape of its
+/// rank space and candidate rows — an upper bound, since cancellation only
+/// removes columns.
+pub fn scratch_bound(r: &DecisionRequest<'_>) -> u64 {
+    let d = r.degree;
+    let mut occ = 0u64;
+    let mut ks = Vec::new();
+    let mut max_terms = 0u64;
+    for p in r.polys.iter().filter(|p| !p.is_zero()) {
+        let pdeg = p
+            .terms
+            .iter()
+            .map(|t| t.mask.count_ones())
+            .max()
+            .unwrap_or(0);
+        if pdeg > d {
+            continue;
+        }
+        occ |= p.terms.iter().fold(0, |a, t| a | t.mask);
+        ks.push((d - pdeg) as usize);
+        max_terms = max_terms.max(p.terms.len() as u64);
+    }
+    let v = occ.count_ones() as u64;
+    let binom = |n: u64, k: u64| -> u64 {
+        if k > n {
+            return 0;
+        }
+        (1..=k).fold(1u64, |c, i| c.saturating_mul(n - k + i) / i)
+    };
+    let upto = |k: u64| (0..=k.min(v)).fold(0u64, |a, j| a.saturating_add(binom(v, j)));
+    let rank_space = upto(u64::from(d));
+    let n_cand = ks
+        .iter()
+        .fold(0u64, |a, &k| a.saturating_add(upto(k as u64)));
+    let cols = rank_space.min(n_cand.saturating_mul(max_terms)).max(1);
+    let stride = cols.div_ceil(64);
+    let bitmap = rank_space.div_ceil(64);
+    let half = n_cand.div_ceil(2);
+    bitmap
+        .saturating_add(bitmap.div_ceil(2))
+        .saturating_add(n_cand.saturating_mul(stride))
+        .saturating_add(3 * half)
+        .saturating_add((u64::from(d) + 1).saturating_mul(stride))
+        .saturating_add(2 * n_cand)
+        .saturating_add(8)
+}
+
+/// Turn a kernel result into the host kernel's answer, deciding on the
+/// host when the kernel declined.
+pub fn unpack(
+    result: &F4Result,
+    request: &DecisionRequest<'_>,
+    caps: MacaulayCaps,
+) -> (Option<Decision>, KernelCounters) {
+    let mut k = KernelCounters::default();
+    match result.status {
+        STATUS_DECIDED => {
+            let mut forced = Vec::with_capacity(result.forced_mask.count_ones() as usize);
+            let mut m = result.forced_mask;
+            while m != 0 {
+                let v = m.trailing_zeros();
+                forced.push((v, result.forced_vals >> v & 1 == 1));
+                m &= m - 1;
+            }
+            k.built = true;
+            k.rows = result.ref_rows;
+            k.cols = result.ref_cols;
+            k.eliminated_rows = u64::from(result.rows);
+            k.eliminated_cols = u64::from(result.cols);
+            k.f5_skipped = u64::from(result.f5_skipped);
+            k.word_ops = result.word_ops;
+            (
+                Some(Decision {
+                    refuted: result.refuted != 0,
+                    forced,
+                }),
+                k,
+            )
+        }
+        STATUS_OVERSIZE => {
+            k.oversize = true;
+            (None, k)
+        }
+        STATUS_EMPTY => {
+            k.built = true;
+            (Some(Decision::default()), k)
+        }
+        STATUS_NO_POLYS => (Some(Decision::default()), k),
+        _ => f4_gf2::decide(request.polys, request.n_vars, request.degree, caps),
+    }
+}
+
+/// Clamp a cap to the kernel's 32-bit field.
+fn cap32(x: usize) -> u32 {
+    u32::try_from(x).unwrap_or(u32::MAX)
+}
+
+/// Spread a batch's wall time over its built results, so the profile's
+/// phase split stays a sum of the whole stage.
+fn charge_time(answers: &mut [(Option<Decision>, KernelCounters)], ns: u128) {
+    let built = answers.iter().filter(|(_, k)| k.built).count().max(1) as u128;
+    for (_, k) in answers.iter_mut().filter(|(_, k)| k.built) {
+        k.reduce_ns = ns / built;
+    }
+}
+
+/// One large matrix eliminated over its high columns
+/// (`cuda/f4_gf2_echelon.cuh`): what `f4_gf2`'s host elimination leaves
+/// its caller.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct Echelon {
+    /// Pivots taken in the high columns.
+    pub pivots: usize,
+    /// Linear blocks (bit `j` = column `low_start + j`) of the rows reduced
+    /// to zero over the high columns, the zero ones dropped, in no order.
+    pub low: Vec<u128>,
+    /// 64-bit word XORs performed.
+    pub word_ops: u64,
+    /// Nanoseconds copying the matrix to the device; zero when emulated.
+    pub upload_ns: u128,
+    /// Nanoseconds running the panels on the device; zero when emulated.
+    pub device_ns: u128,
+    /// Nanoseconds copying the results back; zero when emulated.
+    pub download_ns: u128,
+}
+
+/// The rows `active` marks, from `skip` (missing entries are not skipped).
+fn active_rows(rows: usize, skip: &[bool]) -> Vec<u32> {
+    (0..rows)
+        .map(|r| u32::from(!skip.get(r).copied().unwrap_or(false)))
+        .collect()
+}
+
+/// `(lo, hi)` word pairs back into rows.
+fn low_pairs(words: &[u64], n: usize) -> Vec<u128> {
+    (0..n)
+        .map(|i| u128::from(words[2 * i]) | (u128::from(words[2 * i + 1]) << 64))
+        .collect()
+}
+
+/// The device elimination of one large matrix run on the host
+/// (`f4_gf2_emulate_echelon`): `matrix` is `rows × stride` words, columns
+/// `..low_start` are eliminated and the `width` columns from `low_start`
+/// are the linear block; rows set in `skip` take no part.
+#[cfg(feature = "gpu-emulator")]
+pub fn emulate_echelon(
+    matrix: &[u64],
+    rows: usize,
+    stride: usize,
+    low_start: usize,
+    width: usize,
+    skip: &[bool],
+    threads: u32,
+) -> Echelon {
+    let mut m = matrix[..rows * stride].to_vec();
+    let mut active = active_rows(rows, skip);
+    let mut low = vec![0u64; 2 * rows.max(1)];
+    let (mut n_low, mut pivots, mut ops) = (0u32, 0u32, 0u64);
+    // SAFETY: every buffer spans what the C side indexes: `m` rows × stride
+    // words, `active` rows entries, `low` two words per row.
+    let rc = unsafe {
+        emulator_ffi::f4_gf2_emulate_echelon(
+            m.as_mut_ptr(),
+            rows as u32,
+            stride as u64,
+            low_start as u32,
+            width as u32,
+            active.as_mut_ptr(),
+            threads,
+            low.as_mut_ptr(),
+            &mut n_low,
+            &mut pivots,
+            &mut ops,
+        )
+    };
+    assert_eq!(rc, 0, "f4_gf2_emulate_echelon failed ({rc})");
+    Echelon {
+        pivots: pivots as usize,
+        low: low_pairs(&low, n_low as usize),
+        word_ops: ops,
+        ..Echelon::default()
+    }
+}
+
+#[cfg(feature = "gpu-emulator")]
+mod emulator_ffi {
+    use super::F4Result;
+    extern "C" {
+        #[allow(clippy::too_many_arguments)]
+        pub fn f4_gf2_emulate_echelon(
+            mat: *mut u64,
+            rows: u32,
+            stride: u64,
+            low_start: u32,
+            width: u32,
+            active: *mut u32,
+            threads: u32,
+            low: *mut u64,
+            n_low: *mut u32,
+            pivots: *mut u32,
+            ops: *mut u64,
+        ) -> i32;
+        pub fn f4_gf2_emulate_batch(
+            terms: *const u64,
+            poly_start: *const u32,
+            sys_poly_start: *const u32,
+            sys_meta: *const u32,
+            skip_bits: *const u32,
+            skip_start: *const u32,
+            n_systems: u32,
+            max_rows: u32,
+            max_cols: u32,
+            threads: u32,
+            scratch_words: u64,
+            results: *mut F4Result,
+        ) -> i32;
+        pub fn f4_gf2_result_size() -> u64;
+        pub fn f4_gf2_shared_size() -> u64;
+    }
+}
+
+/// The device kernel's source run on the host: each system decided by one
+/// emulated block of `threads` threads, chunks of the batch in parallel.
+#[cfg(feature = "gpu-emulator")]
+#[derive(Clone, Copy, Debug)]
+pub struct EmulatorDecider {
+    /// Threads per emulated block (1..=1024).
+    pub threads: u32,
+}
+
+#[cfg(feature = "gpu-emulator")]
+impl Default for EmulatorDecider {
+    fn default() -> Self {
+        EmulatorDecider { threads: 256 }
+    }
+}
+
+#[cfg(feature = "gpu-emulator")]
+impl EmulatorDecider {
+    /// `sizeof(F4Result)` and `sizeof(F4Shared)` as the C compiler laid
+    /// them out.
+    pub fn c_layout() -> (u64, u64) {
+        // SAFETY: pure functions of the compiled layout.
+        unsafe {
+            (
+                emulator_ffi::f4_gf2_result_size(),
+                emulator_ffi::f4_gf2_shared_size(),
+            )
+        }
+    }
+
+    /// Run the emulated kernel on a packed batch.
+    pub fn run(&self, batch: &PackedBatch, caps: MacaulayCaps) -> Vec<F4Result> {
+        let mut results = vec![F4Result::default(); batch.len()];
+        if batch.is_empty() {
+            return results;
+        }
+        // SAFETY: every pointer spans the length the batch layout declares,
+        // and `results` holds one F4Result per system.
+        let rc = unsafe {
+            emulator_ffi::f4_gf2_emulate_batch(
+                batch.terms.as_ptr(),
+                batch.poly_start.as_ptr(),
+                batch.sys_poly_start.as_ptr(),
+                batch.sys_meta.as_ptr(),
+                if batch.skip_bits.is_empty() {
+                    std::ptr::null()
+                } else {
+                    batch.skip_bits.as_ptr()
+                },
+                batch.skip_start.as_ptr(),
+                batch.len() as u32,
+                cap32(caps.max_rows),
+                cap32(caps.max_cols),
+                self.threads,
+                batch.scratch_words.max(1),
+                results.as_mut_ptr(),
+            )
+        };
+        assert_eq!(rc, 0, "f4_gf2_emulate_batch failed ({rc})");
+        results
+    }
+}
+
+#[cfg(feature = "gpu-emulator")]
+impl BatchDecider for EmulatorDecider {
+    fn name(&self) -> String {
+        format!("emulate:{}", self.threads)
+    }
+
+    fn decide(
+        &mut self,
+        requests: &[DecisionRequest<'_>],
+        caps: MacaulayCaps,
+    ) -> Vec<(Option<Decision>, KernelCounters)> {
+        let t0 = std::time::Instant::now();
+        let chunk = requests.len().div_ceil(rayon::current_num_threads()).max(1);
+        let mut answers: Vec<(Option<Decision>, KernelCounters)> = requests
+            .par_chunks(chunk)
+            .flat_map_iter(|part| {
+                let batch = PackedBatch::pack(part);
+                let results = self.run(&batch, caps);
+                part.iter()
+                    .zip(results)
+                    .map(|(r, res)| unpack(&res, r, caps))
+                    .collect::<Vec<_>>()
+            })
+            .collect();
+        charge_time(&mut answers, t0.elapsed().as_nanos());
+        answers
+    }
+}
+
+#[cfg(unix)]
+pub use cuda::{compile_kernel_ptx, compile_kernel_sass, CudaDecider};
+
+#[cfg(unix)]
+mod cuda {
+    //! The CUDA driver API and NVRTC, opened with `dlopen` on first use.
+    use super::{
+        active_rows, cap32, charge_time, kernel_source, unpack, BatchDecider, Decision,
+        DecisionRequest, Echelon, F4Result, KernelCounters, MacaulayCaps, PackedBatch,
+    };
+    use rayon::prelude::*;
+    use std::ffi::{c_char, c_int, c_uint, c_void, CStr, CString};
+
+    type CuResult = c_int;
+    type Handle = *mut c_void;
+
+    /// A `dlopen` handle, closed on drop.
+    struct Library(Handle);
+
+    impl Library {
+        fn open(names: &[String]) -> Result<Self, String> {
+            for name in names {
+                let c = CString::new(name.as_str()).map_err(|e| e.to_string())?;
+                // SAFETY: a NUL-terminated path; dlopen has no other contract.
+                let h = unsafe { libc::dlopen(c.as_ptr(), libc::RTLD_NOW | libc::RTLD_LOCAL) };
+                if !h.is_null() {
+                    return Ok(Library(h));
+                }
+            }
+            Err(format!("none of {names:?} could be opened"))
+        }
+
+        /// # Safety
+        /// `T` must be the function-pointer type of the symbol.
+        unsafe fn symbol<T: Copy>(&self, name: &str) -> Result<T, String> {
+            assert_eq!(std::mem::size_of::<T>(), std::mem::size_of::<Handle>());
+            let c = CString::new(name).map_err(|e| e.to_string())?;
+            let p = libc::dlsym(self.0, c.as_ptr());
+            if p.is_null() {
+                Err(format!("symbol {name} not found"))
+            } else {
+                Ok(std::mem::transmute_copy(&p))
+            }
+        }
+    }
+
+    impl Drop for Library {
+        fn drop(&mut self) {
+            // SAFETY: the handle came from dlopen and is closed once.
+            unsafe {
+                libc::dlclose(self.0);
+            }
+        }
+    }
+
+    struct Driver {
+        _lib: Library,
+        init: unsafe extern "C" fn(c_uint) -> CuResult,
+        device_get_count: unsafe extern "C" fn(*mut c_int) -> CuResult,
+        device_get: unsafe extern "C" fn(*mut c_int, c_int) -> CuResult,
+        device_get_attribute: unsafe extern "C" fn(*mut c_int, c_int, c_int) -> CuResult,
+        device_get_name: unsafe extern "C" fn(*mut c_char, c_int, c_int) -> CuResult,
+        primary_ctx_retain: unsafe extern "C" fn(*mut Handle, c_int) -> CuResult,
+        primary_ctx_release: unsafe extern "C" fn(c_int) -> CuResult,
+        ctx_set_current: unsafe extern "C" fn(Handle) -> CuResult,
+        module_load_data: unsafe extern "C" fn(*mut Handle, *const c_void) -> CuResult,
+        module_unload: unsafe extern "C" fn(Handle) -> CuResult,
+        module_get_function: unsafe extern "C" fn(*mut Handle, Handle, *const c_char) -> CuResult,
+        mem_alloc: unsafe extern "C" fn(*mut u64, usize) -> CuResult,
+        mem_free: unsafe extern "C" fn(u64) -> CuResult,
+        memcpy_htod: unsafe extern "C" fn(u64, *const c_void, usize) -> CuResult,
+        memcpy_dtoh: unsafe extern "C" fn(*mut c_void, u64, usize) -> CuResult,
+        #[allow(clippy::type_complexity)]
+        launch_kernel: unsafe extern "C" fn(
+            Handle,
+            c_uint,
+            c_uint,
+            c_uint,
+            c_uint,
+            c_uint,
+            c_uint,
+            c_uint,
+            Handle,
+            *mut *mut c_void,
+            *mut *mut c_void,
+        ) -> CuResult,
+        ctx_synchronize: unsafe extern "C" fn() -> CuResult,
+        get_error_string: unsafe extern "C" fn(CuResult, *mut *const c_char) -> CuResult,
+    }
+
+    impl Driver {
+        fn load() -> Result<Self, String> {
+            let mut names = Vec::new();
+            if let Ok(path) = std::env::var("CA_CUDA_LIB") {
+                names.push(path);
+            }
+            names.extend(["libcuda.so.1".to_string(), "libcuda.so".to_string()]);
+            let lib = Library::open(&names)?;
+            // SAFETY: each type is the documented driver API prototype.
+            unsafe {
+                let first = |a: &str, b: &str| -> String {
+                    if lib.symbol::<Handle>(a).is_ok() {
+                        a.to_string()
+                    } else {
+                        b.to_string()
+                    }
+                };
+                let release = first("cuDevicePrimaryCtxRelease_v2", "cuDevicePrimaryCtxRelease");
+                Ok(Driver {
+                    init: lib.symbol("cuInit")?,
+                    device_get_count: lib.symbol("cuDeviceGetCount")?,
+                    device_get: lib.symbol("cuDeviceGet")?,
+                    device_get_attribute: lib.symbol("cuDeviceGetAttribute")?,
+                    device_get_name: lib.symbol("cuDeviceGetName")?,
+                    primary_ctx_retain: lib.symbol("cuDevicePrimaryCtxRetain")?,
+                    primary_ctx_release: lib.symbol(&release)?,
+                    ctx_set_current: lib.symbol("cuCtxSetCurrent")?,
+                    module_load_data: lib.symbol("cuModuleLoadData")?,
+                    module_unload: lib.symbol("cuModuleUnload")?,
+                    module_get_function: lib.symbol("cuModuleGetFunction")?,
+                    mem_alloc: lib.symbol("cuMemAlloc_v2")?,
+                    mem_free: lib.symbol("cuMemFree_v2")?,
+                    memcpy_htod: lib.symbol("cuMemcpyHtoD_v2")?,
+                    memcpy_dtoh: lib.symbol("cuMemcpyDtoH_v2")?,
+                    launch_kernel: lib.symbol("cuLaunchKernel")?,
+                    ctx_synchronize: lib.symbol("cuCtxSynchronize")?,
+                    get_error_string: lib.symbol("cuGetErrorString")?,
+                    _lib: lib,
+                })
+            }
+        }
+
+        fn check(&self, rc: CuResult, what: &str) -> Result<(), String> {
+            if rc == 0 {
+                return Ok(());
+            }
+            let mut msg: *const c_char = std::ptr::null();
+            // SAFETY: cuGetErrorString writes a static string pointer.
+            unsafe { (self.get_error_string)(rc, &mut msg) };
+            let text = if msg.is_null() {
+                "unknown error".to_string()
+            } else {
+                // SAFETY: a static NUL-terminated string from the driver.
+                unsafe { CStr::from_ptr(msg) }
+                    .to_string_lossy()
+                    .into_owned()
+            };
+            Err(format!("{what}: CUDA error {rc} ({text})"))
+        }
+    }
+
+    struct Nvrtc {
+        _lib: Library,
+        create: unsafe extern "C" fn(
+            *mut Handle,
+            *const c_char,
+            *const c_char,
+            c_int,
+            *const *const c_char,
+            *const *const c_char,
+        ) -> c_int,
+        compile: unsafe extern "C" fn(Handle, c_int, *const *const c_char) -> c_int,
+        log_size: unsafe extern "C" fn(Handle, *mut usize) -> c_int,
+        log: unsafe extern "C" fn(Handle, *mut c_char) -> c_int,
+        ptx_size: unsafe extern "C" fn(Handle, *mut usize) -> c_int,
+        ptx: unsafe extern "C" fn(Handle, *mut c_char) -> c_int,
+        /// `nvrtcGetCUBINSize` and `nvrtcGetCUBIN`, absent before NVRTC 11.1.
+        cubin: Option<(
+            unsafe extern "C" fn(Handle, *mut usize) -> c_int,
+            unsafe extern "C" fn(Handle, *mut c_char) -> c_int,
+        )>,
+        destroy: unsafe extern "C" fn(*mut Handle) -> c_int,
+    }
+
+    impl Nvrtc {
+        fn load() -> Result<Self, String> {
+            let mut names = Vec::new();
+            if let Ok(path) = std::env::var("CA_NVRTC_LIB") {
+                names.push(path);
+            }
+            for v in ["13", "12", "11.2"] {
+                names.push(format!("libnvrtc.so.{v}"));
+            }
+            names.push("libnvrtc.so".into());
+            let lib = Library::open(&names)?;
+            // SAFETY: each type is the documented NVRTC prototype.
+            unsafe {
+                Ok(Nvrtc {
+                    create: lib.symbol("nvrtcCreateProgram")?,
+                    compile: lib.symbol("nvrtcCompileProgram")?,
+                    log_size: lib.symbol("nvrtcGetProgramLogSize")?,
+                    log: lib.symbol("nvrtcGetProgramLog")?,
+                    ptx_size: lib.symbol("nvrtcGetPTXSize")?,
+                    ptx: lib.symbol("nvrtcGetPTX")?,
+                    cubin: lib
+                        .symbol("nvrtcGetCUBINSize")
+                        .and_then(|size| Ok((size, lib.symbol("nvrtcGetCUBIN")?)))
+                        .ok(),
+                    destroy: lib.symbol("nvrtcDestroyProgram")?,
+                    _lib: lib,
+                })
+            }
+        }
+
+        /// Compile `source` to SASS for `sm_{arch}` when `sass`, else to
+        /// NUL-terminated PTX for `compute_{arch}`.
+        fn compile(&self, source: &str, arch: u32, sass: bool) -> Result<Vec<u8>, String> {
+            let (size_of, read) = if sass {
+                self.cubin
+                    .ok_or("this NVRTC cannot emit SASS (nvrtcGetCUBIN needs NVRTC 11.1)")?
+            } else {
+                (self.ptx_size, self.ptx)
+            };
+            let target = format!("{}_{arch}", if sass { "sm" } else { "compute" });
+            let src = CString::new(source).map_err(|e| e.to_string())?;
+            let name = CString::new("f4_gf2_kernel.cu").unwrap();
+            let mut prog: Handle = std::ptr::null_mut();
+            // SAFETY: valid NUL-terminated strings; no headers.
+            let rc = unsafe {
+                (self.create)(
+                    &mut prog,
+                    src.as_ptr(),
+                    name.as_ptr(),
+                    0,
+                    std::ptr::null(),
+                    std::ptr::null(),
+                )
+            };
+            if rc != 0 {
+                return Err(format!("nvrtcCreateProgram failed ({rc})"));
+            }
+            let opt = CString::new(format!("--gpu-architecture={target}")).unwrap();
+            let opts = [opt.as_ptr()];
+            // SAFETY: `prog` is live; one option string.
+            let rc = unsafe { (self.compile)(prog, 1, opts.as_ptr()) };
+            let result = if rc != 0 {
+                let mut n = 0usize;
+                // SAFETY: querying the log of a live program.
+                unsafe { (self.log_size)(prog, &mut n) };
+                let mut buf = vec![0u8; n.max(1)];
+                // SAFETY: `buf` holds the reported log size.
+                unsafe { (self.log)(prog, buf.as_mut_ptr() as *mut c_char) };
+                Err(format!(
+                    "NVRTC compile for {target} failed: {}",
+                    String::from_utf8_lossy(&buf).trim_end_matches('\0')
+                ))
+            } else {
+                let mut n = 0usize;
+                // SAFETY: querying the output size of a compiled program.
+                unsafe { size_of(prog, &mut n) };
+                let mut buf = vec![0u8; n];
+                // SAFETY: `buf` holds the reported size (PTX: NUL included).
+                unsafe { read(prog, buf.as_mut_ptr() as *mut c_char) };
+                Ok(buf)
+            };
+            // SAFETY: destroying the program once.
+            unsafe { (self.destroy)(&mut prog) };
+            result
+        }
+    }
+
+    /// The driver's CUDA devices as `name (sm_XY, N SMs)`, without creating
+    /// a context or compiling anything.
+    pub(super) fn device_names() -> Result<Vec<String>, String> {
+        let driver = Driver::load()?;
+        // SAFETY: plain driver API queries with valid out-pointers.
+        unsafe {
+            driver.check((driver.init)(0), "cuInit")?;
+            let mut count = 0;
+            driver.check((driver.device_get_count)(&mut count), "cuDeviceGetCount")?;
+            let mut out = Vec::new();
+            for ordinal in 0..count {
+                let mut device = 0;
+                driver.check((driver.device_get)(&mut device, ordinal), "cuDeviceGet")?;
+                let attr = |a: c_int| -> Result<i32, String> {
+                    let mut v = 0;
+                    driver.check(
+                        (driver.device_get_attribute)(&mut v, a, device),
+                        "cuDeviceGetAttribute",
+                    )?;
+                    Ok(v)
+                };
+                let mut raw = [0 as c_char; 256];
+                driver.check(
+                    (driver.device_get_name)(raw.as_mut_ptr(), 256, device),
+                    "cuDeviceGetName",
+                )?;
+                out.push(format!(
+                    "{} (sm_{}{}, {} SMs)",
+                    CStr::from_ptr(raw.as_ptr()).to_string_lossy(),
+                    attr(75)?,
+                    attr(76)?,
+                    attr(16)?
+                ));
+            }
+            Ok(out)
+        }
+    }
+
+    /// Compile the kernel with NVRTC for `compute_{arch}` and return its
+    /// NUL-terminated PTX.  Needs only NVRTC (`CA_NVRTC_LIB` or
+    /// `libnvrtc.so.*`), not a device, so it is the check that a machine's
+    /// NVRTC accepts the source.
+    pub fn compile_kernel_ptx(arch: u32) -> Result<Vec<u8>, String> {
+        Nvrtc::load()?.compile(&kernel_source(), arch, false)
+    }
+
+    /// Compile the kernel with NVRTC to an `sm_{arch}` cubin, the image
+    /// [`CudaDecider::new`] loads first: SASS needs no driver JIT, so it
+    /// loads under any driver of NVRTC's CUDA major version, where PTX
+    /// from a newer NVRTC than the driver is refused.
+    pub fn compile_kernel_sass(arch: u32) -> Result<Vec<u8>, String> {
+        Nvrtc::load()?.compile(&kernel_source(), arch, true)
+    }
+
+    /// A device allocation that grows as batches do.
+    #[derive(Default)]
+    struct Buffer {
+        ptr: u64,
+        bytes: usize,
+    }
+
+    /// The kernel on an NVIDIA device.
+    pub struct CudaDecider {
+        driver: Driver,
+        device: c_int,
+        context: Handle,
+        module: Handle,
+        function: Handle,
+        name: String,
+        /// The loaded image: `sm_XY` SASS, `compute_XY` PTX, or `CA_F4_PTX`.
+        code: String,
+        compute: (i32, i32),
+        sm_count: u32,
+        /// Threads per block.
+        pub threads: u32,
+        /// Resident blocks per multiprocessor to launch for.
+        pub blocks_per_sm: u32,
+        /// Device scratch budget over all blocks, in bytes.
+        pub scratch_budget: usize,
+        buffers: [Buffer; 20],
+        /// `ECHELON_KERNELS`, when the module has them.
+        echelon_fns: Option<[Handle; 5]>,
+        /// With `F4_F2_ECHELON_PROFILE` set: launches and nanoseconds per
+        /// kernel, each launch synchronised (which slows the whole run),
+        /// printed and reset after every matrix.
+        profile: Option<std::sync::Mutex<std::collections::BTreeMap<String, (u64, u128)>>>,
+    }
+
+    /// Entry points of `cuda/f4_gf2_echelon.cuh`, in launch order.
+    pub(super) const ECHELON_KERNELS: [&str; 5] = [
+        "f4e_gather",
+        "f4e_panel_block",
+        "f4e_materialise",
+        "f4e_update",
+        "f4e_low",
+    ];
+    /// `sizeof(F4ePivots)`: two `u32`, 64 `u32` rows and 64 `u64` masks.
+    const PIVOTS_BYTES: usize = 8 + 64 * 4 + 64 * 8;
+
+    // SAFETY: the handles are process-wide driver objects; every call makes
+    // the context current on the calling thread first.
+    unsafe impl Send for CudaDecider {}
+
+    impl CudaDecider {
+        /// Open device `ordinal`, compile the kernel for it and load it:
+        /// the first of `sm_XY` SASS, `compute_XY` PTX and `compute_75` PTX
+        /// that NVRTC emits and the driver accepts, or the PTX file named
+        /// by `CA_F4_PTX`.
+        pub fn new(ordinal: usize) -> Result<Self, String> {
+            let driver = Driver::load()?;
+            // SAFETY: plain driver API calls with valid out-pointers.
+            unsafe {
+                driver.check((driver.init)(0), "cuInit")?;
+                let mut count = 0;
+                driver.check((driver.device_get_count)(&mut count), "cuDeviceGetCount")?;
+                if ordinal >= count as usize {
+                    return Err(format!("no CUDA device {ordinal} ({count} present)"));
+                }
+                let mut device = 0;
+                driver.check(
+                    (driver.device_get)(&mut device, ordinal as c_int),
+                    "cuDeviceGet",
+                )?;
+                let attr = |a: c_int| -> Result<i32, String> {
+                    let mut v = 0;
+                    driver.check(
+                        (driver.device_get_attribute)(&mut v, a, device),
+                        "cuDeviceGetAttribute",
+                    )?;
+                    Ok(v)
+                };
+                let sm_count = attr(16)? as u32;
+                let compute = (attr(75)?, attr(76)?);
+                let mut raw = [0 as c_char; 256];
+                driver.check(
+                    (driver.device_get_name)(raw.as_mut_ptr(), 256, device),
+                    "cuDeviceGetName",
+                )?;
+                let name = CStr::from_ptr(raw.as_ptr()).to_string_lossy().into_owned();
+                let mut context: Handle = std::ptr::null_mut();
+                driver.check(
+                    (driver.primary_ctx_retain)(&mut context, device),
+                    "cuDevicePrimaryCtxRetain",
+                )?;
+                driver.check((driver.ctx_set_current)(context), "cuCtxSetCurrent")?;
+                let mut module: Handle = std::ptr::null_mut();
+                let code = match std::env::var("CA_F4_PTX") {
+                    Ok(path) => {
+                        let mut bytes = std::fs::read(&path).map_err(|e| format!("{path}: {e}"))?;
+                        bytes.push(0);
+                        driver.check(
+                            (driver.module_load_data)(&mut module, bytes.as_ptr() as *const c_void),
+                            "cuModuleLoadData",
+                        )?;
+                        "CA_F4_PTX".to_string()
+                    }
+                    Err(_) => {
+                        let nvrtc = Nvrtc::load()?;
+                        let arch = (compute.0 * 10 + compute.1) as u32;
+                        let source = kernel_source();
+                        let mut failures = Vec::new();
+                        let mut loaded = None;
+                        for (target, sass) in [(arch, true), (arch, false), (75, false)] {
+                            let code = format!("{}_{target}", if sass { "sm" } else { "compute" });
+                            let attempt = nvrtc.compile(&source, target, sass).and_then(|image| {
+                                driver.check(
+                                    (driver.module_load_data)(
+                                        &mut module,
+                                        image.as_ptr() as *const c_void,
+                                    ),
+                                    &format!("cuModuleLoadData({code})"),
+                                )
+                            });
+                            match attempt {
+                                Ok(()) => {
+                                    loaded = Some(code);
+                                    break;
+                                }
+                                Err(e) => failures.push(e),
+                            }
+                        }
+                        loaded.ok_or_else(|| failures.join("; "))?
+                    }
+                };
+                let lookup = |name: &str| -> Result<Handle, String> {
+                    let fname = CString::new(name).unwrap();
+                    let mut function: Handle = std::ptr::null_mut();
+                    driver.check(
+                        (driver.module_get_function)(&mut function, module, fname.as_ptr()),
+                        &format!("cuModuleGetFunction({name})"),
+                    )?;
+                    Ok(function)
+                };
+                let function = lookup("f4_gf2_decide_batch")?;
+                // A PTX file built before the large-matrix kernels lacks them.
+                let echelon_fns = ECHELON_KERNELS
+                    .iter()
+                    .map(|name| lookup(name))
+                    .collect::<Result<Vec<_>, _>>()
+                    .ok()
+                    .map(|v| [v[0], v[1], v[2], v[3], v[4]]);
+                let threads = std::env::var("CA_F4_THREADS")
+                    .ok()
+                    .and_then(|v| v.parse().ok())
+                    .unwrap_or(256u32)
+                    .clamp(32, 1024);
+                let scratch_budget = std::env::var("CA_F4_SCRATCH_MB")
+                    .ok()
+                    .and_then(|v| v.parse::<usize>().ok())
+                    .unwrap_or(1024)
+                    << 20;
+                Ok(CudaDecider {
+                    driver,
+                    device,
+                    context,
+                    module,
+                    function,
+                    name,
+                    code,
+                    compute,
+                    sm_count,
+                    threads,
+                    blocks_per_sm: 4,
+                    scratch_budget,
+                    buffers: Default::default(),
+                    echelon_fns,
+                    profile: std::env::var_os("F4_F2_ECHELON_PROFILE")
+                        .map(|_| std::sync::Mutex::new(Default::default())),
+                })
+            }
+        }
+
+        /// Device name, compute capability and multiprocessor count.
+        pub fn device_info(&self) -> (String, (i32, i32), u32) {
+            (self.name.clone(), self.compute, self.sm_count)
+        }
+
+        fn ensure(&mut self, slot: usize, bytes: usize) -> Result<u64, String> {
+            let bytes = bytes.max(8);
+            if self.buffers[slot].bytes < bytes {
+                let old = std::mem::take(&mut self.buffers[slot]);
+                // SAFETY: freeing our own allocation, then allocating anew.
+                unsafe {
+                    if old.ptr != 0 {
+                        self.driver
+                            .check((self.driver.mem_free)(old.ptr), "cuMemFree")?;
+                    }
+                    let mut ptr = 0u64;
+                    self.driver
+                        .check((self.driver.mem_alloc)(&mut ptr, bytes), "cuMemAlloc")?;
+                    self.buffers[slot] = Buffer { ptr, bytes };
+                }
+            }
+            Ok(self.buffers[slot].ptr)
+        }
+
+        fn upload<T: Copy>(&mut self, slot: usize, data: &[T]) -> Result<u64, String> {
+            let bytes = std::mem::size_of_val(data);
+            let ptr = self.ensure(slot, bytes)?;
+            if bytes > 0 {
+                // SAFETY: `ptr` spans at least `bytes`; `data` is host memory.
+                unsafe {
+                    self.driver.check(
+                        (self.driver.memcpy_htod)(ptr, data.as_ptr() as *const c_void, bytes),
+                        "cuMemcpyHtoD",
+                    )?;
+                }
+            }
+            Ok(ptr)
+        }
+
+        /// Launch `f` on `grid` blocks of `block` threads with `params`,
+        /// one pointer per kernel argument, in order and of its type.
+        ///
+        /// # Safety
+        /// `params` must match the kernel's signature.
+        unsafe fn launch(
+            &self,
+            f: Handle,
+            grid: u32,
+            block: u32,
+            params: &mut [*mut c_void],
+            what: &str,
+        ) -> Result<(), String> {
+            let t0 = std::time::Instant::now();
+            self.driver.check(
+                (self.driver.launch_kernel)(
+                    f,
+                    grid.max(1),
+                    1,
+                    1,
+                    block,
+                    1,
+                    1,
+                    0,
+                    std::ptr::null_mut(),
+                    params.as_mut_ptr(),
+                    std::ptr::null_mut(),
+                ),
+                what,
+            )?;
+            if let Some(profile) = &self.profile {
+                self.driver
+                    .check((self.driver.ctx_synchronize)(), "cuCtxSynchronize")?;
+                let mut p = profile.lock().expect("profile poisoned");
+                let slot = p.entry(what.to_string()).or_default();
+                slot.0 += 1;
+                slot.1 += t0.elapsed().as_nanos();
+            }
+            Ok(())
+        }
+
+        fn download<T: Copy + Default>(&self, ptr: u64, n: usize) -> Result<Vec<T>, String> {
+            let mut out = vec![T::default(); n];
+            if n > 0 {
+                // SAFETY: `out` holds `n` values; `ptr` spans at least as many.
+                unsafe {
+                    self.driver.check(
+                        (self.driver.memcpy_dtoh)(
+                            out.as_mut_ptr() as *mut c_void,
+                            ptr,
+                            std::mem::size_of_val(out.as_slice()),
+                        ),
+                        "cuMemcpyDtoH",
+                    )?;
+                }
+            }
+            Ok(out)
+        }
+
+        /// Eliminate one large matrix over its columns `..low_start` on
+        /// the device (`cuda/f4_gf2_echelon.cuh`), as `emulate_echelon`
+        /// (feature `gpu-emulator`) does on the host: `matrix` is
+        /// `rows × stride` words, the `width` columns from `low_start` are
+        /// the linear block, and rows set in `skip` take no part.  The
+        /// panels are queued back to back and synchronised once.
+        pub fn echelon(
+            &mut self,
+            matrix: &[u64],
+            rows: usize,
+            stride: usize,
+            low_start: usize,
+            width: usize,
+            skip: &[bool],
+        ) -> Result<Echelon, String> {
+            let fns = self
+                .echelon_fns
+                .ok_or("the loaded module has no large-matrix kernels")?;
+            if width > 128 || rows > u32::MAX as usize {
+                return Err(format!(
+                    "{rows} rows, linear block {width}: beyond the kernels"
+                ));
+            }
+            // SAFETY: making our retained primary context current.
+            unsafe {
+                self.driver.check(
+                    (self.driver.ctx_set_current)(self.context),
+                    "cuCtxSetCurrent",
+                )?;
+            }
+            let n = rows.max(1);
+            let hw = low_start.div_ceil(64);
+            let t_up = std::time::Instant::now();
+            let mut mat = self.upload(8, &matrix[..rows * stride])?;
+            let mut active = self.upload(9, &active_rows(rows, skip))?;
+            let mut cand = self.ensure(10, n * 4)?;
+            let mut pw = self.ensure(11, n * 8)?;
+            let mut coeff = self.ensure(12, n * 8)?;
+            let mut is_piv = self.ensure(13, n * 4)?;
+            let counts = self.upload(14, &vec![0u32; hw.max(1)])?;
+            let mut piv = self.upload(15, &[0u8; PIVOTS_BYTES])?;
+            let mut ops = self.upload(16, &[0u64])?;
+            let mut low = self.ensure(17, n * 16)?;
+            let mut n_low = self.upload(18, &[0u32])?;
+            let mut prow = self.ensure(19, n * 8)?;
+            let upload_ns = t_up.elapsed().as_nanos();
+            let t_dev = std::time::Instant::now();
+            let (mut stride64, mut rows32) = (stride as u64, rows as u32);
+            let (mut low_start32, mut width32) = (low_start as u32, width as u32);
+            let row_grid = (rows.div_ceil(256) as u32).min(self.sm_count * 8);
+            for w in 0..hw {
+                let mut w32 = w as u32;
+                let high = low_start - 64 * w;
+                let mut mask = if high >= 64 {
+                    u64::MAX
+                } else {
+                    (1u64 << high) - 1
+                };
+                let mut count = counts + 4 * w as u64;
+                // SAFETY: each array points at one value per argument of the
+                // kernel, in its order and of its type.
+                unsafe {
+                    let mut p = [
+                        &mut mat as *mut u64 as *mut c_void,
+                        &mut stride64 as *mut u64 as *mut c_void,
+                        &mut w32 as *mut u32 as *mut c_void,
+                        &mut mask as *mut u64 as *mut c_void,
+                        &mut active as *mut u64 as *mut c_void,
+                        &mut rows32 as *mut u32 as *mut c_void,
+                        &mut cand as *mut u64 as *mut c_void,
+                        &mut pw as *mut u64 as *mut c_void,
+                        &mut count as *mut u64 as *mut c_void,
+                        &mut prow as *mut u64 as *mut c_void,
+                    ];
+                    self.launch(fns[0], row_grid, 256, &mut p, "f4e_gather")?;
+                    let mut p = [
+                        &mut prow as *mut u64 as *mut c_void,
+                        &mut rows32 as *mut u32 as *mut c_void,
+                        &mut cand as *mut u64 as *mut c_void,
+                        &mut pw as *mut u64 as *mut c_void,
+                        &mut coeff as *mut u64 as *mut c_void,
+                        &mut is_piv as *mut u64 as *mut c_void,
+                        &mut count as *mut u64 as *mut c_void,
+                        &mut piv as *mut u64 as *mut c_void,
+                    ];
+                    self.launch(fns[1], 1, 1024, &mut p, "f4e_panel_block")?;
+                    let mut p = [
+                        &mut mat as *mut u64 as *mut c_void,
+                        &mut stride64 as *mut u64 as *mut c_void,
+                        &mut w32 as *mut u32 as *mut c_void,
+                        &mut active as *mut u64 as *mut c_void,
+                        &mut piv as *mut u64 as *mut c_void,
+                        &mut ops as *mut u64 as *mut c_void,
+                    ];
+                    let words = ((stride - w).div_ceil(128) as u32).max(1);
+                    self.launch(fns[2], words, 128, &mut p, "f4e_materialise")?;
+                    // A block per 32-word tile and part of the candidates,
+                    // about four blocks per multiprocessor, and never so many
+                    // parts that a narrow tail is reloaded by idle blocks.
+                    let tiles = (stride - w).div_ceil(32) as u32;
+                    let mut parts = (4 * self.sm_count).div_ceil(tiles).clamp(1, 32);
+                    let mut p = [
+                        &mut mat as *mut u64 as *mut c_void,
+                        &mut stride64 as *mut u64 as *mut c_void,
+                        &mut w32 as *mut u32 as *mut c_void,
+                        &mut parts as *mut u32 as *mut c_void,
+                        &mut cand as *mut u64 as *mut c_void,
+                        &mut coeff as *mut u64 as *mut c_void,
+                        &mut is_piv as *mut u64 as *mut c_void,
+                        &mut count as *mut u64 as *mut c_void,
+                        &mut piv as *mut u64 as *mut c_void,
+                        &mut ops as *mut u64 as *mut c_void,
+                    ];
+                    self.launch(fns[3], tiles * parts, 256, &mut p, "f4e_update")?;
+                }
+            }
+            // SAFETY: as above, for f4e_low.
+            unsafe {
+                let mut p = [
+                    &mut mat as *mut u64 as *mut c_void,
+                    &mut stride64 as *mut u64 as *mut c_void,
+                    &mut low_start32 as *mut u32 as *mut c_void,
+                    &mut width32 as *mut u32 as *mut c_void,
+                    &mut active as *mut u64 as *mut c_void,
+                    &mut rows32 as *mut u32 as *mut c_void,
+                    &mut low as *mut u64 as *mut c_void,
+                    &mut n_low as *mut u64 as *mut c_void,
+                ];
+                self.launch(fns[4], row_grid, 256, &mut p, "f4e_low")?;
+                self.driver
+                    .check((self.driver.ctx_synchronize)(), "cuCtxSynchronize")?;
+            }
+            let device_ns = t_dev.elapsed().as_nanos();
+            if let Some(profile) = &self.profile {
+                let mut p = profile.lock().expect("profile poisoned");
+                for (kernel, (launches, ns)) in p.iter() {
+                    eprintln!(
+                        "F4_F2_ECHELON_PROFILE {kernel}: {launches} launches, {:.1} ms",
+                        *ns as f64 / 1e6
+                    );
+                }
+                p.clear();
+            }
+            let t_down = std::time::Instant::now();
+            let n_low = self.download::<u32>(n_low, 1)?[0] as usize;
+            let pivots = self.download::<u32>(piv, 2)?[1] as usize;
+            let word_ops = self.download::<u64>(ops, 1)?[0];
+            let words = self.download::<u64>(low, 2 * n_low)?;
+            Ok(Echelon {
+                pivots,
+                low: super::low_pairs(&words, n_low),
+                word_ops,
+                upload_ns,
+                device_ns,
+                download_ns: t_down.elapsed().as_nanos(),
+            })
+        }
+
+        /// Run the kernel on a packed batch.
+        pub fn run(
+            &mut self,
+            batch: &PackedBatch,
+            caps: MacaulayCaps,
+        ) -> Result<Vec<F4Result>, String> {
+            let n = batch.len();
+            let mut results = vec![F4Result::default(); n];
+            if n == 0 {
+                return Ok(results);
+            }
+            // SAFETY: making our retained primary context current.
+            unsafe {
+                self.driver.check(
+                    (self.driver.ctx_set_current)(self.context),
+                    "cuCtxSetCurrent",
+                )?;
+            }
+            let grid = (self.sm_count * self.blocks_per_sm).max(1).min(n as u32);
+            let per_block = (self.scratch_budget / 8 / grid as usize) as u64;
+            let scratch_words = batch.scratch_words.clamp(1, per_block.max(1));
+            let mut terms = self.upload(0, &batch.terms)?;
+            let mut poly_start = self.upload(1, &batch.poly_start)?;
+            let mut sys_poly_start = self.upload(2, &batch.sys_poly_start)?;
+            let mut sys_meta = self.upload(3, &batch.sys_meta)?;
+            let mut skip_bits = self.upload(6, &batch.skip_bits)?;
+            let mut skip_start = self.upload(7, &batch.skip_start)?;
+            let mut scratch = self.ensure(4, (scratch_words as usize) * 8 * grid as usize)?;
+            let mut out = self.ensure(5, n * std::mem::size_of::<F4Result>())?;
+            let mut n_systems = n as u32;
+            let mut max_rows = cap32(caps.max_rows);
+            let mut max_cols = cap32(caps.max_cols);
+            let mut words = scratch_words;
+            let mut params: [*mut c_void; 12] = [
+                &mut terms as *mut u64 as *mut c_void,
+                &mut poly_start as *mut u64 as *mut c_void,
+                &mut sys_poly_start as *mut u64 as *mut c_void,
+                &mut sys_meta as *mut u64 as *mut c_void,
+                &mut skip_bits as *mut u64 as *mut c_void,
+                &mut skip_start as *mut u64 as *mut c_void,
+                &mut n_systems as *mut u32 as *mut c_void,
+                &mut max_rows as *mut u32 as *mut c_void,
+                &mut max_cols as *mut u32 as *mut c_void,
+                &mut scratch as *mut u64 as *mut c_void,
+                &mut words as *mut u64 as *mut c_void,
+                &mut out as *mut u64 as *mut c_void,
+            ];
+            // SAFETY: `params` points at one value per kernel argument, in
+            // the order and with the types of `f4_gf2_decide_batch`.
+            unsafe {
+                self.driver.check(
+                    (self.driver.launch_kernel)(
+                        self.function,
+                        grid,
+                        1,
+                        1,
+                        self.threads,
+                        1,
+                        1,
+                        0,
+                        std::ptr::null_mut(),
+                        params.as_mut_ptr(),
+                        std::ptr::null_mut(),
+                    ),
+                    "cuLaunchKernel",
+                )?;
+                self.driver
+                    .check((self.driver.ctx_synchronize)(), "cuCtxSynchronize")?;
+                self.driver.check(
+                    (self.driver.memcpy_dtoh)(
+                        results.as_mut_ptr() as *mut c_void,
+                        out,
+                        n * std::mem::size_of::<F4Result>(),
+                    ),
+                    "cuMemcpyDtoH",
+                )?;
+            }
+            Ok(results)
+        }
+    }
+
+    impl Drop for CudaDecider {
+        fn drop(&mut self) {
+            // SAFETY: releasing what `new` and `ensure` acquired, once.
+            unsafe {
+                (self.driver.ctx_set_current)(self.context);
+                for b in &self.buffers {
+                    if b.ptr != 0 {
+                        (self.driver.mem_free)(b.ptr);
+                    }
+                }
+                (self.driver.module_unload)(self.module);
+                (self.driver.primary_ctx_release)(self.device);
+            }
+        }
+    }
+
+    impl BatchDecider for CudaDecider {
+        fn name(&self) -> String {
+            format!(
+                "cuda:{} sm_{}{} x{} code={}",
+                self.name, self.compute.0, self.compute.1, self.sm_count, self.code
+            )
+        }
+
+        fn decide(
+            &mut self,
+            requests: &[DecisionRequest<'_>],
+            caps: MacaulayCaps,
+        ) -> Vec<(Option<Decision>, KernelCounters)> {
+            let t0 = std::time::Instant::now();
+            let batch = PackedBatch::pack(requests);
+            let results = self
+                .run(&batch, caps)
+                .unwrap_or_else(|e| panic!("CUDA F4 batch failed: {e}"));
+            let mut answers: Vec<_> = requests
+                .par_iter()
+                .zip(&results)
+                .map(|(r, res)| unpack(res, r, caps))
+                .collect();
+            charge_time(&mut answers, t0.elapsed().as_nanos());
+            answers
+        }
+    }
+}
+
+/// Where `f4_gf2` eliminates large matrices: a CUDA device, or the
+/// device source emulated on the host (feature `gpu-emulator`).
+enum Offload {
+    #[cfg(unix)]
+    Cuda(Box<CudaDecider>),
+    #[cfg(feature = "gpu-emulator")]
+    Emulate(u32),
+}
+
+/// `F4_F2_ECHELON`: `auto` (the default) uses CUDA device 0 when one opens
+/// and the host otherwise, without a word; `cuda[:N]` asks for device `N`
+/// and reports when it cannot be opened; `emulate[:threads]` runs the
+/// device source on the host; `host` (or `cpu`, `off`) never offloads.
+fn offload_mode() -> &'static str {
+    static MODE: std::sync::OnceLock<String> = std::sync::OnceLock::new();
+    MODE.get_or_init(|| {
+        let spec = std::env::var("F4_F2_ECHELON").unwrap_or_default();
+        match spec.as_str() {
+            "" => "auto".into(),
+            "cpu" | "off" | "none" | "0" => "host".into(),
+            _ => spec,
+        }
+    })
+}
+
+/// `F4_F2_ECHELON_MIN_WORDS` unless offloading is off, read once and
+/// without touching a device, so a run whose matrices all stay small never
+/// opens one.
+fn offload_min_words() -> Option<usize> {
+    static MIN: std::sync::OnceLock<Option<usize>> = std::sync::OnceLock::new();
+    *MIN.get_or_init(|| {
+        if offload_mode() == "host" {
+            return None;
+        }
+        Some(
+            std::env::var("F4_F2_ECHELON_MIN_WORDS")
+                .ok()
+                .and_then(|v| v.parse().ok())
+                .unwrap_or(1 << 20),
+        )
+    })
+}
+
+fn offload_backend() -> Option<&'static std::sync::Mutex<Offload>> {
+    static OFFLOAD: std::sync::OnceLock<Option<std::sync::Mutex<Offload>>> =
+        std::sync::OnceLock::new();
+    OFFLOAD
+        .get_or_init(|| {
+            let spec = offload_mode();
+            let (kind, arg) = spec.split_once(':').unwrap_or((spec, ""));
+            let backend = match kind {
+                #[cfg(unix)]
+                "auto" | "cuda" => match CudaDecider::new(arg.parse().unwrap_or(0)) {
+                    Ok(d) => Offload::Cuda(Box::new(d)),
+                    Err(e) => {
+                        if kind == "cuda" || std::env::var_os("F4_F2_ECHELON_VERBOSE").is_some() {
+                            eprintln!("F4_F2_ECHELON={spec}: {e}; eliminating on the host");
+                        }
+                        return None;
+                    }
+                },
+                #[cfg(feature = "gpu-emulator")]
+                "emulate" => Offload::Emulate(arg.parse().unwrap_or(256)),
+                _ => return None,
+            };
+            Some(std::sync::Mutex::new(backend))
+        })
+        .as_ref()
+}
+
+/// Matrices eliminated on the device, their words, and the nanoseconds
+/// spent copying and eliminating them, since the process started.
+static OFFLOADED: [std::sync::atomic::AtomicU64; 3] = [
+    std::sync::atomic::AtomicU64::new(0),
+    std::sync::atomic::AtomicU64::new(0),
+    std::sync::atomic::AtomicU64::new(0),
+];
+
+/// What the large-matrix offload has done in this process, for reports.
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct OffloadSummary {
+    /// `F4_F2_ECHELON` as resolved: `auto`, `cuda[:N]`, `emulate[...]` or
+    /// `host`.
+    pub mode: String,
+    /// The device that eliminated, once one was opened.
+    pub device: Option<String>,
+    /// Matrices eliminated there.
+    pub matrices: u64,
+    /// Their 64-bit words.
+    pub words: u64,
+    /// Seconds uploading, eliminating and downloading them.
+    pub seconds: f64,
+}
+
+/// The large-matrix offload's mode, device and work so far.  Opens no
+/// device that no matrix needed.
+pub fn offload_summary() -> OffloadSummary {
+    use std::sync::atomic::Ordering::Relaxed;
+    let matrices = OFFLOADED[0].load(Relaxed);
+    // Only a backend that has eliminated something is already open.
+    let device = (matrices > 0)
+        .then(offload_backend)
+        .flatten()
+        .and_then(|b| {
+            b.lock().ok().map(|g| match &*g {
+                #[cfg(unix)]
+                Offload::Cuda(d) => d.name(),
+                #[cfg(feature = "gpu-emulator")]
+                Offload::Emulate(t) => format!("emulate:{t}"),
+                #[allow(unreachable_patterns)]
+                _ => String::new(),
+            })
+        });
+    OffloadSummary {
+        mode: offload_mode().to_string(),
+        device,
+        matrices,
+        words: OFFLOADED[1].load(Relaxed),
+        seconds: OFFLOADED[2].load(Relaxed) as f64 / 1e9,
+    }
+}
+
+/// The CUDA devices this host's driver reports, by name; empty without a
+/// driver or a device.  Probed once, without compiling anything.
+pub fn cuda_devices() -> Vec<String> {
+    static DEVICES: std::sync::OnceLock<Vec<String>> = std::sync::OnceLock::new();
+    DEVICES
+        .get_or_init(|| {
+            #[cfg(unix)]
+            {
+                cuda::device_names().unwrap_or_default()
+            }
+            #[cfg(not(unix))]
+            {
+                Vec::new()
+            }
+        })
+        .clone()
+}
+
+/// Whether a matrix of `words` words would be eliminated on a device (see
+/// [`offload_echelon`]).  Under `auto` and `cuda` the first such question
+/// opens the device, so the answer is whether one is there.
+pub fn offload_expected(words: u64) -> bool {
+    offload_min_words().is_some_and(|min| words >= min as u64) && offload_backend().is_some()
+}
+
+/// Eliminate one large `f4_gf2` matrix on the backend `F4_F2_ECHELON`
+/// selects (by default any CUDA device that opens), if the matrix has at
+/// least `F4_F2_ECHELON_MIN_WORDS` words (default `1 << 20`, 8 MiB); `None`
+/// leaves it to the host, as does a backend error, which is reported.
+/// `matrix` is `rows × stride` words; columns `..low_start` are eliminated
+/// and the `width` columns from `low_start` are the linear block; rows set
+/// in `skip` take no part.
+pub fn offload_echelon(
+    matrix: &[u64],
+    rows: usize,
+    stride: usize,
+    low_start: usize,
+    width: usize,
+    skip: &[bool],
+) -> Option<Echelon> {
+    if rows.saturating_mul(stride) < offload_min_words()? {
+        return None;
+    }
+    let mut backend = offload_backend()?.lock().ok()?;
+    let result: Result<Echelon, String> = match &mut *backend {
+        #[cfg(unix)]
+        Offload::Cuda(d) => d.echelon(matrix, rows, stride, low_start, width, skip),
+        #[cfg(feature = "gpu-emulator")]
+        Offload::Emulate(threads) => Ok(emulate_echelon(
+            matrix, rows, stride, low_start, width, skip, *threads,
+        )),
+        #[allow(unreachable_patterns)]
+        _ => Err("no large-matrix backend in this build".into()),
+    };
+    match result {
+        Ok(e) => {
+            use std::sync::atomic::Ordering::Relaxed;
+            OFFLOADED[0].fetch_add(1, Relaxed);
+            OFFLOADED[1].fetch_add((rows * stride) as u64, Relaxed);
+            OFFLOADED[2].fetch_add((e.upload_ns + e.device_ns + e.download_ns) as u64, Relaxed);
+            if std::env::var_os("F4_F2_ECHELON_VERBOSE").is_some() {
+                eprintln!(
+                    "F4_F2_ECHELON: {rows} x {stride} words, {} pivots: upload {:.1} ms, \
+                     device {:.1} ms, download {:.1} ms, {:.2e} word XORs",
+                    e.pivots,
+                    e.upload_ns as f64 / 1e6,
+                    e.device_ns as f64 / 1e6,
+                    e.download_ns as f64 / 1e6,
+                    e.word_ops as f64
+                );
+            }
+            Some(e)
+        }
+        Err(e) => {
+            eprintln!("F4_F2_ECHELON: {e}; eliminating on the host");
+            None
+        }
+    }
+}
+
+/// The decider named by `IC_F4_BACKEND`: `cuda[:N]` (device `N`),
+/// `emulate[:threads]` (feature `gpu-emulator`), or `cpu` — the default,
+/// also when the variable is unset.
+pub fn decider_from_env() -> Result<Box<dyn BatchDecider>, String> {
+    let spec = std::env::var("IC_F4_BACKEND").unwrap_or_else(|_| "cpu".into());
+    decider_from_spec(&spec)
+}
+
+/// The decider named by `spec` (see [`decider_from_env`]).
+pub fn decider_from_spec(spec: &str) -> Result<Box<dyn BatchDecider>, String> {
+    let (kind, arg) = spec.split_once(':').unwrap_or((spec, ""));
+    match kind {
+        "cpu" | "" => Ok(Box::new(CpuDecider)),
+        "cuda" => {
+            #[cfg(unix)]
+            {
+                let ordinal = if arg.is_empty() {
+                    0
+                } else {
+                    arg.parse()
+                        .map_err(|_| format!("bad device ordinal {arg:?}"))?
+                };
+                Ok(Box::new(CudaDecider::new(ordinal)?))
+            }
+            #[cfg(not(unix))]
+            {
+                let _ = arg;
+                Err("the CUDA backend needs a Unix dlopen".into())
+            }
+        }
+        "emulate" => {
+            #[cfg(feature = "gpu-emulator")]
+            {
+                let threads = if arg.is_empty() {
+                    256
+                } else {
+                    arg.parse()
+                        .map_err(|_| format!("bad thread count {arg:?}"))?
+                };
+                Ok(Box::new(EmulatorDecider { threads }))
+            }
+            #[cfg(not(feature = "gpu-emulator"))]
+            {
+                let _ = arg;
+                Err("the emulator needs the `gpu-emulator` feature".into())
+            }
+        }
+        other => Err(format!(
+            "unknown F4 backend {other:?} (expected cpu, cuda[:N] or emulate[:threads])"
+        )),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::cryptanalysis::koblitz_groebner::{build_decomposition_system, FieldStructure};
+    use crate::cryptanalysis::koblitz_index_calculus::{build_frobenius_factor_base, KoblitzCurve};
+    use crate::cryptanalysis::pq_groebner_f2::{F2BoolMono, F2BoolPoly};
+    use rand::{rngs::StdRng, Rng, SeedableRng};
+
+    const CAPS: MacaulayCaps = MacaulayCaps {
+        max_rows: 20_000,
+        max_cols: 40_000,
+    };
+
+    /// Real decomposition systems at their base and next degree, plus the
+    /// substituted systems the search produces, plus random ones.
+    pub(super) fn corpus() -> Vec<(Vec<F2BoolPoly>, usize, u32)> {
+        let mut out = Vec::new();
+        for (a, n, m) in [
+            (0u8, 9u32, 2usize),
+            (0, 9, 3),
+            (1, 11, 2),
+            (0, 13, 2),
+            (1, 17, 2),
+        ] {
+            let Some(kc) = KoblitzCurve::new(a, n) else {
+                continue;
+            };
+            let Some(fb) = build_frobenius_factor_base(&kc, 0) else {
+                continue;
+            };
+            let st = FieldStructure::new(kc.n, &kc.curve.irreducible);
+            let mut rng = StdRng::seed_from_u64(u64::from(n) ^ 0xF4);
+            for _ in 0..3 {
+                let raw = 1 + rng.gen::<u64>() % ((1u64 << n) - 1);
+                let x_r =
+                    crate::binary_ecc::F2mElement::from_biguint(&num_bigint::BigUint::from(raw), n);
+                let Some(sys) =
+                    build_decomposition_system(&fb.subspace_basis, &x_r, &kc.curve.b, m, &st)
+                else {
+                    continue;
+                };
+                let mut eqs = sys.equations.clone();
+                for step in 0..3u32 {
+                    let base = eqs
+                        .iter()
+                        .flat_map(|p| p.terms.iter())
+                        .map(|t| t.mask.count_ones())
+                        .max()
+                        .unwrap_or(0)
+                        .max(2);
+                    for d in base..=base + 1 {
+                        out.push((eqs.clone(), sys.n_vars, d));
+                    }
+                    let var = (step * 5 + 2) % sys.n_vars as u32;
+                    eqs = eqs
+                        .iter()
+                        .map(|p| {
+                            crate::cryptanalysis::koblitz_groebner::substitute(
+                                p,
+                                var,
+                                step % 2 == 0,
+                            )
+                        })
+                        .filter(|p| !p.is_zero())
+                        .collect();
+                }
+            }
+        }
+        let mut rng = StdRng::seed_from_u64(0x6_F4);
+        for case in 0..120usize {
+            let n_vars = 3 + case % 12;
+            let n_eqs = 1 + rng.gen::<usize>() % 8;
+            let polys: Vec<F2BoolPoly> = (0..n_eqs)
+                .map(|_| {
+                    let monos: Vec<F2BoolMono> = (0..1 + rng.gen::<usize>() % 6)
+                        .map(|_| {
+                            let mut mask = 0u64;
+                            for _ in 0..rng.gen::<u32>() % 4 {
+                                mask |= 1u64 << (rng.gen::<u32>() % n_vars as u32);
+                            }
+                            F2BoolMono::from_mask(mask)
+                        })
+                        .collect();
+                    F2BoolPoly::from_monos(monos, n_vars)
+                })
+                .collect();
+            out.push((polys, n_vars, 2 + (case as u32 % 3)));
+        }
+        out.push((Vec::new(), 5, 3));
+        out
+    }
+
+    #[test]
+    fn packing_round_trips_the_systems() {
+        let corpus = corpus();
+        let requests: Vec<DecisionRequest<'_>> = corpus
+            .iter()
+            .map(|(p, n, d)| DecisionRequest {
+                polys: p,
+                n_vars: *n,
+                degree: *d,
+            })
+            .collect();
+        let b = PackedBatch::pack(&requests);
+        assert_eq!(b.len(), requests.len());
+        for (i, r) in requests.iter().enumerate() {
+            let (lo, hi) = (
+                b.sys_poly_start[i] as usize,
+                b.sys_poly_start[i + 1] as usize,
+            );
+            let nonzero: Vec<&F2BoolPoly> = r.polys.iter().filter(|p| !p.is_zero()).collect();
+            assert_eq!(hi - lo, nonzero.len());
+            for (k, p) in nonzero.iter().enumerate() {
+                let (a, z) = (
+                    b.poly_start[lo + k] as usize,
+                    b.poly_start[lo + k + 1] as usize,
+                );
+                let masks: Vec<u64> = p.terms.iter().map(|t| t.mask).collect();
+                assert_eq!(&b.terms[a..z], masks.as_slice());
+            }
+            assert_eq!(b.sys_meta[i] & 0xff, r.n_vars as u32);
+            assert_eq!(b.sys_meta[i] >> 8, r.degree);
+        }
+    }
+
+    #[test]
+    fn unpack_decodes_every_status() {
+        let p = F2BoolPoly::from_monos(vec![F2BoolMono::var(1), F2BoolMono::one()], 4);
+        let polys = [p];
+        let r = DecisionRequest {
+            polys: &polys,
+            n_vars: 4,
+            degree: 2,
+        };
+        let decided = F4Result {
+            status: STATUS_DECIDED,
+            forced_mask: 0b1010,
+            forced_vals: 0b0010,
+            ref_rows: 7,
+            ref_cols: 9,
+            ..F4Result::default()
+        };
+        let (d, k) = unpack(&decided, &r, CAPS);
+        assert_eq!(d.unwrap().forced, vec![(1, true), (3, false)]);
+        assert!(k.built && k.rows == 7 && k.cols == 9);
+        let (d, k) = unpack(
+            &F4Result {
+                status: STATUS_OVERSIZE,
+                ..F4Result::default()
+            },
+            &r,
+            CAPS,
+        );
+        assert!(d.is_none() && k.oversize);
+        // A declined system is decided on the host.
+        let (d, _) = unpack(
+            &F4Result {
+                status: STATUS_FALLBACK,
+                ..F4Result::default()
+            },
+            &r,
+            CAPS,
+        );
+        assert_eq!(d.unwrap().forced, vec![(1, true)]);
+    }
+
+    #[test]
+    fn the_kernel_source_is_self_contained() {
+        let src = kernel_source();
+        assert!(src.contains("f4_gf2_decide_batch"));
+        assert!(src.contains("f4e_panel_block"));
+        // NVRTC resolves no include path: every #include is guarded out by
+        // the header that precedes it.  (clang-format indents directives
+        // after the '#'.)
+        let directive = |l: &str| {
+            l.trim_start()
+                .strip_prefix('#')
+                .map(|rest| rest.trim_start().to_string())
+        };
+        let includes: Vec<String> = src
+            .lines()
+            .filter_map(directive)
+            .filter(|d| d.starts_with("include"))
+            .collect();
+        assert_eq!(
+            includes,
+            vec![
+                "include \"f4_gf2_device.cuh\"".to_string(),
+                "include \"f4_gf2_echelon.cuh\"".to_string()
+            ]
+        );
+        for header in ["F4_GF2_DEVICE_CUH", "F4_GF2_ECHELON_CUH"] {
+            let file = format!(
+                "include \"{}.cuh\"",
+                header.to_lowercase().replace("_cuh", "")
+            );
+            let guard = src.find(&format!("define {header}")).unwrap();
+            assert!(
+                guard < src.find(&file).unwrap(),
+                "{header} precedes its include"
+            );
+        }
+    }
+
+    /// Reduced echelon form of `rows` over `width` bits: the unique basis,
+    /// sorted.
+    #[cfg(feature = "gpu-emulator")]
+    fn rref_rows(mut rows: Vec<u128>, width: usize) -> Vec<u128> {
+        let mut basis: Vec<u128> = Vec::new();
+        for col in (0..width).rev() {
+            let bit = 1u128 << col;
+            if let Some(i) = rows.iter().position(|r| r & bit != 0) {
+                let p = rows.swap_remove(i);
+                for r in rows.iter_mut().chain(basis.iter_mut()) {
+                    if *r & bit != 0 {
+                        *r ^= p;
+                    }
+                }
+                basis.push(p);
+            }
+        }
+        basis.sort_unstable();
+        basis
+    }
+
+    /// The device elimination of one large matrix, emulated, against a
+    /// plain Gaussian elimination: the same number of high pivots and the
+    /// same row space in the linear block, on dense random matrices with
+    /// panel boundaries inside a word, skipped rows and empty high parts.
+    #[cfg(feature = "gpu-emulator")]
+    #[test]
+    fn the_emulated_echelon_matches_gaussian_elimination() {
+        let mut rng = StdRng::seed_from_u64(0xEC4E);
+        let mut cases = 0;
+        for &(rows, low_start, width) in &[
+            (1usize, 0usize, 5usize),
+            (40, 37, 20),
+            (130, 64, 65),
+            (300, 129, 40),
+            (200, 190, 2),
+            (500, 300, 65),
+            // Panels whose pivot search runs past many chunks of
+            // candidates.
+            (2500, 70, 10),
+        ] {
+            let cols = low_start + width;
+            let stride = cols.div_ceil(64);
+            for density in [1u32, 4, 16] {
+                let mut m = vec![0u64; rows * stride];
+                for r in 0..rows {
+                    for c in 0..cols {
+                        if rng.gen_range(0..32) < density {
+                            m[r * stride + c / 64] |= 1u64 << (c % 64);
+                        }
+                    }
+                }
+                let skip: Vec<bool> = (0..rows).map(|_| rng.gen_range(0..10) == 0).collect();
+                // Reference: eliminate the high columns, lowest row first.
+                let mut work: Vec<Vec<u64>> = (0..rows)
+                    .filter(|&r| !skip[r])
+                    .map(|r| m[r * stride..(r + 1) * stride].to_vec())
+                    .collect();
+                let mut pivots = 0usize;
+                for c in 0..low_start {
+                    let (w, bit) = (c / 64, 1u64 << (c % 64));
+                    let Some(p) = work.iter().position(|row| row[w] & bit != 0) else {
+                        continue;
+                    };
+                    let prow = work.swap_remove(p);
+                    for row in work.iter_mut() {
+                        if row[w] & bit != 0 {
+                            for (x, y) in row.iter_mut().zip(&prow) {
+                                *x ^= y;
+                            }
+                        }
+                    }
+                    pivots += 1;
+                }
+                let low = |row: &[u64]| {
+                    (0..width).fold(0u128, |acc, j| {
+                        let b = low_start + j;
+                        acc | (u128::from((row[b / 64] >> (b % 64)) & 1) << j)
+                    })
+                };
+                let want = rref_rows(work.iter().map(|r| low(r)).collect(), width);
+                // One thread takes every panel's candidates in row order,
+                // 1024 mostly in gather order; the pivots, hence the word
+                // count, are the lowest rows either way.
+                let mut word_ops = None;
+                for threads in [1, 7, 64, 1024] {
+                    let e = emulate_echelon(&m, rows, stride, low_start, width, &skip, threads);
+                    assert_eq!(e.pivots, pivots, "pivots: {rows}x{cols} density {density}");
+                    assert_eq!(
+                        rref_rows(e.low, width),
+                        want,
+                        "linear block: {rows}x{cols} density {density}"
+                    );
+                    assert_eq!(
+                        *word_ops.get_or_insert(e.word_ops),
+                        e.word_ops,
+                        "word ops: {rows}x{cols} density {density}, {threads} threads"
+                    );
+                    cases += 1;
+                }
+            }
+        }
+        assert_eq!(cases, 84);
+    }
+
+    /// With every elimination routed through the emulated device kernels,
+    /// `decide` and `profile` answer exactly as on the host — refutation,
+    /// pinned variables and rank — with and without F5's row mask.
+    #[cfg(feature = "gpu-emulator")]
+    #[test]
+    fn the_emulated_echelon_decides_and_profiles_like_the_host() {
+        use crate::cryptanalysis::f4_gf2::{decide_with, profile_with, KernelOptions};
+        let caps = f4_gf2::default_caps();
+        let mut cases = corpus();
+        let wider: Vec<_> = cases
+            .iter()
+            .filter(|(_, n_vars, d)| *n_vars <= 20 && *d == 3)
+            .map(|(p, n, _)| (p.clone(), *n, 4))
+            .collect();
+        cases.extend(wider);
+        let mut checked = 0;
+        for (polys, n_vars, degree) in &cases {
+            for f5 in [false, true] {
+                let opts = KernelOptions { f5 };
+                let host_d = decide_with(polys, *n_vars, *degree, caps, opts);
+                let host_p = profile_with(polys, *n_vars, *degree, caps, opts);
+                f4_gf2::EMULATE_ECHELON.with(|c| c.set(true));
+                let dev_d = decide_with(polys, *n_vars, *degree, caps, opts);
+                let dev_p = profile_with(polys, *n_vars, *degree, caps, opts);
+                f4_gf2::EMULATE_ECHELON.with(|c| c.set(false));
+                assert_eq!(
+                    dev_d.0, host_d.0,
+                    "decision: {n_vars} vars, degree {degree}"
+                );
+                assert_eq!(dev_d.1.rank, host_d.1.rank, "decide rank");
+                assert_eq!(dev_p.0, host_p.0, "profile: {n_vars} vars, degree {degree}");
+                checked += 1;
+            }
+        }
+        assert!(checked >= 60, "only {checked} cases");
+    }
+
+    #[test]
+    fn result_layout_matches_the_kernel() {
+        // f4_u32 status, refuted; f4_u64 x5; f4_u32 rows, cols, f5_skipped, reserved.
+        assert_eq!(std::mem::size_of::<F4Result>(), 64);
+        assert_eq!(std::mem::align_of::<F4Result>(), 8);
+    }
+
+    /// Where NVRTC is present, it must accept the embedded source and emit
+    /// the entry point; elsewhere there is nothing to check.
+    #[cfg(unix)]
+    #[test]
+    fn nvrtc_compiles_the_kernel_where_available() {
+        match compile_kernel_ptx(75) {
+            Ok(ptx) => {
+                let text = String::from_utf8_lossy(&ptx);
+                for entry in ["f4_gf2_decide_batch"]
+                    .iter()
+                    .chain(cuda::ECHELON_KERNELS.iter())
+                {
+                    assert!(
+                        text.contains(&format!(".entry {entry}")),
+                        "no entry point {entry}"
+                    );
+                }
+                assert_eq!(ptx.last(), Some(&0), "PTX must be NUL-terminated");
+            }
+            Err(e) => assert!(e.starts_with("none of"), "NVRTC was found but failed: {e}"),
+        }
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn nvrtc_emits_sass_where_available() {
+        match compile_kernel_sass(75) {
+            Ok(cubin) => {
+                assert_eq!(
+                    cubin.get(..4),
+                    Some(&b"\x7fELF"[..]),
+                    "a cubin is an ELF image"
+                );
+                assert!(
+                    cubin.windows(19).any(|w| w == b"f4_gf2_decide_batch"),
+                    "no entry point"
+                );
+            }
+            Err(e) => assert!(
+                e.starts_with("none of") || e.starts_with("this NVRTC cannot emit SASS"),
+                "NVRTC was found but failed: {e}"
+            ),
+        }
+    }
+
+    #[test]
+    fn backend_specs_parse() {
+        assert_eq!(decider_from_spec("cpu").unwrap().name(), "cpu");
+        assert!(decider_from_spec("warp-drive").is_err());
+        assert!(decider_from_spec("cuda:x").is_err());
+    }
+
+    #[cfg(feature = "gpu-emulator")]
+    #[test]
+    fn the_emulated_kernel_decides_like_the_host_kernel() {
+        let (result_size, _) = EmulatorDecider::c_layout();
+        assert_eq!(result_size as usize, std::mem::size_of::<F4Result>());
+        let corpus = corpus();
+        let requests: Vec<DecisionRequest<'_>> = corpus
+            .iter()
+            .map(|(p, n, d)| DecisionRequest {
+                polys: p,
+                n_vars: *n,
+                degree: *d,
+            })
+            .collect();
+        let host: Vec<_> = requests
+            .iter()
+            .map(|r| f4_gf2::decide(r.polys, r.n_vars, r.degree, CAPS))
+            .collect();
+        for threads in [1u32, 7, 32, 256] {
+            let emu = EmulatorDecider { threads };
+            let batch = PackedBatch::pack(&requests);
+            let raw = emu.run(&batch, CAPS);
+            let mut decided = 0;
+            for (i, ((r, res), (want, wk))) in requests.iter().zip(&raw).zip(&host).enumerate() {
+                assert_ne!(res.status, STATUS_FALLBACK, "system {i} fell back");
+                let (got, gk) = unpack(res, r, CAPS);
+                assert_eq!(&got, want, "system {i}, {threads} threads");
+                assert_eq!(
+                    (gk.built, gk.oversize),
+                    (wk.built, wk.oversize),
+                    "system {i}"
+                );
+                assert_eq!((gk.rows, gk.cols), (wk.rows, wk.cols), "system {i} shape");
+                assert_eq!(
+                    (gk.eliminated_rows, gk.eliminated_cols),
+                    (wk.eliminated_rows, wk.eliminated_cols),
+                    "system {i} eliminated shape"
+                );
+                decided += usize::from(res.status == STATUS_DECIDED);
+            }
+            assert!(decided > 100, "only {decided} decided");
+        }
+    }
+
+    #[cfg(feature = "gpu-emulator")]
+    #[test]
+    fn the_emulated_kernel_applies_the_caps_like_the_host_kernel() {
+        let corpus = corpus();
+        let emu = EmulatorDecider { threads: 64 };
+        let mut refused = 0;
+        for (polys, n_vars, degree) in corpus.iter().take(60) {
+            let r = DecisionRequest {
+                polys,
+                n_vars: *n_vars,
+                degree: *degree,
+            };
+            let (_, k) = f4_gf2::decide(polys, *n_vars, *degree, CAPS);
+            if !k.built || k.rows == 0 {
+                continue;
+            }
+            for (dr, dc) in [(0u64, 0u64), (1, 0), (0, 1)] {
+                let caps = MacaulayCaps {
+                    max_rows: (k.rows - dr.min(k.rows)) as usize,
+                    max_cols: (k.cols - dc.min(k.cols)) as usize,
+                };
+                let want = f4_gf2::decide(polys, *n_vars, *degree, caps);
+                let res = emu.run(&PackedBatch::pack(&[r]), caps);
+                let got = unpack(&res[0], &r, caps);
+                assert_eq!(got.0, want.0);
+                assert_eq!(got.1.oversize, want.1.oversize);
+                refused += usize::from(want.1.oversize);
+            }
+        }
+        assert!(refused > 20, "only {refused} refusals exercised");
+    }
+
+    /// F5 on the device: the host's plan as a row mask, the kernel
+    /// eliminating the rest.  The same rows must be left out as on the host,
+    /// and nothing may change but the work.
+    #[cfg(feature = "gpu-emulator")]
+    #[test]
+    fn the_emulated_kernel_skips_the_f5_rows_the_host_kernel_skips() {
+        use crate::cryptanalysis::f4_gf2::{decide_with, KernelOptions};
+        let kc = KoblitzCurve::new(0, 9).unwrap();
+        let fb = build_frobenius_factor_base(&kc, 0).unwrap();
+        let st = FieldStructure::new(kc.n, &kc.curve.irreducible);
+        let mut owned = Vec::new();
+        for raw in [5u64, 77, 190, 301] {
+            let x_r =
+                crate::binary_ecc::F2mElement::from_biguint(&num_bigint::BigUint::from(raw), 9);
+            let sys =
+                build_decomposition_system(&fb.subspace_basis, &x_r, &kc.curve.b, 2, &st).unwrap();
+            for degree in 4..=5 {
+                owned.push((sys.equations.clone(), sys.n_vars, degree));
+            }
+        }
+        let requests: Vec<DecisionRequest<'_>> = owned
+            .iter()
+            .map(|(p, n, d)| DecisionRequest {
+                polys: p,
+                n_vars: *n,
+                degree: *d,
+            })
+            .collect();
+        let with = PackedBatch::pack_with(&requests, true);
+        let without = PackedBatch::pack_with(&requests, false);
+        assert!(!with.skip_bits.is_empty() && without.skip_bits.is_empty());
+        let emu = EmulatorDecider { threads: 128 };
+        let (a, b) = (emu.run(&with, CAPS), emu.run(&without, CAPS));
+        let mut skipped = 0u64;
+        for (i, r) in requests.iter().enumerate() {
+            let (host, hk) = decide_with(
+                r.polys,
+                r.n_vars,
+                r.degree,
+                CAPS,
+                KernelOptions { f5: true },
+            );
+            let (got, gk) = unpack(&a[i], r, CAPS);
+            let (plain, _) = unpack(&b[i], r, CAPS);
+            assert_eq!(got, host, "request {i}");
+            assert_eq!(plain, host, "request {i} without the mask");
+            assert_eq!(gk.f5_skipped, hk.f5_skipped, "request {i}: rows left out");
+            assert_eq!(gk.eliminated_rows, hk.eliminated_rows, "request {i}");
+            assert_eq!(
+                (gk.rows, gk.cols),
+                (hk.rows, hk.cols),
+                "request {i}: reference shape"
+            );
+            assert!(
+                a[i].word_ops < b[i].word_ops,
+                "request {i}: F5 saved no work"
+            );
+            skipped += gk.f5_skipped;
+        }
+        assert!(skipped > 100, "only {skipped} rows left out");
+    }
+
+    /// The whole path the pipeline takes: searches in lockstep, every
+    /// round decided by the emulated device kernel.
+    #[cfg(feature = "gpu-emulator")]
+    #[test]
+    fn lockstep_on_the_emulated_kernel_matches_the_recursive_solver() {
+        use crate::cryptanalysis::f4_batch::solve_lockstep;
+        use crate::cryptanalysis::koblitz_groebner::{
+            solve_boolean_system_filtered, SolveOptions, SolverEngine,
+        };
+        let systems: Vec<(Vec<F2BoolPoly>, usize)> = corpus()
+            .into_iter()
+            .filter(|(p, _, _)| !p.is_empty())
+            .step_by(4)
+            .map(|(p, n, _)| (p, n))
+            .collect();
+        let opts = SolveOptions {
+            engine: SolverEngine::MatrixF4 { max_degree: 3 },
+            max_solutions: usize::MAX,
+            node_budget: 256,
+            ..SolveOptions::default()
+        };
+        let accept = |i: usize, root: u64| root % 5 == (i % 5) as u64;
+        let (got, _) = solve_lockstep(
+            &systems,
+            &opts,
+            &mut EmulatorDecider { threads: 64 },
+            &accept,
+        );
+        for (i, ((eqs, n_vars), outcome)) in systems.iter().zip(&got).enumerate() {
+            let (sols, stats) =
+                solve_boolean_system_filtered(eqs, *n_vars, &opts, |root| accept(i, root));
+            assert_eq!(outcome.solutions, sols, "system {i}");
+            assert_eq!(outcome.stats.reductions, stats.reductions, "system {i}");
+            assert_eq!(outcome.stats.splits, stats.splits, "system {i}");
+            assert_eq!(outcome.stats.propagations, stats.propagations, "system {i}");
+            assert_eq!(outcome.stats.oversize, stats.oversize, "system {i}");
+            assert_eq!(outcome.stats.exhausted, stats.exhausted, "system {i}");
+        }
+    }
+
+    #[cfg(feature = "gpu-emulator")]
+    #[test]
+    fn a_small_scratch_falls_back_to_the_host() {
+        let corpus = corpus();
+        let requests: Vec<DecisionRequest<'_>> = corpus
+            .iter()
+            .take(10)
+            .map(|(p, n, d)| DecisionRequest {
+                polys: p,
+                n_vars: *n,
+                degree: *d,
+            })
+            .collect();
+        let mut batch = PackedBatch::pack(&requests);
+        batch.scratch_words = 16;
+        let raw = EmulatorDecider { threads: 32 }.run(&batch, CAPS);
+        assert!(raw.iter().any(|r| r.status == STATUS_FALLBACK));
+        for (r, res) in requests.iter().zip(&raw) {
+            let want = f4_gf2::decide(r.polys, r.n_vars, r.degree, CAPS).0;
+            assert_eq!(unpack(res, r, CAPS).0, want);
+        }
+    }
+}

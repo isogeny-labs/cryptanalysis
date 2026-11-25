@@ -1,0 +1,44 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T04:14:47Z",
+ "id": "PCC-20261115-b72f12",
+ "kind": "statement",
+ "producer": {
+  "commit": "51dff2bbfee1d648372684f33c711b994643273d",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/closed-root-derived-cache-cleanup-08/ct86-closed-root-cleanup-08-preflight-failure.txt",
+    "sha256": "fd7f625341e57903f48866815d27557161f4d115540e56f82caa7bddd540f427"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/closed-root-derived-cache-cleanup-08/ct86-closed-root-derived-rlib-cleanup-08.json",
+    "sha256": "df7510e925f2c59a1b0eb6bdcc49c6d1b82438fb17ded53eb4adb6342439ebcc"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/closed-root-derived-cache-cleanup-08/ct86_cleanup_closed_root_rlib_08.py",
+    "sha256": "2e2586c9666ba9e60770ee4a148ee5b3b27559440ab2f8592510767251a60ccb"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-public-target/evidence/closed-root-derived-cache-cleanup-08/ct86_cleanup_closed_root_rlib_08b.py",
+    "sha256": "065fd0822026270617ac6f27afa7f7a293577aba4c1c62807c3de34f9af0f4ab"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Closed root derived cache cleanup08: one415311792B obsolete Cargo RLIB from2026-11-11 removed only after exclusion from ALL44386 genuine22 guard keys and both original/legacy PCC attestation schemas across three repos, no active compilers, original diagnostic executable wholeSHA exact and all Git statuses unchanged. Exact digest/inode/size/allocatedbytes receipt and before-unlink legacy-schema KeyError preflight preserved. No source/raw/executable/full prepared-library copy or currentct57/ct80 cache removed. Rebuildable root cache only; no scientific or cold-census acceptance inference. Unsigned storage custody."
+}

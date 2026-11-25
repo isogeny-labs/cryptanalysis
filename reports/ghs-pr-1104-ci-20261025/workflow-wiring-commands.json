@@ -1,0 +1,39 @@
+[
+  {
+    "command": [
+      "python3",
+      "tools/artifacts/artifacts.py",
+      "pull",
+      "--jobs",
+      "16",
+      "experiments/ghs-sweeper"
+    ],
+    "exit_status": 0,
+    "elapsed_seconds_execution_receipt_only": 0.1680484179960331,
+    "output": "ghs-hydration-check.txt",
+    "sha256": "17fc031852341c5973346fb0667170373493e0be896a82385b6c7bd5bba94153"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/artifacts/wire_workflows.py",
+      "--check",
+      ".github/workflows/ghs-sweeper.yml"
+    ],
+    "exit_status": 0,
+    "elapsed_seconds_execution_receipt_only": 13.624718572005804,
+    "output": "ghs-workflow-wiring-after-fix.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "command": [
+      "python3",
+      "tools/artifacts/wire_workflows.py",
+      "--check"
+    ],
+    "exit_status": 1,
+    "elapsed_seconds_execution_receipt_only": 13.546989946000394,
+    "output": "all-workflow-wiring-after-fix.txt",
+    "sha256": "d242c8bd386734f4532719151cee9d3ca69f2ec302ceeb880f042f5bdc9c7cf3"
+  }
+]

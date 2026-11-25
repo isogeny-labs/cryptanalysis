@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/Volumes/SSD990/cryptanalysis/sage",
+    "-python",
+    "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-relative-quartic-splitting-20261026/run_sage.py"
+  ],
+  "elapsed_seconds": 279.326,
+  "protocol_sha256": "db62f860af1f484b6ad876949b598b1d401c894a346e99ab5f1d762dbdd0173e",
+  "returncode": 1,
+  "source_sha256": "80e99d42698590f05786df4559edf83b3767c0909ec6f933110124d247148f2c",
+  "status": "SAGE_ERROR",
+  "stderr": "Traceback (most recent call last):\n  File \"/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-relative-quartic-splitting-20261026/run_sage.py\", line 110, in <module>\n    main()\n    ~~~~^^\n  File \"/Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-relative-quartic-splitting-20261026/run_sage.py\", line 64, in main\n    SK, SL = nf.rnfidealprimedec(rnf, p)\n             ~~~~~~~~~~~~~~~~~~~^^^^^^^^\n  File \"cypari2/auto_gen.pxi\", line 32077, in cypari2.gen.Gen_base.rnfidealprimedec\n    def rnfidealprimedec(rnf, pr):\nTypeError: rnfidealprimedec() takes exactly 1 positional argument (2 given)\n",
+  "stdout": "PARI stack size set to 4294967296 bytes, maximum size set to 4294967296\n{\"phase\": \"rnfinit_complete\", \"relative_degree\": 4}\n"
+}

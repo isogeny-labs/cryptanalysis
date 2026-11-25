@@ -1,0 +1,271 @@
+{
+  "kind": "coordinate-kernel-software-evidence/v1",
+  "date": "2026-10-25",
+  "classification": [
+    "construction engineering",
+    "exact fixed witness verification"
+  ],
+  "requirements": {
+    "novel_affected_family": "not established",
+    "explicit_source_coordinate_kernel": "implemented and checked for fixed d=3 controls",
+    "genus_three_target": "not implemented",
+    "arithmetic_torelli_twist": "not selected",
+    "explicit_isogeny_evaluation": "not implemented",
+    "planted_log_transfer": "not performed",
+    "lower_total_cost_than_ghs_or_gghs": "not established",
+    "broad_cost_obstruction": "not established",
+    "original_355_job_campaign": "pending, protocol admission blocked",
+    "rho_is_acceptance_gate": false
+  },
+  "frozen_contract_commits": [
+    "93a23f3",
+    "baad747",
+    "cf7f0ca"
+  ],
+  "logging_only_commit": "82ecaa5",
+  "check_source_commit": "cf7f0ca",
+  "validation": {
+    "release_all_target_tests": 34,
+    "new_coordinate_kernel_tests": 5,
+    "all_target_exit": 0,
+    "format_exit": 0,
+    "clippy_exit": 0,
+    "clippy_warnings_denied": true,
+    "failed_unit_attempts": 0,
+    "expected_corrupt_cli_exit": 1,
+    "positive_serialized_replays": 3,
+    "render_exit_codes": [
+      0,
+      0,
+      0
+    ]
+  },
+  "independence_scope": "Raw polynomial field multiplication and exponentiation replay the log-table arithmetic; group-law formulas/control flow are shared. The complete checker has no external independent review. Two Weil-pairing formulas agree on the source basis.",
+  "scope": {
+    "supported_d": [
+      3,
+      5
+    ],
+    "fixed_d_executed": [
+      3
+    ],
+    "d5_execution": "unverified",
+    "source_field_modulus": 515,
+    "source_b": 24,
+    "source_a_controls": [
+      0,
+      1
+    ],
+    "quadratic_polynomial": [
+      1,
+      1,
+      1
+    ],
+    "kernel_points_each": 27,
+    "individually_rational_points_each": 3,
+    "ordered_pairings_each": 729,
+    "coordinate_intersections_each": [
+      1,
+      1,
+      1
+    ]
+  },
+  "positive_basis": {
+    "a0": {
+      "P": [
+        [
+          2,
+          0
+        ],
+        [
+          152,
+          0
+        ]
+      ],
+      "Q": [
+        [
+          75,
+          0
+        ],
+        [
+          316,
+          75
+        ]
+      ],
+      "pairing": [
+        0,
+        1
+      ]
+    },
+    "a1": {
+      "P": [
+        [
+          75,
+          0
+        ],
+        [
+          375,
+          0
+        ]
+      ],
+      "Q": [
+        [
+          2,
+          0
+        ],
+        [
+          154,
+          2
+        ]
+      ],
+      "pairing": [
+        1,
+        1
+      ]
+    }
+  },
+  "negative_controls": {
+    "decomposable": {
+      "isotropic": true,
+      "coordinate_intersections": [
+        3,
+        3,
+        3
+      ],
+      "accepted": false
+    },
+    "nonisotropic": {
+      "nontrivial_ordered_pairings": 432,
+      "coordinate_intersections": [
+        1,
+        1,
+        1
+      ],
+      "frobenius_stable": false,
+      "accepted": false
+    }
+  },
+  "twist_transport": {
+    "isomorphism": "(x,y)->(x,y+u*x), over L",
+    "kernel_twist_pair_bound": true,
+    "group_law_pairs_checked": 729,
+    "frobenius_anticonjugacy_points_checked": 27,
+    "round_trip_checked": true,
+    "source_dlp_transfer_over_K": false,
+    "arithmetic_torelli_obstruction_selected": false,
+    "separately_generated_a1_is_not_asserted_to_be_the_same_quotient_twist": true
+  },
+  "historical_overlap": {
+    "fixed_source_orders": [
+      480,
+      546
+    ],
+    "fixed_source_traces": [
+      33,
+      -33
+    ],
+    "both_traces_in_old_smoke": true,
+    "historical_rows_have_explicit_map": false,
+    "novel_local_source_isogeny_class": false,
+    "publication_priority_inference": false,
+    "artifact": "local-prior-overlap.json"
+  },
+  "sources": [
+    {
+      "name": "enge-pairings-2014",
+      "url": "https://arxiv.org/abs/1301.5520",
+      "read_sections": [
+        "section 2.1, Definition 2",
+        "section 3, equation (7), normalized Weil pairing"
+      ],
+      "access_date": "2026-10-25",
+      "pdf": {
+        "sha256": "93b99fa2d13e09c1bc8282b58d472be6285ceea9b594e9b97d765212a3aaa8e4",
+        "bytes": 349260
+      },
+      "txt": {
+        "sha256": "b391f732f05c13ab9f0711711a0d9d9c0feed3a5c53d218b769f6dbae0347be0",
+        "bytes": 90580
+      }
+    },
+    {
+      "name": "tian-cubic-2020",
+      "url": "https://arxiv.org/abs/2012.07173",
+      "read_sections": [
+        "section 2.1, Frobenius and product Weil pairing",
+        "section 3, kernel and reconstruction boundary"
+      ],
+      "access_date": "2026-10-25",
+      "pdf": {
+        "sha256": "b7748c551bea45474f3785cb21c86987449ab858438719300f9273c3f6b9cb5d",
+        "bytes": 253618
+      },
+      "txt": {
+        "sha256": "a2c67868c933554e077d1998de9745d808377a9da880cbd9a483279e3bbab082",
+        "bytes": 58222
+      }
+    }
+  ],
+  "novelty_gaps": [
+    {
+      "source": "Tian 2023 journal version",
+      "url": "https://doi.org/10.1007/s00145-023-09474-2",
+      "status": "full text unread; publisher preview and earlier preprint are not a complete priority audit"
+    },
+    {
+      "source": "Murai restricted thesis",
+      "status": "unread"
+    }
+  ],
+  "campaign_admission": {
+    "skill": ".agents/skills/experiment-protocol/SKILL.md",
+    "required_ref": "crypto-autoresearcher origin/main",
+    "inspected_commit": "e5f46a59516ceca68828e7fc2fcab2e8fc0b12d7",
+    "tool_present": false,
+    "canonical_protocol_files_present": false,
+    "upstream_pr": 2464,
+    "upstream_pr_state": "open",
+    "upstream_pr_merged": false,
+    "upstream_pr_head": "e6527aafcafa970cc93dd51b24966162aecd84e0",
+    "alternative_design_skill_review": "design-experiment and lab-contract on main reviewed; neither was identified as a replacement for the required experiment.protocol/v1 checker",
+    "pending_jobs": 355,
+    "new_campaign_data_collected": false
+  },
+  "catalogue": {
+    "new_entries": 0,
+    "new_verified_edges": 0,
+    "curve_id": null,
+    "candidate_id": null,
+    "dlp_subgroup_order": null
+  },
+  "costs": {
+    "construction": null,
+    "transfer": null,
+    "solve": null,
+    "rho": null
+  },
+  "graph_audit": [
+    "hyperelliptic-cover-infrastructure/source-parity.json",
+    "GHS audit",
+    "branch-orbit report",
+    "ic-candidate-catalog/curves.yaml",
+    "ic-candidate-catalog/isogeny_routes.json"
+  ],
+  "pdf_inspection": {
+    "path": "KERNEL_CERTIFICATE.pdf",
+    "sha256": "c53abf8b4f25c484090e1ceef184c8539787477a93aa46a9cb1de95dbedf906c",
+    "pages": 4,
+    "visually_inspected_pages": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "result": "all source-coordinate tables, equations, diagram, control plot, citations and scope text legible"
+  },
+  "environment": {
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+    "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)"
+  },
+  "engine_matches_journal": true
+}

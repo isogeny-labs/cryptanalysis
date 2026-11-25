@@ -1,0 +1,575 @@
+{
+  "schema": "cryptanalysis.lean_corpus_replay.v1",
+  "source_commit": "6d83c09bc224472fedbfa5c1baa7e65b20502573",
+  "tracked_lean_files": 93,
+  "compiled_lean_files": 93,
+  "uncompiled_lean_files": 0,
+  "coverage_by_method": {
+    "pinned experiment check.py": 28,
+    "mixed640 Lean build and axiom printout": 17,
+    "core Lean build and axiom printout": 24,
+    "dependent Lean build and axiom printout": 19,
+    "pinned direct or Lake build": 5
+  },
+  "proof_scope": "Lean source compilation and source-directed axiom printouts; semantic claim mapping and implementation refinement remain open",
+  "files": [
+    {
+      "source": "bindings/rust/curve-audit/formal/HasseUnique.lean",
+      "sha256": "0e0b14f032203329328910ac0bc0f03db88f508087c4fdb236fd1bbe6d7e49f7",
+      "method": "core Lean build and axiom printout",
+      "evidence": "core/summary.json"
+    },
+    {
+      "source": "experiments/koblitz-n83-index-design-20260929/packed_index_e3_collisions_20261012/CollisionCancellation.lean",
+      "sha256": "f6480034192a4c4929c6b384c87afe19b090c133d11759761eda7d78369ad50c",
+      "method": "core Lean build and axiom printout",
+      "evidence": "core/summary.json"
+    },
+    {
+      "source": "experiments/n83-compact-orbit-k900-20261012/CapacityBound.lean",
+      "sha256": "1552d076eaadcea667dbcac5c041713f566830a5ae1bb9e37968bf04d1a5ad8c",
+      "method": "core Lean build and axiom printout",
+      "evidence": "core/summary.json"
+    },
+    {
+      "source": "experiments/n83-geometric-m5-normalized-20261012/Normalization.lean",
+      "sha256": "030d335570edfdbb2a912c56f35da55197ee06657e22123825dcb580ff5e141d",
+      "method": "core Lean build and axiom printout",
+      "evidence": "core/summary.json"
+    },
+    {
+      "source": "experiments/n83-geometric-m5-ordered18-20261012/FreeLeafSymmetry.lean",
+      "sha256": "14da43676f5f698732c369b48c6139b7a910597921257a6c70ddc6fcd042797e",
+      "method": "core Lean build and axiom printout",
+      "evidence": "core/summary.json"
+    },
+    {
+      "source": "experiments/n83-geometric-m5-seedorder18-20261012/FreeLeafSymmetry.lean",
+      "sha256": "14da43676f5f698732c369b48c6139b7a910597921257a6c70ddc6fcd042797e",
+      "method": "core Lean build and axiom printout",
+      "evidence": "core/summary.json"
+    },
+    {
+      "source": "experiments/n83-geometric-m5-topology16-20261012/Karatsuba.lean",
+      "sha256": "ac6aa2c098c6cd0a0fd80c7527d49eac4c344f362d9381ed2dc6063f223b3edd",
+      "method": "core Lean build and axiom printout",
+      "evidence": "core/summary.json"
+    },
+    {
+      "source": "experiments/n83-geometric-m6-twoshift11-20261012/SixLeafTree.lean",
+      "sha256": "4f52b7ad7f2f5ac4fc3723afdd8d6752f1af57d0aa1ed754228e1bdc7d58efc9",
+      "method": "core Lean build and axiom printout",
+      "evidence": "core/summary.json"
+    },
+    {
+      "source": "experiments/n83-geometric-m6-validseed11-20261012/SixLeafTree.lean",
+      "sha256": "4f52b7ad7f2f5ac4fc3723afdd8d6752f1af57d0aa1ed754228e1bdc7d58efc9",
+      "method": "core Lean build and axiom printout",
+      "evidence": "core/summary.json"
+    },
+    {
+      "source": "experiments/n83-geometric-m6-width11-20261012/SixLeafTree.lean",
+      "sha256": "4f52b7ad7f2f5ac4fc3723afdd8d6752f1af57d0aa1ed754228e1bdc7d58efc9",
+      "method": "core Lean build and axiom printout",
+      "evidence": "core/summary.json"
+    },
+    {
+      "source": "experiments/n83-geometric-offset-census11-20261012/Width11Coset.lean",
+      "sha256": "d1f1b2a303901af9c7594cbf590bd7361765df82bdce4a7ebb7e619e951decc2",
+      "method": "core Lean build and axiom printout",
+      "evidence": "core/summary.json"
+    },
+    {
+      "source": "experiments/n83-geometric-rectangle14-20261012/RectangleBound.lean",
+      "sha256": "471583e4431adeba5bcbc488f9e635e8edd47f327f9b32c7f6b0b009160dcfa6",
+      "method": "core Lean build and axiom printout",
+      "evidence": "core/summary.json"
+    },
+    {
+      "source": "experiments/n83-geometric-rectangle14-translates-20261012/TranslateBound.lean",
+      "sha256": "53214c7e3416c5b9af323893f10755ea8dc3db2844c2eb17a1bda50940146a27",
+      "method": "core Lean build and axiom printout",
+      "evidence": "core/summary.json"
+    },
+    {
+      "source": "experiments/n83-geometric-rectangle14-two-bit-translates-20261012/TranslateBound.lean",
+      "sha256": "aef11604d51213a27fa5fef553cf24d254981f6ce06bf0b5390fd05fa88c7eaf",
+      "method": "core Lean build and axiom printout",
+      "evidence": "core/summary.json"
+    },
+    {
+      "source": "experiments/n83-geometric-two-shift11-20261012/LiftBound.lean",
+      "sha256": "9cde447cce77711f3002884aa17cd678e646753af39f87bced214f853c743d1f",
+      "method": "core Lean build and axiom printout",
+      "evidence": "core/summary.json"
+    },
+    {
+      "source": "experiments/n83-geometric-two-shift12-20261012/LiftBound.lean",
+      "sha256": "6eb6ff7e3dd07d5215587697096a1189a7b6465e4b91fdf4a6f0aaf2e87dd37d",
+      "method": "core Lean build and axiom printout",
+      "evidence": "core/summary.json"
+    },
+    {
+      "source": "experiments/n83-packed-root-capacity-20261013/CapacityBound.lean",
+      "sha256": "c815afcb0c91f589f07ec84e1fb5122c7303b298777be9baaf9a60c317d81801",
+      "method": "core Lean build and axiom printout",
+      "evidence": "core/summary.json"
+    },
+    {
+      "source": "experiments/orbit-quotient-summation/lean/AxiomAudit.lean",
+      "sha256": "2b9ee1583fd7ad0d910a9514e3dd934444ac443bd2ec4792749469fa9dec8066",
+      "method": "pinned direct or Lake build",
+      "evidence": "orbit-audit.log"
+    },
+    {
+      "source": "experiments/orbit-quotient-summation/lean/OrbitPairIndex.lean",
+      "sha256": "7654f9c1cba37f729d904f4b2720cc75bbd810ea47b67ee73e2814e6d4c6c858",
+      "method": "pinned direct or Lake build",
+      "evidence": "orbit-build.log and orbit-audit.log"
+    },
+    {
+      "source": "experiments/prime-j0-adaptive-two-bucket-12211-20261014/AdaptiveBucketFusion.lean",
+      "sha256": "b92b9236ddf98e085694dbd261b5766ceebc255213bbf4a39e6d2c5b918c7619",
+      "method": "dependent Lean build and axiom printout",
+      "evidence": "dependent/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-adaptive-unit-partition-20261014/AdaptiveUnitPartition.lean",
+      "sha256": "595d5df02863a91ef4d67ce3f2e8bb6311a9af1c7b8e3c8279715b8c8380ece6",
+      "method": "dependent Lean build and axiom printout",
+      "evidence": "dependent/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-axis152-20261012/DigitCover.lean",
+      "sha256": "34cd12b1feb598d635c2a16fe386eb6b5dc1f96c155c26a81d86dc44608faa9d",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-axis152-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-axis152-20261012/TopBound.lean",
+      "sha256": "f8ebb537c5beab9d5821846c2b59e6cc28f8b46654bfd5b198c6cf4f51b84c62",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-axis152-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-axis152-20261012/TopRank.lean",
+      "sha256": "f20cb75ef20256f90c968d4c129c33f071bbc954c78d67f43323f6eae39be911",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-axis152-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-axis152-solinas-20261012/Model.lean",
+      "sha256": "27e700627375d70f5c0d996945c1dff360b775286f10c0d13b8ba05a783f05b6",
+      "method": "core Lean build and axiom printout",
+      "evidence": "core/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-axis286-20261012/DigitCover.lean",
+      "sha256": "4de97fb304c2efb8b855ec02d1798f1dccc0f386e020643d16d34e873f4cc5ab",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-axis286-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-axis286-20261012/TopBound.lean",
+      "sha256": "2a122ab3f996d64664149f0d0f97f558683a674d62a5aa12cee5c273dc6e6bb5",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-axis286-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-axis286-20261012/TopRank.lean",
+      "sha256": "65b6cb4027b30d983fc4190a5e169fba23b733f9eb2dc3b80bc8afc5541ca988",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-axis286-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-axis416-20261012/DigitCover.lean",
+      "sha256": "0b874364bb3348e6e58b637ad2e2d4c11e0b09d9da0b29eae6b4c7cdf65f48fd",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-axis416-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-axis416-20261012/TopBound.lean",
+      "sha256": "2c83a57b2170a66529078b4c53b451fb09b793d95039eac315f0a8e0282f9872",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-axis416-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-axis416-20261012/TopRank.lean",
+      "sha256": "178e7e0ade6e7e2aa34f7c82640f0514479412c4c2273a2e2279f45058a4c41b",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-axis416-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-direct-one-bucket-12211-20261014/SplitPrime12211DirectBound.lean",
+      "sha256": "350190ba8a657853a541782c7d4a349e4d0b77fc7df3cb076acbed6b18a43d72",
+      "method": "dependent Lean build and axiom printout",
+      "evidence": "dependent/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-direct-one-bucket-12211-20261014/SplitPrime12211DirectComplete.lean",
+      "sha256": "70f2c4b6a6fc43bca6275964fd0ddccc093c51abaec0a9a0bc8a8b50ebee921a",
+      "method": "dependent Lean build and axiom printout",
+      "evidence": "dependent/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-direct-one-bucket-12211-20261014/SplitPrime12211DirectDigits.lean",
+      "sha256": "601116c607faa2286e12f8e1b6b9a94f8592437a06c175c410ef8ae06cc55da2",
+      "method": "dependent Lean build and axiom printout",
+      "evidence": "dependent/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-gauge-tree-20261012/GaugeTree.lean",
+      "sha256": "7e3473e9dd7a4e9872a99f5aa49d3c9ff94b5bb30a6f9d302d45e0a8a2289937",
+      "method": "pinned direct or Lake build",
+      "evidence": "extra/GaugeTree.log"
+    },
+    {
+      "source": "experiments/prime-j0-hex-orbit-materialized-20261013/OrbitCompression.lean",
+      "sha256": "a25ee0feb475001db46221dbc37f3dbeb0b551d6cc7ceabc10dec4166f214f1c",
+      "method": "pinned direct or Lake build",
+      "evidence": "extra/OrbitCompression.log"
+    },
+    {
+      "source": "experiments/prime-j0-hex-terminal-20261012/VoronoiTerminal.lean",
+      "sha256": "bf5bee534dc6a3373c7966e1b613845d61c5939b86fc5bd4c060fe4440073270",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-hex-terminal-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-mixed640-materialized-tree-20261013/AxialFactorization.lean",
+      "sha256": "94a6813149b41d4a68e0d2dc686d791d5f97e1f114e3a24a956b3e36a4ae0bec",
+      "method": "mixed640 Lean build and axiom printout",
+      "evidence": "mixed640/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-mixed640-materialized-tree-20261013/DualLane.lean",
+      "sha256": "aebf4a8a8db3e9ab80267a8d733b0a718567bd663fa58286212633b34da44cea",
+      "method": "mixed640 Lean build and axiom printout",
+      "evidence": "mixed640/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-mixed640-materialized-tree-20261013/GaugeShift.lean",
+      "sha256": "f7896925fb23f812faeced387d6e18fc22e593d1c9e921ed585ccf92e4445b79",
+      "method": "mixed640 Lean build and axiom printout",
+      "evidence": "mixed640/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-mixed640-materialized-tree-20261013/SplitPrime4831Bound.lean",
+      "sha256": "568b87a50021eaa39a57cbac3676b07e39ab8251ad61ee483c928e02e92c7026",
+      "method": "mixed640 Lean build and axiom printout",
+      "evidence": "mixed640/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-mixed640-materialized-tree-20261013/SplitPrime4831Complete.lean",
+      "sha256": "f6b4d4d431f8a0e3f233f40a1874963d00fd26f288f333221aecd3dbc265381f",
+      "method": "mixed640 Lean build and axiom printout",
+      "evidence": "mixed640/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-mixed640-materialized-tree-20261013/SplitPrime4831Digits.lean",
+      "sha256": "99a2b05e17a3528fbf3b0bff4282d986a18e618f71e721f65663fe3f8c544e07",
+      "method": "mixed640 Lean build and axiom printout",
+      "evidence": "mixed640/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-mixed640-materialized-tree-20261013/SplitPrimeBatchAffine.lean",
+      "sha256": "696a9d44760ce3a9958d2b59ca075bca03fde0bdb50d6199e4ec2ecad4c859a8",
+      "method": "mixed640 Lean build and axiom printout",
+      "evidence": "mixed640/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-mixed640-materialized-tree-20261013/SplitPrimeCanonicalCover.lean",
+      "sha256": "0fd8ba5c9871850cf25cfbc71ff19b506a46561e20033743e5300609c5c24c1e",
+      "method": "mixed640 Lean build and axiom printout",
+      "evidence": "mixed640/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-mixed640-materialized-tree-20261013/SplitPrimeCanonicalSeeds.lean",
+      "sha256": "7578d222eaeaac2a11f7c588e07a53f0f936e5659135ec542a15574dc2405dcc",
+      "method": "mixed640 Lean build and axiom printout",
+      "evidence": "mixed640/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-mixed640-materialized-tree-20261013/SplitPrimeComplete.lean",
+      "sha256": "6ab65cd4ed9afca2dd424e1622b071c7556ff345802ff2a285d2c6f45756ef4b",
+      "method": "mixed640 Lean build and axiom printout",
+      "evidence": "mixed640/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-mixed640-materialized-tree-20261013/SplitPrimeDigitChoice.lean",
+      "sha256": "7d45d2db1258e368ab90f56f3055e27414c575e1547da095bb9ea2764356967c",
+      "method": "mixed640 Lean build and axiom printout",
+      "evidence": "mixed640/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-mixed640-materialized-tree-20261013/SplitPrimeLatticeCell.lean",
+      "sha256": "552ce97921fe6cda7646983a71c5e641cb793249787564d10582e24603ae4e69",
+      "method": "mixed640 Lean build and axiom printout",
+      "evidence": "mixed640/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-mixed640-materialized-tree-20261013/SplitPrimeNormBound.lean",
+      "sha256": "03c93d8abd94673ac8163be0816730c78c8d48f1d8769baa46716b50a5ea10c6",
+      "method": "mixed640 Lean build and axiom printout",
+      "evidence": "mixed640/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-mixed640-materialized-tree-20261013/SplitPrimeRadix.lean",
+      "sha256": "090cc56ea8ded7761c14af1e9670e7597deef6d030fa43ed52abed44ba6d05df",
+      "method": "mixed640 Lean build and axiom printout",
+      "evidence": "mixed640/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-mixed640-materialized-tree-20261013/SplitPrimeTerminalOrbit.lean",
+      "sha256": "7c5e0148024308078b65313919ff45f864426a6d7a8027d4f08f5d700c42ee4d",
+      "method": "mixed640 Lean build and axiom printout",
+      "evidence": "mixed640/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-mixed640-materialized-tree-20261013/SplitPrimeUnitCover.lean",
+      "sha256": "b6146395bee1f1206fb7ce62350062df408340b76b8dcf925569b0691b0932cf",
+      "method": "mixed640 Lean build and axiom printout",
+      "evidence": "mixed640/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-mixed640-materialized-tree-20261013/TauMaterialization.lean",
+      "sha256": "c2287ab737470fe7dd162db34db9b1dce8c850632a5a335f628a09587de9f917",
+      "method": "mixed640 Lean build and axiom printout",
+      "evidence": "mixed640/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-nearest-digit-12211-20261014/ProofAudit.lean",
+      "sha256": "de4f24a0fe2970b5a5b84ce60c4b29b396fbedbec660b2db301028c4e280c206",
+      "method": "dependent Lean build and axiom printout",
+      "evidence": "dependent/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-nearest-digit-12211-20261014/SplitPrime12211GlobalMin.lean",
+      "sha256": "13aea5c2f912d0b81f67efc725138970d599d4401c6b874f7c60bcadb0d66fc0",
+      "method": "dependent Lean build and axiom printout",
+      "evidence": "dependent/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-nearest-digit-12211-20261014/SplitPrime12211NearestBound.lean",
+      "sha256": "06acf9250bee5c3571e7988180faba1844575339da61a4ba9e661f9221da713d",
+      "method": "dependent Lean build and axiom printout",
+      "evidence": "dependent/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-nearest-digit-12211-20261014/SplitPrime12211NearestComplete.lean",
+      "sha256": "0d97a8b90a78184b85230c2ce8aeef827857c1afd578b0c7236308d1b27816a2",
+      "method": "dependent Lean build and axiom printout",
+      "evidence": "dependent/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-nearest-digit-12211-20261014/SplitPrime12211NearestDigits.lean",
+      "sha256": "104fbcf2eb710a90365ec4288723661b760de87bb61a11a80a79aa2574ad9aee",
+      "method": "dependent Lean build and axiom printout",
+      "evidence": "dependent/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-nearest-digit-12211-20261014/SplitPrime12211NearestSelector.lean",
+      "sha256": "abd01a95214e253d03fd09427688583cf8bd50a29f27b05916b0e07ae88fa121",
+      "method": "dependent Lean build and axiom printout",
+      "evidence": "dependent/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-nearest-digit-12211-20261014/SplitPrime12211NearestStep.lean",
+      "sha256": "100be92b95dd562b5e74ea7a75879fbc80bad64f1e94b1179f5cc1e5e8f45e6a",
+      "method": "dependent Lean build and axiom printout",
+      "evidence": "dependent/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-pareto-tree-20261012/ParetoCost.lean",
+      "sha256": "ff3b7c21dbd7e984edd45a6099f66f4eedf7d8cebb0746d3254b8abd59654962",
+      "method": "core Lean build and axiom printout",
+      "evidence": "core/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-power2-direct-terminal-20261012/DigitCover.lean",
+      "sha256": "367ac3c76b3252a32d73bd2c88ce39db3302c39b197a5c3ff27c365ef93a0443",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-power2-direct-terminal-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-power2-direct-terminal-20261012/TopBound.lean",
+      "sha256": "33ee77ad450c83753154076747ff6844c78a2101630cee141a27f48d8126f6b3",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-hex-terminal-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-power2-direct-terminal-20261012/TopRank.lean",
+      "sha256": "34afd6c84c5dc4bbd1ddb8d7fe61fb083a16bc2955f393e997c4cb434f17963d",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-power2-direct-terminal-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-radix569-topball-20261012/DigitCover.lean",
+      "sha256": "b0ac23345a968e756eda92ca3724412d6a41cc6497b63c3a5bc1748c7402ca75",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-radix569-topball-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-radix569-topball-20261012/TopBound.lean",
+      "sha256": "e22d29dc4f04827e6b600332fbfc0523e7503d08626d6a86bc2321a670abc00d",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-radix569-topball-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-radix569-topball-20261012/TopRank.lean",
+      "sha256": "ad850d8c4c542529e3e79364034b3f9853e90a5498dfe33d3190cf8edb5013db",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-radix569-topball-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-radix919-terminal-unit-20261012/DigitCover.lean",
+      "sha256": "154bfeb703703061131e14987b48221ebddd3d7fa6caaa6d8d1f7334a144849d",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-axis152-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-radix919-terminal-unit-20261012/OrbitAtlas.lean",
+      "sha256": "18c1bf583b61afac27b83720c6bb7a31423fda5bb8e64e8bcd28ba975d09b6de",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-radix919-terminal-unit-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-radix919-terminal-unit-20261012/TerminalUnit.lean",
+      "sha256": "65586f4de593c85823b18e95b0a5ac10bc537a114759b73ba78bc4b39d3f5764",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-axis152-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-radix929-topball-20261012/DigitCover.lean",
+      "sha256": "b02aeb8b0afb3d7d202315de6adb8d06e2f6a89764102c797dc5fab5d3f53f5a",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-radix929-topball-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-radix929-topball-20261012/TopBound.lean",
+      "sha256": "edb115cec5c6144e72bc7d743e715697dfb92702fca9c2dc3165ea8b1105015e",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-radix929-topball-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-radix929-topball-20261012/TopRank.lean",
+      "sha256": "cb3d1ec3889ca36fa375622825ea67ab14809c2e9f3517757420831029c86212",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-radix929-topball-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-radix943-corner-certificate-20261012/CornerCertificate.lean",
+      "sha256": "ded8641c09c48da840d694f302e65000c12f49b4b606eebf7e31eb668acca0fb",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-radix943-corner-certificate-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-radix943-digit-cover-20261012/DigitCover.lean",
+      "sha256": "6d6dd3e2498d89d1787c6cbf03e28edf6b0ac2c81e26f5604386160674f013c2",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-radix943-corner-certificate-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-radix943-orbit-refinement-20261012/OrbitAtlas.lean",
+      "sha256": "6572d294ee257b15eb66c2cd77e4af1ddb4daa8c3a68b76c00d78e6d93581856",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-radix943-orbit-refinement-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-radix943-pareto-20261012/Recoding.lean",
+      "sha256": "c3bb5f28f1681f300bbd0d1531c416d478872bbcb73fefd9e451d4c612ddcdea",
+      "method": "core Lean build and axiom printout",
+      "evidence": "core/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-radix943-termination-20261012/Termination.lean",
+      "sha256": "2bb18cdb2ff126b51466f1e693d1a9050b7510aea2cb410c731f142c488ee4d6",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-radix943-corner-certificate-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-split-prime-12211-20261014/SplitPrime12211Bound.lean",
+      "sha256": "1490dc2f691cd4ade2a7796a552a279bc53ae7c154af75d9910837519d65b686",
+      "method": "dependent Lean build and axiom printout",
+      "evidence": "dependent/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-split-prime-12211-20261014/SplitPrime12211Complete.lean",
+      "sha256": "13901e31a1ba4da3f3d993eac38e2e95dc2a85ae5dbd8647437d67390d1482d3",
+      "method": "dependent Lean build and axiom printout",
+      "evidence": "dependent/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-split-prime-12211-20261014/SplitPrime12211Digits.lean",
+      "sha256": "588439e1f996f905d3f25caded17bfd490e633dd2e5229b13fec94a91a811920",
+      "method": "dependent Lean build and axiom printout",
+      "evidence": "dependent/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-split-prime-8011-20261014/SplitPrime8011Bound.lean",
+      "sha256": "178c4dab5534e443ab0c9277e6829d07867ab70bfea566261d63cf8bf0ea3ec1",
+      "method": "dependent Lean build and axiom printout",
+      "evidence": "dependent/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-split-prime-8011-20261014/SplitPrime8011Complete.lean",
+      "sha256": "e37035d4ec8e52f7d108b44556c3645c5f64cd78b89561614768537fbe4b8f5e",
+      "method": "dependent Lean build and axiom printout",
+      "evidence": "dependent/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-split-prime-8011-20261014/SplitPrime8011Digits.lean",
+      "sha256": "5aa37a84b402c78ae15d65c343be1e62581c6dba113d6feade20d75e1bb366e8",
+      "method": "dependent Lean build and axiom printout",
+      "evidence": "dependent/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-split-top-20261012/DigitCover.lean",
+      "sha256": "a1cc11402c3327ff235e3b952034fa64304752e6c7c6de27493e0d2a805ba655",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-split-top-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-split-top-20261012/SplitTop.lean",
+      "sha256": "bc577fd0f00ad89e76cbb94c7a749d2a44fa3af6e97bebf0478396c0647bc95e",
+      "method": "pinned experiment check.py",
+      "evidence": "experiments/prime-j0-split-top-20261012/check.py"
+    },
+    {
+      "source": "experiments/prime-j0-tau-rho-mixed-radix-20261014/MixedRadix.lean",
+      "sha256": "c25dc8b02979af93d1d813f3865f97e6a056d7175d94f69e418338acc2be2f7a",
+      "method": "core Lean build and axiom printout",
+      "evidence": "core/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-terminal-orbit-8011-20261014/TerminalOrbit8011.lean",
+      "sha256": "a4aa76980dd7dd0aa71751682a1a31ef9a2b6d48c8d7609a718b24e75590a6e8",
+      "method": "core Lean build and axiom printout",
+      "evidence": "core/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-three-bucket-20261014/SplitPrime4831Buckets.lean",
+      "sha256": "e10761de71d6f7ba237308845a1e387b4b065b65b444e2d37edb2e1be7571696",
+      "method": "dependent Lean build and axiom printout",
+      "evidence": "dependent/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-u14-karatsuba-20261012/KaratsubaProduct.lean",
+      "sha256": "0bfc5978fc6643df1b18e5869158ecb82949f839ca46efa9cb0a6c12fba55b64",
+      "method": "core Lean build and axiom printout",
+      "evidence": "core/summary.json"
+    },
+    {
+      "source": "experiments/prime-j0-u14-solinas-20261012/SolinasReduction.lean",
+      "sha256": "6031ae6a3355cfb58801caabeab8e591a1b8870a3072faa20d2a20d79b3afa1e",
+      "method": "core Lean build and axiom printout",
+      "evidence": "core/summary.json"
+    },
+    {
+      "source": "research/binary_genus2_cover_20261014/lean/BinaryGenusTwo.lean",
+      "sha256": "5f6a4160ea422c6002b8aaf6247e837a95b267ee40929047f674c5290244a1e0",
+      "method": "pinned direct or Lake build",
+      "evidence": "binary-build.log"
+    }
+  ]
+}

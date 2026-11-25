@@ -1,0 +1,50 @@
+name: CT133 native CM cold DLP holdout replay
+on:
+  pull_request:
+    paths:
+      - experiments/chained-transfer-public-target/ct130-prime31/ct133_*
+      - experiments/chained-transfer-public-target/ct130-prime31/CT133_*
+      - .github/workflows/ct133-native-cm-holdout.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  independent-cold-replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Compile exact-head C++17 with checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd experiments/chained-transfer-public-target/ct130-prime31
+          g++ --version | head -1
+          g++ -O3 -std=c++17 -Wall -Wextra -Wpedantic -o ct133_native ct133_native.cpp
+          sha256sum ct133_native.cpp ct133_validate.py ct133_native > ct133_sources.sha256
+      - name: Replay four frozen 64-target panels and independent audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd experiments/chained-transfer-public-target/ct130-prime31
+          for seed in 20261210 20261211 20261212 20261213; do
+            /usr/bin/time -v -o "ct133_${seed}.time" ./ct133_native 64 "${seed}" > "ct133_${seed}.csv"
+          done
+          python3 -S ct133_validate.py ct133_2026121{0,1,2,3}.csv --self-test > ct133_audit.json
+          python3 -O -S ct133_validate.py ct133_2026121{0,1,2,3}.csv --self-test > ct133_audit_optimized.json
+          cmp ct133_audit.json ct133_audit_optimized.json
+          sha256sum ct133_2026121*.csv ct133_audit.json >> ct133_sources.sha256
+          cat ct133_audit.json
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: ct133-cold-cm-raw-${{ github.run_id }}
+          path: |
+            experiments/chained-transfer-public-target/ct130-prime31/ct133_2026121*.csv
+            experiments/chained-transfer-public-target/ct130-prime31/ct133_2026121*.time
+            experiments/chained-transfer-public-target/ct130-prime31/ct133_audit*.json
+            experiments/chained-transfer-public-target/ct130-prime31/ct133_sources.sha256
+          retention-days: 30

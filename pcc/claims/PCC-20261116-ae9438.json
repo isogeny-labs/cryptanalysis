@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-16T04:52:58Z",
+ "id": "PCC-20261116-ae9438",
+ "kind": "theorem",
+ "producer": {
+  "commit": "c045dfdf2e682d0c98fba9a1bcd7824c00c649dd",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "a39ce4ebde2edbce1f3167a047fce31f898b4cbcb339b9f532e34971f38e417d",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-final-06/LPGraphCases02.lean",
+   "theorem": "LPGraphCases02.half_ground_edge_has_lift"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Scalar relation equations over Lean.Grind.CommRing; exact inverse-of-two/nonzero assumptions as stated; explicit lifts. No numerical dimension, program/geometry/global character or cost claim. Source immutable; both original proof gates pass10/0 as data pcc/claims/PCC-20261116-be98f8.json",
+ "statement": "theorem half_ground_edge_has_lift {K : Type} [CommRing K] (half : K) (two_half : (2 : K) * half = 1) (f g eta : K) : \u2203 a b, 2 * a + (f + f) - eta = 0 \u2227 a + b + f + g - eta = 0"
+}

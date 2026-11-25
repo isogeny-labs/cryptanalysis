@@ -1,0 +1,44 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-11T21:07:15Z",
+ "id": "PCC-20261111-589b24",
+ "kind": "statement",
+ "producer": {
+  "commit": "7c1f32ecb24daffce449703075573c824dd1f241",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/direct-norms-integrated-source-03.txt",
+    "sha256": "3b27053763676ecdd549a475b75435a0aad2dbac83140fbf31719aa08e5f3651"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/direct-norms-source-03.rs",
+    "sha256": "a1c79dff1ba5bafc01d5390b253b6a3428ee99da00d3ab7243a71b20b23b518b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/direct-norms-integrated-glue-source-03.rs",
+    "sha256": "a264e1dcec745efb2ba4f3091656fc4f9624b07632313a715f2ccf0eb1768b34"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/direct-norms-integrated-chain-source-03.rs",
+    "sha256": "96eaf5a39f110cd0bbfe193f01bb5f5eeaf48c3439d2273052b8f1a8db004639"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "After directnormintegration,both actual Phi and Psi prime109source control tests pass onall109scalars,nonzero/order109,matchedellipticcoordinates,scalar preservation,duals/recovery anddirecttarget controls. Original genericnormcoordinate evaluators are retained,and chainnaivehalving explicitly uses them;newquarter evaluator uses the qualified directnorms. Full changedPhi/Psi classmatrix has notrun at registration. StrictClippy04 catches only pairedarray iteration style;failedreceipt/source retained and iteratorcorrection pending. No performanceclaim or signed/globalformal verdict."
+}

@@ -1,0 +1,43 @@
+{
+ "correctness": "rotkey == reference product chain and rotation invariant on 300 random words (and 2,000 in the crate test)",
+ "first_run_before_karatsuba": {
+  "lift_scan_ns_per_word_median": 43.81,
+  "rotkey_batch_ns_per_word_median": 22.74,
+  "rotkey_dependent_chain_ns_per_word_median": 41.75
+ },
+ "label": "LOCAL DIAGNOSTIC (cloud-agent VM, shared 4-vCPU Xeon 2.1 GHz, load average 8-10); not timing evidence",
+ "reading": "batch throughput: rotkey costs about 0.56x lift_scan per word (21.8-22.3 against 38.5-43.8 ns); a dependent chain of keys costs 40.5 ns, so the gain needs independent keys, which a state's 332 partners are; bucket-sorting the rebuild does not help",
+ "rebuild_2pow26_slot_table_of_29878182_keys_s": {
+  "batched_keys_and_inserts": [
+   4.73,
+   3.86,
+   3.7
+  ],
+  "bucket_sorted_inserts": [
+   3.94,
+   3.92,
+   3.99,
+   3.54
+  ],
+  "with_explicit_prefetch": [
+   3.87,
+   3.6,
+   3.55
+  ]
+ },
+ "runs": [
+  {
+   "lift_scan_ns_per_word_median": 38.48,
+   "rotkey_batch_ns_per_word_median": 21.85,
+   "rotkey_dependent_chain_ns_per_word_median": 40.41,
+   "rotkey_karatsuba_ns_per_word_median": 21.99
+  },
+  {
+   "lift_scan_ns_per_word_median": 39.23,
+   "rotkey_batch_ns_per_word_median": 21.8,
+   "rotkey_dependent_chain_ns_per_word_median": 40.51,
+   "rotkey_karatsuba_ns_per_word_median": 22.26
+  }
+ ],
+ "source": "smoke/rotkey_micro.rs (release build, pinned CPU, median of 15 rounds x 200 reps x 4,096 independent random 83-bit words)"
+}

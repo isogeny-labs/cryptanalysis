@@ -77,6 +77,14 @@ typedef struct ca_precomp_table ca_precomp_table;
 CA_API ca_status ca_precomp_table_new(const ca_group *g, const ca_elem *base,
                                       const ca_precomp_params *params, ca_precomp_table **out,
                                       ca_stats *st);
+/* Persist in-progress endpoints and the completed reusable table at checkpoint_path.
+ * A matching checkpoint is resumed automatically.  Progress is written to
+ * checkpoint_path.progress.json and, when verbose, to stderr.  A NULL path
+ * enables live stderr progress without durable state. */
+CA_API ca_status ca_precomp_table_new_checkpointed(const ca_group *g, const ca_elem *base,
+                                      const ca_precomp_params *params, const char *checkpoint_path,
+                                      uint32_t progress_every, uint32_t checkpoint_every,
+                                      int verbose, ca_precomp_table **out, ca_stats *st);
 CA_API void ca_precomp_table_free(ca_precomp_table *t);
 
 /* Solve x * base == target for x in [0, order).  Online cost only, added to
@@ -84,6 +92,13 @@ CA_API void ca_precomp_table_free(ca_precomp_table *t);
  * exhausted (e.g. the table is too small or target is not in <base>). */
 CA_API ca_status ca_precomp_table_solve(const ca_precomp_table *t, const ca_elem *target,
                                         uint64_t *x, ca_stats *st);
+/* Resume the online walk with a completed table.  The checkpoint is tied to
+ * the target and table; it is separate from the reusable table artifact.  A
+ * NULL path enables live stderr progress without durable state. */
+CA_API ca_status ca_precomp_table_solve_checkpointed(const ca_precomp_table *t,
+                                        const ca_elem *target, const char *checkpoint_path,
+                                        uint32_t progress_every, uint32_t checkpoint_every,
+                                        int verbose, uint64_t *x, ca_stats *st);
 
 /* Introspection, for reporting.  Any out pointer may be NULL. */
 CA_API void ca_precomp_table_info(const ca_precomp_table *t, int32_t *dp_bits, uint64_t *chains,

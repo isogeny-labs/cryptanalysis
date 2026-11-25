@@ -9,6 +9,10 @@ static void random_system(uint32_t rows, uint32_t cols, uint32_t per_row, uint64
     CHECK(ca_spmat_init(A, cols, rows, rows * per_row) == CA_OK);
     uint32_t *tc = malloc(per_row * sizeof(uint32_t));
     int32_t *tv = malloc(per_row * sizeof(int32_t));
+    if (!tc || !tv) {
+        CHECK(tc && tv);
+        exit(EXIT_FAILURE);
+    }
     for (uint32_t i = 0; i < rows; i++) {
         for (uint32_t k = 0; k < per_row; k++) {
             tc[k] = (uint32_t)ca_rng_below(rng, cols);
@@ -27,8 +31,45 @@ static void random_system(uint32_t rows, uint32_t cols, uint32_t per_row, uint64
     free(tc); free(tv);
 }
 
+static void dense_boundaries(void)
+{
+    const uint64_t primes[] = {2, 3, 17, 1000003, 4294967311ULL,
+        2305843009213693951ULL, 18446744073709551557ULL};
+    ca_rng rng;
+    ca_rng_seed(&rng, 0x1a20261115ULL);
+    enum { N = 33 };
+    for (size_t qi = 0; qi < sizeof(primes) / sizeof(*primes); ++qi) {
+        uint64_t q = primes[qi];
+        uint64_t M[N * N], rhs[N], x[N], expected[N];
+        memset(M, 0, sizeof(M));
+        for (unsigned j = 0; j < N; ++j) expected[j] = ca_rng_below(&rng, q);
+        for (unsigned i = 0; i < N; ++i) {
+            M[i * N + i] = q + 1 > q ? q + 1 : 1;
+            for (unsigned j = i + 1; j < N; ++j) M[i * N + j] = ca_rng_next(&rng);
+        }
+        /* Reverse rows to force pivot exchanges, retaining unreduced entries. */
+        for (unsigned i = 0; i < N / 2; ++i)
+            for (unsigned j = 0; j < N; ++j) {
+                uint64_t t = M[i * N + j];
+                M[i * N + j] = M[(N - 1 - i) * N + j];
+                M[(N - 1 - i) * N + j] = t;
+            }
+        for (unsigned i = 0; i < N; ++i) {
+            rhs[i] = 0;
+            for (unsigned j = 0; j < N; ++j)
+                rhs[i] = ca_addmod(rhs[i], ca_mulmod(M[i * N + j] % q, expected[j], q), q);
+        }
+        CHECK(ca_dense_solve_mod_prime(M, N, rhs, q, x) == CA_OK);
+        for (unsigned j = 0; j < N; ++j) CHECK_EQ_U64(x[j], expected[j]);
+        memset(M, 0, sizeof(M));
+        memset(rhs, 0, sizeof(rhs));
+        CHECK(ca_dense_solve_mod_prime(M, N, rhs, q, x) == CA_ERR_SINGULAR);
+    }
+}
+
 int main(void)
 {
+    dense_boundaries();
     ca_rng rng;
     ca_rng_seed(&rng, 8);
     /* dense */
@@ -37,6 +78,10 @@ int main(void)
         uint32_t n = 40;
         uint64_t *M = calloc((size_t)n * n, sizeof(uint64_t)), *rhs = calloc(n, sizeof(uint64_t));
         uint64_t *xt = calloc(n, sizeof(uint64_t)), *x = calloc(n, sizeof(uint64_t));
+        if (!M || !rhs || !xt || !x) {
+            CHECK(M && rhs && xt && x);
+            exit(EXIT_FAILURE);
+        }
         for (uint32_t j = 0; j < n; j++) xt[j] = ca_rng_below(&rng, q);
         for (uint32_t i = 0; i < n; i++) {
             for (uint32_t j = 0; j < n; j++) {
@@ -47,6 +92,37 @@ int main(void)
         CHECK(ca_dense_solve_mod_prime(M, n, rhs, q, x) == CA_OK);
         for (uint32_t j = 0; j < n; j++) CHECK_EQ_U64(x[j], xt[j]);
         free(M); free(rhs); free(xt); free(x);
+    }
+    /* dense with unreduced 64-bit entries, at the largest prime below 2^63
+     * (the division-free path) and the largest below 2^64 (the fallback) */
+    {
+        const uint64_t dqs[] = {9223372036854775783ULL, 18446744073709551557ULL};
+        for (size_t qi = 0; qi < 2; qi++) {
+            uint64_t q = dqs[qi];
+            uint32_t n = 60;
+            uint64_t *M = calloc((size_t)n * n, sizeof(uint64_t)),
+                     *rhs = calloc(n, sizeof(uint64_t));
+            uint64_t *xt = calloc(n, sizeof(uint64_t)), *x = calloc(n, sizeof(uint64_t));
+            if (!M || !rhs || !xt || !x) {
+                CHECK(M && rhs && xt && x);
+                exit(EXIT_FAILURE);
+            }
+            for (uint32_t j = 0; j < n; j++) xt[j] = ca_rng_below(&rng, q);
+            for (uint32_t i = 0; i < n; i++) {
+                uint64_t acc = 0;
+                for (uint32_t j = 0; j < n; j++) {
+                    M[i * n + j] = ca_rng_next(&rng);
+                    acc = ca_addmod(acc, ca_mulmod(M[i * n + j] % q, xt[j], q), q);
+                }
+                rhs[i] = acc + (UINT64_MAX - acc) / q * q; /* unreduced, same residue */
+            }
+            CHECK(ca_dense_solve_mod_prime(M, n, rhs, q, x) == CA_OK);
+            for (uint32_t j = 0; j < n; j++) CHECK_EQ_U64(x[j], xt[j]);
+            free(M);
+            free(rhs);
+            free(xt);
+            free(x);
+        }
     }
     /* sparse: various sizes, big prime modulus */
     const uint64_t qs[] = {4294967311ULL, 1000000000000000003ULL, 18446744073709551557ULL};
@@ -60,6 +136,10 @@ int main(void)
             uint64_t *xt = malloc(cols * sizeof(uint64_t));
             uint64_t *x = malloc(cols * sizeof(uint64_t));
             uint8_t *known = malloc(cols);
+            if (!b || !xt || !x || !known) {
+                CHECK(b && xt && x && known);
+                exit(EXIT_FAILURE);
+            }
             random_system(rows, cols, 12, q, &A, b, xt, &rng);
             ca_linsolve_report rep;
             ca_status rc = ca_linsolve_mod_prime(&A, b, q, x, known, 5, &rep);
@@ -99,6 +179,10 @@ int main(void)
         const uint64_t b[4] = {5, 1, 9, 12};
         uint64_t x[4];
         uint8_t known[4];
+        CHECK(ca_linsolve_mod_prime(NULL, b, q, x, known, 1, NULL) == CA_ERR_INVALID);
+        CHECK(ca_linsolve_mod_prime(&A, NULL, q, x, known, 1, NULL) == CA_ERR_INVALID);
+        CHECK(ca_linsolve_mod_prime(&A, b, q, NULL, known, 1, NULL) == CA_ERR_INVALID);
+        CHECK(ca_linsolve_mod_prime(&A, b, q, x, NULL, 1, NULL) == CA_ERR_INVALID);
         CHECK(ca_linsolve_mod_prime(&A, b, q, x, known, 1, NULL) == CA_OK);
         CHECK(known[0] && known[1] && known[2] && known[3]);
         CHECK_EQ_U64(x[0], 2); CHECK_EQ_U64(x[1], 3); CHECK_EQ_U64(x[2], 5); CHECK_EQ_U64(x[3], 7);
@@ -123,6 +207,88 @@ int main(void)
         CHECK(small.row_cap >= 11);
         ca_spmat_free(&small);
         ca_spmat_free(&big);
+    }
+    /* The Lanczos pool: the solution, `known` and the report (iterations,
+     * attempts, active size, dense fallback) are identical at every thread
+     * count, for the 64-bit gather (q < 2^32), the 128-bit gather (q near
+     * 2^60) and the one-thread scatter fallback (q near 2^64), including a
+     * rank-deficient system (columns 0 and 1 always together with the same
+     * coefficient) whose solve does not determine every unknown. */
+    {
+        const uint64_t tqs[] = {4294967311ULL, 1000000000000000003ULL, 18446744073709551557ULL};
+        const uint32_t tsizes[][3] = {{1400, 1000, 10}, {3200, 2600, 8}, {1300, 1000, 8}};
+        for (size_t qi = 0; qi < 3; qi++) {
+            for (size_t s = 0; s < 3; s++) {
+                const uint64_t q = tqs[qi];
+                const uint32_t rows = tsizes[s][0], cols = tsizes[s][1];
+                ca_spmat A;
+                uint64_t *b = malloc(rows * sizeof(uint64_t));
+                uint64_t *xt = malloc(cols * sizeof(uint64_t));
+                uint64_t *x1 = malloc(cols * sizeof(uint64_t));
+                uint64_t *xk = malloc(cols * sizeof(uint64_t));
+                uint8_t *k1 = malloc(cols), *kk = malloc(cols);
+                if (!b || !xt || !x1 || !xk || !k1 || !kk) {
+                    CHECK(b && xt && x1 && xk && k1 && kk);
+                    exit(EXIT_FAILURE);
+                }
+                random_system(rows, cols, tsizes[s][2], q, &A, b, xt, &rng);
+                if (s == 2) {
+                    /* rebuild with column 1 tied to column 0 */
+                    ca_spmat B;
+                    CHECK(ca_spmat_init(&B, cols, rows, A.nnz + rows) == CA_OK);
+                    uint32_t tc[32];
+                    int32_t tv[32];
+                    for (uint32_t i = 0; i < rows; i++) {
+                        uint32_t n = 0;
+                        int32_t v0 = 0;
+                        for (uint32_t k = A.row_ptr[i]; k < A.row_ptr[i + 1] && n < 30; k++) {
+                            if (A.col[k] == 1) continue;
+                            if (A.col[k] == 0) v0 = A.val[k];
+                            tc[n] = A.col[k];
+                            tv[n++] = A.val[k];
+                        }
+                        if (v0) {
+                            tc[n] = 1;
+                            tv[n++] = v0;
+                        }
+                        CHECK(ca_spmat_add_row(&B, tc, tv, n) == CA_OK);
+                        uint64_t acc = 0;
+                        for (uint32_t k = B.row_ptr[i]; k < B.row_ptr[i + 1]; k++) {
+                            int32_t v = B.val[k];
+                            uint64_t c = v >= 0 ? (uint64_t)v % q : q - ((uint64_t)(-v) % q);
+                            acc = ca_addmod(acc, ca_mulmod(c, xt[B.col[k]], q), q);
+                        }
+                        b[i] = acc;
+                    }
+                    ca_spmat_free(&A);
+                    A = B;
+                }
+                ca_linsolve_report r1, rk;
+                ca_status rc1 = ca_linsolve_mod_prime_mt(&A, b, q, x1, k1, 77, 1, &r1);
+                for (uint32_t t = 2; t <= 5; t++) {
+                    memset(xk, 0xa5, cols * sizeof(uint64_t));
+                    ca_status rck = ca_linsolve_mod_prime_mt(&A, b, q, xk, kk, 77, t, &rk);
+                    CHECK_EQ_U64((uint64_t)rck, (uint64_t)rc1);
+                    CHECK_EQ_U64(rk.active_rows, r1.active_rows);
+                    CHECK_EQ_U64(rk.active_cols, r1.active_cols);
+                    CHECK_EQ_U64(rk.lanczos_iters, r1.lanczos_iters);
+                    CHECK_EQ_U64(rk.attempts, r1.attempts);
+                    CHECK_EQ_U64((uint64_t)rk.used_dense, (uint64_t)r1.used_dense);
+                    CHECK(memcmp(xk, x1, cols * sizeof(uint64_t)) == 0);
+                    CHECK(memcmp(kk, k1, cols) == 0);
+                }
+                printf("threads q=%" PRIu64
+                       " %ux%u: rc %d, iters %u, attempts %u, dense %d: identical at 1-5 threads\n",
+                       q, rows, cols, (int)rc1, r1.lanczos_iters, r1.attempts, r1.used_dense);
+                ca_spmat_free(&A);
+                free(b);
+                free(xt);
+                free(x1);
+                free(xk);
+                free(k1);
+                free(kk);
+            }
+        }
     }
     TEST_MAIN_END();
 }

@@ -1,0 +1,40 @@
+{
+  "schema": "crax.aes-bridge-acceptance/v1",
+  "checked_at_utc": "2026-10-24T05:12:26.692566+00:00",
+  "source_state": "working tree CRAx AES group",
+  "crypto_binary_sha256": "8cfb04fa2aa4c1ff8b56fe40fb46e3631e2af285328c61f20d240be8c858f8e4",
+  "crax_binary_sha256": "dec0d583a6842114cebb0970593c26fde52826fc5d3bc57a4ce2814229b52cbb",
+  "checks": {
+    "help_lists": [
+      "aes-differential-observed",
+      "aes-linear-observed",
+      "aes-distinguisher",
+      "aes-dfa",
+      "aes-cpa",
+      "aes-dpa",
+      "aes-cache-timing",
+      "aes-trail-check",
+      "aes-related-differential"
+    ],
+    "sbox_row_parity": {
+      "ddt": {
+        "row": 17,
+        "sha256": "dba2a91fa52a6d137566ff4efead91f8ba6695cc0cfaedfb72acad85762452a3"
+      },
+      "lat": {
+        "row": 17,
+        "sha256": "42d95a7d12a77e443493503f2e4b360c0b29aa15ede7479aa38094623bfaf667"
+      },
+      "bct": {
+        "row": 17,
+        "sha256": "07b5881c715f9a027ed816e4d5faf58a8dfa445ae5ee370ccbeff1e290f5b487"
+      },
+      "dlct": {
+        "row": 17,
+        "sha256": "5c6872dd91d1d280380af585aeedad25b8f97f20ab2838247abc9e7f020b7b4e"
+      }
+    },
+    "zero_correlation_output_verified": true,
+    "unknown_command_rejected": true
+  }
+}

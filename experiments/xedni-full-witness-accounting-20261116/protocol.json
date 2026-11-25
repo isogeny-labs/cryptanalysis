@@ -1,0 +1,13 @@
+{
+  "schema": "xedni-full-witness-accounting-v1",
+  "source_candidate_rows": "experiments/xedni-lift-height-search-20261116/rows.jsonl",
+  "source_candidate_rows_sha256": "63d2fc969879937d2528547e31c2f22ab8e20a46d1b26fe9803dd139101fb250",
+  "source_point_winners": "experiments/xedni-lift-height-search-20261116/winners.jsonl",
+  "source_point_winners_sha256": "f5cb56651a97dedfa2bdca27e1ef9099c4ff60421cbcfb983aea1d269d8ab8cb",
+  "source_sage_audit": "experiments/xedni-lift-height-search-20261116/audit-sage.json",
+  "source_sage_audit_sha256": "3be9dcf1408734b76d295d289e528100d7740b85c9224c92cfed878b3b336e4f",
+  "full_max_score": "Maximum numerator or denominator bit length among A,B,Px,Py,Rx,Ry, where integers have denominator 1 and bit_length(0)=0.",
+  "full_sum_score": "Sum of numerator and denominator bit lengths among A,B,Px,Py,Rx,Ry, with sign bits excluded.",
+  "selection": "For each of the 159 source events, enumerate its 27 candidates in frozen order, minimize each score with lexicographic shift tie-breaking, and compare each optimum with the centered baseline and the source point-only winner. Preserve per-event outcomes and both control classes.",
+  "measurement": "exact full-witness representation accounting on the archived candidate set; no wall-time or end-to-end speed comparison"
+}

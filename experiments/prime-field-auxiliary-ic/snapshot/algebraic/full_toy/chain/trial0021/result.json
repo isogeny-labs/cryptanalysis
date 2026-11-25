@@ -1,0 +1,52 @@
+{
+  "status": "solved",
+  "encoding": "chain",
+  "p": 127,
+  "m": 2,
+  "variables": 6,
+  "equations": 7,
+  "backend_seconds": 0.014789826999731304,
+  "timeout_seconds": 10.0,
+  "memory_limit_mib": 2048,
+  "algorithm": "std-dp-fglm",
+  "solutions": [
+    {
+      "x1": 85,
+      "x2": 3,
+      "z2j3": 98,
+      "z2j2": 88,
+      "z1j3": 98,
+      "z1j2": 88
+    },
+    {
+      "x1": 3,
+      "x2": 85,
+      "z2j3": 98,
+      "z2j2": 88,
+      "z1j3": 98,
+      "z1j2": 88
+    }
+  ],
+  "relations": [
+    [
+      [
+        3,
+        46
+      ],
+      [
+        85,
+        38
+      ]
+    ]
+  ],
+  "dimension": 0,
+  "lex_basis": [
+    "x1^2+39*x1+1",
+    "x2+x1+39",
+    "z2j3+29",
+    "z2j2+39",
+    "z1j3+29",
+    "z1j2+39"
+  ],
+  "elapsed_seconds": 0.3929118260002724
+}

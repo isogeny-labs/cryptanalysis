@@ -1,0 +1,35 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'exec python3 \"$(git rev-parse --show-toplevel)/scripts/relay.py\" --runtime codex session-start'",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'exec python3 \"$(git rev-parse --show-toplevel)/tools/goal_brief.py\" --hook-json'",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'exec python3 \"$(git rev-parse --show-toplevel)/scripts/relay.py\" --runtime codex snapshot'",
+            "timeout": 20
+          }
+        ]
+      }
+    ]
+  }
+}

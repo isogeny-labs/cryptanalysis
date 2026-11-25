@@ -1,0 +1,24 @@
+{
+  "recorded_at": "2026-10-28T18:08:45.759409+00:00",
+  "command": [
+    "python3",
+    "/var/tmp/known-label-independence-tool-20261028/tools/check_review_independence.py",
+    "--plan",
+    "reports/known-label-formal-review-20261028/review-plan.json",
+    "--reports",
+    "reports/known-label-formal-review-20261028/reviewers/TASK-20261028-32bc7d/attestation-checker.json",
+    "reports/known-label-formal-review-20261028/reviewers/TASK-20261028-a07ed4/attestation-checker.json",
+    "reports/known-label-formal-review-20261028/reviewers/TASK-20261028-298dc6/attestation.json"
+  ],
+  "exit_code": 0,
+  "stdout": "PASS: 3 report(s), every joint owned and attested, blindness respected, controls declared\n",
+  "stderr": "",
+  "checker_inputs": "independence-checker-inputs.json",
+  "plan_sha256": "2579b4dd93b2f1df7a54eca0b952fb30a51917c3c5259f7c8b6b3c9ae21724f1",
+  "report_sha256": {
+    "reviewers/TASK-20261028-32bc7d/attestation-checker.json": "a4d6eea1a0b9e1ec02981659ef1a055f9e01707f51e74125bafcce7430874805",
+    "reviewers/TASK-20261028-a07ed4/attestation-checker.json": "2e1878ff411572a62778a8ca43ca30e55dd51aa7475203563453e5d3dabe4dd1",
+    "reviewers/TASK-20261028-298dc6/attestation.json": "12e6a121f66bcb8602155d2c9fdc380f8c530299e1a05a0c202a3ec15e5b2f9b"
+  },
+  "scope": "Declaration consistency only; no authentication of isolation or scientific/native validity. OriginalJ3 breaks is retained."
+}

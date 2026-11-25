@@ -1,0 +1,147 @@
+{
+  "beat_id": "koblitz.compact_orbit.n83_single_target",
+  "disjoint_from": [
+    "q0",
+    "eval (B's panel_b, 16 points)",
+    "scanorder-heldout (384 points)",
+    "combined-primary-v1 (576 points)",
+    "probepipe-primary-v1 (384 points)",
+    "statefold-cold-v1 (16 points)",
+    "tablefilter-primary-v1 (384 points)",
+    "stacked-cold-v1 (20 points)",
+    "rankcut-cold-v1 (20 points)",
+    "eval (64 points)",
+    "rankprobe-cold-v1 (20 points)",
+    "indexlift-cold-v1 (20 points)",
+    "k899-cold-v1 (20 points)",
+    "rotkey-cold-v1 (20 points)",
+    "onlineframe-v1 (64 points)",
+    "closure-cold-v1 (20 points)",
+    "knownlog-cold-v1 (40 points)",
+    "blrankprobe-cold-v1 (64 points)",
+    "closureindexlift-cold-v1 (20 points)",
+    "closureindexlift-rep-cold-v1 (10 points)",
+    "indexbuild-cold-v1 (12 points)",
+    "indexbuild2-cold-v1 (12 points)"
+  ],
+  "domain": "kic-n83-single-target-public-point-v1",
+  "input_law": "public hash-to-curve: x = SHA-256('kic-n83-single-target-public-point-v1|onlineframe2-cold-v1|<seed>|<counter>')[0:8] little-endian mod 2^n for the first counter whose x lifts; y by half-trace, sign by bit 0 of digest byte 8; Q = [h]P. No scalar is known to either arm.",
+  "points": [
+    {
+      "point": [
+        "6396302043642278883690851",
+        "1203837970184971793056564"
+      ],
+      "seed": 0
+    },
+    {
+      "point": [
+        "847415116828410474462018",
+        "9078157158427267513687619"
+      ],
+      "seed": 1
+    },
+    {
+      "point": [
+        "2649539144838955182457256",
+        "6618604613947744183218000"
+      ],
+      "seed": 2
+    },
+    {
+      "point": [
+        "708460656684887382149804",
+        "1332993960399958594082322"
+      ],
+      "seed": 3
+    },
+    {
+      "point": [
+        "3685325997666977703331150",
+        "3301749613716938826070478"
+      ],
+      "seed": 4
+    },
+    {
+      "point": [
+        "5928976436232154217846360",
+        "7055037121490112635553801"
+      ],
+      "seed": 5
+    },
+    {
+      "point": [
+        "4333950719055247657951133",
+        "1633383802099542208267165"
+      ],
+      "seed": 6
+    },
+    {
+      "point": [
+        "7007697960547297906642080",
+        "7244564827100628293010994"
+      ],
+      "seed": 7
+    },
+    {
+      "point": [
+        "334354631082117644464399",
+        "841650813701318574974547"
+      ],
+      "seed": 8
+    },
+    {
+      "point": [
+        "575631430215162097926317",
+        "7349075068397022762358120"
+      ],
+      "seed": 9
+    },
+    {
+      "point": [
+        "1804573272336403252920671",
+        "4125033432116381964761572"
+      ],
+      "seed": 10
+    },
+    {
+      "point": [
+        "461160732296801709117007",
+        "610961355529688529566870"
+      ],
+      "seed": 11
+    },
+    {
+      "point": [
+        "7995182426257419495261657",
+        "1570586706313902910473121"
+      ],
+      "seed": 12
+    },
+    {
+      "point": [
+        "6412458311393634475098315",
+        "5438481375819975902133490"
+      ],
+      "seed": 13
+    },
+    {
+      "point": [
+        "8133041159488284396340649",
+        "9432312268453115502620939"
+      ],
+      "seed": 14
+    },
+    {
+      "point": [
+        "667743846941226371449918",
+        "4102191295159797203518543"
+      ],
+      "seed": 15
+    }
+  ],
+  "role": "onlineframe2-cold-v1",
+  "scalar_known_to_anyone": false,
+  "schema": 1,
+  "sized_by": "16 points x 4 alternating primary pairs (power_check.py checks the design)"
+}

@@ -1,0 +1,49 @@
+name: CT317 source-only public-target group replay
+
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct317_group_replay.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT317_INDEPENDENT_PRIMEFIELD_GROUP_REPLAY_PROTOCOL.md'
+      - '.github/workflows/ct317-source-only-group-replay.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  toy-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Exact-head synthetic group equation and corrupted raw-evidence refusals
+        shell: bash
+        run: |
+          set -euo pipefail
+          p=experiments/chained-transfer-public-target/norm-point-reuse-01/ct317_group_replay.py
+          python3 -m py_compile "$p"
+          python3 "$p" --self-test > /tmp/ct317-normal.json
+          python3 -O "$p" --self-test > /tmp/ct317-optimized.json
+          cmp /tmp/ct317-normal.json /tmp/ct317-optimized.json
+          python3 - <<'PY'
+          import json
+          x=json.load(open('/tmp/ct317-normal.json'))
+          assert x['positive_toy_replays'] == 28, x
+          assert x['synthetic_mutations_refused'] == 12, x
+          assert x['native_models_executed'] == 0, x
+          assert x['pcc'] == 'unverified', x
+          print('CT317_TOY_GROUP_REPLAY_PASS', x)
+          PY
+      - name: Never admit missing physical panel
+        shell: bash
+        run: |
+          set -euo pipefail
+          p=experiments/chained-transfer-public-target/norm-point-reuse-01/ct317_group_replay.py
+          if python3 "$p" > /tmp/ct317-missing.out 2>&1; then
+            echo 'bad: absent raw panel admitted'
+            exit 1
+          fi
+          grep -q 'required' /tmp/ct317-missing.out

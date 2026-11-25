@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Coordinate-system leverage bound for the recorded IC rows (2026-11-03)</title>
+  <style>
+html {
+color: #1a1a1a;
+background-color: #fdfdfd;
+}
+body {
+margin: 0 auto;
+max-width: 58em;
+padding-left: 50px;
+padding-right: 50px;
+padding-top: 50px;
+padding-bottom: 50px;
+hyphens: auto;
+overflow-wrap: break-word;
+text-rendering: optimizeLegibility;
+font-kerning: normal;
+}
+@media (max-width: 600px) {
+body {
+font-size: 0.9em;
+padding: 12px;
+}
+h1 {
+font-size: 1.8em;
+}
+}
+@media print {
+html {
+background-color: white;
+}
+body {
+background-color: transparent;
+color: black;
+font-size: 12pt;
+}
+p, h2, h3 {
+orphans: 3;
+widows: 3;
+}
+h2, h3, h4 {
+page-break-after: avoid;
+}
+}
+p {
+margin: 1em 0;
+}
+a {
+color: #1a1a1a;
+}
+a:visited {
+color: #1a1a1a;
+}
+img {
+max-width: 100%;
+}
+h1, h2, h3, h4, h5, h6 {
+margin-top: 1.4em;
+}
+h5, h6 {
+font-size: 1em;
+font-style: italic;
+}
+h6 {
+font-weight: normal;
+}
+ol, ul {
+padding-left: 1.7em;
+margin-top: 1em;
+}
+li > ol, li > ul {
+margin-top: 0;
+}
+blockquote {
+margin: 1em 0 1em 1.7em;
+padding-left: 1em;
+border-left: 2px solid #e6e6e6;
+color: #606060;
+}
+code {
+font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+font-size: 85%;
+margin: 0;
+hyphens: manual;
+}
+pre {
+margin: 1em 0;
+overflow: auto;
+}
+pre code {
+padding: 0;
+overflow: visible;
+overflow-wrap: normal;
+}
+.sourceCode {
+background-color: transparent;
+overflow: visible;
+}
+hr {
+background-color: #1a1a1a;
+border: none;
+height: 1px;
+margin: 1em 0;
+}
+table {
+margin: 1em 0;
+border-collapse: collapse;
+width: 100%;
+overflow-x: auto;
+display: block;
+font-variant-numeric: lining-nums tabular-nums;
+}
+table caption {
+margin-bottom: 0.75em;
+}
+tbody {
+margin-top: 0.5em;
+border-top: 1px solid #1a1a1a;
+border-bottom: 1px solid #1a1a1a;
+}
+th {
+border-top: 1px solid #1a1a1a;
+padding: 0.25em 0.5em 0.25em 0.5em;
+}
+td {
+padding: 0.125em 0.5em 0.25em 0.5em;
+}
+header {
+margin-bottom: 4em;
+text-align: center;
+}
+#TOC li {
+list-style: none;
+}
+#TOC ul {
+padding-left: 1.3em;
+}
+#TOC > ul {
+padding-left: 0;
+}
+#TOC a:not(:hover) {
+text-decoration: none;
+}
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+</style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Coordinate-system leverage bound for the recorded IC
+rows (2026-11-03)</h1>
+</header>
+<h1 id="can-a-curve-equation-or-coordinate-system-bring-a-recorded-ic-row-to-parity-with-rho-2026-11-03">Can
+a curve equation or coordinate system bring a recorded IC row to parity
+with rho? (2026-11-03)</h1>
+<p><strong>Kind.</strong> Derived record. No new run. Every input number
+is copied from a frozen record and cited by path and line in
+<code>RESULTS.md</code> and <code>data.json</code>.
+<strong>Verdict.</strong> No recorded row reaches parity through a
+coordinate change alone, under the lab’s own pricing of the
+alternatives. The closest row misses by 1% under the most generous
+reading, so the question is not closed by a wide margin and the deciding
+measurement is named below.</p>
+<h2 id="why-this-record-exists">Why this record exists</h2>
+<p>On 2026-11-03 the owner asked whether the statement “a coordinate win
+cannot move those rows into parity” had been established. It had not: it
+was an inference in chat with no data behind it. This record is the
+derivation, with its assumptions exposed, and the inventory of what the
+lab has measured about coordinates and curve shapes.</p>
+<h2 id="method">Method</h2>
+<p>A coordinate system or curve model changes the cost of each
+elliptic-curve group operation and nothing else: relation yield,
+factor-base size, linear algebra and descent counts are unchanged. If a
+fraction <code>f_g</code> of a row’s IC cost is group operations and a
+coordinate change makes each one <code>c</code> times cheaper, the
+whole-row speedup is Amdahl’s</p>
+<pre><code>speedup(c) = 1 / ((1 - f_g) + f_g / c)</code></pre>
+<p>and parity with the recorded gap <code>g</code> needs
+<code>c* = f_g / (1/g - (1 - f_g))</code>, unreachable when
+<code>1/g &lt;= 1 - f_g</code>.</p>
+<p>Two inputs are needed per row. The gap is on every frozen row. The
+share <code>f_g</code> is recorded on one row only
+(<code>ic_group</code> 315 of <code>ic_total</code> 537 GAE on the a1
+n29 Frobenius-orbit arm). For the other rows the record uses the
+envelope <code>f_g = 1</code>, the assumption most favourable to
+coordinates, under which <code>c*</code> equals the gap itself.</p>
+<p>The available <code>c</code> comes from the lab’s pricing of the
+alternatives to its shipping arithmetic, which is batched affine on
+every measured row (the n41 to n61 baselines are even priced in units of
+one batched affine addition). In
+<code>ecc2k130/LAMBDA-PROJECTIVE.md</code> the shipping batch-16 affine
+update costs 38.1 carry-less lane instructions, the batch-infinity limit
+36.3, and every projective form more (lambda-projective mixed 60.5, full
+78.5). The explicit-formula operation counts in the lab’s EFD import say
+the same for prime and binary curves: affine addition is 2M 1S 1I
+against 7M 4S for Jacobian mixed addition or 9M 5S for Lopez-Dahab, and
+with the inversion batched over k &gt;= 16 points affine stays cheapest.
+So the realistic factor still available is the batch-depth limit,
+<code>c = 1.05</code>; the generous reading takes the ALU-count ratio of
+1.30 as if a coordinate change could win it rather than lose it.</p>
+<h2 id="result">Result</h2>
+<p>See <code>RESULTS.md</code> for the full table and
+<code>bound.svg</code> for the figure. In short:</p>
+<table>
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 21%" />
+<col style="width: 21%" />
+<col style="width: 21%" />
+<col style="width: 21%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>row</th>
+<th style="text-align: right;">gap</th>
+<th style="text-align: right;">f_g</th>
+<th style="text-align: right;">c* for parity</th>
+<th style="text-align: right;">available c</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>a1 n29 Frobenius orbit (measured f_g)</td>
+<td style="text-align: right;">1.566</td>
+<td style="text-align: right;">0.587</td>
+<td style="text-align: right;">2.61</td>
+<td style="text-align: right;">1.05 to 1.30</td>
+</tr>
+<tr class="even">
+<td>n41 disjoint cold panel</td>
+<td style="text-align: right;">1.314</td>
+<td style="text-align: right;">envelope 1</td>
+<td style="text-align: right;">1.31</td>
+<td style="text-align: right;">1.05 to 1.30</td>
+</tr>
+<tr class="odd">
+<td>p36 prime res2</td>
+<td style="text-align: right;">2.59</td>
+<td style="text-align: right;">envelope 1</td>
+<td style="text-align: right;">2.59</td>
+<td style="text-align: right;">1.05 to 1.30</td>
+</tr>
+<tr class="even">
+<td>n83 rank-finder (wall)</td>
+<td style="text-align: right;">3.92</td>
+<td style="text-align: right;">envelope 1</td>
+<td style="text-align: right;">3.92</td>
+<td style="text-align: right;">1.05 to 1.30</td>
+</tr>
+<tr class="odd">
+<td>rule v8 n47</td>
+<td style="text-align: right;">4.67</td>
+<td style="text-align: right;">envelope 1</td>
+<td style="text-align: right;">4.67</td>
+<td style="text-align: right;">1.05 to 1.30</td>
+</tr>
+<tr class="even">
+<td>baselines n41, n53, n61</td>
+<td style="text-align: right;">7.66, 13.2, 21.0</td>
+<td style="text-align: right;">envelope 1</td>
+<td style="text-align: right;">same as gap</td>
+<td style="text-align: right;">1.05 to 1.30</td>
+</tr>
+<tr class="odd">
+<td>tournament round 0026 n19a0</td>
+<td style="text-align: right;">11.5</td>
+<td style="text-align: right;">envelope 1</td>
+<td style="text-align: right;">11.5</td>
+<td style="text-align: right;">1.05 to 1.30</td>
+</tr>
+</tbody>
+</table>
+<p>Every required factor sits above the available one. The n41 cold
+panel is the exception that keeps the question alive: it needs 1.314
+against a generous 1.30, a 1% margin, and that row’s true
+<code>f_g</code> is unrecorded.</p>
+<h2 id="what-the-lab-has-measured-about-coordinates-and-shapes">What the
+lab has measured about coordinates and shapes</h2>
+<p>The inventory is in <code>RESULTS.md</code>. In one line each: the
+only controlled coordinate arm against matched rho is the genus-2
+weighted-projective state versus its affine wrapper at 1.10 pooled, both
+arms 3.8 to 4.2 times behind rho; the P-256 Jacobian seed ladder is 17.4
+times faster per seed but is setup only; the ECC2K-130 lambda-projective
+pricing favours affine by 1.59 and was never built; the Curve25519
+Edwards and Montgomery factor-base coordinates give F4 costs within 1%
+of the Weierstrass frame at k = 20 with no DLP arm. No experiment in
+either repository has treated the coordinate system of an elliptic-curve
+IC or rho run as the variable at the DLP level with an A/A arm.</p>
+<h2 id="claim-limits">Claim limits</h2>
+<ul>
+<li>Derived, not measured. The envelope <code>f_g = 1</code> overstates
+what coordinates can do on eight of nine rows; the true shares are
+smaller (the n83 row’s dominant cost is an index build, not group
+operations).</li>
+<li>The available <code>c</code> is an operation-count bound. Cache
+behaviour, batching depth and instruction mix on a given host can move
+it; that is exactly what catalogue idea H097 measures.</li>
+<li>The gaps are each record’s own unit and reference; they are compared
+here only through the dimensionless ratio each record states.</li>
+</ul>
+<h2 id="the-measurement-that-decides-it">The measurement that decides
+it</h2>
+<p>H097 in <code>research/handbook-ff-ic-ideas-20261103/IDEAS.md</code>:
+batch-affine versus projective candidate generation, binary and prime
+split, 10^7 additions per scheme with matched tables and seeds on
+isolab-eks, an A/A arm, <code>perf-ipc</code> cycles. Its outcome
+replaces the <code>c</code> column above with a measured number; the n41
+panel row is where that number matters.</p>
+<h2 id="files">Files</h2>
+<p><code>data.json</code> (inputs with sources), <code>bound.py</code>
+(derivation and figure), <code>RESULTS.md</code> (table, sources,
+inventory), <code>bound.svg</code>, <code>report.html</code>,
+<code>report.pdf</code>.</p>
+<figure>
+<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAwIiBoZWlnaHQ9IjQ0MCIgZm9udC1mYW1pbHk9IkhlbHZldGljYSwgQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTEiPgo8cmVjdCB3aWR0aD0iMTAwMCIgaGVpZ2h0PSI0NDAiIGZpbGw9IndoaXRlIi8+Cjx0ZXh0IHg9IjcwIiB5PSIyNCIgZm9udC1zaXplPSIxMyIgZm9udC13ZWlnaHQ9ImJvbGQiPlBlci1ncm91cC1vcGVyYXRpb24gZmFjdG9yIGMqIGEgY29vcmRpbmF0ZSBjaGFuZ2Ugd291bGQgbmVlZCBmb3IgcGFyaXR5IHdpdGggcmhvLCBwZXIgcmVjb3JkZWQgSUMgcm93IChsb2cgc2NhbGUpPC90ZXh0Pgo8bGluZSB4MT0iNzAiIHkxPSIzNTAuMCIgeDI9Ijk4MCIgeTI9IjM1MC4wIiBzdHJva2U9IiNlNGU0ZTQiLz48dGV4dCB4PSI2NCIgeT0iMzU0LjAiIHRleHQtYW5jaG9yPSJlbmQiPjE8L3RleHQ+CjxsaW5lIHgxPSI3MCIgeTE9IjMyNy41OTU0Njg4NjM2Njc2MyIgeDI9Ijk4MCIgeTI9IjMyNy41OTU0Njg4NjM2Njc2MyIgc3Ryb2tlPSIjZTRlNGU0Ii8+PHRleHQgeD0iNjQiIHk9IjMzMS41OTU0Njg4NjM2Njc2MyIgdGV4dC1hbmNob3I9ImVuZCI+MS4zPC90ZXh0Pgo8bGluZSB4MT0iNzAiIHkxPSIyOTAuODA4ODY4ODQzMzM4NiIgeDI9Ijk4MCIgeTI9IjI5MC44MDg4Njg4NDMzMzg2IiBzdHJva2U9IiNlNGU0ZTQiLz48dGV4dCB4PSI2NCIgeT0iMjk0LjgwODg2ODg0MzMzODYiIHRleHQtYW5jaG9yPSJlbmQiPjI8L3RleHQ+CjxsaW5lIHgxPSI3MCIgeTE9IjI1Ni4xODQyNzY3NDE0MjM5NiIgeDI9Ijk4MCIgeTI9IjI1Ni4xODQyNzY3NDE0MjM5NiIgc3Ryb2tlPSIjZTRlNGU0Ii8+PHRleHQgeD0iNjQiIHk9IjI2MC4xODQyNzY3NDE0MjM5NiIgdGV4dC1hbmNob3I9ImVuZCI+MzwvdGV4dD4KPGxpbmUgeDE9IjcwIiB5MT0iMjEyLjU2MjQ0OTU5OTE4NTEiIHgyPSI5ODAiIHkyPSIyMTIuNTYyNDQ5NTk5MTg1MSIgc3Ryb2tlPSIjZTRlNGU0Ii8+PHRleHQgeD0iNjQiIHk9IjIxNi41NjI0NDk1OTkxODUxIiB0ZXh0LWFuY2hvcj0iZW5kIj41PC90ZXh0Pgo8bGluZSB4MT0iNzAiIHkxPSIxNTMuMzcxMzE4NDQyNTIzNzIiIHgyPSI5ODAiIHkyPSIxNTMuMzcxMzE4NDQyNTIzNzIiIHN0cm9rZT0iI2U0ZTRlNCIvPjx0ZXh0IHg9IjY0IiB5PSIxNTcuMzcxMzE4NDQyNTIzNzIiIHRleHQtYW5jaG9yPSJlbmQiPjEwPC90ZXh0Pgo8bGluZSB4MT0iNzAiIHkxPSI5NC4xODAxODcyODU4NjIyNSIgeDI9Ijk4MCIgeTI9Ijk0LjE4MDE4NzI4NTg2MjI1IiBzdHJva2U9IiNlNGU0ZTQiLz48dGV4dCB4PSI2NCIgeT0iOTguMTgwMTg3Mjg1ODYyMjUiIHRleHQtYW5jaG9yPSJlbmQiPjIwPC90ZXh0Pgo8bGluZSB4MT0iNzAiIHkxPSIzNDUuODMzNTc2MDYwNzUxIiB4Mj0iOTgwIiB5Mj0iMzQ1LjgzMzU3NjA2MDc1MSIgc3Ryb2tlPSIjMmE5ZDRiIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1kYXNoYXJyYXk9IjYgNCIvPjx0ZXh0IHg9Ijk3NiIgeT0iMzQxLjgzMzU3NjA2MDc1MSIgdGV4dC1hbmNob3I9ImVuZCIgZmlsbD0iIzJhOWQ0YiIgZm9udC1zaXplPSIxMCI+YXZhaWxhYmxlLCByZWFsaXN0aWMgYyA9IDEuMDU8L3RleHQ+CjxsaW5lIHgxPSI3MCIgeTE9IjMyNy41OTU0Njg4NjM2Njc2MyIgeDI9Ijk4MCIgeTI9IjMyNy41OTU0Njg4NjM2Njc2MyIgc3Ryb2tlPSIjZDA4YTAwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1kYXNoYXJyYXk9IjYgNCIvPjx0ZXh0IHg9Ijk3NiIgeT0iMzIzLjU5NTQ2ODg2MzY2NzYzIiB0ZXh0LWFuY2hvcj0iZW5kIiBmaWxsPSIjZDA4YTAwIiBmb250LXNpemU9IjEwIj5hdmFpbGFibGUsIGdlbmVyb3VzIGMgPSAxLjM8L3RleHQ+CjxyZWN0IHg9IjgyLjAiIHk9IjI2OC4yMzU0NDQxOTU2MDAzIiB3aWR0aD0iNzYuMCIgaGVpZ2h0PSI4MS43NjQ1NTU4MDQzOTk3MiIgZmlsbD0iIzJiNDdjOSIvPgo8dGV4dCB4PSIxMjAuMCIgeT0iMjY0LjIzNTQ0NDE5NTYwMDMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTAiPjIuNjE8L3RleHQ+Cjx0ZXh0IHg9IjEyMC4wIiB5PSIzNzQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iOSI+YTEgbjI5IEZyb2Jlbml1cy1vcmJpdDwvdGV4dD4KPHRleHQgeD0iMTIwLjAiIHk9IjM4NiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSI5Ij5JQyB2cyByaG8tZnJvYjwvdGV4dD4KPHJlY3QgeD0iMTgyLjAiIHk9IjMyNi42ODA3NDk2OTcyMjQzIiB3aWR0aD0iNzYuMCIgaGVpZ2h0PSIyMy4zMTkyNTAzMDI3NzU2ODYiIGZpbGw9IiM5ZmIwZTgiLz4KPHRleHQgeD0iMjIwLjAiIHk9IjMyMi42ODA3NDk2OTcyMjQzIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjEwIj4xLjMxPC90ZXh0Pgo8dGV4dCB4PSIyMjAuMCIgeT0iMzc0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjkiPm40MSBkaXNqb2ludCBjb2xkPC90ZXh0Pgo8dGV4dCB4PSIyMjAuMCIgeT0iMzg2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjkiPkNQVSBwYW5lbCAoY29tcGFjdDwvdGV4dD4KPHRleHQgeD0iMjIwLjAiIHk9IjM5OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSI5Ij52cyByaG8pPC90ZXh0Pgo8cmVjdCB4PSIyODIuMCIgeT0iMjE4LjM5MzEwNDIzMDEyMjUzIiB3aWR0aD0iNzYuMCIgaGVpZ2h0PSIxMzEuNjA2ODk1NzY5ODc3NDciIGZpbGw9IiM5ZmIwZTgiLz4KPHRleHQgeD0iMzIwLjAiIHk9IjIxNC4zOTMxMDQyMzAxMjI1MyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxMCI+NC42NzwvdGV4dD4KPHRleHQgeD0iMzIwLjAiIHk9IjM3NCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSI5Ij5ydWxlIHY4IEtvYmxpdHo8L3RleHQ+Cjx0ZXh0IHg9IjMyMC4wIiB5PSIzODYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iOSI+ZGVzY2VudCBuNDcgKGNvbGQpPC90ZXh0Pgo8cmVjdCB4PSIzODIuMCIgeT0iMTc2LjE2ODcxMzgwMjQzMjY4IiB3aWR0aD0iNzYuMCIgaGVpZ2h0PSIxNzMuODMxMjg2MTk3NTY3MzIiIGZpbGw9IiM5ZmIwZTgiLz4KPHRleHQgeD0iNDIwLjAiIHk9IjE3Mi4xNjg3MTM4MDI0MzI2OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxMCI+Ny42NjwvdGV4dD4KPHRleHQgeD0iNDIwLjAiIHk9IjM3NCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSI5Ij5iYXNlbGluZSBuNDEgcnVsZTwvdGV4dD4KPHRleHQgeD0iNDIwLjAiIHk9IjM4NiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSI5Ij52MyAoY29sZCk8L3RleHQ+CjxyZWN0IHg9IjQ4Mi4wIiB5PSIxMjkuNDA0NjQ0NjMzODg5NTciIHdpZHRoPSI3Ni4wIiBoZWlnaHQ9IjIyMC41OTUzNTUzNjYxMTA0MyIgZmlsbD0iIzlmYjBlOCIvPgo8dGV4dCB4PSI1MjAuMCIgeT0iMTI1LjQwNDY0NDYzMzg4OTU3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjEwIj4xMy4yPC90ZXh0Pgo8dGV4dCB4PSI1MjAuMCIgeT0iMzc0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjkiPmJhc2VsaW5lIG41MyBydWxlPC90ZXh0Pgo8dGV4dCB4PSI1MjAuMCIgeT0iMzg2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjkiPnYzIChjb2xkKTwvdGV4dD4KPHJlY3QgeD0iNTgyLjAiIHk9IjkwLjEzNTg0MzA2OTE2OTQzIiB3aWR0aD0iNzYuMCIgaGVpZ2h0PSIyNTkuODY0MTU2OTMwODMwNiIgZmlsbD0iIzlmYjBlOCIvPgo8dGV4dCB4PSI2MjAuMCIgeT0iODYuMTM1ODQzMDY5MTY5NDMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTAiPjIxPC90ZXh0Pgo8dGV4dCB4PSI2MjAuMCIgeT0iMzc0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjkiPmJhc2VsaW5lIG42MSBydWxlPC90ZXh0Pgo8dGV4dCB4PSI2MjAuMCIgeT0iMzg2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjkiPnYzIChjb2xkKTwvdGV4dD4KPHJlY3QgeD0iNjgyLjAiIHk9IjIzMy4yNTU4NDk3ODE2MjI5IiB3aWR0aD0iNzYuMCIgaGVpZ2h0PSIxMTYuNzQ0MTUwMjE4Mzc3MDkiIGZpbGw9IiM5ZmIwZTgiLz4KPHRleHQgeD0iNzIwLjAiIHk9IjIyOS4yNTU4NDk3ODE2MjI5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjEwIj4zLjkyPC90ZXh0Pgo8dGV4dCB4PSI3MjAuMCIgeT0iMzc0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjkiPmJhc2VsaW5lIG44MyByYW5rLWZpbmRlcjwvdGV4dD4KPHRleHQgeD0iNzIwLjAiIHk9IjM4NiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSI5Ij4oY29sZCwgd2FsbCk8L3RleHQ+CjxyZWN0IHg9Ijc4Mi4wIiB5PSIyNjguNzMzNDEyMzAwNjg3NDYiIHdpZHRoPSI3Ni4wIiBoZWlnaHQ9IjgxLjI2NjU4NzY5OTMxMjU0IiBmaWxsPSIjOWZiMGU4Ii8+Cjx0ZXh0IHg9IjgyMC4wIiB5PSIyNjQuNzMzNDEyMzAwNjg3NDYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTAiPjIuNTk8L3RleHQ+Cjx0ZXh0IHg9IjgyMC4wIiB5PSIzNzQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iOSI+cDM2IHByaW1lIHJlczI8L3RleHQ+Cjx0ZXh0IHg9IjgyMC4wIiB5PSIzODYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iOSI+dnMgcmhvLm5lZ2F0aW9uPC90ZXh0Pgo8cmVjdCB4PSI4ODIuMCIgeT0iMTQxLjI1ODM1MjY5MjM3Mjc0IiB3aWR0aD0iNzYuMCIgaGVpZ2h0PSIyMDguNzQxNjQ3MzA3NjI3MjYiIGZpbGw9IiM5ZmIwZTgiLz4KPHRleHQgeD0iOTIwLjAiIHk9IjEzNy4yNTgzNTI2OTIzNzI3NCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxMCI+MTEuNTwvdGV4dD4KPHRleHQgeD0iOTIwLjAiIHk9IjM3NCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSI5Ij50b3VybmFtZW50IHJvdW5kIDAwMjY8L3RleHQ+Cjx0ZXh0IHg9IjkyMC4wIiB5PSIzODYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iOSI+bjE5YTAgYmF0Y2gxNiAoSXIpPC90ZXh0Pgo8dGV4dCB4PSI3MCIgeT0iNDI2IiBmb250LXNpemU9IjEwIj5kYXJrIGJhcjogZl9nIG1lYXN1cmVkICgwLjU4NywgRnJvYmVuaXVzLW9yYml0IG4yOSk7IGxpZ2h0IGJhcnM6IGVudmVsb3BlIGZfZyA9IDEsIHNvIGMqIGVxdWFscyB0aGUgcmVjb3JkZWQgZ2FwLiBFdmVyeSBiYXIgc2l0cyBhYm92ZSBib3RoIGF2YWlsYWJsZS1jIGxpbmVzLiBEZXJpdmVkIGZyb20gZnJvemVuIHJlY29yZHMgKFJFU1VMVFMubWQpOyBub3RoaW5nIGhlcmUgaXMgYSBuZXcgbWVhc3VyZW1lbnQuPC90ZXh0Pgo8L3N2Zz4=" alt="Required per-operation factor per row" />
+<figcaption aria-hidden="true">Required per-operation factor per
+row</figcaption>
+</figure>
+<hr />
+<h1 id="results-derived-from-frozen-records-no-new-measurement">Results
+(derived from frozen records; no new measurement)</h1>
+<p>Available per-group-operation factor from a coordinate change:
+realistic c = 1.05 (batch depth is the only lever left once arithmetic
+is batched affine), generous c = 1.3 (the ALU ratio read in the lab’s
+favour). Sources in data.json.</p>
+<table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 12%" />
+<col style="width: 12%" />
+<col style="width: 9%" />
+<col style="width: 12%" />
+<col style="width: 12%" />
+<col style="width: 12%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>row</th>
+<th style="text-align: right;">gap IC/rho</th>
+<th style="text-align: right;">f_g</th>
+<th style="text-align: left;">f_g measured?</th>
+<th style="text-align: right;">c* needed for parity</th>
+<th style="text-align: right;">row speedup at c=1.05</th>
+<th style="text-align: right;">at c=1.30</th>
+<th style="text-align: left;">parity at c=1.05?</th>
+<th style="text-align: left;">at c=1.30?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>a1 n29 Frobenius-orbit IC vs rho-frob</td>
+<td style="text-align: right;">1.566</td>
+<td style="text-align: right;">0.587</td>
+<td style="text-align: left;">yes</td>
+<td style="text-align: right;">2.61</td>
+<td style="text-align: right;">1.029</td>
+<td style="text-align: right;">1.157</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="even">
+<td>n41 disjoint cold CPU panel (compact vs rho)</td>
+<td style="text-align: right;">1.314</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: left;">no (envelope 1)</td>
+<td style="text-align: right;">1.31</td>
+<td style="text-align: right;">1.050</td>
+<td style="text-align: right;">1.300</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="odd">
+<td>rule v8 Koblitz descent n47 (cold)</td>
+<td style="text-align: right;">4.67</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: left;">no (envelope 1)</td>
+<td style="text-align: right;">4.67</td>
+<td style="text-align: right;">1.050</td>
+<td style="text-align: right;">1.300</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="even">
+<td>baseline n41 rule v3 (cold)</td>
+<td style="text-align: right;">7.657</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: left;">no (envelope 1)</td>
+<td style="text-align: right;">7.66</td>
+<td style="text-align: right;">1.050</td>
+<td style="text-align: right;">1.300</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="odd">
+<td>baseline n53 rule v3 (cold)</td>
+<td style="text-align: right;">13.24</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: left;">no (envelope 1)</td>
+<td style="text-align: right;">13.2</td>
+<td style="text-align: right;">1.050</td>
+<td style="text-align: right;">1.300</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="even">
+<td>baseline n61 rule v3 (cold)</td>
+<td style="text-align: right;">20.97</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: left;">no (envelope 1)</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">1.050</td>
+<td style="text-align: right;">1.300</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="odd">
+<td>baseline n83 rank-finder (cold, wall)</td>
+<td style="text-align: right;">3.924</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: left;">no (envelope 1)</td>
+<td style="text-align: right;">3.92</td>
+<td style="text-align: right;">1.050</td>
+<td style="text-align: right;">1.300</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="even">
+<td>p36 prime res2 vs rho.negation</td>
+<td style="text-align: right;">2.59</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: left;">no (envelope 1)</td>
+<td style="text-align: right;">2.59</td>
+<td style="text-align: right;">1.050</td>
+<td style="text-align: right;">1.300</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="odd">
+<td>tournament round 0026 n19a0 batch16 (Ir)</td>
+<td style="text-align: right;">11.52</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: left;">no (envelope 1)</td>
+<td style="text-align: right;">11.5</td>
+<td style="text-align: right;">1.050</td>
+<td style="text-align: right;">1.300</td>
+<td style="text-align: left;">no</td>
+<td style="text-align: left;">no</td>
+</tr>
+</tbody>
+</table>
+<p>Reading: with f_g = 1 the required factor equals the gap itself, so
+the smallest gap on record, 1.314 on the n41 cold panel, needs c =
+1.314, above the generous 1.30 by 1%; every other row needs c &gt;=
+1.566. On the one row with a measured f_g (0.587) parity needs c = 2.61,
+while the available factor is at most 1.05 to 1.30.</p>
+<h2 id="sources">Sources</h2>
+<ul>
+<li><strong>a1 n29 Frobenius-orbit IC vs rho-frob</strong>: gap from
+crypto research/ecbench_frobenius_orbit_vs_rho_20261014/README.md:76
+(1.566 [0.992, 2.347], S in GAE/sqrt r); f_g: crypto
+research/ecbench_frobenius_orbit_vs_rho_20261014/tables/derived-phase-means.jsonl:5:
+ic_group 315 of ic_total 537 GAE (means of 48 runs); README.md:163 gives
+additions+doublings only IC/rho-frob = 0.96 The only row with a measured
+group-operation share.</li>
+<li><strong>n41 disjoint cold CPU panel (compact vs rho)</strong>: gap
+from crypto
+research/notes/ecc2k130/disjoint_cold_v2_outcome_20261001/RESULT.md:28
+(paired 1.314 [1.288, 1.359], CPU seconds); f_g: not recorded;
+selector_phase_admission_20261001/DECISION.md:9 splits elapsed into
+index build 35.27% and rank+targets 63.23% only. Envelope f_g = 1.
+Closest row to parity: 23.9% reduction needed.</li>
+<li><strong>rule v8 Koblitz descent n47 (cold)</strong>: gap from crypto
+research/ic_tool_program/rule/v8/README.md:49 (4.67 [4.34, 5.07]); f_g:
+not recorded; setup wall split build 4.33M / collect 7.81M / select
+3.60M / verify 1.52M / la 0.26M ns (mean of 135 repetitions,
+runs/k1n47/T0*-R1.price.json) carries no group-op split. Envelope f_g =
+1.</li>
+<li><strong>baseline n41 rule v3 (cold)</strong>: gap from cryptanalysis
+docs/ic/baselines.json n41 (cold 7.66 [6.90, 8.61]); unit one batched
+affine addition; f_g: not recorded; setup is 98.9% of cold S
+(BASELINES.md next_improvement). Envelope f_g = 1.</li>
+<li><strong>baseline n53 rule v3 (cold)</strong>: gap from cryptanalysis
+docs/ic/baselines.json n53 (13.2 [11.8, 15.0]); f_g: not recorded; setup
+99.7% of cold S. Envelope f_g = 1.</li>
+<li><strong>baseline n61 rule v3 (cold)</strong>: gap from cryptanalysis
+docs/ic/baselines.json n61 (21.0 [18.6, 23.8]); f_g: not recorded; setup
+99.7% of cold S. Envelope f_g = 1.</li>
+<li><strong>baseline n83 rank-finder (cold, wall)</strong>: gap from
+cryptanalysis docs/ic/baselines.json n83 gap_tuned_rho (end-to-end cold
+3.924, point estimate); f_g: not recorded; wall split e2e cold 7273.5 ms
+= rank 2806.5 + setup 4308.5 (index build 3246.3) + online 158.6; the
+index build is hashing, not group operations, so the true f_g is well
+below 1. Envelope f_g = 1. Factor-base construction uncharged on this
+row.</li>
+<li><strong>p36 prime res2 vs rho.negation</strong>: gap from crypto
+research/ic_planner_exhaustive_20261026/README.md:335 (2.5921 [2.234,
+3.008] at w=0); f_g: not recorded; the per-run records.jsonl is in the
+artifact store. Envelope f_g = 1.</li>
+<li><strong>tournament round 0026 n19a0 batch16 (Ir)</strong>: gap from
+crypto
+research/ic_candidate_tournament_20260915/runs/round-0026/REPORT.md:72
+(11.524 [10.718, 13.016] Ir); f_g: phase table lines 105-118 (M Ir):
+factor base+tables 18.536 of 30.347 total; collection+decomposition
+1.840; verify+filter+linalg 3.591. No group-op split. Envelope f_g =
+1.</li>
+</ul>
+<h2 id="measured-coordinate-or-curve-shape-arms-in-the-lab">Measured
+coordinate or curve-shape arms in the lab</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>arm</th>
+<th>numbers</th>
+<th>source</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>genus-2 weighted-projective state vs affine wrapper (not an elliptic
+curve)</td>
+<td>state/wrapper 1.1016 pooled over 1,260 targets (0.5468-1.3037 across
+36 cells, 12/36 favour state); wrapper/rho 3.7938, state/rho 4.1793</td>
+<td>crypto
+research/projective_law_followup_20261022/REPORT.md:22-42</td>
+</tr>
+<tr class="even">
+<td>P-256 rho seed ladder, Jacobian vs affine (setup only, L0)</td>
+<td>0.6615 vs 11.5295 ms per seed, 17.43x, about 750 inversions to 1;
+the report says the effect on whole-run throughput is small</td>
+<td>crypto benchmarks/20261017-gpu-nist-jac-seed/REPORT.md:43-51</td>
+</tr>
+<tr class="odd">
+<td>ECC2K-130 affine batch vs lambda-projective (priced, nothing
+built)</td>
+<td>38.1 vs 60.5 clmad per update (1.59x in favour of affine); affine
+batch 16 measured 14.41 B/s</td>
+<td>crypto ecc2k130/LAMBDA-PROJECTIVE.md:104-121</td>
+</tr>
+<tr class="even">
+<td>rho batched inversion rewrite (engineering, same coordinates)</td>
+<td>Callgrind Ir/step 1.040 at n41 and n53; native 1.117 not
+established, A/A 7.0%; rerun paired 0.989</td>
+<td>crypto research/rho_batchinv_20261022/README.md:10-24</td>
+</tr>
+<tr class="odd">
+<td>Curve25519 factor-base coordinate: Weierstrass x, Montgomery x,
+Edwards y (support counts, k=20)</td>
+<td>signed classes at width 2^10: 458, 533, 499; Edwards/Weierstrass F4
+mul-adds per target 0.997-1.000 at t=4 and 0.989-0.993 at t=6-7</td>
+<td>crypto
+research/curve25519_algebraic_ladder_20261102/README.md:16-24;
+research/curve25519_edwards_semaev_20261102/README.md:53-89</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

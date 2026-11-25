@@ -1,0 +1,21 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-15T17:05:09Z",
+ "id": "PCC-20261115-d2f58b",
+ "kind": "statement",
+ "producer": {
+  "commit": "27fc983527118c3b3b0016a12b9aca8b5539108a",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "recompute",
+   "path": "experiments/prime-field-auxiliary-ic/rust-validation/kernel-fusion-20261115/producer-checks.json",
+   "sha256": "ae3ffa91bac18cade2de7b1358f98fe94378c920580a0114f01a480227e2b94d"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Unsigned implementation and correctness diagnostics; source-level arithmetic counts are not instruction counts or a measured speedup. Resource probes did not launch a GPU or benchmark job.",
+ "statement": "The native scalar/SIMD center update replaces one field multiplication with one addition per intermediate coefficient update and zero-candidate detection is fused with evaluation. Producer checks report 15 core checks on stable and Rust 1.78 plus three CLI checks passing, including explicit polynomial products, mixed shifts and multi-tile padding cases; no runtime improvement has been measured."
+}

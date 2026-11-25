@@ -1,0 +1,9 @@
+# Prespecified fundamental-discriminant Hecke rank holdout
+
+Change the fundamental discriminant from the prior `D_K=-7` family to `D_K=-39` while retaining a split norm-2 ideal and a rational degree-11 isogeny possibility. The Kronecker symbols are `(-39/2)=+1` and `(-39/11)=+1`. Freeze conductor `f=6`, Hecke degrees `[2,3]`, and the producer's first eligible field prime `p=367` with trace magnitude `u=8`, satisfying `4p=u²+39f²`.
+
+The existing empirical full-component rule predicts, before running this instance, `h(-39)=4`, `h(-156)=4`, `h(-351)=12`, and `h(-1404)=12`. Thus its predicted two-lift class size is `C=2(4+4+12+12)=64`, its rank is `C-2h(-1404)=40`, its projective deficiency is `23`, and its Atkin–Lehner deficiency is `11`. This is a falsifiable prediction, not an assumption in the producer. The class numbers were calculated with the checked Sage launcher using PARI `qfbclassno` before the run.
+
+First verify that the Hilbert class roots over `F_367` and the rational `X_0(11)` points above them provide a nonempty start set. Then run the copied class-walk producer with `PFS_WALK_DK=-39`, `PFS_WALK_F=6`, `PFS_WALK_L=2,3`, and `PFS_WALK_PMIN=367`. Retain the raw class, relation matrix, producer output, exit status, and wall cap. Independently recompute matrix rank over three primes and classify the observed conductor strata. If the rational lift or full component fails, retain that result instead of substituting another field or changing the prediction.
+
+The copied producer SHA-256 is `17a2a87c86206644e4d9f6e64735f97f5e56c2526fe20a3b54807c193685ba09`; its `hecke11.py` dependency is `7e66144e76bf62f7e645d87cc58be2bb0f7cc5e52601665650ef0706a6f715fb`. Save `./sage --runtime-info` before the producer. Cap producer wall time at 180 seconds. This ordinary-host run tests exact class/rank structure; its wall time is diagnostic.

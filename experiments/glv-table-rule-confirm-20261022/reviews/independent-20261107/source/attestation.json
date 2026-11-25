@@ -1,0 +1,95 @@
+{
+  "checks_not_performed": [
+    "fresh Lean build",
+    "C compile or execution",
+    "empirical row replay"
+  ],
+  "checks_performed": [
+    "git blob SHA-256 comparison",
+    "manual eight-theorem type and three-definition review",
+    "literal C selector and branch inspection",
+    "C integer promotion and bounded rr analysis",
+    "Python adverse-case arithmetic enumeration"
+  ],
+  "joint_owned": [
+    "exact source identity",
+    "eight public theorem type and definition correspondence to C selector",
+    "C input and arithmetic caveats",
+    "adverse selector cases"
+  ],
+  "report_sha256": "8a9a47b355262b76e13d0fb8517530573bdd6b30c2efd5108bbb3156a03a0af6",
+  "repository_commit": "927d1eada55ff51e87b89930cad48672147e0929",
+  "reviewer": "source-fidelity",
+  "schema": "independent-review-attestation-v1",
+  "sibling_access": false,
+  "sources_read": [
+    {
+      "commit": "927d1eada55ff51e87b89930cad48672147e0929",
+      "path": "experiments/glv-table-rule-confirm-20261022/TableBudget.lean",
+      "sha256": "823903d27e906feccfe40f29df7feb7a23669b0c96d0bdc1f79ff0e3bddf93b4"
+    },
+    {
+      "commit": "927d1eada55ff51e87b89930cad48672147e0929",
+      "path": "experiments/glv-table-rule-confirm-20261022/LEAN_PROOF.md",
+      "sha256": "95d80e054b675e2f76025b1791d725dcc9265ce0b0e3e3d6a28e023e31a905fb"
+    },
+    {
+      "commit": "927d1eada55ff51e87b89930cad48672147e0929",
+      "path": "experiments/glv-table-rule-confirm-20261022/REPORT.md",
+      "sha256": "08eb5c9435829c7d6db0aaa8c548a18bd03e96559303b046b6f9b057206bd212"
+    },
+    {
+      "commit": "927d1eada55ff51e87b89930cad48672147e0929",
+      "path": "experiments/glv-table-rule-confirm-20261022/PROTOCOL.md",
+      "sha256": "f44ca1e500ef6cedb3aa1cf9b56f2c2bb26535af0c219ce7feba42dd1f20ce11"
+    },
+    {
+      "commit": "927d1eada55ff51e87b89930cad48672147e0929",
+      "path": "experiments/glv-table-rule-confirm-20261022/check_lean_source_binding.py",
+      "sha256": "b841a8213e4a052ddaeafd264520f1d03cca5e75795ac58e7eddc8f4dcdfe059"
+    },
+    {
+      "commit": "927d1eada55ff51e87b89930cad48672147e0929",
+      "path": "experiments/glv-table-rule-confirm-20261022/lean-receipt.json",
+      "sha256": "90c7c692c62acaadc0e38f837b34224a61d8f480ae376bd1cdc1f716eeed7ab0"
+    },
+    {
+      "commit": "927d1eada55ff51e87b89930cad48672147e0929",
+      "path": "experiments/glv-table-rule-confirm-20261022/lean-source-binding.json",
+      "sha256": "df2b27bedfb712b396d4927fb8958534beb542783a410fe4bde00baf945b2839"
+    },
+    {
+      "commit": "927d1eada55ff51e87b89930cad48672147e0929",
+      "path": "experiments/glv-table-rule-confirm-20261022/live-source-binding.json",
+      "sha256": "8439b5e825d0b845ad1d47d2326990f599176f4fecda13efdd9015365e96f1e1"
+    },
+    {
+      "commit": "927d1eada55ff51e87b89930cad48672147e0929",
+      "path": "src/curve.c",
+      "sha256": "60796724ef7d7c5b3b7dfd89c29db85d5e188deb247b5d9d0bd69b84551afe20"
+    },
+    {
+      "commit": "927d1eada55ff51e87b89930cad48672147e0929",
+      "path": "lean-toolchain",
+      "sha256": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b"
+    },
+    {
+      "commit": "7cb3dce4cac9176d74afb6403048b5fabbaab834",
+      "path": "src/curve.c",
+      "sha256": "e504bb18f0e80134c9ccf9abc1b7a825097286a759075090d2693ef82b406975"
+    },
+    {
+      "commit": "42761f85b06242cb54f2a5fa405c723451897503",
+      "path": "src/curve.c",
+      "sha256": "3f3a100d635d814bdfa0f6624a40b9d77c9c564f65db2bbc568dcd4b55285efe"
+    },
+    {
+      "commit": "8bf648dcbefe7b8131e5fb26909c77e68778332a",
+      "path": "src/curve.c",
+      "sha256": "60796724ef7d7c5b3b7dfd89c29db85d5e188deb247b5d9d0bd69b84551afe20"
+    }
+  ],
+  "task": "T-1836",
+  "verdict": "holds",
+  "verdict_scope": "Conditional selector arithmetic and exact target-commit C source correspondence; no compiled-behavior or performance claim"
+}

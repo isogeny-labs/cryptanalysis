@@ -1,0 +1,127 @@
+{
+ "bootstrap": "rank blocks resampled; attempt indices resampled within each drawn block, shared by the block's rank processes; cold points resampled, paired; 300 draws per simulation (10,000 in the frozen verifier)",
+ "chosen_rank_blocks": 3,
+ "expected_e2e_ratio_from_archived_cPI": 1.0354756458806935,
+ "expected_note": "(K + mean cP) / (K + mean cPI) with run 39214027289's kP/kPaa rank stage and cP / cPI cold means: an estimate from another run, not a claim and not an input of this check",
+ "mean_cold_ms_prior": 22292.6407644,
+ "mean_rank_stage_ms_prior": 143736.1002375,
+ "min_blocks": 3,
+ "min_delta": 1.01,
+ "null": "e = 1: the archived cR / cP cold pairs, two processes of the same cold code",
+ "points": 20,
+ "power": {
+  "1.000": {
+   "by_blocks": {
+    "2": {
+     "mc_se": 0.012062338081814818,
+     "power": 0.03
+    },
+    "3": {
+     "mc_se": 0.011039701082909808,
+     "power": 0.025
+    },
+    "4": {
+     "mc_se": 0.009899494936611665,
+     "power": 0.02
+    }
+   },
+   "cold_effect": 1.0000000000000007
+  },
+  "1.002": {
+   "by_blocks": {
+    "2": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    },
+    "3": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    },
+    "4": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    }
+   },
+   "cold_effect": 1.015089976749744
+  },
+  "1.005": {
+   "by_blocks": {
+    "2": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    },
+    "3": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    },
+    "4": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    }
+   },
+   "cold_effect": 1.0384789669991665
+  },
+  "1.010": {
+   "by_blocks": {
+    "2": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    },
+    "3": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    },
+    "4": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    }
+   },
+   "cold_effect": 1.0796099323031951
+  },
+  "1.020": {
+   "by_blocks": {
+    "2": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    },
+    "3": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    },
+    "4": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    }
+   },
+   "cold_effect": 1.171005701545014
+  },
+  "1.035": {
+   "by_blocks": {
+    "2": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    },
+    "3": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    },
+    "4": {
+     "mc_se": 7.071067811865476e-08,
+     "power": 1.0
+    }
+   },
+   "cold_effect": 1.336638121616652
+  }
+ },
+ "prior": "inputs/power_prior.json",
+ "prior_source": "koblitz-n83-rankprobe-20261019/run_github_39214027289 (arms kP, kPaa, cR, cP, cPI)",
+ "quick": false,
+ "schema": 1,
+ "simulations": 200,
+ "statistic": "R = E2E(cP) / E2E(cPI), E2E(c) = K + mean cold(c), K the shared mean rank stage (each block the mean of its rank processes); 95% lower bound > 1",
+ "type_i_at_1.000": {
+  "2": 0.03,
+  "3": 0.025,
+  "4": 0.02
+ }
+}

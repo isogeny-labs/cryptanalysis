@@ -1,0 +1,18 @@
+   Compiling chained-transfer-reference v0.1.0 (/workspace/cryptanalysis/experiments/chained-transfer-reference)
+    Finished `release` profile [optimized] target(s) in 6.39s
+     Running unittests src/main.rs (experiments/chained-transfer-reference/target/release/deps/chained_transfer_reference-d352df790eb46e3d)
+
+running 1 test
+retained degenerate pairing[(0, 3), (1, 4), (2, 5)], delta0
+stable pairing[(0, 4), (1, 5), (2, 3)], delta63, target[56, 41, 62, 78, 24, 57, 80]
+stable pairing[(0, 5), (1, 3), (2, 4)], delta38, target[56, 60, 62, 23, 24, 44, 80]
+shifted109 source counts(120, 10436, 12317), elliptic quotient orders109/113, stable3 degenerate1 targets2
+shifted109 target[56, 41, 62, 78, 24, 57, 80], counts(120, 10436, 12317), leading_rootSome(22)
+shifted109 supported monic target[31, 75, 74, 54, 71, 55, 1], raw ordinate scale22
+shifted109 target[56, 60, 62, 23, 24, 44, 80], counts(120, 10436, 12317), leading_rootSome(22)
+shifted109 supported monic target[31, 26, 74, 47, 71, 46, 1], raw ordinate scale22
+PASS checked cubic square roots/invalid fields, frozen shift2 source all109 coordinate/pullback/norm controls and complete stable-kernel/codomain inventory; no shifted Richelot map evaluated
+test nonsplit::checked_cubic_roots_and_frozen_shifted109_inventory ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 44 filtered out; finished in 0.91s
+

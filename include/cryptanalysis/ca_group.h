@@ -89,10 +89,40 @@ CA_API ca_status ca_group_ec_init(ca_group *g, uint64_t p, uint64_t a, uint64_t 
 
 /* ---- element operations (thin wrappers around the vtable) -------------- */
 
+/* Native (Z/pZ)^* vtable address: ca_group_op compares against this so a
+ * long mul-chain skips the indirect call, while diagnostic wrappers that
+ * replace vt (op-counting tests) still go through their hooks. */
+CA_API extern const ca_group_vtable *const ca_zp_vt_ptr;
+
+/* (Z/pZ)^* is a single Montgomery multiply.  For p < 2^62 the product uses
+ * lazy REDC ([0, 2p) residues); equal/hash/decode canonicalize.  Same class
+ * as zp_op / zp_dbl. */
 static inline void ca_group_op(const ca_group *g, ca_elem *r, const ca_elem *a, const ca_elem *b)
-{ g->vt->op(g, r, a, b); }
+{
+    if (g->vt == ca_zp_vt_ptr) {
+        const uint64_t p = g->mont.p;
+        if (p < (1ULL << 62)) {
+            r->w[0] = ca_mont_mul_lazy(a->w[0], b->w[0], p, g->mont.pinv);
+        } else {
+            r->w[0] = ca_mont_mul(&g->mont, a->w[0], b->w[0]);
+        }
+        return;
+    }
+    g->vt->op(g, r, a, b);
+}
 static inline void ca_group_dbl(const ca_group *g, ca_elem *r, const ca_elem *a)
-{ g->vt->dbl(g, r, a); }
+{
+    if (g->vt == ca_zp_vt_ptr) {
+        const uint64_t p = g->mont.p;
+        if (p < (1ULL << 62)) {
+            r->w[0] = ca_mont_sqr_lazy(a->w[0], p, g->mont.pinv);
+        } else {
+            r->w[0] = ca_mont_sqr(&g->mont, a->w[0]);
+        }
+        return;
+    }
+    g->vt->dbl(g, r, a);
+}
 static inline void ca_group_inv(const ca_group *g, ca_elem *r, const ca_elem *a)
 { g->vt->inv(g, r, a); }
 static inline void ca_group_identity(const ca_group *g, ca_elem *r)
@@ -145,6 +175,37 @@ CA_API void ca_group_format(const ca_group *g, const ca_elem *a, char *buf, size
 CA_API int ca_ec_lift_x(const ca_group *g, ca_elem *r, uint64_t x);
 /* Apply the curve's endomorphism psi once (a copy when none is enabled). */
 CA_API void ca_ec_endo(const ca_group *g, ca_elem *r, const ca_elem *a);
+/* Variable-time j=0 tau-adic scalar multiplication for public scalars.
+ * Returns 0 without changing r when this curve has no compatible
+ * endomorphism. The counts distinguish tau, mixed-addition, and tripling
+ * operations; they are not generic group-op counts. */
+CA_API int ca_ec_mul_tau2(const ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k,
+                          uint64_t *tau_steps, uint64_t *adds);
+CA_API int ca_ec_mul_tau4(const ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k,
+                          uint64_t *tau_steps, uint64_t *adds);
+CA_API int ca_ec_mul_tau4_tripling(const ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k,
+                                   uint64_t *tau_steps, uint64_t *adds, uint64_t *triples);
+/* Prime-field j=0 scalar multiplication using the Eisenstein endomorphism
+ * tau = 1 - omega and a width-2 tau-NAF.  This requires an enabled j=0
+ * endomorphism and a point in the configured order-n subgroup.  Returns 1
+ * when used, 0 when unavailable (r is then untouched).  The
+ * optional counts are tau evaluations and mixed additions, respectively;
+ * they are not interchangeable with generic group-op counts. */
+CA_API int ca_ec_mul_tau2(const ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k,
+                          uint64_t *tau_steps, uint64_t *adds);
+/* Width-4 variant with the paper's nine seed coefficients and sixfold unit
+ * orbit.  Setup is charged on every call.  `adds` includes projective
+ * additions and doublings used to prepare the seed table. */
+CA_API int ca_ec_mul_tau4(const ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k,
+                          uint64_t *tau_steps, uint64_t *adds);
+/* Rewrites pairs of tau powers as powers of 3 and evaluates them with the
+ * Jacobian tripling formula.  `triples` counts those evaluations separately. */
+CA_API int ca_ec_mul_tau4_tripling(const ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k,
+                                   uint64_t *tau_steps, uint64_t *adds, uint64_t *triples);
+/* Paper's 4S+6M Jacobian tripling formula for a=0, converted back to the
+ * library's affine representation.  Returns 1 on a supported curve and 0
+ * otherwise; valid for any curve point, with aliasing allowed. */
+CA_API int ca_ec_triple_j0(const ca_group *g, ca_elem *r, const ca_elem *a);
 /* Random point on the curve. */
 CA_API void ca_ec_random_point(const ca_group *g, ca_elem *r, uint64_t seed);
 /* Count points on E(F_p) using Mestre's baby-step giant-step method.

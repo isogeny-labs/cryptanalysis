@@ -1,0 +1,43 @@
+{
+  "status": "pass",
+  "checks": [
+    {
+      "name": "framework",
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-j2",
+        "--manifest-path",
+        "/tmp/ic-canonical-frozen-source-001/suite/Cargo.toml",
+        "--lib",
+        "ic_framework",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "clippy",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "-j2",
+        "--manifest-path",
+        "/tmp/ic-canonical-frozen-source-001/suite/Cargo.toml",
+        "--lib",
+        "--example",
+        "ic_affine_pipeline_probe",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "source_sha256": "cae16da54a3c940e7b7fa6678dfe53b324760a67dc937eb856f2d9b1fe7add86",
+  "standing": "local ARM correctness and lint only; native SIMD still requires remote positive controls"
+}

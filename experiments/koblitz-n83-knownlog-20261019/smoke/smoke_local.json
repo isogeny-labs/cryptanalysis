@@ -1,0 +1,129 @@
+{
+ "bases": {
+  "220": {
+   "base_hash": "e2b8d13f75587f7ae9a2dfa06a9760ed36deb7fed9dcc2bd6ccadeb8218bd088",
+   "base_sha256": "1045de01def6535ecf255435f92a9929cd7aa1ce794b8736034c18871e4c930c",
+   "index_digest": {
+    "logical_states": 4017200,
+    "logical_states_blake3": "196ad3a131fdc0ea91ecb26192dd5dbbbfa291d48b3867211589fba07f0d1b5a",
+    "table_entries": 4016540,
+    "table_map_sum64": "48ca2241816b3f6a",
+    "table_map_xor64": "b14d52cb55395544"
+   },
+   "log_table_sha256": "a567436a7f3076a858d30a5873e11c9e898a638fba5d39e52ace8ed7935ed6bc",
+   "q0_identity": {
+    "probes": 801863,
+    "relation": [
+     30585,
+     1963,
+     20417,
+     30373
+    ],
+    "scalar": "3141592653589793"
+   },
+   "root_table_entries": 4016540
+  },
+  "600": {
+   "base_hash": "730744637b87219e72d77e7a391e11845fdacc9b45357fcc16474a853b63fa3f",
+   "base_sha256": "8d2f3152432b235f64ccb448b38956c3d214456d9237830382cad0d7f3477a10",
+   "index_digest": {
+    "logical_states": 29880000,
+    "logical_states_blake3": "047c7294f01637dc879f5299e1a1ee9751174a9e89f58d71bc383594c93f8828",
+    "table_entries": 29878197,
+    "table_map_sum64": "ecd3c85419c411eb",
+    "table_map_xor64": "26bf95fd45e52505"
+   },
+   "log_table_sha256": "bf4aca722328f5524bb0ccc9ad3b0bc3e6b6e6ea333425727c9c6f8b8a1deb6e",
+   "q0_identity": {
+    "probes": 2155400,
+    "relation": [
+     25923,
+     52400,
+     11104,
+     19613
+    ],
+    "scalar": "3141592653589793"
+   },
+   "root_table_entries": 29878197
+  }
+ },
+ "generator": {
+  "220": {
+   "gen_ms": [
+    104.174053,
+    86.109739,
+    89.760458
+   ],
+   "gen_ms_median": 89.760458
+  },
+  "600": {
+   "gen_ms": [
+    240.832461,
+    207.775495,
+    218.386482
+   ],
+   "gen_ms_median": 218.386482
+  }
+ },
+ "host": {
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "rustc": "1.97.0 (local; the runner pins 1.99.0)"
+ },
+ "label": "LOCAL DIAGNOSTIC (cloud-agent VM, shared 4 vCPU; not timing evidence). Exactness fields are exact.",
+ "producer_binary": "scratchpad rotkey-bin/ic_online_rotkey_r770 (the rotation-key producer: the rank-probe producer plus rank-stage-only additions, cold path identical; sha256 08ead085...). The runner builds the rank-probe producer itself.",
+ "producer_q0": {
+  "220": {
+   "base_load_ms": 377.592691,
+   "cold_ms": 4128.036212,
+   "factor_log_table": {
+    "input_blake3": "4787ad38445f7867c83ee20c650e82b35c3b313e5aee113403861f46259c2b20",
+    "rank_stage_skipped": true,
+    "relation_la_or_load_and_verify_ms": 31.944843,
+    "source": "verified_cache",
+    "verified_columns": 220,
+    "verify_all_logs_ms": 31.831664000000004
+   },
+   "index_ms": 3394.065411,
+   "log_verify_ms": 31.944843,
+   "online_ms": 212.065425,
+   "peak_rss_bytes": 265089024,
+   "probes": 801863,
+   "recovered_scalar": "3141592653589793",
+   "relation": [
+    30585,
+    1963,
+    20417,
+    30373
+   ],
+   "scan_selftest_ms": 75.347285,
+   "setup_complete_ms": 3915.970787
+  },
+  "600": {
+   "base_load_ms": 418.35256300000003,
+   "cold_ms": 31385.495364000002,
+   "factor_log_table": {
+    "input_blake3": "2ea49d639de1ac08fa0da75ae07e9a319e33491e7a24e1d7c0d31bb44231f7a7",
+    "rank_stage_skipped": true,
+    "relation_la_or_load_and_verify_ms": 86.143479,
+    "source": "verified_cache",
+    "verified_columns": 600,
+    "verify_all_logs_ms": 86.01315299999999
+   },
+   "index_ms": 27737.489451999998,
+   "log_verify_ms": 86.143479,
+   "online_ms": 737.278381,
+   "peak_rss_bytes": 1875005440,
+   "probes": 2155400,
+   "recovered_scalar": "3141592653589793",
+   "relation": [
+    25923,
+    52400,
+    11104,
+    19613
+   ],
+   "scan_selftest_ms": 2335.47729,
+   "setup_complete_ms": 30648.216983
+  }
+ },
+ "schema": 1
+}

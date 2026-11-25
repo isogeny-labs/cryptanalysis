@@ -1,0 +1,26 @@
+{
+  "schema": "lab.owner-git-reader-sync/v1",
+  "standing": "unverified",
+  "parent_commit": "fef501bb7dac688437193b92879b945241d37a13",
+  "owner_repository": "crypto",
+  "owner_commit": "ad2a014c0022cf000845014499a9649b6c2cef2d",
+  "owner_source_sha256": "6d4f273c678408a97c5fda777878fb95061852b60f7d83e84592afa9890b1e36",
+  "replaced_consumer_source_sha256": "d4a3b3e5b31e5ba70c3a70e1e8c77a691045a91e8009cd6edfc3d7efaf29b978",
+  "change": "Copy exact owner artifact reader; configured S3 reads default to verified cache, Git recovery bundles and Git history, without contacting S3",
+  "retained_guards": [
+    "Exact manifest SHA-256 and byte count",
+    "Wrong or oversized recovery payload refused",
+    "Tracked successor and unstaged edits preserved"
+  ],
+  "owner_control_evidence": {
+    "actual_cli_cold_recovery_controls": 3,
+    "unit_controls_initial_pass": 55,
+    "unit_controls_total": 57,
+    "two_setup_failures_passed_after_exact_policy_fixture_and_disposable_file_clone_fetch": true
+  },
+  "frozen_artifacts_changed": false,
+  "PCC_source_and_claims_changed": false,
+  "native_proof_source_and_context_changed": false,
+  "consumer_CI": "pending; do not infer completion",
+  "optimization_introduced": false
+}

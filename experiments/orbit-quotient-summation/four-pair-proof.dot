@@ -1,0 +1,18 @@
+digraph four_pair_proof {
+  graph [rankdir=LR, fontname="DejaVu Sans", label="Four-summand support and finite implementation check", labelloc=t, fontsize=18, bgcolor="white"];
+  node [shape=box, style="rounded,filled", fillcolor="#eaf2f8", color="#335c81", fontname="DejaVu Sans", fontsize=12];
+  edge [color="#335c81", fontname="DejaVu Sans", fontsize=11];
+  A [label="Slot A × slot B\nrepresentative pairs"];
+  C [label="Slot C × slot D\nrepresentative pairs"];
+  L [label="Left residue index\n(a+b) mod r"];
+  R [label="Right residue index\n(c+d) mod r"];
+  J [label="Complementary join\n(s+u) mod r = t mod r", fillcolor="#d7efda", color="#357a43"];
+  D [label="Direct four-tuple test\n(a+b+c+d) mod r = t mod r", fillcolor="#fff0ce", color="#9b6b14"];
+  T [label="Lean: support equivalence\nall finite lists, all r and t", fillcolor="#e4ddf6", color="#6a4aa3"];
+  P [label="Python: 11 targets × 2 modes\n16 key quadruples per target\nall eight summary fields", fillcolor="#e4ddf6", color="#6a4aa3"];
+  A -> L; C -> R; L -> J; R -> J;
+  J -> T [label="iff"];
+  D -> T;
+  J -> P [style=dashed, label="m4_stats"];
+  D -> P [style=dashed, label="enumerated reference"];
+}

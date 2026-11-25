@@ -1,0 +1,23 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T02:34:59Z",
+ "id": "PCC-20261123-ddc6ec",
+ "kind": "theorem",
+ "producer": {
+  "commit": "533d38b125950b47266ba4de5a429b65829553d1",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "75f58fe70661385d39ab5e95ddf0db30d048af5fd6ff73220494afc1e7fe505a",
+   "kind": "lean",
+   "path": "experiments/prime-field-auxiliary-ic/m31-balanced-square/Signed.lean",
+   "sha256": "422a183af984c94d9dc732d02056360be3dcb0d6c02e69197fe441bb771476eb",
+   "theorem": "M31SignedSquare.chain_correct"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Signed M31 square folding preserves the represented field square under an arbitrary length chain with one final normalization."
+}

@@ -1,0 +1,5 @@
+# Proof map
+
+The field-product exclusion used here is the checked Lean theorem `SignNorm.trace_norm_excludes_box` in the adjacent [N41 module](../n41_w11_sign_norm_20261019/SignNorm.lean). It quantifies over an arbitrary field, a Boolean functional with `L 0 = false`, and finite rows of sign factors. Its proof and `#print axioms` audit are documented in that experiment's `PROOF_MAP.md`; the only reported axioms are `propext`, `Classical.choice`, and `Quot.sound`.
+
+For this N131 instance, `audit_sage.py` checks the theorem's finite input: each of 256 public sign products is independently multiplied from its 32 factors and has functional value one under the saved mask. It also reconstructs source points, replays group sums, and verifies factor zero exactly against a group relation for all 9,216 assignments across the control and public boxes. The exact curve-group and determinant equivalence is a computational bridge here. Formalizing that bridge in Lean remains the open mathematical proof obligation described in the N41 proof map.

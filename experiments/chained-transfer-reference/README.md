@@ -1,0 +1,445 @@
+# Complete F101 chain checkpoint
+
+
+Scientific source a39fefaa084756d0a58386253651a667e2ad9de6 pins upstream
+927a4efe5fe68b4270ae5989f3cbab0b68852f4b. Local full147b9f is COMPLETE:
+original02:38:22–02:52:52UTC,outer/driver/original exits0,eleven phase pairs
+[0,0],all794 input hashes unchanged,cleanliness[0,0,0],failing rg shim never
+invoked. BOTH independently enumerated12,317-class domains,all old scopes,
+new four tests,bounded36-fibre CLI and eleven new Lean declarations pass.
+Written f97916/partial formalization e9bf81 retain their exact bridge limits.
+No native process is running. [pcc:unverified]
+
+Own CI43353278346 on exacta39 is COMPLETE ALL SIX SUCCESS,f507c9/root6321c6.
+Every whole job log/API/standardXZ/raw+archive hash/exact roundtrip remains.
+The new job TOTAL42 modules260 compiled includes40 upstream238 plus11 old
+and11 new consumer declarations,zero trusted axioms. Old five jobs remain;
+reference has25+98+five integration tests as1+1+1+2 and ONE OLD ignored test.
+Local no-rg instrumentation is separate from uninstrumented CI. These
+science CIs are SETTLED;do not repoll or redispatch. [pcc:unverified]
+
+All FOUR original native raw trees are actually remotely published with
+whole-byte replay BEFORE normal manifest bot commits:unit+CLI973bee/953892
+canonicalcee9;fullca8c22/505bd4 canonical9917;admission91f519/17f652
+canonical5048. Whole archives respectively2412572/SHA8ec2a0e4,
+2412084/SHA26c3048e,2451524/SHA9f0b2e6e,130472/SHA0250a35b.
+Actual full43356854601/job131660813332 and admission43358286544/
+job131665457719 receipts include exactFF0/artifact0/wiring0. Original
+c37d26/0556d8 claim subjects hydrate exact published bytes. Consumer1431777
+published108 metadata paths with scoped governance4e11ac;root5048 is the
+actual admission manifest bot. ONE later PCC data-read workflow change
+adds sorted admission hydration;other793 runtime/proof/focused-workflow
+inputs still match FULL01. Verifiers/trust policy are unchanged.
+[pcc:unverified]
+
+Additive report578f99 contains TWO final50,492-byte PDF pages,ALL visually
+inspected,with editable DOT/SVG/recorded data/renderer/Typst and source links:
+cryptanalysis:experiments/chained-transfer-reference/reports/fp-chain-ci-publication/REPORT.md.
+Original packaging0ed3e9,wiring d98424 and CI-collector07a92c failures remain;
+corrected collector matches frozen1+1+1+2 layout without changing native
+criteria. Earlier pending/active paragraphs below are HISTORICAL and
+superseded by this checkpoint. Scientific standing remains unsigned.
+[pcc:unverified]
+
+Current next actions are in `FP_CHAIN_CHECKPOINT.md`. Earlier components below retain historical scope.
+
+---
+
+# Independent prime-norm whole raw publication complete
+
+Actual rootb83ad3/[immutable9bc7 canonical manifest](https://github.com/isogeny-labs/crypto/blob/9bc7bb08b2465603cbaaf6648e85dd2568b80686/research/chained_jacobian_transfers_20261110/evidence/consumer-prime-norm-whole-archive-handoff-01/.artifacts.json) publishes both whole unit206-file506588-byte and full970-file2419924-byte archives. Trusted-base43340558886/job131607521223 records TWO whole remote byte replays before the normal bot commit;exactlocalFF0/artifact0/wiring0. Full log/API/stdXZ/hashes/roundtrips retained. [Inspected one-page35707 publication addendumb3ac97](reports/prime-norm-archive-publication/REPORT.md) is byte-identical to root. Earlier pending paragraphs are historical/additively superseded;no original claim/report/custody rewrite. Scientificstandingunsigned. [pcc:unverified]
+
+Replaymetadata400fbe is published7dfa6c;allscience/pins/FIVEwholejobs unchanged. CompleteLOCAL3043e8 and reportsf5c69e/6c3a4e retain full norm4/recovery/group/DLP/oracle/negativecontrols and43/24eleven/40module238compiled212written/oldkernel4CLI/newnorm4CLI/consumer11Lean/allguards. Ownsciencecd2fivejobCI43338033189 next01:24UTC;root6298all4CI3e89b6settled. No cost/solveradvantage. NextnewfrozenfullF101C0↔T20adapterprotocol. [pcc:unverified]
+
+---
+# Complete independent prime-norm integration replay
+
+Full01/3043e8 passes43native/24algebraelevenexactoutputs/botholdnativeJSONcomparisons/40upstreammodules238compiled212written0trusted/oldkernel4+CLI/newnorm4+CLI+exactnewIDC/11consumerLean/all722upstream+51consumerhashes/originalexits0/no-rg. [Inspected two-page replay reportf5c69e](reports/prime-norm-replay/REPORT.md) and[latest checkpoint](PRIME_NORM_CHECKPOINT.md) record full original receipts/custody/admissions and boundaries. Sciencecd2d564/readyPR1519;all implementation/pin/five jobs unchanged by this addendum. Scientificstandingunsigned;no cost/solveradvantage. [pcc:unverified]
+
+Whole206-file unit506588-byte archive and970-file full2419924-byte archive are intact with member/raw/archive hashes/exact roundtrips. Root handoff5643d0/exactcopies uses existing trusted-base artifact-autofix;actual S3 upload/whole readback/real manifests are PENDING,not inferred from metadata. Own consumer CI43338033189/5jobs pending next01:24UTC;root6298 own43330431536 SUCCESSall4/3e89b6 is settled. Earlier pendingfull paragraphs below are historical and superseded by this checkpoint. [pcc:unverified]
+
+---
+# New component: independent F101 T20 norms and completed pullback
+
+Four new native tests accept all12,317 rational classes:independent image-Mumford norm agrees with the F101² pointwise oracle,both actual[4],public recovery9238 and component82/85,group/Frobenius,all109+113 scalar images/exact orders. Full signed infinity/repeated fibres and negative controls pass,204440. Eleven exact Lean statements/localPCCpasses/zero trusted-native,380d2b;bounded36-fibre CLI/new universal IDC,fdd132. Scientific standing unsigned,no cost/solver advantage. [pcc:unverified]
+
+[Independent written proof](PRIME_NORM_INDEPENDENT_PROOF.md),[frozen protocolec2a8b](PRIME_NORM_REPLAY_PROTOCOL.md),[inspected three-page unit report6c3a4e](reports/prime-norm-independent-unit/REPORT.md),[active checkpoint](PRIME_NORM_CHECKPOINT.md). First manifest error101 preserved7f58bd;four bad infinity multiplicities and two squarefree fibres differ as required. All35 old source/check/pins and four complete CI jobs retained byte-identical;new fifth job/driver drafted. Full pinned6298 replay/admission controls pending. Whole506,588-byte unit raw archive intact local pending documented root trusted-base migration;remote availability not yet claimed. [pcc:unverified]
+
+Prior proper replay whole failed79,644-byte and positive80,516-byte archives ARE now remotely published at immutable root5bec canonical manifests;consumer71c03a addendum/c0b8 checkpoints this,actual trusted-base43319185494 full remote replay evidence retained. The old pending paragraphs below are historical and additively superseded. Consumer exact8072 own43315145393 succeeds all4 jobs,b3c8f1;no repoll. [pcc:unverified]
+
+---
+# New component: proper T20 replay and independent kernel checks
+
+CompleteLOCAL400f38 exactcrypto030e passes41native/23algebra/tenidentity
+comparisons/bothnativeJSONcmp/39modules224compiled198written0trusted/
+checker4+16mutants+CLI0/all719upstream82consumer184originalhashes/no-rg.
+Newindependentlyencodedkernelrecordchecksuseexistingengines;thefullR20
+suitereplaysproducerimplementation. Allscientificstandingunsigned.
+[pcc:unverified]
+
+Mainpcc/claims/PCC-20261112-a5bc14.json /[inspected2page50510PDF report](reports/proper-t20-replay/REPORT.md);
+failurepcc/claims/PCC-20261112-7d49ad.json /[inspected1page38464PDF report](reports/proper-t20-failures/REPORT.md).
+Wholefailed79644andpositive80516rawarchivesintactlocalpendingdocumented
+roottrusted-baseartifact-autofixS3upload/replay/realmanifests. Metadataisnot
+remoterawavailability. Allold35Rust/check/pins+3wholejobsunchanged;new
+fourthproperjobadditive,parent748e/immediate1513. [pcc:unverified]
+
+---
+# CT28: direct first F101 elliptic quartic norm
+
+[Written proof](QUARTIC_COVER.md),[acceptance/resume](QUARTIC_STATUS.md) and [inspected report](reports/quartic-first/complete-report.pdf) record complete25native/85reference unit+five integrations,all source guards/fmt/strictClippy,301fbe. Every12317 first T0/E109 norm matches the retained route,with all actual poles/repeated/infinity cases. Scientific standing unsigned,geometric formalization partial;no measured cost ratio. [pcc:unverified]
+
+Previous CT27 complete-class acceptance and resume: [FULL_CLASS_STATUS.md](FULL_CLASS_STATUS.md). [pcc:unverified]
+
+# CT26: lazy canonical roots for the Richelot reference
+
+[Written proof](ROOT_TABLE.md), [current status](ROOT_TABLE_STATUS.md) and
+[inspected report](reports/reference-roots/roots-report.pdf) describe deferred
+root-table construction and exact first-root preservation by axis enumeration.
+Every base discriminant at17/101 matches the original exhaustive builder.
+Allsix complete12317-class R0/R1/R2 domains match pointwise evaluation,
+with separate instances proving closed production caches stay empty while
+quadratic references initialize theirs. Full guard02 passes25native/
+82reference unit+five integrations, one old ignored benchmark, all guards/
+fmt/strictClippy, PCC3c6362. Parent1496 exact65a CI succeeds25/81+five,
+e2187d; own final-head CI remains separate. Scientific standing unsigned,
+formalization partial, no measured advantage. [pcc:unverified]
+
+# CT25: direct C2 successor norms
+
+[Written specialization](SUCCESSOR_NORMS.md),
+[current status](SUCCESSOR_NORMS_STATUS.md) and
+[inspected report](reports/successor-norms/norms-report.pdf) describe both
+direct C2 elliptic norms and their Phi2/Psi2 integration. All12317 classes
+match both retained generic norms, including every degree/zero category,
+repeated support and balanced infinity correction. Both complete forward/
+dual transfer graphs agree with genuine generic references. Full changed
+guard04 passes25native/81reference unit plus five integrations, one old
+ignored benchmark, all guards/fmt/strictClippy, PCC03b76b. Parent1494 exact43a
+CI succeeds25/80+five, PCCd942e6; this child's own CI remains separate.
+Scientific standing unsigned, formalization partial, no measured advantage.
+[pcc:unverified]
+
+# CT24: two consecutive nondual Jacobian transfers
+
+[Written proof](SUCCESSOR_CHAIN_V2.md),[current checkpoint](SUCCESSOR_CHECKPOINT.md)
+and [inspected report](reports/successor-chain/chain-report.pdf) describe
+actual Phi2:C1→C2 and transported Psi2:T1→T2. Both complete12317-class
+domains for eachPhi2/R2/Psi2 pass component checks,with all109/113 source
+relations/reverse196/inverses104/64/direct4 beta alpha,full geometric
+two-kernel and explicit49-class Psi2 kernel. Independent T2 branch oracle
+and separate flat validity/Frobenius replay pass. Written global geometry
+and five new conditional Lean helpers are distinguished from runtime tests.
+Full changed guard15 passes25native/80reference unit+five integrations,
+one old ignored benchmark,PCC5383d3;final-head CI remains separate. No timing
+or computational advantage claim;all standing unsigned. [pcc:unverified]
+
+# CT23: closed Richelot fibres and explicit Psi kernel
+
+[CLOSED_FIBRES.md](CLOSED_FIBRES.md), [current status](CLOSED_FIBRES_STATUS.md)
+and [report](closed-fibres-report.pdf) describe the resultant evaluator and
+actual49-class T0 kernel witness. All four12317-class R0/R1 domains match
+pointwise evaluation,including dual2/bijections/paired sums and geometric
+chart boundaries. Integrated complete guard07 passes25native/70reference
+unit plus three integrations,one old ignored benchmark,all guards/fmt/
+strictClippy (PCC1f1423). The original pointwise and naive routes remain.
+Independent flat-field replay checks the exported divisor validity and
+Frobenius only. Full scientific standing remains unsigned. [pcc:unverified]
+
+# Chained transfer differential reference
+
+Current [direct elliptic norms](DIRECT_NORMS.md) evaluate both C0/C1
+quotients using base-field formulas with repeated/zero support and every
+balanced infinity term. Both norms match the unchanged generic route on
+all12317 classes ofeach model. Integrated complete guard passes25native/
+66reference unit+three integrations,one old benchmark ignored;all Phi/
+PhiHat classes agree with retained generic evaluation and all Psi/source
+controls pass. Seven new partial Lean lemmas bring the source census97;
+geometry remains written and standing unsigned. [DIRECT_NORMS_STATUS.md](DIRECT_NORMS_STATUS.md)
+retains exact receipts,limits and the inspected two-page report. No timing,
+solver or broader catalog claim. [pcc:unverified]
+
+Current [transported seven-chain](SEVEN_CHAIN.md) constructs actual global
+Psi between the accepted T0 and a distinct unpolarized F101 Jacobian T1.
+Both complete12317-class domains pass dual[7],bijections,paired additions,
+coefficient descent and all109 source/reverse28/inverse74/direct4 controls.
+Actual49-kernel/64-lift action,full geometric two-kernel inclusion and a
+complete target-automorphism/sign proof support the written construction.
+Local guard passes25native/65reference unit+two integrations;the additional
+third integration and strict all-target Clippy also pass. Source helpers90,
+formal geometry partial,standing unsigned. [SEVEN_CHAIN_STATUS.md](SEVEN_CHAIN_STATUS.md)
+retains exact records,corrections,report and the new consumer ledger fork.
+Final-head focused CI is a separate pending obligation. [pcc:unverified]
+
+Current [degree49 Jacobian transfer](SEVEN_TRANSFER.md) supplies actual
+Phi/PhiHat between the fixed F101 Jacobians C0/C1. Full geometric2-kernel
+certificates and a written quotient/polarization proof give a genuine(7,7)
+map. Both entire12317-class rational domains,dual[7],bijections,paired
+additions and all109 original source controls pass. New eight Lean helpers
+bring the project to80 written lemmas;actual geometry remains written.
+The full local guard passes native25/reference57 unit+two integrations,
+one old benchmark ignored;exact2450815e2 CI43085588914 later succeeds.
+Parent1484 now has a frozen-ledger conflict with main. See the diagram,
+inspected two-page PDF and immutable receipts. All standing unsigned.
+[pcc:unverified]
+
+Prior [elliptic degree7 checkpoint](ELLIPTIC_SEVEN.md) constructs four
+actual maps/duals on the109/113 elliptic factors with exact polynomial and
+complete group checks. A separate unchanged Montgomery engine replays
+frozen certificates. Separate102/five-input guards and seven native
+inputs remain distinct at75a737b8. PR1483 merged52fe5eba0 after exact-head
+43038507853 passed native25/reference51+two integrations. The old report's
+pending-CI/root-receipt gaps are historical:original root records/receipts
+are restored unchanged in crypto dcd324f35. [pcc:unverified]
+
+Current [odd-kernel assessment](ODD_KERNELS.md) closes rational3/5
+maximal-isotropic kernels for the accepted17/101 examples,also7 for17.
+Shifted101 has four abstract7 candidates;one now has an actual Jacobian
+map above. Every fixed finite plane/pairing ratio and six upstream Lean algebra/
+root certificates pass. Separately authored closedPR3918 polynomial Rust
+oracle now compiles unchanged and passes;formatting-only integration enters
+CI without importing producer field/Richelot/Cantor code. PR1481/1482 and
+their exact49/50-unit-plus1-integration receipts remain historical.
+Standing unsigned;solving-cost comparisons remain open.
+[pcc:unverified]
+
+Current [split-quotient checkpoint](SPLIT_QUOTIENTS.md) makes both elliptic
+norms/full odd rational-group reconstruction explicit. All285/12,317 classes
+pass completed reciprocal coordinates,inverses,both norm additions,cross-norm
+zero and sum of pull/norms=[2]. Every transferred source scalar has target
+coordinates([4]P,0). Seven upstream Lean lemmas pass; no DLP solver or
+measured advantage. Prior63cf80560 passes exact-head native25/reference47
+CI; current full49-test replay pending. Older snapshots below retain their
+exact scope. [pcc:unverified]
+
+Current [target Frobenius assessment](TARGET_FROBENIUS.md) strengthens both
+accepted17/101 maps to an unpolarized Fp-Jacobian nonisomorphism obstruction:
+source/target2-torsion over Fp³ has16/4 elements. Both targets have six-cycle
+branch action and only their previous dual as a rational Richelot kernel;
+another rational step must backtrack. All256 torsion additions/Frobenius
+branch-image controls pass; seven core Lean certificates compile upstream.
+Prior shifted source767c945a0 passes exact-head native25/reference46 CI;
+current CT16 full47-test replay is pending. Standing unsigned; no universal
+transfer impossibility or computational advantage. [pcc:unverified]
+
+Latest continuation: [shifted full-order109 transfer](SHIFTED109.md),
+[diagram/PDF](shifted109-report.pdf). The predeclared shift2 source admits a
+determinant63 map/dual with all12,317 source and target classes checked;
+all109 scalar/recovery[4]/inverse82 relations pass. Independent flat F101⁶
+field replay and four shifted-cover Lean lemmas pass in crypto. Targeted
+changed-input tests/Clippy pass; current full46-test guarded CI is pending.
+The older receipts below retain their exact scope. No cost advantage,
+solver or cross-prime descent result. [pcc:unverified]
+
+This development oracle compares the native fixed F101 transfer fixture in
+[crypto #3877](https://github.com/isogeny-labs/crypto/pull/3877) with the
+pre-existing `suite/src/prime_hyperelliptic` BigUint implementation, which is
+imported without modification. Both use Cantor arithmetic; these producer-run
+checks are not signed independent validation. [pcc:unverified]
+
+## Exact input and source pin
+
+Source E:y²=x³+1, C:y²=x⁶+1, W=(10,0), P=(4,41), r=17 over F101.
+The Richelot target is C₂:w²=41z⁶+9z⁴+9z²+41. The upstream native
+package is pinned to crypto commit
+`75a737b8366ec6c78ed8672886423fcbe69853a2`; `source-pin.json` and both
+SHA-256 manifests bind the exact new and reference sources. The reference
+comes from cryptanalysis `68594c8874c75a0a6c04a3874adb1374088ca4f5`.
+The initial upstream18db046 pin is retained in `source-pins/` and Git history;
+its earlier receipts remain unchanged.
+
+The reference needs a monic quintic. On each odd chart Y²=F(t), let
+L=leading(F), a=1/L, t=a*z, Y=a²*Z. Then F(a*z)/a⁴ is monic;
+u becomes monic(u(a*z)), v becomes v(a*z)/a². This is an F101 coordinate
+change, not an unrecorded twist or a square-root assumption. [pcc:unverified]
+
+## Retained development outcomes
+
+- 10,404 canonical source additions and inverses compared after this change.
+- All 289 additions in the Richelot order-17 target subgroup compared.
+- All 10,404 rational Richelot source images admitted and compared against a
+  fixed-translation addition in the pre-existing target arithmetic.
+- Both Jacobian orders recomputed as 10,404 from Fp/Fp² point counts using
+  the pre-existing implementation.
+- Successor C_s:y²=x⁶+6x⁴+9x²−16 and
+  C_t:w²=20z⁶+81z⁴+83z²+21, based at1 and2: both complete9,216-class
+  sets have paired additions and both dual norms compared with BigUint;
+  independent Fp/Fp² point counts give order9,216, and reference negation
+  counts self-inverse classes as4 and16.
+- Latest guarded suite receipt: native25 and reference43 passing tests, one pre-existing benchmark left
+  ignored. These are local correctness counts, not performance measurements.
+  [pcc:unverified]
+
+Evidence: `evidence/differential-01.txt` through `differential-04.txt`.
+Successor receipts: `evidence/successor-development-01.txt` and
+`evidence/successor-pinned-01.txt`; the latter completes source guards,
+formatting, strict Clippy and full replay against the published75a737b8 feature pin.
+Records PCC-20261111-5e39d6 and PCC-20261111-820d6f and PCC-20261111-d0f154 remain unverified until actual signed standing
+changes. Strict Clippy's first attempt found the reference's pre-existing
+`Fp2Ctx::from_fp(&self)` convention warning. The compatibility annotation is
+confined to the imported reference module; no correctness test or reference
+arithmetic was changed. Both the warning and subsequent pass are retained.
+[pcc:unverified]
+
+The [operational non-split map](NONSPLIT_MAP.md),
+[diagram/PDF](nonsplit-map-report.pdf), now evaluates the determinant11
+correspondence/dual with F17⁶ intermediates and complete F17 descent. All285
+classes in each direction satisfy both dual norms[2], bijection and paired
+additivity; all19 elliptic source scalar/recovery relations pass. Full guard
+passes native25/reference43 tests,1 old benchmark ignored, formatting/strict
+Clippy/guards(PCC-bd303e). A separate pre-existing flat F17⁶ engine replays128
+field witnesses, without importing new field/map code; this validates that
+layer, not independently the full Jacobian map. All standing unsigned, no
+cost advantage or cross-prime descent. Next: predeclared shifted E109 cover.
+[pcc:unverified]
+
+The subsequent [balanced genus2 prototype](BALANCED.md),
+[diagram/PDF](balanced-report.pdf), handles monic split-infinity sextics at
+checked primes5..101. Both10,404-class old/translated models match the existing
+chart engine; E109/F101 transfers without a rational Weierstrass point and
+all11,663 classes have paired norm additions checked. Latest complete guard
+at that checkpoint passes native25/reference37 tests,1 existing benchmark ignored, formatting
+and strict Clippy (PCC-8b7ca0). The production backend/catalog remain unchanged.
+No non-split Richelot correspondence or computational advantage is supplied.
+[pcc:unverified]
+
+The [Frobenius-stable kernel assessment](NONSPLIT_KERNELS.md) and
+[inspected PDF](nonsplit-report.pdf) now enumerate all15 pairings on the
+predeclared E19/F17 sextic. Three are stable:1 degenerate and2 smooth targets,
+which are isomorphic to each other but not to the source as F17 curves.
+The E109/F101 quadratic cover instead has only the degenerate stable kernel.
+These fixture-specific outcomes do not assert unpolarized-Jacobian
+nonisomorphism or universal transfer impossibility. Final guard passes
+native25/reference40 tests,1 old benchmark ignored, formatting/strict Clippy
+and source checks(PCC-3c51f5). Actual non-split divisor maps remain next.
+[pcc:unverified]
+
+## Cubic covers and arbitrary-class closed-point norm
+
+`src/cubic_transfer.rs` extends the prior Enge cover family's missing norm
+prerequisite. It reuses the pre-existing checked BigUint arithmetic. On the
+existing E/F101:y²=x³+x+46,#E109,G(2,37), whole cubic pullbacks reach
+`y²=x9+x3+46` (genus4), then `y²=x27+x9+46` (genus13). Polynomial substitution
+handles nonsplit/ramified fibers. Coefficient deflation is an exact-image
+inverse; it is not a global genus13 norm. [pcc:unverified]
+
+The genus4 norm accepts every canonical divisor of degree≤4: complete bounded
+support factorization, elliptic Frobenius traces in Fp[X]/q, multiplicity,
+orbit closure and descent checks. It never reads a DLP scalar. Tests cover
+all109 source scalars,130 fixed translated classes with closed support
+degrees1..4, and an E19/F17 control with all361 ordered subgroup pairs,
+ramification and degree12 target representatives. Four development tests and
+strict Clippy pass (PCC-daf60f). [pcc:unverified]
+
+The separate crypto root example `chained_cubic_norm_reference` imports no new
+norm code. Its pre-existing genus4/13 and affine elliptic engines reconstruct
+all130 witnesses; another Frobenius-gcd criterion confirms irreducible
+cubic/quartic support. Both Jacobian engines use Cantor and both harnesses
+are producer-authored; this is not signed scientific standing. The TSV and
+independent receipt are retained in the crypto study, PCC-2d5c08.
+[pcc:unverified]
+
+Full guarded replay `evidence/cubic-pinned-02.txt` passes native25 tests and
+reference33 tests, formatting and strict Clippy; one old benchmark remains
+ignored (PCC-29610e). The seven upstream runtime sources remain at75a737b8.
+The first development compile and first wrapper PATH failure remain in
+`cubic-transfer-01.txt` and `cubic-pinned-01.txt`. No benchmark was executed.
+[pcc:unverified]
+
+The source E109's quadratic sextic has no rational linear/quadratic factors.
+The general odd-full-group argument restricts individually rational Richelot
+factors and the rational-Weierstrass chart; it does not exclude a
+Frobenius-stable unordered triple of nonrational quadratics. Balanced genus2
+arithmetic and explicit descent are next prerequisites. No cost advantage or
+cross-prime descent follows. See the upstream `CUBIC_NORM_20261111.md`,
+`cubic-report.pdf` and queue CT11–CT13. [pcc:unverified]
+
+Small-prime PR1474 merged852a464a7310d733a472e4550e1fe4070614c538;
+focused run42999610365 succeeds on exactdf2b78a2. Its raw log is retained
+(PCC-ca8352). Broader C++ analysis failures are distinct; no all-CI-green
+claim is made. [pcc:unverified]
+
+## Reproduce
+
+Clone/check out `crypto` and `cryptanalysis` as siblings. In `crypto`, make
+the pinned upstream commit available and check out its native source paths;
+the rest of the checkout may differ. With Rust/Cargo on PATH, from
+`cryptanalysis` run:
+
+```sh
+experiments/chained-transfer-reference/check.sh
+```
+
+`check.sh` refuses source/reference digest drift before building. The sibling
+path in Cargo.toml is deliberate: this avoids a second whole-repository Cargo
+Git dependency clone while retaining exact source custody. Cargo.lock freezes
+the three small external numeric/build dependencies. CI checks out the two
+repositories in the same layout and runs this command.
+
+No standalone DLP solver, experiment allocation, measured speedup, field-family
+generalization or full Picard/Richelot formalization is claimed. See the
+upstream [report](https://github.com/isogeny-labs/crypto/blob/75a737b8366ec6c78ed8672886423fcbe69853a2/research/chained_jacobian_transfers_20261110/REPORT_20261111.md)
+for the genuine Jacobian hops, duals, zero controls and retained equivalences:
+the initial target is isomorphic to its source; the successor has different
+rational2-torsion cardinalities and therefore nonisomorphic F101 Jacobians.
+Both complete elliptic endpoint functions equal direct elliptic shortcuts.
+The preserved prime subgroups are17 and3 respectively, with no extrapolation
+to growing fields or an advantage over existing ECDLP algorithms.
+[pcc:unverified]
+
+Primary sources reviewed: Galbraith corrected book ch.8 §8.3 and ch.10
+§§10.3–10.4; Kunzweiler DCC 2024, DOI 10.1007/s10623-024-01366-1,
+§§3.1–3.2. Source review, hashes and unavailable KB/vault notes are in the
+upstream `SOURCES_20261111.md`. Canonical transfer/leaderboard graphs are
+unchanged because this is unsigned fixed-fixture development evidence.
+
+## Second nonbacktracking Jacobian hop
+
+The fixed next pairing is(2,18),(-2,28),(-18,-28), with leading scale20,
+determinant67 and new base11. The third curve has coefficients
+[38,9,29,62,86,17,8]. On its complete9,216-class set the pre-existing
+reference checks paired additions and dual norm, independently derives order
+9,216 from Fp/Fp² point counts, and counts8 self-inverse elements. It also
+counts the rational composite kernel as8 elements with4 self-inverse, rather
+than assuming the geometric degree16 is a rational cardinality. The upstream
+native check finds trivial intersection of the next and previous-dual kernels,
+and transports the original r3 subgroup nontrivially through both hops.
+These remain unsigned development assertions. [pcc:unverified]
+
+`evidence/second-hop-development-01.txt` preserves the first development run;
+`evidence/second-hop-pinned-01.txt` binds the complete28-test replay to the
+published aabae197 checkpoint, before the later small-prime feature. Earlier
+18db046 and b280efc pin metadata and every receipt remain retained. The next
+family extension requires an explicit new feature/source pin; it is outside
+this immutable replay. [pcc:unverified]
+
+## Checked small-prime feature
+
+The current pin includes seven runtime inputs, including the unchanged external
+crypto/src/prime_hyperelliptic/fp2.rs, and enables native feature small-prime.
+check.sh now runs native formatting/Clippy/all25 tests before the29-test
+reference suite(1 existing benchmark ignored). The original18db046,b280efc
+and aabae197 pin metadata and every raw receipt remain retained. Latest
+receipt small-prime-pinned-01.txt, PCC-20261111-465843, remains unsigned.
+[pcc:unverified]
+
+|p|Each Jacobian order|Source/target self-inverse counts|Independent elliptic orders|
+|---|---|---|---|
+|13|180|4/4|10/18|
+|29|960|4/16|40/24|
+|31|1008|16/4|28/36|
+|101|9216|4/16|96/96|
+
+All eight complete class sets have independent BigUint chart arithmetic,
+paired additions, dual norms, point-count orders and negation counts checked.
+The quadratic-field counter shares the existing Fp2 lineage with the native
+field layer; it is not an independent validation of that layer. The native
+backend accepts checked primes≤4096 and caps exhaustive enumeration at101.
+No cryptographic-size or cross-prime transfer is inferred. [pcc:unverified]
+
+The upstream global successor argument identifies its first elliptic endpoint
+with a rational2-isogeny shortcut in characteristic different from2,3,5.
+Its Lean statements cover cleared algebra, while geometric completion remains
+a written argument. It does not identify the final Jacobian-valued two-hop
+map with that endpoint. No performance result or signed standing is claimed.
+[pcc:unverified]

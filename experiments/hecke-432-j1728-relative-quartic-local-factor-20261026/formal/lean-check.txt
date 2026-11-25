@@ -1,0 +1,14 @@
+Command (working directory: experiments/hecke-two-sheet-small-order-20261023/formal):
+lake env lean /Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-relative-quartic-local-factor-20261026/formal/QuadraticSplit.lean
+Exit: 0
+'J1728QuarticLocalFactor.square_scaled_iff_square' depends on axioms: [propext, Classical.choice, Quot.sound]
+'J1728QuarticLocalFactor.quadratic_split_iff_discriminant_square' depends on axioms: [propext, Classical.choice, Quot.sound]
+Command (same working directory):
+lake env lean /Volumes/SSD990/cryptanalysis/experiments/hecke-432-j1728-relative-quartic-local-factor-20261026/formal/FourCycleParity.lean
+Exit: 0
+'J1728QuarticLocalFactor.four_cycle_odd' depends on axioms: [propext, Classical.choice, Quot.sound]
+'J1728QuarticLocalFactor.every_four_cycle_odd' depends on axioms: [propext, Classical.choice, Quot.sound]
+Toolchain: leanprover/lean4:v4.35.0-rc4
+Dependency: mathlib4 revision 021c46bdd042f67b538b9f9871d556a93713a9a9
+lean4checker --fresh: unavailable on this host
+Formalization status: partial; local Hensel, Frobenius-discriminant, and exact number-field bridges remain open.

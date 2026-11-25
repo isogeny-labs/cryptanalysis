@@ -12,11 +12,35 @@
 #define FY(e) ((e)->w[1])
 #define FINF(e) ((e)->w[2])
 
-static inline uint64_t fadd(const ca_group *g, uint64_t a, uint64_t b) { return ca_addmod(a, b, g->p); }
-static inline uint64_t fsub(const ca_group *g, uint64_t a, uint64_t b) { return ca_submod(a, b, g->p); }
-static inline uint64_t fmul(const ca_group *g, uint64_t a, uint64_t b) { return ca_mont_mul(&g->mont, a, b); }
-static inline uint64_t fsqr(const ca_group *g, uint64_t a) { return ca_mont_sqr(&g->mont, a); }
-static inline uint64_t finv(const ca_group *g, uint64_t a) { return ca_mont_inv(&g->mont, a); }
+static inline uint64_t ec_field_add(const ca_group *g, uint64_t a, uint64_t b) { return ca_addmod(a, b, g->p); }
+static inline uint64_t ec_field_sub(const ca_group *g, uint64_t a, uint64_t b) { return ca_submod(a, b, g->p); }
+static inline uint64_t ec_field_mul(const ca_group *g, uint64_t a, uint64_t b) { return ca_mont_mul(&g->mont, a, b); }
+static inline uint64_t ec_field_sqr(const ca_group *g, uint64_t a) { return ca_mont_sqr(&g->mont, a); }
+static inline uint64_t ec_field_inv(const ca_group *g, uint64_t a) { return ca_mont_inv(&g->mont, a); }
+
+/* Jacobian coords for p < 2^62 stay in lazy Montgomery form [0, 2p): mul
+ * skips the final conditional subtract; add/sub close under 2p.  Zero-tests
+ * and the affine conversion canonicalize.  Affine batch_op keeps strict
+ * residues (lazy there was slower). */
+static inline int ec_fp_is_zero_lazy(uint64_t x, uint64_t p) { return x == 0 || x == p; }
+static inline uint64_t ec_jac_add(uint64_t a, uint64_t b, uint64_t p2)
+{
+    uint64_t s = a + b;
+    if (s >= p2) s -= p2;
+    return s;
+}
+static inline uint64_t ec_jac_sub(uint64_t a, uint64_t b, uint64_t p2)
+{
+    return a >= b ? a - b : a + p2 - b;
+}
+static inline uint64_t ec_jac_mul(uint64_t a, uint64_t b, uint64_t p, uint64_t np)
+{
+    return ca_mont_mul_lazy(a, b, p, np);
+}
+static inline uint64_t ec_jac_sqr(uint64_t a, uint64_t p, uint64_t np)
+{
+    return ca_mont_sqr_lazy(a, p, np);
+}
 
 static void ec_identity(const ca_group *g, ca_elem *r)
 {
@@ -36,8 +60,8 @@ static int ec_is_identity(const ca_group *g, const ca_elem *a)
 static inline void ec_add_with_inv(const ca_group *g, ca_elem *r, const ca_elem *a,
                                    const ca_elem *b, uint64_t lam)
 {
-    uint64_t x3 = fsub(g, fsub(g, fsqr(g, lam), FX(a)), FX(b));
-    uint64_t y3 = fsub(g, fmul(g, lam, fsub(g, FX(a), x3)), FY(a));
+    uint64_t x3 = ec_field_sub(g, ec_field_sub(g, ec_field_sqr(g, lam), FX(a)), FX(b));
+    uint64_t y3 = ec_field_sub(g, ec_field_mul(g, lam, ec_field_sub(g, FX(a), x3)), FY(a));
     FX(r) = x3;
     FY(r) = y3;
     FINF(r) = 0;
@@ -47,10 +71,10 @@ static inline void ec_add_with_inv(const ca_group *g, ca_elem *r, const ca_elem 
 static void ec_dbl(const ca_group *g, ca_elem *r, const ca_elem *a)
 {
     if (FINF(a) || FY(a) == 0) { ec_identity(g, r); return; }
-    uint64_t x2 = fsqr(g, FX(a));
-    uint64_t num = fadd(g, fadd(g, fadd(g, x2, x2), x2), g->a_mont);
-    uint64_t den = fadd(g, FY(a), FY(a));
-    uint64_t lam = fmul(g, num, finv(g, den));
+    uint64_t x2 = ec_field_sqr(g, FX(a));
+    uint64_t num = ec_field_add(g, ec_field_add(g, ec_field_add(g, x2, x2), x2), g->a_mont);
+    uint64_t den = ec_field_add(g, FY(a), FY(a));
+    uint64_t lam = ec_field_mul(g, num, ec_field_inv(g, den));
     ec_add_with_inv(g, r, a, a, lam);
 }
 
@@ -63,7 +87,7 @@ static void ec_op(const ca_group *g, ca_elem *r, const ca_elem *a, const ca_elem
         ec_identity(g, r);
         return;
     }
-    uint64_t lam = fmul(g, fsub(g, FY(b), FY(a)), finv(g, fsub(g, FX(b), FX(a))));
+    uint64_t lam = ec_field_mul(g, ec_field_sub(g, FY(b), FY(a)), ec_field_inv(g, ec_field_sub(g, FX(b), FX(a))));
     ec_add_with_inv(g, r, a, b, lam);
 }
 
@@ -86,60 +110,109 @@ static int ec_equal(const ca_group *g, const ca_elem *a, const ca_elem *b)
 static uint64_t ec_hash(const ca_group *g, const ca_elem *a)
 {
     (void)g;
-    if (FINF(a)) return 0x9e3779b97f4a7c15ULL;
-    return ca_mix64(FX(a) * 0x9E3779B97F4A7C15ULL ^ ca_mix64(FY(a)));
+    return ca_ec_hash_words(FX(a), FY(a), FINF(a));
+}
+
+ca_ec_consts ca_ec_consts_of(const ca_group *g)
+{
+    ca_ec_consts c = {g->p, (uint64_t)0 - g->mont.pinv, g->a_mont, g->mont.r1};
+    return c;
 }
 
 /*
  * Batched affine addition with Montgomery's simultaneous inversion trick:
- * one field inversion for n additions at the cost of 3(n-1) extra
- * multiplications.  Special cases (infinity, doubling, inverse pairs)
- * are handled inline so that the common path stays branch-light.
+ * one field inversion for n additions at the cost of about 2n extra
+ * multiplications, run over four interleaved chains so the serial dependency
+ * of a Montgomery product does not idle the multiply ports.  Special cases
+ * (infinity, doubling, inverse pairs) are handled inline so that the common
+ * path stays branch-light.
  */
 static void ec_batch_op(const ca_group *g, ca_elem *r, const ca_elem *a, const ca_elem *b,
                         size_t n, uint64_t *scratch)
 {
     if (n == 0) return;
-    uint64_t *den = scratch;       /* n denominators */
-    uint64_t *pre = scratch + n;   /* n prefix products */
+    /* The field constants go into locals first.  The stores below (r, and
+     * den/pre in scratch) are all uint64_t lvalues, so the compiler must
+     * assume each may overwrite g->p or g->mont and would reload them, and
+     * recompute -pinv, at every multiplication.  Same Montgomery reduction as
+     * ca_mont_redc, so the same residues. */
+    const uint64_t P = g->p, NPI = (uint64_t)0 - g->mont.pinv, AM = g->a_mont;
     const uint64_t one = g->mont.r1;
+#define BM(x, y) (CA_FC_ADD(CA_FC_MUL, 1), ca_ec_bmul((x), (y), P, NPI))
+#define BA(x, y) ca_addmod((x), (y), P)
+#define BS(x, y) ca_submod((x), (y), P)
+    /* Interleaved chains, the same scheme rho_thread_main uses: a Montgomery
+     * product is a serial dependency, and one chain through the whole batch
+     * leaves the multiply ports idle.  Four chains quarter the dependency
+     * length and cost 3*4-2 = 10 extra multiplications out of 3n+2n, while
+     * the suffix products put the inverses out in element order. */
+    enum { EC_CHAINS = 4 };
+    const size_t k = n < EC_CHAINS ? n : EC_CHAINS;
+    uint64_t *den = scratch;       /* n denominators */
+    uint64_t *suf = scratch + n;   /* n suffix products */
     for (size_t i = 0; i < n; i++) {
         uint64_t d;
         if (FINF(&a[i]) || FINF(&b[i])) d = one;
         else if (FX(&a[i]) == FX(&b[i])) {
-            if (FY(&a[i]) == FY(&b[i]) && FY(&a[i]) != 0) d = fadd(g, FY(&a[i]), FY(&a[i]));
+            if (FY(&a[i]) == FY(&b[i]) && FY(&a[i]) != 0)
+                d = BA(FY(&a[i]), FY(&a[i]));
             else d = one;
-        } else d = fsub(g, FX(&b[i]), FX(&a[i]));
+        } else
+            d = BS(FX(&b[i]), FX(&a[i]));
         den[i] = d;
-        pre[i] = i ? fmul(g, pre[i - 1], d) : d;
     }
-    uint64_t inv = finv(g, pre[n - 1]);
-    for (size_t i = n; i-- > 0;) {
-        uint64_t di = i ? fmul(g, inv, pre[i - 1]) : inv; /* den[i]^{-1} */
-        inv = fmul(g, inv, den[i]);
+    for (size_t i = n; i-- > 0;) suf[i] = i + k < n ? BM(den[i], suf[i + k]) : den[i];
+    /* totals[j] = suf[j] is chain j's product; invert the product of the
+     * totals once and split it: inv_j = inv * prod_{i != j} total_i. */
+    uint64_t before[EC_CHAINS], after[EC_CHAINS], inv[EC_CHAINS];
+    before[0] = one;
+    for (size_t j = 1; j < k; j++) before[j] = BM(before[j - 1], suf[j - 1]);
+    after[k - 1] = one;
+    for (size_t j = k - 1; j-- > 0;) after[j] = BM(after[j + 1], suf[j + 1]);
+    uint64_t all = BM(before[k - 1], suf[k - 1]);
+    all = ec_field_inv(g, all);
+    for (size_t j = 0; j < k; j++) inv[j] = BM(all, BM(before[j], after[j]));
+    for (size_t i = 0, j = 0; i < n; i++) {
+        uint64_t di = i + k < n ? BM(inv[j], suf[i + k]) : inv[j];
+        inv[j] = BM(inv[j], den[i]);
+        j = j + 1 == k ? 0 : j + 1;
         const ca_elem *A = &a[i], *B = &b[i];
         if (FINF(A)) { r[i] = *B; continue; }
         if (FINF(B)) { r[i] = *A; continue; }
-        if (FX(A) == FX(B)) {
-            if (FY(A) == FY(B) && FY(A) != 0) {
-                uint64_t x2 = fsqr(g, FX(A));
-                uint64_t num = fadd(g, fadd(g, fadd(g, x2, x2), x2), g->a_mont);
-                ec_add_with_inv(g, &r[i], A, A, fmul(g, num, di));
+        const uint64_t ax = FX(A), ay = FY(A);
+        uint64_t lam;
+        if (ax == FX(B)) {
+            if (ay == FY(B) && ay != 0) {
+                CA_FC_ADD(CA_FC_SQR, 1);
+                uint64_t x2 = ca_ec_bmul(ax, ax, P, NPI);
+                uint64_t num = BA(BA(BA(x2, x2), x2), AM);
+                lam = BM(num, di);
             } else {
                 ec_identity(g, &r[i]);
+                continue;
             }
-            continue;
+        } else {
+            lam = BM(BS(FY(B), ay), di);
         }
-        uint64_t lam = fmul(g, fsub(g, FY(B), FY(A)), di);
-        ec_add_with_inv(g, &r[i], A, B, lam);
+        const uint64_t bx = FX(B);
+        CA_FC_ADD(CA_FC_SQR, 1);
+        uint64_t x3 = BS(BS(ca_ec_bmul(lam, lam, P, NPI), ax), bx);
+        uint64_t y3 = BS(BM(lam, BS(ax, x3)), ay);
+        FX(&r[i]) = x3;
+        FY(&r[i]) = y3;
+        FINF(&r[i]) = 0;
+        r[i].w[3] = 0;
     }
+#undef BM
+#undef BA
+#undef BS
 }
 
 static int ec_on_curve_words(const ca_group *g, uint64_t x, uint64_t y)
 {
     uint64_t xm = ca_mont_to(&g->mont, x), ym = ca_mont_to(&g->mont, y);
-    uint64_t lhs = fsqr(g, ym);
-    uint64_t rhs = fadd(g, fmul(g, fadd(g, fsqr(g, xm), g->a_mont), xm), g->b_mont);
+    uint64_t lhs = ec_field_sqr(g, ym);
+    uint64_t rhs = ec_field_add(g, ec_field_mul(g, ec_field_add(g, ec_field_sqr(g, xm), g->a_mont), xm), g->b_mont);
     return lhs == rhs;
 }
 
@@ -168,8 +241,8 @@ static int ec_is_valid(const ca_group *g, const ca_elem *a)
 {
     if (FINF(a)) return 1;
     if (FX(a) >= g->p || FY(a) >= g->p) return 0;
-    uint64_t lhs = fsqr(g, FY(a));
-    uint64_t rhs = fadd(g, fmul(g, fadd(g, fsqr(g, FX(a)), g->a_mont), FX(a)), g->b_mont);
+    uint64_t lhs = ec_field_sqr(g, FY(a));
+    uint64_t rhs = ec_field_add(g, ec_field_mul(g, ec_field_add(g, ec_field_sqr(g, FX(a)), g->a_mont), FX(a)), g->b_mont);
     return lhs == rhs;
 }
 
@@ -178,16 +251,291 @@ static int ec_is_valid(const ca_group *g, const ca_elem *a)
  * with negation, so this is a valid canonical choice. */
 static int ec_canonicalize(const ca_group *g, ca_elem *a)
 {
-    if (FINF(a) || FY(a) == 0) return 0;
-    uint64_t ny = g->p - FY(a);
-    if (ny < FY(a)) { FY(a) = ny; return 1; }
-    return 0;
+    return ca_ec_canon_words(g->p, &FY(a), FINF(a));
 }
 
 static const ca_group_vtable ec_vt = {
     ec_op, ec_dbl, ec_inv, ec_identity, ec_is_identity, ec_equal, ec_hash,
     ec_batch_op, ec_encode, ec_decode, ec_is_valid, ec_canonicalize,
 };
+
+int ca_ec_group_is_native(const ca_group *g) { return g->vt == &ec_vt; }
+
+/*
+ * Scalar multiplication in Jacobian coordinates (X : Y : Z), affine
+ * (X/Z^2, Y/Z^3), all in Montgomery form.  An affine step costs a field
+ * inversion (an extended gcd, ~660 of an affine add's ~880 instructions);
+ * a Jacobian step costs a dozen multiplications, and one inversion at the
+ * end returns the same canonical affine point.  The special cases match
+ * ec_op/ec_dbl: Y = 0 doubles to the identity, and P + Q with equal
+ * abscissae is a double or the identity.
+ */
+typedef struct ec_jac {
+    uint64_t x, y, z;
+    int inf;
+} ec_jac;
+
+static void ec_jac_to_affine(const ca_group *g, ca_elem *r, const ec_jac *acc);
+
+/* 2P (dbl-2007-bl, general a). */
+static void ec_jac_dbl(const ca_group *g, ec_jac *r)
+{
+    if (r->inf) return;
+    const uint64_t p = g->p;
+    if (ec_fp_is_zero_lazy(r->y, p)) {
+        r->inf = 1;
+        return;
+    }
+    if (p < (1ULL << 62)) {
+        const uint64_t np = g->mont.pinv, p2 = p << 1, am = g->a_mont;
+        uint64_t xx = ec_jac_sqr(r->x, p, np), yy = ec_jac_sqr(r->y, p, np);
+        uint64_t yyyy = ec_jac_sqr(yy, p, np), zz = ec_jac_sqr(r->z, p, np);
+        uint64_t t = ec_jac_add(r->x, yy, p2);
+        uint64_t s = ec_jac_sub(ec_jac_sub(ec_jac_sqr(t, p, np), xx, p2), yyyy, p2);
+        s = ec_jac_add(s, s, p2);
+        uint64_t m = ec_jac_add(ec_jac_add(ec_jac_add(xx, xx, p2), xx, p2),
+                                ec_jac_mul(am, ec_jac_sqr(zz, p, np), p, np), p2);
+        uint64_t x3 = ec_jac_sub(ec_jac_sub(ec_jac_sqr(m, p, np), s, p2), s, p2);
+        uint64_t y8 = ec_jac_add(yyyy, yyyy, p2);
+        y8 = ec_jac_add(y8, y8, p2);
+        y8 = ec_jac_add(y8, y8, p2);
+        uint64_t y3 = ec_jac_sub(ec_jac_mul(m, ec_jac_sub(s, x3, p2), p, np), y8, p2);
+        uint64_t yz = ec_jac_add(r->y, r->z, p2);
+        uint64_t z3 = ec_jac_sub(ec_jac_sub(ec_jac_sqr(yz, p, np), yy, p2), zz, p2);
+        r->x = x3;
+        r->y = y3;
+        r->z = z3;
+        return;
+    }
+    uint64_t xx = ec_field_sqr(g, r->x), yy = ec_field_sqr(g, r->y), yyyy = ec_field_sqr(g, yy), zz = ec_field_sqr(g, r->z);
+    uint64_t t = ec_field_add(g, r->x, yy);
+    uint64_t s = ec_field_sub(g, ec_field_sub(g, ec_field_sqr(g, t), xx), yyyy);
+    s = ec_field_add(g, s, s);
+    uint64_t m = ec_field_add(g, ec_field_add(g, ec_field_add(g, xx, xx), xx), ec_field_mul(g, g->a_mont, ec_field_sqr(g, zz)));
+    uint64_t x3 = ec_field_sub(g, ec_field_sub(g, ec_field_sqr(g, m), s), s);
+    uint64_t y8 = ec_field_add(g, yyyy, yyyy);
+    y8 = ec_field_add(g, y8, y8);
+    y8 = ec_field_add(g, y8, y8);
+    uint64_t y3 = ec_field_sub(g, ec_field_mul(g, m, ec_field_sub(g, s, x3)), y8);
+    uint64_t yz = ec_field_add(g, r->y, r->z);
+    uint64_t z3 = ec_field_sub(g, ec_field_sub(g, ec_field_sqr(g, yz), yy), zz);
+    r->x = x3;
+    r->y = y3;
+    r->z = z3;
+}
+
+/* P + (x2, y2) for a finite affine (x2, y2) (madd-2007-bl). */
+static void ec_jac_add_affine(const ca_group *g, ec_jac *r, uint64_t x2, uint64_t y2)
+{
+    if (r->inf) {
+        r->x = x2;
+        r->y = y2;
+        r->z = g->mont.r1;
+        r->inf = 0;
+        return;
+    }
+    const uint64_t p = g->p;
+    if (p < (1ULL << 62)) {
+        const uint64_t np = g->mont.pinv, p2 = p << 1;
+        uint64_t z1z1 = ec_jac_sqr(r->z, p, np);
+        uint64_t u2 = ec_jac_mul(x2, z1z1, p, np);
+        uint64_t s2 = ec_jac_mul(ec_jac_mul(y2, r->z, p, np), z1z1, p, np);
+        uint64_t h = ec_jac_sub(u2, r->x, p2);
+        uint64_t rr = ec_jac_sub(s2, r->y, p2);
+        if (ec_fp_is_zero_lazy(h, p)) {
+            if (ec_fp_is_zero_lazy(rr, p))
+                ec_jac_dbl(g, r);
+            else
+                r->inf = 1;
+            return;
+        }
+        rr = ec_jac_add(rr, rr, p2);
+        uint64_t hh = ec_jac_sqr(h, p, np);
+        uint64_t i = ec_jac_add(hh, hh, p2);
+        i = ec_jac_add(i, i, p2);
+        uint64_t j = ec_jac_mul(h, i, p, np);
+        uint64_t v = ec_jac_mul(r->x, i, p, np);
+        uint64_t x3 = ec_jac_sub(ec_jac_sub(ec_jac_sub(ec_jac_sqr(rr, p, np), j, p2), v, p2), v, p2);
+        uint64_t y1j = ec_jac_mul(r->y, j, p, np);
+        uint64_t y3 = ec_jac_sub(ec_jac_sub(ec_jac_mul(rr, ec_jac_sub(v, x3, p2), p, np), y1j, p2), y1j, p2);
+        uint64_t zh = ec_jac_add(r->z, h, p2);
+        uint64_t z3 = ec_jac_sub(ec_jac_sub(ec_jac_sqr(zh, p, np), z1z1, p2), hh, p2);
+        r->x = x3;
+        r->y = y3;
+        r->z = z3;
+        return;
+    }
+    uint64_t z1z1 = ec_field_sqr(g, r->z);
+    uint64_t u2 = ec_field_mul(g, x2, z1z1);
+    uint64_t s2 = ec_field_mul(g, ec_field_mul(g, y2, r->z), z1z1);
+    uint64_t h = ec_field_sub(g, u2, r->x);
+    uint64_t rr = ec_field_sub(g, s2, r->y);
+    if (h == 0) {
+        if (rr == 0)
+            ec_jac_dbl(g, r);
+        else
+            r->inf = 1;
+        return;
+    }
+    rr = ec_field_add(g, rr, rr);
+    uint64_t hh = ec_field_sqr(g, h);
+    uint64_t i = ec_field_add(g, hh, hh);
+    i = ec_field_add(g, i, i);
+    uint64_t j = ec_field_mul(g, h, i);
+    uint64_t v = ec_field_mul(g, r->x, i);
+    uint64_t x3 = ec_field_sub(g, ec_field_sub(g, ec_field_sub(g, ec_field_sqr(g, rr), j), v), v);
+    uint64_t y1j = ec_field_mul(g, r->y, j);
+    uint64_t y3 = ec_field_sub(g, ec_field_sub(g, ec_field_mul(g, rr, ec_field_sub(g, v, x3)), y1j), y1j);
+    uint64_t zh = ec_field_add(g, r->z, h);
+    uint64_t z3 = ec_field_sub(g, ec_field_sub(g, ec_field_sqr(g, zh), z1z1), hh);
+    r->x = x3;
+    r->y = y3;
+    r->z = z3;
+}
+
+/* Binary left-to-right ladder: adds only P itself, so it is correct for
+ * points of any order.  Used when the sliding-window table would contain
+ * the identity (P of order <= 15). */
+static void ec_group_mul_binary(const ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k)
+{
+    const uint64_t ax = FX(a), ay = FY(a);
+    ec_jac acc = {0, 0, 0, 1};
+    for (int bit = 63 - __builtin_clzll(k); bit >= 0; bit--) {
+        ec_jac_dbl(g, &acc);
+        if ((k >> bit) & 1) ec_jac_add_affine(g, &acc, ax, ay);
+    }
+    ec_jac_to_affine(g, r, &acc);
+}
+
+int ca_ec_group_mul(const ca_group *g, ca_elem *r, const ca_elem *a, uint64_t k)
+{
+    if (g->vt != &ec_vt) return 0; /* a caller's own vtable: use it */
+    if (FINF(a) || k == 0) {
+        ec_identity(g, r);
+        return 1;
+    }
+    /* Sliding-window width 4: odd affine table {P,3P,...,15P}.  Build the
+     * table in Jacobian (madd from 2P), then one Montgomery-trick inversion
+     * yields all eight affine rows — same point as binary L→R. */
+    enum { WIN = 4, NODD = 1 << (WIN - 1) };
+    ca_elem two, odd[NODD];
+    ec_dbl(g, &two, a); /* affine 2P, one inversion */
+    if (FINF(&two)) { /* P of order 2: the table below would add the identity */
+        ec_group_mul_binary(g, r, a, k);
+        return 1;
+    }
+    ec_jac J[NODD];
+    J[0].x = FX(a);
+    J[0].y = FY(a);
+    J[0].z = g->mont.r1;
+    J[0].inf = 0;
+    for (int t = 1; t < NODD; t++) {
+        J[t] = J[t - 1];
+        ec_jac_add_affine(g, &J[t], FX(&two), FY(&two)); /* (2t+1)P */
+        if (J[t].inf) { /* (2t+1)P = O: order <= 15, a table row would be O */
+            ec_group_mul_binary(g, r, a, k);
+            return 1;
+        }
+    }
+    /* Batch-invert the Z's (Montgomery's trick); J[0].z = R already. */
+    uint64_t prod[NODD], invz[NODD];
+    prod[0] = J[0].z;
+    for (int t = 1; t < NODD; t++)
+        prod[t] = J[t].inf ? prod[t - 1] : ec_field_mul(g, prod[t - 1], J[t].z);
+    uint64_t acc_inv = ec_field_inv(g, prod[NODD - 1]);
+    for (int t = NODD - 1; t > 0; t--) {
+        if (J[t].inf) {
+            invz[t] = 0;
+            continue;
+        }
+        invz[t] = ec_field_mul(g, acc_inv, prod[t - 1]);
+        acc_inv = ec_field_mul(g, acc_inv, J[t].z);
+    }
+    invz[0] = acc_inv;
+    for (int t = 0; t < NODD; t++) {
+        if (J[t].inf) {
+            ec_identity(g, &odd[t]);
+            continue;
+        }
+        uint64_t zi = invz[t], zi2 = ec_field_sqr(g, zi);
+        uint64_t x = ec_field_mul(g, J[t].x, zi2);
+        uint64_t y = ec_field_mul(g, J[t].y, ec_field_mul(g, zi2, zi));
+        /* Jacobian may leave lazy residues; affine table rows stay in [0, p). */
+        FX(&odd[t]) = ca_fp_canon(x, g->p);
+        FY(&odd[t]) = ca_fp_canon(y, g->p);
+        FINF(&odd[t]) = 0;
+        odd[t].w[3] = 0;
+    }
+
+    ec_jac acc = {0, 0, 0, 1};
+    int i = 63 - __builtin_clzll(k);
+    while (i >= 0) {
+        if (((k >> i) & 1) == 0) {
+            ec_jac_dbl(g, &acc);
+            i--;
+            continue;
+        }
+        int s = i + 1 < WIN ? i + 1 : WIN;
+        while (s > 1 && ((k >> (i - s + 1)) & 1) == 0) s--;
+        uint64_t u = (k >> (i - s + 1)) & (((uint64_t)1 << s) - 1);
+        for (int t = 0; t < s; t++) ec_jac_dbl(g, &acc);
+        const ca_elem *T = &odd[(u - 1) >> 1];
+        ec_jac_add_affine(g, &acc, FX(T), FY(T));
+        i -= s;
+    }
+    ec_jac_to_affine(g, r, &acc);
+    return 1;
+}
+
+/* The affine point of a Jacobian accumulator: one inversion. */
+static void ec_jac_to_affine(const ca_group *g, ca_elem *r, const ec_jac *acc)
+{
+    if (acc->inf) {
+        ec_identity(g, r);
+        return;
+    }
+    uint64_t zi = ec_field_inv(g, ca_fp_canon(acc->z, g->p)), zi2 = ec_field_sqr(g, zi);
+    FX(r) = ca_fp_canon(ec_field_mul(g, ca_fp_canon(acc->x, g->p), zi2), g->p);
+    FY(r) = ca_fp_canon(ec_field_mul(g, ca_fp_canon(acc->y, g->p), ec_field_mul(g, zi2, zi)), g->p);
+    FINF(r) = 0;
+    r->w[3] = 0;
+}
+
+/* acc += the sum of pow[b] over the set bits b of k (pow[b] affine). */
+static void ec_jac_add_bits(const ca_group *g, ec_jac *acc, const ca_elem *pow, uint64_t k)
+{
+    for (int b = 0; k; b++, k >>= 1)
+        if ((k & 1) && !FINF(&pow[b])) ec_jac_add_affine(g, acc, FX(&pow[b]), FY(&pow[b]));
+}
+
+int ca_ec_fb_sum(const ca_group *g, ca_elem *r, const ca_elem *pows1, uint64_t k1,
+                 const ca_elem *pows2, uint64_t k2)
+{
+    if (g->vt != &ec_vt) return 0; /* a caller's own vtable: use it */
+    ec_jac acc = {0, 0, 0, 1};
+    ec_jac_add_bits(g, &acc, pows1, k1);
+    ec_jac_add_bits(g, &acc, pows2, k2);
+    ec_jac_to_affine(g, r, &acc);
+    return 1;
+}
+
+int ca_ec_group_mul2(const ca_group *g, ca_elem *r, const ca_elem *P, uint64_t a, const ca_elem *Q,
+                     uint64_t b, const ca_elem *PQ)
+{
+    if (g->vt != &ec_vt || FINF(P) || FINF(Q) || FINF(PQ)) return 0;
+    ec_jac acc = {0, 0, 0, 1};
+    const uint64_t ab = a | b;
+    for (int bit = ab ? 63 - __builtin_clzll(ab) : -1; bit >= 0; bit--) {
+        ec_jac_dbl(g, &acc);
+        const unsigned sel = (unsigned)((a >> bit) & 1) | (unsigned)(((b >> bit) & 1) << 1);
+        if (sel) {
+            const ca_elem *T = sel == 1 ? P : sel == 2 ? Q : PQ;
+            ec_jac_add_affine(g, &acc, FX(T), FY(T));
+        }
+    }
+    ec_jac_to_affine(g, r, &acc);
+    return 1;
+}
 
 ca_status ca_group_ec_init(ca_group *g, uint64_t p, uint64_t a, uint64_t b, uint64_t order)
 {
@@ -226,12 +574,12 @@ void ca_ec_endo(const ca_group *g, ca_elem *r, const ca_elem *a)
     }
     if (g->endo_kind == 1) {
         /* j = 0: psi(x, y) = (beta * x, -y), beta a cube root of unity */
-        FX(r) = fmul(g, g->endo_c_mont, FX(a));
+        FX(r) = ec_field_mul(g, g->endo_c_mont, FX(a));
         FY(r) = FY(a) ? g->p - FY(a) : 0;
     } else {
         /* j = 1728: psi(x, y) = (-x, i * y), i = sqrt(-1) */
         FX(r) = FX(a) ? g->p - FX(a) : 0;
-        FY(r) = fmul(g, g->endo_c_mont, FY(a));
+        FY(r) = ec_field_mul(g, g->endo_c_mont, FY(a));
     }
     FINF(r) = 0;
     r->w[3] = 0;
@@ -264,26 +612,211 @@ void ca_ec_random_point(const ca_group *g, ca_elem *r, uint64_t seed)
 
 /* ---- Mestre's point counting ------------------------------------------ */
 
-/* All k in [lo, lo+width) with k*P == T, appended to out (up to cap).
- * Returns the number found (may exceed cap; only cap are stored). */
-static size_t ec_interval_all(const ca_group *g, const ca_elem *P, const ca_elem *T, uint64_t lo,
-                              uint64_t width, uint64_t *out, size_t cap, ca_stats *st)
+enum { EC_LANES = 64 };
+
+/*
+ * r[i] = a[i] + b with one shared addend b: same dens and inverses as
+ * ec_batch_op with b[i] = b, but b's coordinates stay in registers and the
+ * caller does not materialize n copies of b (baby-step stride).
+ */
+static void ec_batch_add_same_b(const ca_group *g, ca_elem *r, const ca_elem *a, const ca_elem *b,
+                                size_t n, uint64_t *scratch)
 {
-    uint64_t m = ca_isqrt(width) + 1;
-    ca_htab tab;
-    if (ca_htab_init(&tab, (size_t)m) != CA_OK) return 0;
-    ca_elem cur;
-    ec_identity(g, &cur);
-    uint64_t small_order = 0;
-    for (uint64_t j = 0; j < m; j++) {
-        uint64_t old;
-        if (ca_htab_insert(&tab, ec_hash(g, &cur), j, 0, &old, NULL) == 1) {
-            /* cur == old*P: P has small order j - old */
-            small_order = j - old;
-            break;
+    if (n == 0) return;
+    const uint64_t P = g->p, NPI = (uint64_t)0 - g->mont.pinv, AM = g->a_mont;
+    const uint64_t one = g->mont.r1;
+    const uint64_t bx = FX(b), by = FY(b);
+    const int binf = FINF(b) != 0;
+#define BM(x, y) (CA_FC_ADD(CA_FC_MUL, 1), ca_ec_bmul((x), (y), P, NPI))
+#define BA(x, y) ca_addmod((x), (y), P)
+#define BS(x, y) ca_submod((x), (y), P)
+    enum { EC_CHAINS = 4 };
+    const size_t k = n < EC_CHAINS ? n : EC_CHAINS;
+    uint64_t *den = scratch, *suf = scratch + n;
+    for (size_t i = 0; i < n; i++) {
+        uint64_t d;
+        if (FINF(&a[i]) || binf) d = one;
+        else if (FX(&a[i]) == bx) {
+            if (FY(&a[i]) == by && FY(&a[i]) != 0) d = BA(FY(&a[i]), FY(&a[i]));
+            else d = one;
+        } else
+            d = BS(bx, FX(&a[i]));
+        den[i] = d;
+    }
+    for (size_t i = n; i-- > 0;) suf[i] = i + k < n ? BM(den[i], suf[i + k]) : den[i];
+    uint64_t before[EC_CHAINS], after[EC_CHAINS], inv[EC_CHAINS];
+    before[0] = one;
+    for (size_t j = 1; j < k; j++) before[j] = BM(before[j - 1], suf[j - 1]);
+    after[k - 1] = one;
+    for (size_t j = k - 1; j-- > 0;) after[j] = BM(after[j + 1], suf[j + 1]);
+    uint64_t all = BM(before[k - 1], suf[k - 1]);
+    all = ec_field_inv(g, all);
+    for (size_t j = 0; j < k; j++) inv[j] = BM(all, BM(before[j], after[j]));
+    for (size_t i = 0, j = 0; i < n; i++) {
+        uint64_t di = i + k < n ? BM(inv[j], suf[i + k]) : inv[j];
+        inv[j] = BM(inv[j], den[i]);
+        j = j + 1 == k ? 0 : j + 1;
+        const ca_elem *A = &a[i];
+        if (FINF(A)) { r[i] = *b; continue; }
+        if (binf) { r[i] = *A; continue; }
+        const uint64_t ax = FX(A), ay = FY(A);
+        uint64_t lam;
+        if (ax == bx) {
+            if (ay == by && ay != 0) {
+                CA_FC_ADD(CA_FC_SQR, 1);
+                uint64_t x2 = ca_ec_bmul(ax, ax, P, NPI);
+                uint64_t num = BA(BA(BA(x2, x2), x2), AM);
+                lam = BM(num, di);
+            } else {
+                ec_identity(g, &r[i]);
+                continue;
+            }
+        } else {
+            lam = BM(BS(by, ay), di);
         }
-        ec_op(g, &cur, &cur, P);
-        if (st) st->group_ops++;
+        CA_FC_ADD(CA_FC_SQR, 1);
+        uint64_t x3 = BS(BS(ca_ec_bmul(lam, lam, P, NPI), ax), bx);
+        uint64_t y3 = BS(BM(lam, BS(ax, x3)), ay);
+        FX(&r[i]) = x3;
+        FY(&r[i]) = y3;
+        FINF(&r[i]) = 0;
+        r[i].w[3] = 0;
+    }
+#undef BM
+#undef BA
+#undef BS
+}
+
+/*
+ * r[i] = a + b[i] with one shared augend a: same dens/inverses as
+ * ec_batch_op with a[i] = a (giant-step R + k*(-mP)).
+ */
+static void ec_batch_add_same_a(const ca_group *g, ca_elem *r, const ca_elem *a, const ca_elem *b,
+                                size_t n, uint64_t *scratch)
+{
+    if (n == 0) return;
+    const uint64_t P = g->p, NPI = (uint64_t)0 - g->mont.pinv, AM = g->a_mont;
+    const uint64_t one = g->mont.r1;
+    const uint64_t ax = FX(a), ay = FY(a);
+    const int ainf = FINF(a) != 0;
+#define BM(x, y) (CA_FC_ADD(CA_FC_MUL, 1), ca_ec_bmul((x), (y), P, NPI))
+#define BA(x, y) ca_addmod((x), (y), P)
+#define BS(x, y) ca_submod((x), (y), P)
+    enum { EC_CHAINS = 4 };
+    const size_t k = n < EC_CHAINS ? n : EC_CHAINS;
+    uint64_t *den = scratch, *suf = scratch + n;
+    for (size_t i = 0; i < n; i++) {
+        uint64_t d;
+        if (ainf || FINF(&b[i])) d = one;
+        else if (ax == FX(&b[i])) {
+            if (ay == FY(&b[i]) && ay != 0) d = BA(ay, ay);
+            else d = one;
+        } else
+            d = BS(FX(&b[i]), ax);
+        den[i] = d;
+    }
+    for (size_t i = n; i-- > 0;) suf[i] = i + k < n ? BM(den[i], suf[i + k]) : den[i];
+    uint64_t before[EC_CHAINS], after[EC_CHAINS], inv[EC_CHAINS];
+    before[0] = one;
+    for (size_t j = 1; j < k; j++) before[j] = BM(before[j - 1], suf[j - 1]);
+    after[k - 1] = one;
+    for (size_t j = k - 1; j-- > 0;) after[j] = BM(after[j + 1], suf[j + 1]);
+    uint64_t all = BM(before[k - 1], suf[k - 1]);
+    all = ec_field_inv(g, all);
+    for (size_t j = 0; j < k; j++) inv[j] = BM(all, BM(before[j], after[j]));
+    for (size_t i = 0, j = 0; i < n; i++) {
+        uint64_t di = i + k < n ? BM(inv[j], suf[i + k]) : inv[j];
+        inv[j] = BM(inv[j], den[i]);
+        j = j + 1 == k ? 0 : j + 1;
+        const ca_elem *B = &b[i];
+        if (ainf) { r[i] = *B; continue; }
+        if (FINF(B)) { r[i] = *a; continue; }
+        const uint64_t bx = FX(B), by = FY(B);
+        uint64_t lam;
+        if (ax == bx) {
+            if (ay == by && ay != 0) {
+                CA_FC_ADD(CA_FC_SQR, 1);
+                uint64_t x2 = ca_ec_bmul(ax, ax, P, NPI);
+                uint64_t num = BA(BA(BA(x2, x2), x2), AM);
+                lam = BM(num, di);
+            } else {
+                ec_identity(g, &r[i]);
+                continue;
+            }
+        } else {
+            lam = BM(BS(by, ay), di);
+        }
+        CA_FC_ADD(CA_FC_SQR, 1);
+        uint64_t x3 = BS(BS(ca_ec_bmul(lam, lam, P, NPI), ax), bx);
+        uint64_t y3 = BS(BM(lam, BS(ax, x3)), ay);
+        FX(&r[i]) = x3;
+        FY(&r[i]) = y3;
+        FINF(&r[i]) = 0;
+        r[i].w[3] = 0;
+    }
+#undef BM
+#undef BA
+#undef BS
+}
+
+/* Fill consecutive multiples with one batched inversion per prefix
+ * expansion, plus its offset doubling.  Preserve affine-addition order. */
+static void ec_multiples(const ca_group *g, ca_elem *out, const ca_elem *base,
+                         size_t count, uint64_t *scratch)
+{
+    ec_identity(g, &out[0]);
+    if (count == 1) return;
+    out[1] = *base;
+    for (size_t span = 2; span < count; span *= 2) {
+        ca_elem offset;
+        ec_dbl(g, &offset, &out[span / 2]);
+        size_t n = count - span < span ? count - span : span;
+        ec_batch_add_same_b(g, out + span, out, &offset, n, scratch);
+    }
+}
+
+/* All k in [lo, lo+width) with k*P == T, appended to out (up to cap).
+ * Returns the number found (may exceed cap; only cap are stored).
+ * tab is cleared and filled; the caller owns its allocation. */
+static size_t ec_interval_all(const ca_group *g, const ca_elem *P, const ca_elem *T, uint64_t lo,
+                              uint64_t width, uint64_t *out, size_t cap, ca_stats *st,
+                              ca_htab1 *tab)
+{
+    const uint64_t root = ca_isqrt(width);
+    uint64_t m = root + 1;
+    ca_htab1_clear(tab);
+    /* Baby and giant steps go EC_LANES at a time through a shared-addend
+     * Montgomery trick (one inversion per block).  Hashing, insertion,
+     * lookup and every count follow the one-step loops; elements a block
+     * computes past the last one used are not charged. */
+    ca_elem lane[EC_LANES] = {{{0}}};
+    uint64_t scratch[2 * EC_LANES];
+    ca_elem cur;
+    uint64_t small_order = 0;
+    ca_elem stride;
+    {
+        const uint64_t first = m < EC_LANES ? m : EC_LANES;
+        ec_multiples(g, lane, P, (size_t)first, scratch);
+        if (m > EC_LANES) ec_dbl(g, &stride, &lane[EC_LANES / 2]);
+        uint64_t steps_done = m;
+        for (uint64_t j0 = 0; j0 < m && !small_order; j0 += EC_LANES) {
+            const uint64_t n = m - j0 < EC_LANES ? m - j0 : EC_LANES;
+            for (uint64_t c = 0; c < n; c++) {
+                uint64_t old;
+                if (ca_htab1_insert(tab, ec_hash(g, &lane[c]), j0 + c, &old) == 1) {
+                    /* (j0 + c) P == old P: P has small order j0 + c - old */
+                    small_order = j0 + c - old;
+                    steps_done = j0 + c;
+                    break;
+                }
+            }
+            if (!small_order && j0 + EC_LANES < m) {
+                const uint64_t next = m - j0 - EC_LANES;
+                ec_batch_add_same_b(g, lane, lane, &stride, next < EC_LANES ? next : EC_LANES,
+                                   scratch);
+            }
+        }
+        if (st) st->group_ops += steps_done;
     }
     size_t found = 0;
     if (small_order) {
@@ -306,7 +839,6 @@ static size_t ec_interval_all(const ca_group *g, const ca_elem *P, const ca_elem
                 found++;
             }
         }
-        ca_htab_free(&tab);
         return found;
     }
     /* giant steps: R = T - (lo + i m) P; if R == jP then k = lo + i m + j */
@@ -317,25 +849,42 @@ static size_t ec_interval_all(const ca_group *g, const ca_elem *P, const ca_elem
     ca_group_mul(g, &base, P, lo, NULL);
     ec_inv(g, &base, &base);
     ec_op(g, &R, T, &base); /* T - lo P */
-    uint64_t steps = m ? width / m + 1 : 1;
-    for (uint64_t i = 0; i < steps; i++) {
-        uint64_t j;
-        if (ca_htab_find(&tab, ec_hash(g, &R), &j, NULL)) {
-            /* verify */
-            ca_elem chk;
-            ca_group_mul(g, &chk, P, j, NULL);
-            if (ec_equal(g, &chk, &R)) {
-                ca_u128 k = (ca_u128)lo + (ca_u128)i * m + j;
-                if (k < (ca_u128)lo + width) {
-                    if (found < cap) out[found] = (uint64_t)k;
-                    found++;
+    uint64_t steps = root != UINT64_MAX ? width / m + 1 : 1; /* m == 0 only if root + 1 wraps */
+    /* giant[k] = k (-m P); a block is R + giant[k] for k < EC_LANES */
+    ca_elem giant[EC_LANES] = {{{0}}}, block_step;
+    uint64_t hs[EC_LANES];
+    ec_multiples(g, giant, &negmP, (size_t)(steps < EC_LANES ? steps : EC_LANES), scratch);
+    if (steps > EC_LANES) ec_dbl(g, &block_step, &giant[EC_LANES / 2]);
+    const ca_htab1_entry *ep = tab->e;
+    const size_t mask = tab->cap - 1;
+    const int pf = tab->cap != 0;
+    for (uint64_t i0 = 0; i0 < steps; i0 += EC_LANES) {
+        const uint64_t n = steps - i0 < EC_LANES ? steps - i0 : EC_LANES;
+        ec_batch_add_same_a(g, lane, &R, giant, n, scratch);
+        for (uint64_t k = 0; k < n; k++) {
+            const uint64_t h = ca_ec_hash_words(lane[k].w[0], lane[k].w[1], lane[k].w[2]);
+            hs[k] = h;
+            if (pf) __builtin_prefetch(&ep[(size_t)(h ? h : 1) & mask], 0, 1);
+        }
+        for (uint64_t k = 0; k < n; k++) {
+            const uint64_t i = i0 + k;
+            uint64_t j;
+            if (ca_htab1_find(tab, hs[k], &j)) {
+                /* verify */
+                ca_elem chk;
+                ca_group_mul(g, &chk, P, j, NULL);
+                if (ec_equal(g, &chk, &lane[k])) {
+                    ca_u128 kk = (ca_u128)lo + (ca_u128)i * m + j;
+                    if (kk < (ca_u128)lo + width) {
+                        if (found < cap) out[found] = (uint64_t)kk;
+                        found++;
+                    }
                 }
             }
         }
-        ec_op(g, &R, &R, &negmP);
-        if (st) st->group_ops++;
+        if (st) st->group_ops += n;
+        if (n == EC_LANES) ec_op(g, &R, &R, &block_step);
     }
-    ca_htab_free(&tab);
     return found;
 }
 
@@ -351,12 +900,23 @@ static ca_status ec_count_once(const ca_group *g, uint64_t *order, ca_stats *st,
     ca_u128 lo128 = (ca_u128)p + 1 - 2 * (ca_u128)s;
     uint64_t lo = lo128 < 1 ? 1 : (uint64_t)lo128;
     uint64_t width = 4 * s + 1;
+    /* Near 2^64 the top of the Hasse interval does not fit a uint64_t:
+     * search only the part that does (the walk would otherwise wrap and
+     * return the order modulo 2^64), and report an order above 2^64 as
+     * not found rather than truncated. */
+    if (width - 1 > UINT64_MAX - lo) width = UINT64_MAX - lo + 1;
+    uint64_t m = ca_isqrt(width) + 1;
     ca_rng rng;
     ca_rng_seed(&rng, seed);
     enum { CAP = 4096 };
     uint64_t *cands = malloc(CAP * sizeof(uint64_t));
     uint64_t *cur = malloc(CAP * sizeof(uint64_t));
-    if (!cands || !cur) { free(cands); free(cur); return CA_ERR_NOMEM; }
+    ca_htab1 tab;
+    if (!cands || !cur || ca_htab1_init(&tab, (size_t)m) != CA_OK) {
+        free(cands);
+        free(cur);
+        return CA_ERR_NOMEM;
+    }
     size_t ncand = 0;
     int have = 0;
     *ambiguous = 0;
@@ -365,7 +925,7 @@ static ca_status ec_count_once(const ca_group *g, uint64_t *order, ca_stats *st,
         ca_elem P, T;
         ca_ec_random_point(g, &P, ca_rng_next(&rng));
         ec_identity(g, &T);
-        size_t n = ec_interval_all(g, &P, &T, lo, width, cur, CAP, st);
+        size_t n = ec_interval_all(g, &P, &T, lo, width, cur, CAP, st, &tab);
         if (n == 0 || n > CAP) continue;
         if (!have) {
             memcpy(cands, cur, n * sizeof(uint64_t));
@@ -388,6 +948,7 @@ static ca_status ec_count_once(const ca_group *g, uint64_t *order, ca_stats *st,
         if (ncand == 0) { rc = CA_ERR_INTERNAL; break; }
     }
     if (rc != CA_OK && have && ncand > 1) *ambiguous = 1;
+    ca_htab1_free(&tab);
     free(cands);
     free(cur);
     return rc;
@@ -425,12 +986,19 @@ ca_status ca_ec_count_points(uint64_t p, uint64_t a, uint64_t b, uint64_t *order
             uint64_t ot;
             int amb2 = 0;
             if (ec_count_once(&tw, &ot, st, 0x7715ULL ^ p, &amb2) == CA_OK) {
-                /* #E + #E' = 2p + 2; 128-bit so p > 2^63 does not wrap */
-                *order = (uint64_t)((ca_u128)2 * p + 2 - ot);
-                rc = CA_OK;
+                /* #E + #E' = 2p + 2; 128-bit so p > 2^63 does not wrap,
+                 * and an order that does not fit 64 bits is refused. */
+                ca_u128 o = (ca_u128)2 * p + 2 - ot;
+                if (o <= (ca_u128)UINT64_MAX) {
+                    *order = (uint64_t)o;
+                    rc = CA_OK;
+                }
             }
         }
     }
     st->seconds += ca_now() - t0;
+    if (rc != CA_OK && (ca_u128)p + 1 + 2 * ((ca_u128)ca_isqrt(p) + 1) > (ca_u128)UINT64_MAX)
+        ca_set_error("p = %llu: #E(F_p) may exceed 64 bits and was not found below 2^64",
+                     (unsigned long long)p);
     return rc;
 }

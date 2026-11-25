@@ -1,0 +1,28 @@
+digraph hardening {
+  graph [bgcolor="white", rankdir=LR, nodesep=0.45, ranksep=0.65,
+         fontname="DejaVu Sans", label="Prime-field m=3 evidence gates (development status)",
+         labelloc=t, fontsize=18];
+  node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=11,
+        color="#496780", fillcolor="#eef5f8", margin="0.13,0.08"];
+  edge [color="#496780", fontname="DejaVu Sans", fontsize=10];
+
+  semantics [label="Signed semantic predicate\n(disjoint x windows + lift signs)"];
+  oracle [label="Native small-field oracle\nPASS: exhaustive = two-window", fillcolor="#dff3e4", color="#2c7a4b"];
+  theory [label="Production CDCL(T)/Fp theory\nOPEN: explanations + UNSAT proof", fillcolor="#fff2d8", color="#a16b00"];
+  panel [label="Complete natural panel\nOPEN: every row must verify", fillcolor="#fff2d8", color="#a16b00"];
+  decision [label="Advance only if\na < 1.5 and e < 0.5", fillcolor="#f3e7f7", color="#76428a"];
+
+  setup [label="Setup S(s) = 2^(a s)\nincludes preprocessing", fillcolor="#eef0fb", color="#4c5ba6"];
+  query [label="2^s natural queries\nQ(s) = 2^(e s)", fillcolor="#eef0fb", color="#4c5ba6"];
+  total [label="Cold relation collection\n2^(a s) + 2^((e+1)s)", fillcolor="#eef0fb", color="#4c5ba6"];
+
+  cvc5 [label="cvc5 QF_FF\nSAT diagnostic only at inspected source", fillcolor="#f7e4e4", color="#9a3f3f"];
+  onehot [label="One-hot continuation\n805,306,365 vars at s=27\nNOT ADMITTED", fillcolor="#f7e4e4", color="#9a3f3f"];
+
+  semantics -> oracle -> theory -> panel -> decision;
+  setup -> total;
+  query -> total;
+  total -> decision;
+  cvc5 -> panel [style=dashed, label="not UNSAT-eligible"];
+  onehot -> panel [style=dashed, label="new representation required"];
+}

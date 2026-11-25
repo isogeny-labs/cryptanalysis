@@ -1,0 +1,23 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T01:59:28Z",
+ "id": "PCC-20261123-c028f2",
+ "kind": "measurement",
+ "producer": {
+  "commit": "a481df4bc33b906283fdd746b91dc1ef43b7d7a0",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-rotation-smoothness/native-key/timings.csv",
+    "sha256": "744416fb07f4a26ceef91cf204f5aaf27e56cee8ed8bc5aba510ccfe8937c773"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "On one Apple M4 Pro with Apple clang 21, the native reciprocal census had a median paired direct/carry ratio of 1.232 at bounds 47 and 67. All 72 rows matched the complete reference key set."
+}

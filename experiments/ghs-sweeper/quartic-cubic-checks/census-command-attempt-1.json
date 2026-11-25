@@ -1,0 +1,24 @@
+{
+  "command": [
+    "/workspace/.cargo/bin/cargo",
+    "run",
+    "--release",
+    "--locked",
+    "--manifest-path",
+    "experiments/ghs-sweeper/Cargo.toml",
+    "--example",
+    "quartic_cubic",
+    "--",
+    "census",
+    "--threads",
+    "2"
+  ],
+  "cwd": "/workspace/cryptanalysis",
+  "revision": "15e0c097d08216a3bfb3972f6264c1f163cd53f6",
+  "source_sha256": "d4849b80a2dfb388a8257838d09114157570a131d008009d7f8ba6bb62b57a73",
+  "exit_status": 0,
+  "elapsed_seconds_execution_receipt_only": 14.871636390686035,
+  "output_sha256": "7325f3ea08dae2f39ce96acbb2f1c9138adc6906466c7ec1c60a9bab645c25b8",
+  "stderr_sha256": "92e85d600ede3cd221790a9d0872c59266508bb9b633f04c084575fbce6d67cd",
+  "performance_claim": false
+}

@@ -1,0 +1,82 @@
+    Checking typenum v1.20.1
+    Checking utf8parse v0.2.2
+    Checking is_terminal_polyfill v1.70.2
+    Checking colorchoice v1.0.5
+    Checking anstyle-query v1.1.5
+    Checking anstyle-parse v1.0.0
+    Checking anstyle v1.0.14
+    Checking num-traits v0.2.19
+    Checking serde_core v1.0.229
+    Checking anstream v1.0.0
+    Checking strsim v0.11.1
+    Checking generic-array v0.14.7
+    Checking clap_lex v1.1.1
+    Checking num-integer v0.1.47
+    Checking clap_builder v4.6.7
+    Checking zmij v1.0.23
+    Checking memchr v2.8.3
+    Checking block-buffer v0.10.4
+    Checking crypto-common v0.1.7
+    Checking digest v0.10.7
+    Checking cpufeatures v0.2.17
+    Checking cfg-if v1.0.5
+    Checking itoa v1.0.18
+    Checking sha2 v0.10.9
+    Checking num-bigint v0.4.8
+    Checking anyhow v1.0.104
+    Checking clap v4.6.7
+    Checking serde v1.0.229
+    Checking serde_json v1.0.154
+    Checking transfer-audit v0.1.0 (/workspace/cryptanalysis-transfer-audit/tools/transfer-audit)
+error: this function has too many arguments (8/7)
+   --> src/../../../suite/src/binary_ecc/curve.rs:311:5
+    |
+311 | /     fn from_hex_parts(
+312 | |         m: u32,
+313 | |         irr: IrreduciblePoly,
+314 | |         a: &str,
+...   |
+319 | |         h: u32,
+320 | |     ) -> Self {
+    | |_____________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#too_many_arguments
+    = note: `-D clippy::too-many-arguments` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::too_many_arguments)]`
+
+error: the loop variable `i` is used to index `bits`
+   --> src/../../../suite/src/binary_ecc/f2m.rs:652:14
+    |
+652 |     for i in 0..n_words {
+    |              ^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#needless_range_loop
+    = note: `-D clippy::needless-range-loop` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::needless_range_loop)]`
+help: consider using an iterator and enumerate()
+    |
+652 -     for i in 0..n_words {
+652 +     for (i, <item>) in bits.iter().enumerate().take(n_words) {
+    |
+
+error: manual implementation of `.is_multiple_of()`
+   --> src/lib.rs:101:12
+    |
+101 |         if n % p == 0 {
+    |            ^^^^^^^^^^ help: replace with: `n.is_multiple_of(p)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#manual_is_multiple_of
+    = note: `-D clippy::manual-is-multiple-of` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::manual_is_multiple_of)]`
+
+error: manual implementation of `.is_multiple_of()`
+   --> src/lib.rs:636:22
+    |
+636 |             d > 0 && input.degree % d == 0,
+    |                      ^^^^^^^^^^^^^^^^^^^^^ help: replace with: `input.degree.is_multiple_of(d)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#manual_is_multiple_of
+
+error: could not compile `transfer-audit` (lib) due to 4 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `transfer-audit` (lib test) due to 4 previous errors

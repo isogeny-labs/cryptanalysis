@@ -1,0 +1,48 @@
+[
+  {
+    "command": [
+      "/workspace/.cargo/bin/cargo",
+      "fmt",
+      "--manifest-path",
+      "experiments/ghs-sweeper/Cargo.toml",
+      "--",
+      "--check"
+    ],
+    "exit_status": 0,
+    "elapsed_seconds_execution_receipt_only": 0.3179762363433838,
+    "output": "format-attempt-1.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "command": [
+      "/workspace/.cargo/bin/cargo",
+      "clippy",
+      "--locked",
+      "--manifest-path",
+      "experiments/ghs-sweeper/Cargo.toml",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit_status": 0,
+    "elapsed_seconds_execution_receipt_only": 2.492325782775879,
+    "output": "clippy-attempt-1.txt",
+    "sha256": "7d847d31e3f5dab44f4d70bde95dbba23b778ef4ceb99b301edd458b2ee9ef41"
+  },
+  {
+    "command": [
+      "/workspace/.cargo/bin/cargo",
+      "test",
+      "--release",
+      "--locked",
+      "--manifest-path",
+      "experiments/ghs-sweeper/Cargo.toml",
+      "--all-targets"
+    ],
+    "exit_status": 0,
+    "elapsed_seconds_execution_receipt_only": 0.9610018730163574,
+    "output": "all-targets-attempt-2.txt",
+    "sha256": "d85eb9acbffb306547a9901cc5ee3ff88d43a4f5543534288618df5b6eabbc8a"
+  }
+]

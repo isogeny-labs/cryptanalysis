@@ -1,0 +1,24 @@
+[package]
+name = "tau6-loop"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+# The n = 19 tau6 index calculus end to end in native code (no dependencies):
+# setup, Python-compatible MT19937 target draws, point arithmetic, the shift
+# loop, relation checks, the GF(r) left kernel in Sage's echelon basis and the
+# log. The per-shift solve is the v3 source file itself (src/lib.rs includes
+# ../../volcano-n19-native-tau6-v3-20261020/native/src/lib.rs by path).
+[lib]
+name = "tau6loop"
+path = "src/lib.rs"
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "tau6dlp"
+path = "src/bin/tau6dlp.rs"
+
+[profile.release]
+opt-level = 3
+codegen-units = 1
+panic = "abort"

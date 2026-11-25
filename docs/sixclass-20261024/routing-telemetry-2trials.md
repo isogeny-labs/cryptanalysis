@@ -1,0 +1,11 @@
+# Six-class routing telemetry, exploratory two-target smoke run
+
+Question: do the new native C counters account for every six-class visit and retain the joint twist/route-parity observations needed for an H1 diagnostic?
+
+Protocol and controls: `cmake -S . -B /tmp/ca-sixclass-method-build -DCA_BUILD_SHARED=OFF -DCA_BUILD_STATIC=ON -DCA_BUILD_TOOLS=ON -DCA_BUILD_TESTS=ON`; build `ca_sixclass_bench test_sixclass`; run `ctest --test-dir /tmp/ca-sixclass-method-build -R sixclass --output-on-failure`; run `/tmp/ca-sixclass-method-build/ca_sixclass_bench 2`. The benchmark itself pairs default/six-class/default on two planted `glv-j0-26` targets (seeds 19 and 20), includes setup and answer checks, and retains the A/A timing arms. This protocol and its data were published together, so this is retrospective exploratory evidence, not a held-out H1 test.
+
+Environment: x86-64, Intel Xeon 6975P-C, 32 visible CPUs; GCC 11.5.0, CMake 3.22.2. Parent revision `1f6aa21795ba7a4307d3accfb60ff2787c028c4f`; changed source SHA-256: `src/sixclass.c` `2ae955be8cfcedd16eee46343b26e31c74a55ddab835e4fe96516e3a1f4f105a`, `tools/ca_sixclass_bench.c` `bde2780e788e25b9185008290902640941ca23247a6c4367ffd1dcdfcccccdc0`, public header `1d7c2a73349737e820c0a133e11a3b4a18b2cfef97a174dbd4c34ca8786b9328`. Binary SHA-256 `ec9cfc09b191e789fc5e4ad28678040a4f68614293439d1d47355690f57d0f39`.
+
+Raw output: [routing-telemetry-2trials.json](routing-telemetry-2trials.json), SHA-256 `0b2d4e41e63d05aca35bad5330e9356bcf8142e41e3f4a074fdd04a5d5b559d4`. Both target answers were checked by the benchmark and `test_sixclass` passed. The six-class arm recorded 820 and 1,739 class visits; in each row both the six twist totals and the twelve twist/route-parity cells sum exactly to class visits. The paired wall times and A/A drift are in the raw file, including a candidate loss on seed 19 and a candidate gain on seed 20. Two targets provide no speed estimate or confidence interval.
+
+These counts are correlated walk visits. They cannot establish class uniformity, route independence, collision CDF, full-work cost, or a secp256k1 attack estimate. No network, coordinator, memory, field-operation, or success-amplification cost was measured. The next gate is a frozen independent-target protocol with raw capped/censored trails and an explicit sampling unit.

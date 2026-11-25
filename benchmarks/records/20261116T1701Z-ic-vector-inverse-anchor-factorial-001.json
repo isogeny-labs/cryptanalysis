@@ -1,0 +1,948 @@
+{
+  "branch": "codex/ic-trial32-20261115",
+  "closed_utc": "2026-11-16T20:20:04+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "cloud/modal_run.py",
+        "run",
+        "--image",
+        "cuda",
+        "--gpu",
+        "L4",
+        "--cpu",
+        "4",
+        "--memory",
+        "8",
+        "--timeout",
+        "900",
+        "--apt",
+        "time",
+        "--out",
+        "experiments/ic-vector-inverse-20261116/timing-001",
+        "--detach",
+        "--",
+        "python3",
+        "experiments/ic-vector-inverse-20261116/run_prepared.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-16T20:03:53+00:00",
+      "wall_s": 21.883
+    }
+  ],
+  "commit": "9d310eeb969f6a02da6434584fa548dc96ea37e9",
+  "commit_dirty": false,
+  "created_utc": "2026-11-16T17:01:48+00:00",
+  "curve_uid": null,
+  "entries": [],
+  "host": {
+    "cpu": "arm",
+    "cpus_online": 14,
+    "hostname": "Mac.attlocal.net",
+    "isolation": "unstated",
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O"
+  },
+  "id": "20261116T1701Z-ic-vector-inverse-anchor-factorial-001",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n15_primary_vs_anchor",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9610638424973758,
+        1.0091491458883088
+      ],
+      "unit": "ratio",
+      "value": 0.9767325542628278
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n15_primary_kernel",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9724826053730694,
+        1.0130465903827761
+      ],
+      "unit": "ratio",
+      "value": 0.9942391913723647
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n15_primary_build_control",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9675203856801191,
+        1.0176637224196783
+      ],
+      "unit": "ratio",
+      "value": 0.9982685219748353
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n15_collector_vs_anchor",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9465105317347673,
+        1.0239364953242467
+      ],
+      "unit": "ratio",
+      "value": 0.9736974350931169
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n15_collector_kernel",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9582444533375434,
+        1.0243312081757923
+      ],
+      "unit": "ratio",
+      "value": 0.9945152208649174
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n15_collector_build_control",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9537202339115523,
+        1.0173575174073757
+      ],
+      "unit": "ratio",
+      "value": 1.0070800977551961
+    },
+    {
+      "baseline": 0.000529106,
+      "better": "lower",
+      "n": 24,
+      "name": "n15_candidate_primary_mean",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": 0.00019845729166666668,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.0005346033333333334
+    },
+    {
+      "baseline": 0.00028293412500000003,
+      "better": "lower",
+      "n": 24,
+      "name": "n15_candidate_collector_mean",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": 9.507787500000001e-05,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.0002884214166666667
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 24,
+      "name": "n15_actual_inverse_vector_elements",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 7936.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 24,
+      "name": "n15_actual_inverse_vector_padded_lanes",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 0.0
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n18_primary_vs_anchor",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9740278442265718,
+        1.0083807811870227
+      ],
+      "unit": "ratio",
+      "value": 0.9897167261454924
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n18_primary_kernel",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9859897369768105,
+        1.0298427996997577
+      ],
+      "unit": "ratio",
+      "value": 1.0042774034847701
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n18_primary_build_control",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9661572207099526,
+        0.9986757623049355
+      ],
+      "unit": "ratio",
+      "value": 0.9765483994797641
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n18_collector_vs_anchor",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.951388379461276,
+        1.003714746302776
+      ],
+      "unit": "ratio",
+      "value": 0.9722728631202204
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n18_collector_kernel",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9801734309851198,
+        1.0466565923687194
+      ],
+      "unit": "ratio",
+      "value": 1.0033343217137898
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n18_collector_build_control",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.966103908217517,
+        0.9839337542018529
+      ],
+      "unit": "ratio",
+      "value": 0.9781822777295295
+    },
+    {
+      "baseline": 0.0008222227083333333,
+      "better": "lower",
+      "n": 24,
+      "name": "n18_candidate_primary_mean",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": 0.00022489691666666668,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.0008273047916666667
+    },
+    {
+      "baseline": 0.0003073312083333333,
+      "better": "lower",
+      "n": 24,
+      "name": "n18_candidate_collector_mean",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": 0.000112694,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.0003145119166666667
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 24,
+      "name": "n18_actual_inverse_vector_elements",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 10400.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 24,
+      "name": "n18_actual_inverse_vector_padded_lanes",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 0.0
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n21_primary_vs_anchor",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9891108287476906,
+        1.0133421274852223
+      ],
+      "unit": "ratio",
+      "value": 0.9998740292066055
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n21_primary_kernel",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9931095361479448,
+        1.0202593923692542
+      ],
+      "unit": "ratio",
+      "value": 1.013539803026628
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n21_primary_build_control",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9796620829383781,
+        1.004645102124564
+      ],
+      "unit": "ratio",
+      "value": 0.9917158949400348
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n21_collector_vs_anchor",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.001600052246604,
+        1.0272859800561371
+      ],
+      "unit": "ratio",
+      "value": 1.0158977445719
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n21_collector_kernel",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0203484438577974,
+        1.057259090875652
+      ],
+      "unit": "ratio",
+      "value": 1.041095442034216
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n21_collector_build_control",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9630536877576515,
+        0.9953369830559853
+      ],
+      "unit": "ratio",
+      "value": 0.9791376773860138
+    },
+    {
+      "baseline": 0.002011670791666667,
+      "better": "lower",
+      "n": 24,
+      "name": "n21_candidate_primary_mean",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": 0.00039973383333333337,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.0020050105416666666
+    },
+    {
+      "baseline": 0.0007995592916666667,
+      "better": "lower",
+      "n": 24,
+      "name": "n21_candidate_collector_mean",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": 0.00028520650000000004,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.0007931339583333334
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 24,
+      "name": "n21_actual_inverse_vector_elements",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 83920.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 24,
+      "name": "n21_actual_inverse_vector_padded_lanes",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 0.0
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n24_primary_vs_anchor",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0048266286088503,
+        1.0264865633505607
+      ],
+      "unit": "ratio",
+      "value": 1.0142030940157478
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n24_primary_kernel",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9893539967952275,
+        1.0273577737017772
+      ],
+      "unit": "ratio",
+      "value": 1.0081785168697706
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n24_primary_build_control",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9826270993400897,
+        1.014759267121203
+      ],
+      "unit": "ratio",
+      "value": 1.0016060931596344
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n24_collector_vs_anchor",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0147258808646797,
+        1.0400073716111067
+      ],
+      "unit": "ratio",
+      "value": 1.0216783503583504
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n24_collector_kernel",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.012995745108778,
+        1.0414174478812623
+      ],
+      "unit": "ratio",
+      "value": 1.028955512426717
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n24_collector_build_control",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9869048768414778,
+        1.0160930149813692
+      ],
+      "unit": "ratio",
+      "value": 1.0028977500498142
+    },
+    {
+      "baseline": 0.005729217083333334,
+      "better": "lower",
+      "n": 24,
+      "name": "n24_candidate_primary_mean",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": 0.0005162007916666667,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.005494087208333334
+    },
+    {
+      "baseline": 0.0016062877916666668,
+      "better": "lower",
+      "n": 24,
+      "name": "n24_candidate_collector_mean",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": 0.00040128912500000003,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.0015637622499999999
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 24,
+      "name": "n24_actual_inverse_vector_elements",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 152880.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 24,
+      "name": "n24_actual_inverse_vector_padded_lanes",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 0.0
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n27_primary_vs_anchor",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9930198033312659,
+        1.0499965890195226
+      ],
+      "unit": "ratio",
+      "value": 1.0173365152299172
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n27_primary_kernel",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.001610644401963,
+        1.0423539294802393
+      ],
+      "unit": "ratio",
+      "value": 1.019753297368631
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n27_primary_build_control",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9690856974369424,
+        1.0152813286920672
+      ],
+      "unit": "ratio",
+      "value": 0.9972853491014788
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n27_collector_vs_anchor",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.014384189154439,
+        1.0254581283813526
+      ],
+      "unit": "ratio",
+      "value": 1.0172788869862355
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n27_collector_kernel",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.0340232126282785,
+        1.055519077348107
+      ],
+      "unit": "ratio",
+      "value": 1.0468346253420053
+    },
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": 24,
+      "name": "n27_collector_build_control",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.9646767502895646,
+        0.982003084546762
+      ],
+      "unit": "ratio",
+      "value": 0.9715978362972548
+    },
+    {
+      "baseline": 0.022086091958333335,
+      "better": "lower",
+      "n": 24,
+      "name": "n27_candidate_primary_mean",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": 0.0013614629166666668,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.021980889375
+    },
+    {
+      "baseline": 0.009494813833333334,
+      "better": "lower",
+      "n": 24,
+      "name": "n27_candidate_collector_mean",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": 0.0012413218333333334,
+      "reference_kind": "matched_rho",
+      "spread": null,
+      "unit": "wall_s",
+      "value": 0.009366823208333333
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 24,
+      "name": "n27_actual_inverse_vector_elements",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 1097216.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 24,
+      "name": "n27_actual_inverse_vector_padded_lanes",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 0.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 120,
+      "name": "aa_failed_controls",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 4.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 360,
+      "name": "capped_ic_arms",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 0.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 600,
+      "name": "replayed_target_answers",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 600.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 240,
+      "name": "replayed_aa_answers",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 240.0
+    },
+    {
+      "baseline": null,
+      "better": "neutral",
+      "n": 2560,
+      "name": "replayed_walk_states",
+      "note": "Unsigned exploratory measurements; qualificationnull and invalid for promotion. Context plus pipeline through oracle cleanup excludes prior inputs/startup and later context/report destruction. All A/A failures retained; Python replay separate.",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 2560.0
+    }
+  ],
+  "problem": "binary-ic-vector-inverse-anchor-pipeline",
+  "raw": [
+    {
+      "bytes": 4284711,
+      "path": "experiments/ic-vector-inverse-20261116/raw-timing-001.tar.gz",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/26/264fffe4eeebd9270355c084880ae93fd7ac0d903fad10ec2c6f5a3df50b1fff",
+      "sha256": "264fffe4eeebd9270355c084880ae93fd7ac0d903fad10ec2c6f5a3df50b1fff",
+      "uploaded": true
+    },
+    {
+      "bytes": 236697,
+      "path": "experiments/ic-vector-inverse-20261116/raw-bundle-receipt.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/f4/f49f13fae65d22269f7c1b4e93b3d4215f460be1fb826eda2923ed7346a6e645",
+      "sha256": "f49f13fae65d22269f7c1b4e93b3d4215f460be1fb826eda2923ed7346a6e645",
+      "uploaded": true
+    },
+    {
+      "bytes": 1207717,
+      "path": "experiments/ic-vector-inverse-20261116/analysis.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/07/0777b6f7be0d6b68d8500a2114f0600cdc5e1d88abb9e2e501c5128b20f9c166",
+      "sha256": "0777b6f7be0d6b68d8500a2114f0600cdc5e1d88abb9e2e501c5128b20f9c166",
+      "uploaded": true
+    },
+    {
+      "bytes": 164296,
+      "path": "experiments/ic-vector-inverse-20261116/independent-arithmetic-timing001.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/de/de6cff305362a62dbdf89699b0ff0bd9e14e15cb105c28a267350ea4ce77224d",
+      "sha256": "de6cff305362a62dbdf89699b0ff0bd9e14e15cb105c28a267350ea4ce77224d",
+      "uploaded": true
+    },
+    {
+      "bytes": 1149,
+      "path": "experiments/ic-vector-inverse-20261116/independent-walk-timing001.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/5f/5f31556df0adac8ff5661a5f48b8b1570fc4d0928d1251014ce5045b275d1230",
+      "sha256": "5f31556df0adac8ff5661a5f48b8b1570fc4d0928d1251014ce5045b275d1230",
+      "uploaded": true
+    },
+    {
+      "bytes": 562,
+      "path": "experiments/ic-vector-inverse-20261116/prepared-input.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/97/9734ea012b8c11f2ed6e76c30ba8c44ca27841b813dc9297ba545eaeafd3a916",
+      "sha256": "9734ea012b8c11f2ed6e76c30ba8c44ca27841b813dc9297ba545eaeafd3a916",
+      "uploaded": true
+    },
+    {
+      "bytes": 562,
+      "path": "experiments/ic-vector-inverse-20261116/anchor-input.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/d0/d0c6ef52ef2640ab52a58f76e22397e4a0a56a430b0c00eb8960072ac7b610c2",
+      "sha256": "d0c6ef52ef2640ab52a58f76e22397e4a0a56a430b0c00eb8960072ac7b610c2",
+      "uploaded": true
+    },
+    {
+      "bytes": 517,
+      "path": "experiments/ic-vector-inverse-20261116/timing-job-metadata.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/21/2151be86918369cd4ce690eda06d2f05d82650632b06ad4a09687022ed485d6b",
+      "sha256": "2151be86918369cd4ce690eda06d2f05d82650632b06ad4a09687022ed485d6b",
+      "uploaded": true
+    },
+    {
+      "bytes": 367,
+      "path": "experiments/ic-vector-inverse-20261116/storage-transport.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/c2/c2cbe892c7eb0b69540ae84157cc6634ca8064aae2822f33443110f1d0b50451",
+      "sha256": "c2cbe892c7eb0b69540ae84157cc6634ca8064aae2822f33443110f1d0b50451",
+      "uploaded": true
+    },
+    {
+      "bytes": 5871,
+      "path": "experiments/ic-vector-inverse-20261116/PROTOCOL.md",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/34/349764bbb78067bfd85d294b232fa51b422fea249e9d6c9e1fc3e961ee5c3695",
+      "sha256": "349764bbb78067bfd85d294b232fa51b422fea249e9d6c9e1fc3e961ee5c3695",
+      "uploaded": true
+    },
+    {
+      "bytes": 219908,
+      "path": "experiments/ic-vector-inverse-20261116/REPORT.pdf",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/53/5346e7aa233db42e9336c71d62d01cc45b9426a9f24057310c8eef19456e54ad",
+      "sha256": "5346e7aa233db42e9336c71d62d01cc45b9426a9f24057310c8eef19456e54ad",
+      "uploaded": true
+    },
+    {
+      "bytes": 38537,
+      "path": "experiments/ic-vector-inverse-20261116/primary.svg",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/82/82b0298f2aa33f6c1bffe5249dca3ed0212708476f86acdeb7893a7cd54c1d2f",
+      "sha256": "82b0298f2aa33f6c1bffe5249dca3ed0212708476f86acdeb7893a7cd54c1d2f",
+      "uploaded": true
+    },
+    {
+      "bytes": 69620,
+      "path": "experiments/ic-vector-inverse-20261116/primary.png",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/b0/b0d7bab6f4cb16b0e44653e829cf3390b02bf63e15157f22e62f09fabda1a7fc",
+      "sha256": "b0d7bab6f4cb16b0e44653e829cf3390b02bf63e15157f22e62f09fabda1a7fc",
+      "uploaded": true
+    },
+    {
+      "bytes": 37743,
+      "path": "experiments/ic-vector-inverse-20261116/collector.svg",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/27/2746e6ef3821c33dde04beaa1cf79c9e0122b3cda59e0fd4cf32cebb3cbea6fc",
+      "sha256": "2746e6ef3821c33dde04beaa1cf79c9e0122b3cda59e0fd4cf32cebb3cbea6fc",
+      "uploaded": true
+    },
+    {
+      "bytes": 71926,
+      "path": "experiments/ic-vector-inverse-20261116/collector.png",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/7f/7fadfabb9a87ac3648dbabdb522d2f3dc143eb2f027f58008b4730101c2b66df",
+      "sha256": "7fadfabb9a87ac3648dbabdb522d2f3dc143eb2f027f58008b4730101c2b66df",
+      "uploaded": true
+    },
+    {
+      "bytes": 8118,
+      "path": "experiments/ic-vector-inverse-20261116/flow.svg",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/8a/8a5c6ea5deadffc3865a1039b5bae929d4c1899f75aaf67ccbe4d2d6e6d60594",
+      "sha256": "8a5c6ea5deadffc3865a1039b5bae929d4c1899f75aaf67ccbe4d2d6e6d60594",
+      "uploaded": true
+    },
+    {
+      "bytes": 60108,
+      "path": "experiments/ic-vector-inverse-20261116/flow.png",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/30/30497b7f0894666f9488804109fec9e828d5db131f01066bbc55607cd3dfc0bd",
+      "sha256": "30497b7f0894666f9488804109fec9e828d5db131f01066bbc55607cd3dfc0bd",
+      "uploaded": true
+    },
+    {
+      "bytes": 312,
+      "path": "experiments/ic-vector-inverse-20261116/archive-remote-replay.json",
+      "s3_uri": "s3://crypto-autoresearcher/store/sha256/46/463f248cf485f25c75c2e71092afdc2e029d76f91ba02a8c471c5880ad4f52a0",
+      "sha256": "463f248cf485f25c75c2e71092afdc2e029d76f91ba02a8c471c5880ad4f52a0",
+      "uploaded": true
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "experiments/ic-vector-inverse-20261116/REPORT.pdf",
+    "png": [
+      "experiments/ic-vector-inverse-20261116/primary.png",
+      "experiments/ic-vector-inverse-20261116/collector.png"
+    ],
+    "svg": [
+      "experiments/ic-vector-inverse-20261116/primary.svg",
+      "experiments/ic-vector-inverse-20261116/collector.svg",
+      "experiments/ic-vector-inverse-20261116/flow.svg"
+    ]
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "ic-vector-inverse-anchor-factorial-001",
+  "status": "invalid",
+  "summary": "Frozen SIMD inverse:840 scalar answers and2560states replayed,0caps,4failed A/A controls retained. N27collector current/candidate1.0468 but frozenanchor/candidate1.0173; primaryanchor/candidate1.0173 CI includes1. Exploratory unsigned qualificationnull; no promotion. Checkpoint restored via crypto-autoresearcher/default/us-west-2;899raw captures archived before closure.",
+  "validation": "experiments/ic-vector-inverse-20261116/analysis.json"
+}

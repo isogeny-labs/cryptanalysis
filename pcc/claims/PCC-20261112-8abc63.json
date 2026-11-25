@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-12T21:36:27Z",
+ "id": "PCC-20261112-8abc63",
+ "kind": "statement",
+ "producer": {
+  "commit": "748e44e22bdf60439c3af7da90298c6644669908",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/proper-cached-whitespace-failed-01/scope.json",
+    "sha256": "63077d0d261df99653ca65dc9a20f33cbaabac215d8a7d161efcd5d96760f1b7"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/proper-cached-whitespace-failed-01/stage.exit",
+    "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/proper-cached-whitespace-failed-01/stage.txt",
+    "sha256": "fae819710a16b886833289a63fb09f895cec10c851097cae65267cfdf13ebe96"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned consumer precommitcachedwhitespacefailure:102ownedpaths staged,no commit;gitdiffcachedcheck2 flagsrecordedstdoutnewblankEOF in immutable163fbfsubject. Preserveoriginalrawbytes/hash;scopeGitwhitespace=-blank-at-eof attributetothisonerawfixture,retainallcode/otherwhitespacechecks. Priorf7def2workingtree diff0 isnot cachedcheck0. No math/source/testcriterionchange or rawlogtrim."
+}

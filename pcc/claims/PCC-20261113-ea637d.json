@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-13T16:37:29Z",
+ "id": "PCC-20261113-ea637d",
+ "kind": "theorem",
+ "producer": {
+  "commit": "85b799ec5d7f3a8e81168af11fbf4ba36007be28",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "e3db714bb1fd19cd933925d89c4f2875be957f589f9e9fd5be1519db6aa151ae",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/kernel-census/lean/KernelStructure.lean",
+   "theorem": "Kernel223.equal_count_and_inclusion_give_equal_membership"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Faithful partial structural implications for actualq223kernelargument:5nameddecls/8auditedincl3trueCounthelpers,zero trusted;closedcounts,conjugacy-stabilitytransport,isometry-isotropytransport,generalfiniteBoolcountmonotone andinclusion+equalcount=>equalmembership. Bothunchangedoriginal4.35/4.34.1 gatesPASS8;actualnativeexecution/Sp6cardinality/theta/Galois/Frobenius/Weilpairing/Normpolarization/Jacobiangeometry remainwritten/open. Originalproducer01redundantgeneralizing error preserved6956b2,proof-only02all5statementhashes unchanged. Exactlocalbindingsunsigned/notfullformal,newmaporcost.",
+ "statement": "theorem equal_count_and_inclusion_give_equal_membership (n : Nat) (p q : Fin n \u2192 Bool) (inclusion : \u2200 i, p i=true \u2192 q i=true) (equal_count : trueCount n p=trueCount n q) : \u2200 i, p i=q i"
+}

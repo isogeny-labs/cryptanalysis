@@ -1,0 +1,44 @@
+F
+======================================================================
+FAIL: test_pull_recreates_parent_outside_sparse_checkout (tools.artifacts.test_artifacts.RoundTrip.test_pull_recreates_parent_outside_sparse_checkout)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/cryptanalysis/tools/artifacts/test_artifacts.py", line 144, in test_pull_recreates_parent_outside_sparse_checkout
+    self.assertEqual(result.returncode, 0, result.stderr)
+AssertionError: 1 != 0 : Traceback (most recent call last):
+  File "/workspace/cryptanalysis/tools/artifacts/artifacts.py", line 681, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/workspace/cryptanalysis/tools/artifacts/artifacts.py", line 674, in main
+    return {
+           ^
+  File "/workspace/cryptanalysis/tools/artifacts/artifacts.py", line 579, in cmd_pull
+    list(ex.map(one, todo))
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/concurrent/futures/_base.py", line 619, in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/concurrent/futures/_base.py", line 317, in _result_or_cancel
+    return fut.result(timeout)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/concurrent/futures/_base.py", line 456, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/cryptanalysis/tools/artifacts/artifacts.py", line 576, in one
+    place_copy(c, f)
+  File "/workspace/cryptanalysis/tools/artifacts/artifacts.py", line 452, in place_copy
+    shutil.copyfile(src, dest)
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/shutil.py", line 262, in copyfile
+    with open(dst, 'wb') as fdst:
+         ^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/tmp7g33h422/repo/research/r1/runs/a.jsonl'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.413s
+
+FAILED (failures=1)

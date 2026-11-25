@@ -1,0 +1,161 @@
+{
+  "status": "solved",
+  "scalar": "7",
+  "scalar_hex": "0x7",
+  "verified": true,
+  "instance": {
+    "name": "DEMO-Fp17-order19",
+    "field_type": "prime",
+    "prime": "0x11",
+    "a": "0x2",
+    "b": "0x2",
+    "order": "19",
+    "cofactor": 1,
+    "P": [
+      "0x5",
+      "0x1"
+    ],
+    "Q": [
+      "0x0",
+      "0x6"
+    ]
+  },
+  "backend": "tensor_indexed",
+  "conditional_tensor_contraction_implemented": true,
+  "tensor_encoding": "indexed",
+  "tensor_statistics": {
+    "calls": 6,
+    "leaves": 6,
+    "recursive_calls": 0,
+    "mode_tuples": 0,
+    "interpolation_values": 0,
+    "max_depth": 0,
+    "max_precision": 0,
+    "experimental_parameters": false
+  },
+  "subexponential_runtime_claimed": false,
+  "trial": 1,
+  "target_attempts": 6,
+  "factor_base_sizes": [
+    18,
+    18
+  ],
+  "relations_collected": 6,
+  "matrix_rank": 4,
+  "bases": [
+    {
+      "prime": "37",
+      "alpha": "9",
+      "beta": "36",
+      "threshold": 37,
+      "points": [
+        "0x21",
+        "0x15",
+        "0xd",
+        "0x1",
+        "0x1a",
+        "0x12",
+        "0xe",
+        "0xa",
+        "0x6",
+        "0x1b",
+        "0x13",
+        "0xf",
+        "0xb",
+        "0x7",
+        "0x20",
+        "0x14",
+        "0xc",
+        "0x0"
+      ]
+    },
+    {
+      "prime": "37",
+      "alpha": "5",
+      "beta": "16",
+      "threshold": 37,
+      "points": [
+        "0x13",
+        "0xc",
+        "0x1b",
+        "0x14",
+        "0xd",
+        "0x6",
+        "0x15",
+        "0xe",
+        "0x7",
+        "0x0",
+        "0xf",
+        "0x1",
+        "0x20",
+        "0xa",
+        "0x12",
+        "0x21",
+        "0xb",
+        "0x1a"
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "u": "3",
+      "v": "15",
+      "indices": [
+        7,
+        0
+      ]
+    },
+    {
+      "u": "14",
+      "v": "15",
+      "indices": [
+        11,
+        0
+      ]
+    },
+    {
+      "u": "12",
+      "v": "6",
+      "indices": [
+        2,
+        0
+      ]
+    },
+    {
+      "u": "3",
+      "v": "15",
+      "indices": [
+        7,
+        0
+      ]
+    },
+    {
+      "u": "0",
+      "v": "12",
+      "indices": [
+        14,
+        0
+      ]
+    },
+    {
+      "u": "13",
+      "v": "0",
+      "indices": [
+        7,
+        0
+      ]
+    }
+  ],
+  "dependency": {
+    "5": "1",
+    "0": "18"
+  },
+  "elapsed_seconds": 0.02740231300049345,
+  "certificate_verification": {
+    "status": "verified",
+    "scalar": "7",
+    "relations_checked": 6,
+    "factor_base_points_checked": 36,
+    "instance": "DEMO-Fp17-order19"
+  }
+}

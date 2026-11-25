@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-15T04:02:56Z",
+ "id": "PCC-20261115-ff6c64",
+ "kind": "theorem",
+ "producer": {
+  "commit": "77a26ca643847f32b746c8de98812073f71535d0",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "36c4288a41e1b768f48d6b3c22506236ecd3a478fbd6fa980b12af85088e2380",
+   "kind": "lean",
+   "path": "experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-02/lean/NormPointReuse.lean",
+   "theorem": "NormPointReuse.corrected_norm_reuse"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Conditional IntModule derivation of corrected-lift doubling and direct/factored norm-point reuse from target HLP dual identity, elliptic doubling linearity, actual half and two-torsion correction. Desired transported-norm equality is derived, not assumed. Both original434/435 gates3roots0trusted. Actual fields/varieties/HLP norm/Frobenius and encoded-program bridges remain explicit; native candidate NOT RUN, no cost or signed standing.",
+ "statement": "theorem corrected_norm_reuse {A B J : Type} [IntModule A] [IntModule B] (g : A \u2192 B) (phi : B \u2192 J) (norm : J \u2192 B) (duality : \u2200 z, norm (phi z) = (2 : Int) \u2022 z) (linear_two : \u2200 a, g ((2 : Int) \u2022 a) = (2 : Int) \u2022 g a) (p t q : A) (half : (2 : Int) \u2022 p = q) (correction_two_torsion : (2 : Int) \u2022 t = 0) : norm (phi (g (p + t))) = (2 : Int) \u2022 g (p + t) \u2227 (2 : Int) \u2022 g (p + t) = g q"
+}

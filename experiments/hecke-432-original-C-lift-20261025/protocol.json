@@ -1,0 +1,13 @@
+{
+  "status": "FROZEN_BEFORE_ORIGINAL_C_EVALUATION",
+  "frozen_utc": "2026-10-25T23:55:40Z",
+  "prime": 997,
+  "source": "all 1800 noncuspidal source records in experiments/hecke-432-prime997-20261025/image.json with their indexed 16- and 27-isogeny paths in census.json",
+  "original_C": "recover a point on 27a1 from source j and terminal 27-isogeny quotient j, then filter by both intermediate j(3tau) and j(9tau)",
+  "projection": "retain the previously independently audited E output for each exact source row",
+  "group_keys": ["original_C_and_E", "original_C_and_E_and_terminal16_j"],
+  "primary_question": "does any (original C,E) fiber contain more than the geometric degree 24 of the normalized B map, forcing at least two rational B lifts?",
+  "secondary_question": "how many source collisions remain after adding terminal 16-isogeny j?",
+  "decision_rule": "report the complete multiplicity histograms, source count, and maximal groups; infer multiple B lifts only when an original-C/E group has more than 24 sources",
+  "limits": "group multiplicity at most 24 does not establish a unique B lift; terminal j is a diagnostic, not a formula"
+}

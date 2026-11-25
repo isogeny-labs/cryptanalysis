@@ -24,17 +24,36 @@ extern "C" {
 typedef struct ca_kangaroo_params {
     uint32_t herd_size;   /* kangaroos per herd (tame and wild each), 0 => auto,
                              clamped to CA_KANGAROO_MAX_HERD */
-    int32_t dp_bits;      /* distinguished point bits, -1 => auto, clamped to 62 */
+    /* Distinguished point bits, -1 => auto, clamped to 62; with a known
+     * group order n also to floor(log2 n)/2 - 2 (2^dp_bits <= sqrt(n)/4). */
+    int32_t dp_bits;
     uint32_t jumps;       /* number of jump sizes (powers of two), 0 => auto */
     uint64_t seed;        /* 0 => random */
-    uint64_t max_ops;     /* 0 => none */
+    /* Abort with CA_ERR_LIMIT after this many group ops.  0 sets no limit
+     * and keeps the built-in runaway guard, 256 * sqrt(width) + 64 * kangaroos
+     * * 2^dp_bits + 2^20 hops (plus 4 * width when `jumps` is set), far above
+     * the cost of a logarithm that lies in the interval; a run that reaches
+     * it returns CA_ERR_NOT_FOUND. */
+    uint64_t max_ops;
 } ca_kangaroo_params;
 
 CA_API void ca_kangaroo_params_default(ca_kangaroo_params *p);
 
+/* With a known group order n, an interval holding n or more values is
+ * searched over one period [lo, lo + n - 1]; the answer is then the smallest
+ * logarithm >= lo, which lies in [lo, hi]. */
 CA_API ca_status ca_kangaroo_solve(const ca_group *g, const ca_elem *base, const ca_elem *target,
                                    uint64_t lo, uint64_t hi, const ca_kangaroo_params *params,
                                    uint64_t *x, ca_stats *st);
+
+/* Preserve herd positions, RNG state and distinguished points.  NULL
+ * checkpoint_path enables live progress without persistence.  Intervals are
+ * seconds; zero selects defaults (5 for progress, 60 for checkpoint). */
+CA_API ca_status ca_kangaroo_solve_checkpointed(
+    const ca_group *g, const ca_elem *base, const ca_elem *target,
+    uint64_t lo, uint64_t hi, const ca_kangaroo_params *params,
+    const char *checkpoint_path, uint32_t progress_interval,
+    uint32_t checkpoint_interval, int verbose, uint64_t *x, ca_stats *st);
 
 #ifdef __cplusplus
 }

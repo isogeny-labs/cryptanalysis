@@ -1,0 +1,512 @@
+﻿2026-10-25T05:47:51.5927280Z Current runner version: '2.338.0'
+2026-10-25T05:47:51.5965915Z ##[group]Runner Image Provisioner
+2026-10-25T05:47:51.5967288Z Hosted Compute Agent
+2026-10-25T05:47:51.5968677Z Version: 20261021.618
+2026-10-25T05:47:51.5969830Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+2026-10-25T05:47:51.5971303Z Build Date: 2026-10-21T00:45:21Z
+2026-10-25T05:47:51.5972496Z Worker ID: {fe669c9a-dc75-47c9-9751-66a81b95bc1f}
+2026-10-25T05:47:51.5973767Z Region: eastus2
+2026-10-25T05:47:51.5974841Z Cloud: Azure
+2026-10-25T05:47:51.5975760Z ##[endgroup]
+2026-10-25T05:47:51.5978732Z ##[group]Operating System
+2026-10-25T05:47:51.5979855Z Ubuntu
+2026-10-25T05:47:51.5980782Z 24.04.5
+2026-10-25T05:47:51.5981764Z LTS
+2026-10-25T05:47:51.5982741Z ##[endgroup]
+2026-10-25T05:47:51.5983892Z ##[group]Runner Image
+2026-10-25T05:47:51.5984969Z Image: ubuntu-24.04
+2026-10-25T05:47:51.5985914Z Version: 20261012.334.1
+2026-10-25T05:47:51.5988585Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261012.334/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-25T05:47:51.5991607Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261012.334
+2026-10-25T05:47:51.5993443Z ##[endgroup]
+2026-10-25T05:47:51.5995426Z ##[group]GITHUB_TOKEN Permissions
+2026-10-25T05:47:51.5998637Z Contents: read
+2026-10-25T05:47:51.5999752Z Metadata: read
+2026-10-25T05:47:51.6000822Z ##[endgroup]
+2026-10-25T05:47:51.6004374Z Secret source: Actions
+2026-10-25T05:47:51.6006066Z Cache mode: write
+2026-10-25T05:47:51.6007519Z Prepare workflow directory
+2026-10-25T05:47:51.6589500Z Prepare all required actions
+2026-10-25T05:47:51.6662019Z Getting action download info
+2026-10-25T05:47:51.8594640Z Download action repository 'actions/checkout@v7' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-10-25T05:47:52.0624013Z Complete job name: gcc -fanalyzer
+2026-10-25T05:47:52.1673983Z ##[group]Run actions/checkout@v7
+2026-10-25T05:47:52.1674997Z with:
+2026-10-25T05:47:52.1675498Z   repository: aburan28/cryptanalysis
+2026-10-25T05:47:52.1679858Z   token: ***
+2026-10-25T05:47:52.1680341Z   ssh-strict: true
+2026-10-25T05:47:52.1680822Z   ssh-user: git
+2026-10-25T05:47:52.1681306Z   persist-credentials: true
+2026-10-25T05:47:52.1681836Z   clean: true
+2026-10-25T05:47:52.1682321Z   sparse-checkout-cone-mode: true
+2026-10-25T05:47:52.1682890Z   fetch-depth: 1
+2026-10-25T05:47:52.1683360Z   fetch-tags: false
+2026-10-25T05:47:52.1683852Z   show-progress: true
+2026-10-25T05:47:52.1684351Z   lfs: false
+2026-10-25T05:47:52.1684809Z   submodules: false
+2026-10-25T05:47:52.1685299Z   set-safe-directory: true
+2026-10-25T05:47:52.1685851Z   allow-unsafe-pr-checkout: false
+2026-10-25T05:47:52.1686771Z ##[endgroup]
+2026-10-25T05:47:52.2863042Z Syncing repository: aburan28/cryptanalysis
+2026-10-25T05:47:52.2867004Z ##[group]Getting Git version info
+2026-10-25T05:47:52.2871016Z Working directory is '/home/runner/work/cryptanalysis/cryptanalysis'
+2026-10-25T05:47:52.2876066Z [command]/usr/bin/git version
+2026-10-25T05:47:52.2980505Z git version 2.55.0
+2026-10-25T05:47:52.3005912Z ##[endgroup]
+2026-10-25T05:47:52.3018126Z Temporarily overriding HOME='/home/runner/work/_temp/700f7e8e-cef1-42cc-90a3-cf39cf289a36' before making global git config changes
+2026-10-25T05:47:52.3022433Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-25T05:47:52.3027464Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cryptanalysis/cryptanalysis
+2026-10-25T05:47:52.3090909Z Deleting the contents of '/home/runner/work/cryptanalysis/cryptanalysis'
+2026-10-25T05:47:52.3093697Z ##[group]Determining repository object format
+2026-10-25T05:47:52.3096689Z ##[endgroup]
+2026-10-25T05:47:52.3099095Z ##[group]Initializing the repository
+2026-10-25T05:47:52.3101288Z [command]/usr/bin/git init /home/runner/work/cryptanalysis/cryptanalysis
+2026-10-25T05:47:52.3244971Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-25T05:47:52.3247508Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-25T05:47:52.3251096Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-25T05:47:52.3253270Z hint: call:
+2026-10-25T05:47:52.3254944Z hint:
+2026-10-25T05:47:52.3256690Z hint: 	git config --global init.defaultBranch <name>
+2026-10-25T05:47:52.3259007Z hint:
+2026-10-25T05:47:52.3260618Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-25T05:47:52.3264753Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-25T05:47:52.3266832Z hint:
+2026-10-25T05:47:52.3268812Z hint: 	git branch -m <name>
+2026-10-25T05:47:52.3270263Z hint:
+2026-10-25T05:47:52.3272660Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-25T05:47:52.3275197Z Initialized empty Git repository in /home/runner/work/cryptanalysis/cryptanalysis/.git/
+2026-10-25T05:47:52.3280690Z [command]/usr/bin/git remote add origin https://github.com/aburan28/cryptanalysis
+2026-10-25T05:47:52.3346483Z ##[endgroup]
+2026-10-25T05:47:52.3348884Z ##[group]Disabling automatic garbage collection
+2026-10-25T05:47:52.3351551Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-25T05:47:52.3386575Z ##[endgroup]
+2026-10-25T05:47:52.3389126Z ##[group]Setting up auth
+2026-10-25T05:47:52.3391013Z Removing SSH command configuration
+2026-10-25T05:47:52.3395627Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T05:47:52.3431091Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-25T05:47:52.3832687Z Removing HTTP extra header
+2026-10-25T05:47:52.3836647Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T05:47:52.3870726Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-25T05:47:52.4122648Z Removing includeIf entries pointing to credentials config files
+2026-10-25T05:47:52.4124831Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-25T05:47:52.4153518Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-25T05:47:52.4394340Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-85403599-29db-486d-bc80-cae1dd185c35.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-25T05:47:52.4437529Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path /home/runner/work/_temp/git-credentials-85403599-29db-486d-bc80-cae1dd185c35.config
+2026-10-25T05:47:52.4470748Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-85403599-29db-486d-bc80-cae1dd185c35.config
+2026-10-25T05:47:52.4508414Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-85403599-29db-486d-bc80-cae1dd185c35.config
+2026-10-25T05:47:52.4541294Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-85403599-29db-486d-bc80-cae1dd185c35.config
+2026-10-25T05:47:52.4574229Z ##[endgroup]
+2026-10-25T05:47:52.4576262Z ##[group]Fetching the repository
+2026-10-25T05:47:52.4582091Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +6d6cbe802a3b7d7f4fd8d1b04193937d613181fc:refs/remotes/pull/1104/merge
+2026-10-25T05:47:59.8794634Z From https://github.com/aburan28/cryptanalysis
+2026-10-25T05:47:59.8815675Z  * [new ref]           6d6cbe802a3b7d7f4fd8d1b04193937d613181fc -> pull/1104/merge
+2026-10-25T05:47:59.8822947Z ##[endgroup]
+2026-10-25T05:47:59.8825396Z ##[group]Determining the checkout info
+2026-10-25T05:47:59.8827500Z ##[endgroup]
+2026-10-25T05:47:59.8829050Z [command]/usr/bin/git sparse-checkout disable
+2026-10-25T05:47:59.8872617Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-25T05:47:59.8904775Z ##[group]Checking out the ref
+2026-10-25T05:47:59.8908112Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/1104/merge
+2026-10-25T05:48:00.9936695Z Updating files:  26% (15601/58978)
+2026-10-25T05:48:01.0477285Z Updating files:  27% (15925/58978)
+2026-10-25T05:48:01.1019078Z Updating files:  28% (16514/58978)
+2026-10-25T05:48:01.1500733Z Updating files:  29% (17104/58978)
+2026-10-25T05:48:01.2081780Z Updating files:  30% (17694/58978)
+2026-10-25T05:48:01.2526438Z Updating files:  31% (18284/58978)
+2026-10-25T05:48:01.2994288Z Updating files:  32% (18873/58978)
+2026-10-25T05:48:01.3411300Z Updating files:  33% (19463/58978)
+2026-10-25T05:48:01.3747850Z Updating files:  34% (20053/58978)
+2026-10-25T05:48:01.3979721Z Updating files:  35% (20643/58978)
+2026-10-25T05:48:01.4276598Z Updating files:  36% (21233/58978)
+2026-10-25T05:48:01.4646338Z Updating files:  37% (21822/58978)
+2026-10-25T05:48:01.4971061Z Updating files:  38% (22412/58978)
+2026-10-25T05:48:01.5358891Z Updating files:  39% (23002/58978)
+2026-10-25T05:48:01.5766955Z Updating files:  40% (23592/58978)
+2026-10-25T05:48:01.6173798Z Updating files:  41% (24181/58978)
+2026-10-25T05:48:01.6490131Z Updating files:  42% (24771/58978)
+2026-10-25T05:48:01.6925410Z Updating files:  43% (25361/58978)
+2026-10-25T05:48:01.7324513Z Updating files:  44% (25951/58978)
+2026-10-25T05:48:01.7658304Z Updating files:  45% (26541/58978)
+2026-10-25T05:48:01.8073113Z Updating files:  46% (27130/58978)
+2026-10-25T05:48:01.8436821Z Updating files:  47% (27720/58978)
+2026-10-25T05:48:01.8806513Z Updating files:  48% (28310/58978)
+2026-10-25T05:48:01.9173490Z Updating files:  49% (28900/58978)
+2026-10-25T05:48:01.9386280Z Updating files:  50% (29489/58978)
+2026-10-25T05:48:01.9540965Z Updating files:  50% (29808/58978)
+2026-10-25T05:48:01.9897396Z Updating files:  51% (30079/58978)
+2026-10-25T05:48:02.0271571Z Updating files:  52% (30669/58978)
+2026-10-25T05:48:02.0671765Z Updating files:  53% (31259/58978)
+2026-10-25T05:48:02.1007162Z Updating files:  54% (31849/58978)
+2026-10-25T05:48:02.1341099Z Updating files:  55% (32438/58978)
+2026-10-25T05:48:02.1607921Z Updating files:  56% (33028/58978)
+2026-10-25T05:48:02.1859676Z Updating files:  57% (33618/58978)
+2026-10-25T05:48:02.2091439Z Updating files:  58% (34208/58978)
+2026-10-25T05:48:02.2335851Z Updating files:  59% (34798/58978)
+2026-10-25T05:48:02.2575544Z Updating files:  60% (35387/58978)
+2026-10-25T05:48:02.2818000Z Updating files:  61% (35977/58978)
+2026-10-25T05:48:02.3080972Z Updating files:  62% (36567/58978)
+2026-10-25T05:48:02.3341581Z Updating files:  63% (37157/58978)
+2026-10-25T05:48:02.3575099Z Updating files:  64% (37746/58978)
+2026-10-25T05:48:02.3803387Z Updating files:  65% (38336/58978)
+2026-10-25T05:48:02.4049217Z Updating files:  66% (38926/58978)
+2026-10-25T05:48:02.4365761Z Updating files:  67% (39516/58978)
+2026-10-25T05:48:02.4708863Z Updating files:  68% (40106/58978)
+2026-10-25T05:48:02.5082215Z Updating files:  69% (40695/58978)
+2026-10-25T05:48:02.5559794Z Updating files:  70% (41285/58978)
+2026-10-25T05:48:02.5898782Z Updating files:  71% (41875/58978)
+2026-10-25T05:48:02.6389416Z Updating files:  72% (42465/58978)
+2026-10-25T05:48:02.7232030Z Updating files:  73% (43054/58978)
+2026-10-25T05:48:02.7617146Z Updating files:  74% (43644/58978)
+2026-10-25T05:48:02.8302587Z Updating files:  75% (44234/58978)
+2026-10-25T05:48:02.8987407Z Updating files:  76% (44824/58978)
+2026-10-25T05:48:02.9387505Z Updating files:  77% (45414/58978)
+2026-10-25T05:48:02.9616694Z Updating files:  77% (45765/58978)
+2026-10-25T05:48:03.0242913Z Updating files:  78% (46003/58978)
+2026-10-25T05:48:03.0849570Z Updating files:  79% (46593/58978)
+2026-10-25T05:48:03.1349562Z Updating files:  80% (47183/58978)
+2026-10-25T05:48:03.1926923Z Updating files:  81% (47773/58978)
+2026-10-25T05:48:03.2676360Z Updating files:  82% (48362/58978)
+2026-10-25T05:48:03.3350393Z Updating files:  83% (48952/58978)
+2026-10-25T05:48:03.3655183Z Updating files:  84% (49542/58978)
+2026-10-25T05:48:03.3858470Z Updating files:  85% (50132/58978)
+2026-10-25T05:48:03.4280463Z Updating files:  86% (50722/58978)
+2026-10-25T05:48:03.4939803Z Updating files:  87% (51311/58978)
+2026-10-25T05:48:03.5648039Z Updating files:  88% (51901/58978)
+2026-10-25T05:48:03.6092853Z Updating files:  89% (52491/58978)
+2026-10-25T05:48:03.6325645Z Updating files:  90% (53081/58978)
+2026-10-25T05:48:03.6578609Z Updating files:  91% (53670/58978)
+2026-10-25T05:48:03.6861801Z Updating files:  92% (54260/58978)
+2026-10-25T05:48:03.7345955Z Updating files:  93% (54850/58978)
+2026-10-25T05:48:03.7639632Z Updating files:  94% (55440/58978)
+2026-10-25T05:48:03.7925301Z Updating files:  95% (56030/58978)
+2026-10-25T05:48:03.8293388Z Updating files:  96% (56619/58978)
+2026-10-25T05:48:03.8551497Z Updating files:  97% (57209/58978)
+2026-10-25T05:48:03.9398613Z Updating files:  98% (57799/58978)
+2026-10-25T05:48:03.9515070Z Updating files:  98% (58296/58978)
+2026-10-25T05:48:04.0381646Z Updating files:  99% (58389/58978)
+2026-10-25T05:48:04.0383694Z Updating files: 100% (58978/58978)
+2026-10-25T05:48:04.0384391Z Updating files: 100% (58978/58978), done.
+2026-10-25T05:48:04.0959111Z Note: switching to 'refs/remotes/pull/1104/merge'.
+2026-10-25T05:48:04.0961093Z 
+2026-10-25T05:48:04.0961823Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-25T05:48:04.0962842Z changes and commit them, and you can discard any commits you make in this
+2026-10-25T05:48:04.0963838Z state without impacting any branches by switching back to a branch.
+2026-10-25T05:48:04.0964499Z 
+2026-10-25T05:48:04.0965253Z If you want to create a new branch to retain commits you create, you may
+2026-10-25T05:48:04.0966226Z do so (now or later) by using -c with the switch command. Example:
+2026-10-25T05:48:04.0966852Z 
+2026-10-25T05:48:04.0967203Z   git switch -c <new-branch-name>
+2026-10-25T05:48:04.0967905Z 
+2026-10-25T05:48:04.0968265Z Or undo this operation with:
+2026-10-25T05:48:04.0968783Z 
+2026-10-25T05:48:04.0969107Z   git switch -
+2026-10-25T05:48:04.0969483Z 
+2026-10-25T05:48:04.0970011Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-25T05:48:04.0970712Z 
+2026-10-25T05:48:04.0971493Z HEAD is now at 6d6cbe80 Merge 099e8c53e1d98781270a451c1228859d48ea66fb into c5aa7b39bfa30e8cdbd46a158c7cbadaa8be3503
+2026-10-25T05:48:04.1078765Z ##[endgroup]
+2026-10-25T05:48:04.1153185Z [command]/usr/bin/git log -1 --format=%H
+2026-10-25T05:48:04.1169201Z 6d6cbe802a3b7d7f4fd8d1b04193937d613181fc
+2026-10-25T05:48:04.1490245Z ##[group]Run python3 tools/artifacts/artifacts.py pull --jobs 16 experiments/koblitz-pair-claw-20260929/runs experiments/sage-ic-campaign
+2026-10-25T05:48:04.1491336Z [36;1mpython3 tools/artifacts/artifacts.py pull --jobs 16 experiments/koblitz-pair-claw-20260929/runs experiments/sage-ic-campaign[0m
+2026-10-25T05:48:04.1814697Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-25T05:48:04.1815182Z env:
+2026-10-25T05:48:04.1816179Z   AWS_ACCESS_KEY_ID: ***
+2026-10-25T05:48:04.1816685Z   AWS_SECRET_ACCESS_KEY: ***
+2026-10-25T05:48:04.1817016Z   AWS_REGION: us-west-2
+2026-10-25T05:48:04.1817321Z ##[endgroup]
+2026-10-25T05:48:09.1538743Z hydrated 6 files (3.8 MB); 0 already present
+2026-10-25T05:48:09.1683752Z ##[group]Run cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug \
+2026-10-25T05:48:09.1684256Z [36;1mcmake -S . -B build -DCMAKE_BUILD_TYPE=Debug \[0m
+2026-10-25T05:48:09.1684665Z [36;1m  -DCA_BUILD_TESTS=OFF -DCA_BUILD_SHARED=OFF \[0m
+2026-10-25T05:48:09.1685003Z [36;1m  -DCMAKE_C_COMPILER=gcc \[0m
+2026-10-25T05:48:09.1685350Z [36;1m  -DCMAKE_C_FLAGS="-fanalyzer -Wall -Wextra -Werror"[0m
+2026-10-25T05:48:09.1685763Z [36;1mcmake --build build -j"$(getconf _NPROCESSORS_ONLN)"[0m
+2026-10-25T05:48:09.1746776Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-25T05:48:09.1747337Z ##[endgroup]
+2026-10-25T05:48:12.4264183Z -- The C compiler identification is GNU 13.3.0
+2026-10-25T05:48:12.5696137Z -- Detecting C compiler ABI info
+2026-10-25T05:48:12.8393912Z -- Detecting C compiler ABI info - done
+2026-10-25T05:48:12.8572991Z -- Check for working C compiler: /usr/bin/gcc - skipped
+2026-10-25T05:48:12.8637705Z -- Detecting C compile features
+2026-10-25T05:48:12.8701205Z -- Detecting C compile features - done
+2026-10-25T05:48:12.9101460Z -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+2026-10-25T05:48:13.1192913Z -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+2026-10-25T05:48:13.1303439Z -- Found Threads: TRUE
+2026-10-25T05:48:13.1771571Z -- Configuring done (2.8s)
+2026-10-25T05:48:13.2025420Z -- Generating done (0.0s)
+2026-10-25T05:48:13.2029840Z -- Build files have been written to: /home/runner/work/cryptanalysis/cryptanalysis/build
+2026-10-25T05:48:13.2299305Z [  2%] Building C object CMakeFiles/cryptanalysis_static.dir/src/modarith.c.o
+2026-10-25T05:48:13.2300217Z [  5%] Building C object CMakeFiles/cryptanalysis_static.dir/src/util.c.o
+2026-10-25T05:48:13.5888886Z [  8%] Building C object CMakeFiles/cryptanalysis_static.dir/src/group_common.c.o
+2026-10-25T05:48:13.9720994Z [ 11%] Building C object CMakeFiles/cryptanalysis_static.dir/src/group_zp.c.o
+2026-10-25T05:48:14.0708337Z [ 14%] Building C object CMakeFiles/cryptanalysis_static.dir/src/group_ec.c.o
+2026-10-25T05:48:14.5270663Z [ 17%] Building C object CMakeFiles/cryptanalysis_static.dir/src/ec_tau.c.o
+2026-10-25T05:48:18.6864450Z [ 20%] Building C object CMakeFiles/cryptanalysis_static.dir/src/bsgs.c.o
+2026-10-25T05:48:22.3508872Z [ 23%] Building C object CMakeFiles/cryptanalysis_static.dir/src/rho.c.o
+2026-10-25T05:48:27.2589634Z [ 26%] Building C object CMakeFiles/cryptanalysis_static.dir/src/kangaroo.c.o
+2026-10-25T05:48:30.8068126Z [ 29%] Building C object CMakeFiles/cryptanalysis_static.dir/src/grumpy.c.o
+2026-10-25T05:48:33.9809266Z [ 32%] Building C object CMakeFiles/cryptanalysis_static.dir/src/precomp.c.o
+2026-10-25T05:48:43.1579027Z In file included from /home/runner/work/cryptanalysis/cryptanalysis/src/dlog_internal.h:8,
+2026-10-25T05:48:43.1598601Z                  from /home/runner/work/cryptanalysis/cryptanalysis/src/precomp.c:33:
+2026-10-25T05:48:43.1618701Z /home/runner/work/cryptanalysis/cryptanalysis/src/ca_internal.h: In function ‘ca_rng_seed’:
+2026-10-25T05:48:43.1620652Z /home/runner/work/cryptanalysis/cryptanalysis/src/ca_internal.h:39:24: error: use of uninitialized value ‘*r.s[1]’ [CWE-457] [-Werror=analyzer-use-of-uninitialized-value]
+2026-10-25T05:48:43.1638095Z    39 |     if ((r->s[0] | r->s[1] | r->s[2] | r->s[3]) == 0) r->s[0] = 1;
+2026-10-25T05:48:43.1658003Z       |                    ~~~~^~~
+2026-10-25T05:48:43.1871604Z   ‘ca_precomp_solve’: events 1-2
+2026-10-25T05:48:43.1878054Z     |
+2026-10-25T05:48:43.1898585Z     |/home/runner/work/cryptanalysis/cryptanalysis/src/precomp.c:1055:11:
+2026-10-25T05:48:43.1918453Z     | 1055 | ca_status ca_precomp_solve(const ca_group *g, const ca_elem *base, const ca_elem *target,
+2026-10-25T05:48:43.1930817Z     |      |           ^~~~~~~~~~~~~~~~
+2026-10-25T05:48:43.1938292Z     |      |           |
+2026-10-25T05:48:43.1958413Z     |      |           (1) entry to ‘ca_precomp_solve’
+2026-10-25T05:48:43.1977996Z     |......
+2026-10-25T05:48:43.1988137Z     | 1059 |     ca_status rc = ca_precomp_table_new(g, base, params, &t, st);
+2026-10-25T05:48:43.2000135Z     |      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:48:43.2022231Z     |      |                    |
+2026-10-25T05:48:43.2038481Z     |      |                    (2) calling ‘ca_precomp_table_new’ from ‘ca_precomp_solve’
+2026-10-25T05:48:43.2057966Z     |
+2026-10-25T05:48:43.2068139Z     +--> ‘ca_precomp_table_new’: events 3-4
+2026-10-25T05:48:43.2078109Z            |
+2026-10-25T05:48:43.2098606Z            |  780 | ca_status ca_precomp_table_new(const ca_group *g, const ca_elem *base,
+2026-10-25T05:48:43.2118039Z            |      |           ^~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:48:43.2137994Z            |      |           |
+2026-10-25T05:48:43.2148155Z            |      |           (3) entry to ‘ca_precomp_table_new’
+2026-10-25T05:48:43.2158185Z            |......
+2026-10-25T05:48:43.2178426Z            |  784 |     return pc_table_new(g, base, params, NULL, 0, 0, 0, out, st);
+2026-10-25T05:48:43.2198080Z            |      |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:48:43.2207982Z            |      |            |
+2026-10-25T05:48:43.2218490Z            |      |            (4) calling ‘pc_table_new’ from ‘ca_precomp_table_new’
+2026-10-25T05:48:43.2237980Z            |
+2026-10-25T05:48:43.2278368Z            +--> ‘pc_table_new’: events 5-11
+2026-10-25T05:48:43.2280490Z                   |
+2026-10-25T05:48:43.2299835Z                   |  555 | static ca_status pc_table_new(const ca_group *g, const ca_elem *base,
+2026-10-25T05:48:43.2318040Z                   |      |                  ^~~~~~~~~~~~
+2026-10-25T05:48:43.2338017Z                   |      |                  |
+2026-10-25T05:48:43.2348297Z                   |      |                  (5) entry to ‘pc_table_new’
+2026-10-25T05:48:43.2358113Z                   |......
+2026-10-25T05:48:43.2378044Z                   |  565 |     if (g->order == 0) {
+2026-10-25T05:48:43.2398016Z                   |      |        ~          
+2026-10-25T05:48:43.2407990Z                   |      |        |
+2026-10-25T05:48:43.2418343Z                   |      |        (7) following ‘false’ branch...
+2026-10-25T05:48:43.2437977Z                   |......
+2026-10-25T05:48:43.2448224Z                   |  569 |     double t0 = ca_now();
+2026-10-25T05:48:43.2458062Z                   |      |                 ~~~~~~~~
+2026-10-25T05:48:43.2477992Z                   |      |                 |
+2026-10-25T05:48:43.2498005Z                   |      |                 (8) ...to here
+2026-10-25T05:48:43.2508044Z                   |......
+2026-10-25T05:48:43.2518134Z                   |  573 |     if (!t) return CA_ERR_NOMEM;
+2026-10-25T05:48:43.2538012Z                   |      |        ~          
+2026-10-25T05:48:43.2557999Z                   |      |        |
+2026-10-25T05:48:43.2568375Z                   |      |        (9) following ‘false’ branch (when ‘t’ is non-NULL)...
+2026-10-25T05:48:43.2578100Z                   |  574 |     t->g = g;
+2026-10-25T05:48:43.2598086Z                   |      |     ~~~~~~~~      
+2026-10-25T05:48:43.2607979Z                   |      |          |
+2026-10-25T05:48:43.2618124Z                   |      |          (10) ...to here
+2026-10-25T05:48:43.2637995Z                   |......
+2026-10-25T05:48:43.2658464Z                   |  623 |         if (pc_bloom_init(&bloom, (uint64_t)bits) == 0) use_bloom = 1;
+2026-10-25T05:48:43.2668011Z                   |      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:48:43.2678075Z                   |      |             |
+2026-10-25T05:48:43.2698656Z                   |      |             (11) calling ‘pc_bloom_init’ from ‘pc_table_new’
+2026-10-25T05:48:43.2718031Z                   |......
+2026-10-25T05:48:43.2748061Z                   |  673 |     ca_rng rng;
+2026-10-25T05:48:43.2748546Z                   |      |            ~~~    
+2026-10-25T05:48:43.2768018Z                   |      |            |
+2026-10-25T05:48:43.2788047Z                   |      |            (6) region created on stack here
+2026-10-25T05:48:43.2789171Z                   |
+2026-10-25T05:48:43.2808371Z                   +--> ‘pc_bloom_init’: events 12-14
+2026-10-25T05:48:43.2808827Z                          |
+2026-10-25T05:48:43.2809299Z                          |  127 | static int pc_bloom_init(pc_bloom *b, uint64_t bits)
+2026-10-25T05:48:43.2809855Z                          |      |            ^~~~~~~~~~~~~
+2026-10-25T05:48:43.2810284Z                          |      |            |
+2026-10-25T05:48:43.2810840Z                          |      |            (12) entry to ‘pc_bloom_init’
+2026-10-25T05:48:43.2811555Z                          |......
+2026-10-25T05:48:43.2811966Z                          |  132 |     if (!b->w) return -1;
+2026-10-25T05:48:43.2812424Z                          |      |        ~              ~
+2026-10-25T05:48:43.2812861Z                          |      |        |              |
+2026-10-25T05:48:43.2813320Z                          |      |        |              (14) ...to here
+2026-10-25T05:48:43.2813952Z                          |      |        (13) following ‘true’ branch...
+2026-10-25T05:48:43.2814421Z                          |
+2026-10-25T05:48:43.2815119Z                   <------+
+2026-10-25T05:48:43.2815450Z                   |
+2026-10-25T05:48:43.2815896Z                 ‘pc_table_new’: events 15-17
+2026-10-25T05:48:43.2816302Z                   |
+2026-10-25T05:48:43.2816773Z                   |  623 |         if (pc_bloom_init(&bloom, (uint64_t)bits) == 0) use_bloom = 1;
+2026-10-25T05:48:43.2817489Z                   |      |            ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:48:43.2828226Z                   |      |            ||
+2026-10-25T05:48:43.2848372Z                   |      |            |(15) returning to ‘pc_table_new’ from ‘pc_bloom_init’
+2026-10-25T05:48:43.2858195Z                   |      |            (16) following ‘false’ branch...
+2026-10-25T05:48:43.2868084Z                   |......
+2026-10-25T05:48:43.2888376Z                   |  627 |     memset(&bd, 0, sizeof(bd));
+2026-10-25T05:48:43.2898030Z                   |      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:48:43.2908047Z                   |      |     |
+2026-10-25T05:48:43.2928304Z                   |      |     (17) ...to here
+2026-10-25T05:48:43.2947985Z                   |
+2026-10-25T05:48:43.2968178Z                 ‘pc_table_new’: event 18
+2026-10-25T05:48:43.2968801Z                   |
+2026-10-25T05:48:43.2988080Z                   |  629 |     bd.bloom = use_bloom ? &bloom : NULL;
+2026-10-25T05:48:43.3008003Z                   |      |                                   ^
+2026-10-25T05:48:43.3027941Z                   |      |                                   |
+2026-10-25T05:48:43.3028872Z                   |      |                                   (18) following ‘false’ branch (when ‘use_bloom == 0’)...
+2026-10-25T05:48:43.3047964Z                   |
+2026-10-25T05:48:43.3068123Z                 ‘pc_table_new’: events 19-28
+2026-10-25T05:48:43.3087908Z                   |
+2026-10-25T05:48:43.3088430Z                   |  629 |     bd.bloom = use_bloom ? &bloom : NULL;
+2026-10-25T05:48:43.3108027Z                   |      |                                   ^
+2026-10-25T05:48:43.3127961Z                   |      |                                   |
+2026-10-25T05:48:43.3128643Z                   |      |                                   (19) ...to here
+2026-10-25T05:48:43.3148003Z                   |......
+2026-10-25T05:48:43.3168030Z                   |  642 |     if (!tids || !wks || !created) {
+2026-10-25T05:48:43.3187941Z                   |      |        ~                           
+2026-10-25T05:48:43.3188530Z                   |      |        |
+2026-10-25T05:48:43.3208201Z                   |      |        (20) following ‘false’ branch...
+2026-10-25T05:48:43.3227960Z                   |......
+2026-10-25T05:48:43.3248198Z                   |  650 |     for (uint32_t i = 0; i < threads; i++) {
+2026-10-25T05:48:43.3248917Z                   |      |                   ~      ~~~~~~~~~~~
+2026-10-25T05:48:43.3268428Z                   |      |                   |        |
+2026-10-25T05:48:43.3288428Z                   |      |                   |        (22) following ‘false’ branch (when ‘i >= threads’)...
+2026-10-25T05:48:43.3307979Z                   |      |                   (21) ...to here
+2026-10-25T05:48:43.3308593Z                   |......
+2026-10-25T05:48:43.3328053Z                   |  655 |     int lock_initialized = 0;
+2026-10-25T05:48:43.3348020Z                   |      |         ~~~~~~~~~~~~~~~~           
+2026-10-25T05:48:43.3368000Z                   |      |         |
+2026-10-25T05:48:43.3369019Z                   |      |         (23) ...to here
+2026-10-25T05:48:43.3388027Z                   |  656 |     if (checkpoint) {
+2026-10-25T05:48:43.3408028Z                   |      |        ~                           
+2026-10-25T05:48:43.3408624Z                   |      |        |
+2026-10-25T05:48:43.3428818Z                   |      |        (24) following ‘false’ branch (when ‘checkpoint’ is NULL)...
+2026-10-25T05:48:43.3448024Z                   |......
+2026-10-25T05:48:43.3468234Z                   |  667 |     uint64_t identity = pc_checkpoint_identity(t, chains, threads, bd.max_ops,
+2026-10-25T05:48:43.3469160Z                   |      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:48:43.3488025Z                   |      |                         |
+2026-10-25T05:48:43.3508230Z                   |      |                         (25) ...to here
+2026-10-25T05:48:43.3528377Z                   |      |                         (26) following ‘false’ branch (when ‘use_bloom == 0’)...
+2026-10-25T05:48:43.3529228Z                   |      |                         (27) ...to here
+2026-10-25T05:48:43.3548376Z                   |      |                         (28) calling ‘pc_checkpoint_identity’ from ‘pc_table_new’
+2026-10-25T05:48:43.3568175Z                   |  668 |                                                 use_bloom ? bloom.nwords : 0);
+2026-10-25T05:48:43.3595848Z                   |      |                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:48:43.3596867Z                   |
+2026-10-25T05:48:43.3618329Z                   +--> ‘pc_checkpoint_identity’: events 29-30
+2026-10-25T05:48:43.3638015Z                          |
+2026-10-25T05:48:43.3638994Z                          |  432 | static uint64_t pc_checkpoint_identity(const ca_precomp_table *t, uint64_t target,
+2026-10-25T05:48:43.3658222Z                          |      |                 ^~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:48:43.3678125Z                          |      |                 |
+2026-10-25T05:48:43.3698364Z                          |      |                 (29) entry to ‘pc_checkpoint_identity’
+2026-10-25T05:48:43.3699091Z                          |......
+2026-10-25T05:48:43.3718379Z                          |  446 |     return dlog_ckpt_hash(v, sizeof(v), UINT64_C(14695981039346656037));
+2026-10-25T05:48:43.3738141Z                          |      |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:48:43.3758152Z                          |      |            |
+2026-10-25T05:48:43.3762744Z                          |      |            (30) calling ‘dlog_ckpt_hash’ from ‘pc_checkpoint_identity’
+2026-10-25T05:48:43.3778089Z                          |
+2026-10-25T05:48:43.3798202Z                          +--> ‘dlog_ckpt_hash’: events 31-33
+2026-10-25T05:48:43.3815666Z                                 |
+2026-10-25T05:48:43.3829597Z                                 |/home/runner/work/cryptanalysis/cryptanalysis/src/dlog_checkpoint_internal.h:20:24:
+2026-10-25T05:48:43.3838262Z                                 |   20 | static inline uint64_t dlog_ckpt_hash(const void *data, size_t n, uint64_t h)
+2026-10-25T05:48:43.3858062Z                                 |      |                        ^~~~~~~~~~~~~~
+2026-10-25T05:48:43.3878042Z                                 |      |                        |
+2026-10-25T05:48:43.3898729Z                                 |      |                        (31) entry to ‘dlog_ckpt_hash’
+2026-10-25T05:48:43.3899465Z                                 |......
+2026-10-25T05:48:43.3916785Z                                 |   23 |     for (size_t i = 0; i < n; i++) { h ^= p[i]; h *= UINT64_C(1099511628211); }
+2026-10-25T05:48:43.3938097Z                                 |      |                        ~~~~~               ~
+2026-10-25T05:48:43.3958064Z                                 |      |                          |                 |
+2026-10-25T05:48:43.3958831Z                                 |      |                          |                 (33) ...to here
+2026-10-25T05:48:43.3978419Z                                 |      |                          (32) following ‘true’ branch (when ‘i < n’)...
+2026-10-25T05:48:43.3997970Z                                 |
+2026-10-25T05:48:43.4018021Z                          <------+
+2026-10-25T05:48:43.4018561Z                          |
+2026-10-25T05:48:43.4038271Z                        ‘pc_checkpoint_identity’: event 34
+2026-10-25T05:48:43.4057986Z                          |
+2026-10-25T05:48:43.4078209Z                          |/home/runner/work/cryptanalysis/cryptanalysis/src/precomp.c:446:12:
+2026-10-25T05:48:43.4079216Z                          |  446 |     return dlog_ckpt_hash(v, sizeof(v), UINT64_C(14695981039346656037));
+2026-10-25T05:48:43.4098110Z                          |      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:48:43.4118035Z                          |      |            |
+2026-10-25T05:48:43.4128567Z                          |      |            (34) returning to ‘pc_checkpoint_identity’ from ‘dlog_ckpt_hash’
+2026-10-25T05:48:43.4137966Z                          |
+2026-10-25T05:48:43.4138315Z                   <------+
+2026-10-25T05:48:43.4138647Z                   |
+2026-10-25T05:48:43.4139073Z                 ‘pc_table_new’: events 35-40
+2026-10-25T05:48:43.4139468Z                   |
+2026-10-25T05:48:43.4140023Z                   |  667 |     uint64_t identity = pc_checkpoint_identity(t, chains, threads, bd.max_ops,
+2026-10-25T05:48:43.4140766Z                   |      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:48:43.4141290Z                   |      |                         |
+2026-10-25T05:48:43.4142012Z                   |      |                         (35) returning to ‘pc_table_new’ from ‘pc_checkpoint_identity’
+2026-10-25T05:48:43.4142725Z                   |  668 |                                                 use_bloom ? bloom.nwords : 0);
+2026-10-25T05:48:43.4143355Z                   |      |                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:48:43.4143867Z                   |  669 |     int ready = 0;
+2026-10-25T05:48:43.4144506Z                   |  670 |     ca_status rc = checkpoint ? pc_checkpoint_load(checkpoint, &bd, wks, identity,
+2026-10-25T05:48:43.4145280Z                   |      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:48:43.4145946Z                   |  671 |                                                      params->seed, &ready) : CA_OK;
+2026-10-25T05:48:43.4146571Z                   |      |                                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:48:43.4147164Z                   |      |                                                                            |
+2026-10-25T05:48:43.4148329Z                   |      |                                                                            (36) following ‘false’ branch (when ‘checkpoint’ is NULL)...
+2026-10-25T05:48:43.4149246Z                   |      |                                                                            (37) ...to here
+2026-10-25T05:48:43.4149811Z                   |  672 |     if (rc != CA_OK) goto finish;
+2026-10-25T05:48:43.4167950Z                   |      |        ~                 
+2026-10-25T05:48:43.4178473Z                   |      |        |
+2026-10-25T05:48:43.4198234Z                   |      |        (38) following ‘false’ branch (when ‘rc == 0’)...
+2026-10-25T05:48:43.4198942Z                   |  673 |     ca_rng rng;
+2026-10-25T05:48:43.4218075Z                   |  674 |     ca_rng_seed(&rng, t->seed);
+2026-10-25T05:48:43.4238033Z                   |      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-25T05:48:43.4257947Z                   |      |     |
+2026-10-25T05:48:43.4258483Z                   |      |     (39) ...to here
+2026-10-25T05:48:43.4278272Z                   |      |     (40) calling ‘ca_rng_seed’ from ‘pc_table_new’
+2026-10-25T05:48:43.4297983Z                   |
+2026-10-25T05:48:43.4318371Z                   +--> ‘ca_rng_seed’: events 41-46
+2026-10-25T05:48:43.4319322Z                          |
+2026-10-25T05:48:43.4338498Z                          |/home/runner/work/cryptanalysis/cryptanalysis/src/ca_internal.h:35:20:
+2026-10-25T05:48:43.4358185Z                          |   35 | static inline void ca_rng_seed(ca_rng *r, uint64_t seed)
+2026-10-25T05:48:43.4377968Z                          |      |                    ^~~~~~~~~~~
+2026-10-25T05:48:43.4378575Z                          |      |                    |
+2026-10-25T05:48:43.4398208Z                          |      |                    (41) entry to ‘ca_rng_seed’
+2026-10-25T05:48:43.4417992Z                          |......
+2026-10-25T05:48:43.4438069Z                          |   38 |     for (int i = 0; i < 4; i++) r->s[i] = ca_splitmix64(&x);
+2026-10-25T05:48:43.4438860Z                          |      |                     ~~~~~                 ~~~~~~~~~~~~~~~~~
+2026-10-25T05:48:43.4458072Z                          |      |                       |                   |
+2026-10-25T05:48:43.4478068Z                          |      |                       |                   (43) ...to here
+2026-10-25T05:48:43.4479047Z                          |      |                       (42) following ‘true’ branch (when ‘i <= 3’)...
+2026-10-25T05:48:43.4498338Z                          |      |                       (44) following ‘false’ branch (when ‘i > 3’)...
+2026-10-25T05:48:43.4518191Z                          |   39 |     if ((r->s[0] | r->s[1] | r->s[2] | r->s[3]) == 0) r->s[0] = 1;
+2026-10-25T05:48:43.4537993Z                          |      |          ~~~~~~~   ~~~~~~~
+2026-10-25T05:48:43.4538620Z                          |      |              |         |
+2026-10-25T05:48:43.4558397Z                          |      |              |         (46) use of uninitialized value ‘*r.s[1]’ here
+2026-10-25T05:48:43.4578051Z                          |      |              (45) ...to here
+2026-10-25T05:48:43.4598015Z                          |
+2026-10-25T05:48:43.5778646Z cc1: all warnings being treated as errors
+2026-10-25T05:48:43.6237339Z gmake[2]: *** [CMakeFiles/cryptanalysis_static.dir/build.make:219: CMakeFiles/cryptanalysis_static.dir/src/precomp.c.o] Error 1
+2026-10-25T05:48:43.6238932Z gmake[2]: *** Waiting for unfinished jobs....
+2026-10-25T05:48:52.1638490Z gmake[1]: *** [CMakeFiles/Makefile2:102: CMakeFiles/cryptanalysis_static.dir/all] Error 2
+2026-10-25T05:48:52.1641937Z gmake: *** [Makefile:136: all] Error 2
+2026-10-25T05:48:52.1665435Z ##[error]Process completed with exit code 2.
+2026-10-25T05:48:52.1802779Z Post job cleanup.
+2026-10-25T05:48:52.2700707Z [command]/usr/bin/git version
+2026-10-25T05:48:52.2743040Z git version 2.55.0
+2026-10-25T05:48:52.2785946Z Temporarily overriding HOME='/home/runner/work/_temp/acec6df7-c261-4473-98e7-d5a149770988' before making global git config changes
+2026-10-25T05:48:52.2788043Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-25T05:48:52.2790652Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cryptanalysis/cryptanalysis
+2026-10-25T05:48:52.2824937Z Removing SSH command configuration
+2026-10-25T05:48:52.2832521Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-25T05:48:52.2873737Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-25T05:48:52.3150053Z Removing HTTP extra header
+2026-10-25T05:48:52.3156909Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-25T05:48:52.3205558Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-25T05:48:52.3473948Z Removing includeIf entries pointing to credentials config files
+2026-10-25T05:48:52.3495568Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-25T05:48:52.3515313Z includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path
+2026-10-25T05:48:52.3519000Z includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path
+2026-10-25T05:48:52.3520240Z includeif.gitdir:/github/workspace/.git.path
+2026-10-25T05:48:52.3521113Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-25T05:48:52.3527089Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path
+2026-10-25T05:48:52.3553836Z /home/runner/work/_temp/git-credentials-85403599-29db-486d-bc80-cae1dd185c35.config
+2026-10-25T05:48:52.3566932Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-85403599\-29db\-486d\-bc80\-cae1dd185c35\.config
+2026-10-25T05:48:52.3634345Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path
+2026-10-25T05:48:52.3649088Z /home/runner/work/_temp/git-credentials-85403599-29db-486d-bc80-cae1dd185c35.config
+2026-10-25T05:48:52.3656859Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-85403599\-29db\-486d\-bc80\-cae1dd185c35\.config
+2026-10-25T05:48:52.3698352Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-10-25T05:48:52.3718706Z /github/runner_temp/git-credentials-85403599-29db-486d-bc80-cae1dd185c35.config
+2026-10-25T05:48:52.3729999Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-85403599\-29db\-486d\-bc80\-cae1dd185c35\.config
+2026-10-25T05:48:52.3765195Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-25T05:48:52.3789571Z /github/runner_temp/git-credentials-85403599-29db-486d-bc80-cae1dd185c35.config
+2026-10-25T05:48:52.3800707Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-85403599\-29db\-486d\-bc80\-cae1dd185c35\.config
+2026-10-25T05:48:52.3836197Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-25T05:48:52.4110537Z Removing credentials config '/home/runner/work/_temp/git-credentials-85403599-29db-486d-bc80-cae1dd185c35.config'
+2026-10-25T05:48:52.4275864Z Cleaning up orphan processes

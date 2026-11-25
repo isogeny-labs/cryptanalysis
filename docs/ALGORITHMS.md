@@ -284,18 +284,33 @@ Wiener-Zuccherato / Duursma-Gaudry-Morain automorphism-class idea, and the
 Frobenius speed-up on binary Koblitz curves (the `fpga/` ECC2K-130 core) is
 the same idea over an extension field, out of scope for this `F_p` core.
 
-**The walk.**  `glv_rho_solve` walks canonical representatives of the
-automorphism classes `{Y, psi(Y), ..., psi^{m-1}(Y)}`: it reduces to the
-minimum-hash member, tracking the power `k` of `psi` applied so the exponents
-`(a, b)` in `Y = a G + b H` are multiplied by `lambda^k`.  The step is a
-function of the class (index and distinguished-point test read the canonical
-hash, and multipliers are always added to the canonical point), so walks that
-meet stay merged.  Folding by `m` costs a few field multiplications per step
-(applying `psi`) but shrinks the space by `m`, for `sqrt(m)` fewer
-operations.  Automorphism walks fall into fruitless cycles far more often
-than a plain walk, so the same 2-cycle look-ahead the negation map uses is
-carried over (if the reduced point would pick the multiplier just used,
-advance to the next one); without it the cycles dominate and erase the gain.
+**The walk.**  The reference `glv_rho_solve` walks canonical representatives
+of `{Y, psi(Y), ..., psi^{m-1}(Y)}`: it selects the minimum-hash member and
+multiplies `(a, b)` by `lambda^k` after applying `psi^k`.  Both families use
+it.  `CA_J0_RHO_COORD_CANON=ON` is a coordinate-only ablation that
+canonicalizes every j=0 step.  An oriented ("covariant") j=0 walk, which kept
+each point in its current orientation and checked orbit collisions only at
+distinguished points, was removed with `CA_J0_RHO_COVARIANT_WALK`.  The
+solver had not reached it since #437, and the current walk measured cheaper
+below 36 bits (#1059, #1061).  Commit `f962323` is the last that builds it.
+
+**Prime-field j0 tau arithmetic.**  `ca_ec_mul_tau2` represents a scalar as
+a short element of `Z[omega]`, expands it with width-2 digits from the six
+units, and evaluates the paper's Jacobian `tau = 1 - omega` formula.  The
+width-4 table from the paper is available in `ca_ec_mul_tau4`;
+`ca_ec_mul_tau4_tripling` rewrites pairs of tau powers as powers of 3, and
+`ca_ec_triple_j0` exposes the Jacobian tripling formula.  The one-shot
+width-4 tripling implementation uses general projective addition for odd
+digits.  The rho jump table and restarts no longer use these functions: their
+build options (`CA_J0_TAU_RHO`, `CA_J0_TAU_RHO_WIDTH`) were removed after the
+setup path stopped reaching them in #437.  The explicit paired startup modes
+of `ca_curve_solve_startup` keep their own tau evaluation.  These field-operation costs differ from the paper's
+augmented-tau variant.  Counts from different scalar backends use different
+primitive operations, so compare their paired online wall times;
+see [the recorded exploratory measurements](../experiments/prime-j0-tau-20260930/README.md).
+The separate [oriented-walk experiment](../experiments/prime-j0-rho-coordinate-canon-20261002/README.md)
+measures the walk change on frozen one-target workloads. Its wall ratios
+await [isolated replay](ISOLATED_BENCHMARKS.md).
 
 `ca_curve_detect` reports the structure from parameters, `ca_curve_group`
 builds a group with the endomorphism enabled, and `ca_curve_solve` dispatches
@@ -423,6 +438,28 @@ around 56 bits, and the gap widens quickly above it.
 * Mestre's baby-step giant-step point counting for `E(F_p)`
   (`O(p^{1/4})`, with the quadratic-twist fallback when the group exponent
   is small), used by the tests and the `ca ec-order` command.
+
+## Truncated products and error budgets
+
+Not an algorithm in the library, but a cross-cutting technique worth knowing
+when reading or extending the multiword paths: when a consumer only needs a
+fixed 128-bit window of a 256-bit product, that window can be evaluated
+directly from four single-word products per row, skipping the fold and the
+carry chain, at the price of a one-sided error of at most 64 units of
+`2^-128`. Adjacent windows are obtained by multiplying by `beta = 2^(64d)`
+rather than by computing a second product.
+
+The method, its error table, and the verification protocol that must accompany
+it (exact certificate, bit-exact model, mutants, static count) are in
+[TECHNIQUES-TRUNCATED-FRACTION.md](TECHNIQUES-TRUNCATED-FRACTION.md). The
+routine review gate for any published cost figure is
+[REVIEW-CHECKLIST-COST-CLAIMS.md](REVIEW-CHECKLIST-COST-CLAIMS.md), and the
+machine-checked form of that gate is
+[INSTRUCTION-COST-ACCOUNTING.md](INSTRUCTION-COST-ACCOUNTING.md) with
+`tools/cost/ledger.py`. The arithmetic itself does not apply to this library's
+`p < 2^64` Montgomery paths; the methodology does, and
+[RHO-WALK-COST.md](RHO-WALK-COST.md) applies it to the rho walk: six
+multiplications per step, and the tunings that measured no change.
 
 ## References
 

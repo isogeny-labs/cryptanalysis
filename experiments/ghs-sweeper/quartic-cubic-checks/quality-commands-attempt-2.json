@@ -1,0 +1,34 @@
+[
+  {
+    "command": [
+      "/workspace/.cargo/bin/cargo",
+      "clippy",
+      "--locked",
+      "--manifest-path",
+      "experiments/ghs-sweeper/Cargo.toml",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit_status": 0,
+    "elapsed_seconds_execution_receipt_only": 0.49352526664733887,
+    "output": "clippy-attempt-2.txt",
+    "sha256": "995726d79ca430275712cd01d2a481ceed14b0491211a45c5354a9cb45b200f6"
+  },
+  {
+    "command": [
+      "/workspace/.cargo/bin/cargo",
+      "test",
+      "--release",
+      "--locked",
+      "--manifest-path",
+      "experiments/ghs-sweeper/Cargo.toml",
+      "--all-targets"
+    ],
+    "exit_status": 0,
+    "elapsed_seconds_execution_receipt_only": 5.346846342086792,
+    "output": "all-targets-attempt-2.txt",
+    "sha256": "8fac273e4eea23a58c33713584da50af3f15851fe1eba3ca817c15df3c52f251"
+  }
+]

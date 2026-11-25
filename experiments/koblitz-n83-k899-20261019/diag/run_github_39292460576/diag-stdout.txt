@@ -1,0 +1,47 @@
+{"tag": "cP600_a", "exit": 0, "process_wall_s": 18.2052161693573, "setup_ms": 16881.053398, "index_ms": 15367.468818000001, "rank_ms": 0.0069700000000000005, "ns_probe": null}
+{"tag": "kP899", "exit": 0, "process_wall_s": 124.65274262428284, "setup_ms": 122394.509405, "index_ms": 35666.174490000005, "rank_ms": 85702.50552400001, "ns_probe": 121.4565123533696}
+{"tag": "kP600", "exit": 0, "process_wall_s": 129.6471450328827, "setup_ms": 128280.295194, "index_ms": 15021.987808, "rank_ms": 111714.77756, "ns_probe": 105.624422969089}
+{"tag": "cP899_a", "exit": 0, "process_wall_s": 40.310853242874146, "setup_ms": 37811.740451, "index_ms": 36714.589724, "rank_ms": 0.008684, "ns_probe": null}
+{"tag": "cP600_b", "exit": 0, "process_wall_s": 19.017069101333618, "setup_ms": 17587.166741, "index_ms": 16026.280797999998, "rank_ms": 0.007232000000000001, "ns_probe": null}
+{"tag": "cP899_b", "exit": 0, "process_wall_s": 42.64133262634277, "setup_ms": 40199.891646, "index_ms": 39115.961525000006, "rank_ms": 0.008133, "ns_probe": null}
+{"tag": "cPI600", "exit": 0, "process_wall_s": 15.682075023651123, "setup_ms": 14273.063274, "index_ms": 12737.221185999999, "rank_ms": 0.007321, "ns_probe": null}
+{"tag": "cPI899", "exit": 0, "process_wall_s": 34.50395202636719, "setup_ms": 32122.262562, "index_ms": 31071.486707999997, "rank_ms": 0.008664, "ns_probe": null}
+{
+ "derived": {
+  "index_ms_cold_K600": 15696.874808,
+  "index_ms_cold_K899": 37915.275624500006,
+  "index_ms_rank_K600": 15021.987808,
+  "index_ms_rank_K899": 35666.174490000005,
+  "index_ms_lift_K600": 12737.221185999999,
+  "index_ms_lift_K899": 31071.486707999997,
+  "setup_ms_cold_K600": 17234.1100695,
+  "setup_ms_cold_K899": 39005.8160485,
+  "setup_ms_lift_K600": 14273.063274,
+  "setup_ms_lift_K899": 32122.262562,
+  "rank_stage_ms_K600": 111714.77756,
+  "ns_per_probe_all_K600": 105.624422969089,
+  "ns_per_probe_first50_K600": 103.74121948519102,
+  "probes_mean_over_law_K600": 1.0192007690253568,
+  "first50_ms_K600": 10229.185402,
+  "rank_stage_ms_K899": 85702.50552400001,
+  "ns_per_probe_all_K899": 121.4565123533696,
+  "ns_per_probe_first50_K899": 119.98853534485127,
+  "probes_mean_over_law_K899": 1.016137354276595,
+  "first50_ms_K899": 4461.939031
+ },
+ "gates": {
+  "index_build_K899_le_55s": true,
+  "ns_per_probe_K899_le_150": true,
+  "every_process_exit0_one_target_q0_scalar_oracle": true,
+  "k899_table_oracle_pass": true,
+  "k899_first600_equal_B_K600": true,
+  "k600_written_equal_B_K600": true
+ },
+ "go": true,
+ "checks": {
+  "k899_first600_equal_B_K600": true,
+  "k899_table_sha256": "92dfb9d20bd477af7bdd2d0bf9bf20489729d1beba92cf1c44d89564848045b8",
+  "k899_logs_sha256": "c665235067ab457e23a710cfe97b7bffe4a8726c72a8fa59580e01555c07492a",
+  "k600_written_equal_B_K600": true
+ }
+}

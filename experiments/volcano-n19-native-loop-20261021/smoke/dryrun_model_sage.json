@@ -1,0 +1,67 @@
+{
+ "binary_rows_launcher_wall_s": [
+  0.0895,
+  0.0901,
+  0.3202,
+  0.1431,
+  0.1277,
+  0.3338
+ ],
+ "detail_s0b": {
+  "multi": 2375,
+  "nonempty": 2381,
+  "systems": 2982
+ },
+ "gate_names": {
+  "missing": [],
+  "not_true": [
+   "tier1_counters_recorded"
+  ],
+  "protocol_differs": [],
+  "unknown": []
+ },
+ "gates": {
+  "counts_and_log_identical_per_point": true,
+  "every_scheduled_row_valid": true,
+  "field_check_every_native_process": true,
+  "generator_equals_archived": true,
+  "host_cpu_identity_unchanged": true,
+  "native_artifacts_one_digest": true,
+  "o1_passed": true,
+  "o2_passed": true,
+  "placement_pinned_every_process": true,
+  "planted_compared_every_item": true,
+  "raw_records_verified": true,
+  "receipt_rows_match_schedule": true,
+  "relation_digests_recomputed": true,
+  "relations_identical_per_point": true,
+  "rho_verified": true,
+  "rows_in_schedule_order": true,
+  "runner_identity_matches_frozen_files": true,
+  "s0_binary_passed": true,
+  "s0_passed": true,
+  "schedule_and_panel_regenerate": true,
+  "setup_identical_per_point": true,
+  "smoke_points_equal_v3_archive": true,
+  "tier1_counters_recorded": false,
+  "warm_batch_reproduced": true
+ },
+ "invalid_rows": [],
+ "kind": "dry run: real launcher, real tau6dlp, real verifier, stand-in sage (pure-Python model); mechanics only, no Sage, no timing",
+ "ok": true,
+ "problems": [],
+ "proc_schedstat_present": false,
+ "rows": 18,
+ "runner_exit": 0,
+ "runner_stderr_tail": [],
+ "runner_stdout_tail": [
+  "{\"part\": \"smoke\", \"serial\": 16, \"arm\": \"N2X\", \"point\": \"v3p01\", \"role\": \"smoke\", \"status\": \"valid\", \"issues\": [], \"launcher_wall_s\": 2.194620075}",
+  "{\"part\": \"smoke\", \"serial\": 17, \"arm\": \"rho\", \"point\": \"v3p01\", \"role\": \"smoke\", \"status\": \"valid\", \"issues\": [], \"launcher_wall_s\": 0.070129144}",
+  "{\"part\": \"smoke\", \"serial\": 18, \"arm\": \"N2\", \"point\": \"v3p01\", \"role\": \"warm\", \"status\": \"valid\", \"issues\": [], \"launcher_wall_s\": 0.333801769}",
+  "{\"counts\": {\"valid\": 18}, \"guard_tripped\": false, \"stopped_after_gate\": null}"
+ ],
+ "statuses": [
+  "valid"
+ ],
+ "verifier_exit": 6
+}

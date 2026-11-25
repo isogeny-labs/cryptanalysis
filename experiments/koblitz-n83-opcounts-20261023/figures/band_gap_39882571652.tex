@@ -1,0 +1,22 @@
+\documentclass[tikz,border=4pt]{standalone}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[width=11cm, height=7cm, ymode=log, xmin=-0.3, xmax=2.3,
+  xlabel={weight $w$ (GAE per unpriced native operation)},
+  ylabel={gap to matched rho: cost(arm) / cost(rT)}, xtick={0,1,2},
+  xticklabels={0,0.1,1}, title={n = 83 stacked producer, run 39882571652 (v2 analysis)}, legend pos=outer north east, legend cell align=left]
+\addplot[gray, dotted, domain=-0.3:2.3, samples=2, forget plot] {1};
+\addplot[blue, mark=*, error bars/.cd, y dir=both, y explicit] coordinates {(0,0.0113811) -= (0,0.0026144) += (0,0.00413817) (1,28.9955) -= (0,6.6685) += (0,10.5476) (2,115.503) -= (0,26.5637) += (0,42.0162)};
+\addlegendentry{S}
+\addplot[blue, mark=*, dashed, error bars/.cd, y dir=both, y explicit] coordinates {(0,56.082) -= (0,12.8984) += (0,20.3993) (1,70.9944) -= (0,16.3279) += (0,25.8243) (2,115.503) -= (0,26.5637) += (0,42.0162)};
+\addlegendentry{S (Frobenius at 1 GAE)}
+\addplot[red!70!black, mark=square*, error bars/.cd, y dir=both, y explicit] coordinates {(0,0.0114118) -= (0,0.00262144) += (0,0.00414931) (1,43.9319) -= (0,10.0995) += (0,15.9873) (2,175.019) -= (0,40.2349) += (0,63.6914)};
+\addlegendentry{P}
+\addplot[red!70!black, mark=square*, dashed, error bars/.cd, y dir=both, y explicit] coordinates {(0,83.9986) -= (0,19.311) += (0,30.569) (1,106.841) -= (0,24.5621) += (0,38.8815) (2,175.019) -= (0,40.2349) += (0,63.6914)};
+\addlegendentry{P (Frobenius at 1 GAE)}
+\node[anchor=south west, font=\footnotesize, gray] at (axis cs:-0.25,1) {parity with rho};
+\end{axis}
+\end{tikzpicture}
+\end{document}

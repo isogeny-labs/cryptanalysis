@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/dev/shm/cryptanalysis-gate-184-negative-20261031/verify.py", line 155, in <module>
+    main()
+  File "/dev/shm/cryptanalysis-gate-184-negative-20261031/verify.py", line 143, in main
+    result = build(args.repo)
+             ^^^^^^^^^^^^^^^^
+  File "/dev/shm/cryptanalysis-gate-184-negative-20261031/verify.py", line 113, in build
+    require(log.count(b'native added theorem modules checked: 77') == 1,
+  File "/dev/shm/cryptanalysis-gate-184-negative-20261031/verify.py", line 23, in require
+    raise ValueError(message)
+ValueError: hosted log lacks 77-module terminal marker

@@ -1,0 +1,41 @@
+{
+  "checks": [
+    "enumerate all C(F997) affine points independently",
+    "factor specialized exact degree-12 H(C,x_E) over F997",
+    "lift each rational x_E to all rational E points",
+    "evaluate exact B branch with explicit exceptional status",
+    "replay B and E curve equations and 3-isogeny",
+    "compare complete rational pair set with source-pair census and kernel-chain keys",
+    "retain extra and missing pairs and multiplicities"
+  ],
+  "curves": {
+    "B": "y^2=x^3-16",
+    "C": "y^2+y=x^3-7",
+    "E": "y^2=x^3+432"
+  },
+  "expected_source_pair_count": 1800,
+  "inputs": {
+    "b_image": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-prime997-exact-b-image-20261025/fibers.json",
+      "sha256": "d648c0a2ebf7082752cd8cb2f5ffcdc1e4a90f15c76ee70758eff8f6304a8ba8"
+    },
+    "branch": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-b-coordinate-resolvent-20261025/branch_formula.json",
+      "sha256": "14f7fef3e32d9b65062ea3cf0a9c026b128ef7228e6e58f0320924a024ee930b"
+    },
+    "resolvent": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-relative-resolvent-20261025/relative_resolvent.json",
+      "sha256": "3b127f8d71971b2a54c85137992cc1db560c5dab982fae0ec52146114b1fcc6b"
+    },
+    "source_census": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-prime997-20261025/census.json",
+      "sha256": "3633892432afdce27e4d35ddb08633e8d94b21e54f2b341c7da3852e7047cba4"
+    },
+    "source_pairs": {
+      "path": "/Volumes/SSD990/cryptanalysis/experiments/hecke-432-original-C-lift-20261025/result.json",
+      "sha256": "30a51d70e8853d78b189f4882e1dc292b1d841bb0e1b09318a8a4fc27b0fbdf5"
+    }
+  },
+  "prime": 997,
+  "status": "FROZEN_BEFORE_INDEPENDENT_PAIR_ENUMERATION"
+}

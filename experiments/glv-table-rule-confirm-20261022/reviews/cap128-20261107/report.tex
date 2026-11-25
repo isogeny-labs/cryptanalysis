@@ -1,0 +1,21 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.7in]{geometry}
+\usepackage{graphicx}
+\begin{document}
+\section*{Independent GLV size-dependent cap proof review}
+\textbf{2026-11-07.} Nineteen new named Lean theorem types describe the pinned C selector: cap 32 below $lg=40$, cap 128 from $lg=40$, divisor 12, start value 8, and four possible doublings. The new selector equals the previous one below 40 bits and cannot choose a smaller table for the same numerator and log factor.
+\medskip
+\begin{center}\begin{tabular}{c|c|c}Budget $b$ & cap 32 & cap 128\\\hline $b<16$ & 8 & 8\\$16\leq b<32$ & 16 & 16\\$32\leq b<64$ & 32 & 32\\$64\leq b<128$ & 32 & 64\\$128\leq b$ & 32 & 128\end{tabular}\end{center}
+\noindent \textbf{Machine checks.} Fresh pinned Lean 4.34.1 compilation passed. All 27 declaration axiom prints used only \texttt{propext} and \texttt{Quot.sound}; the source file has no \texttt{sorry}, custom axiom, \texttt{unsafe}, or \texttt{native\_decide}. Seven supplemental hashes passed. The live C-source binding checker passed and rejected five changed-selector controls. Blind arithmetic and separate source-fidelity reviews agree on the conditional selector result.
+\medskip
+\noindent \textbf{Inputs and boundary.} Target main is \texttt{702b6804}; current C SHA-256 is \texttt{e1d624e5...f63}. The C path yields a positive log factor, but the proof does not establish the external \texttt{c.m>0} prerequisite for C division. No performance or solver-correctness trial was rerun.
+\begin{center}\setlength{\unitlength}{1pt}\begin{picture}(400,120)
+\put(20,10){\vector(1,0){370}}\put(20,10){\vector(0,1){100}}
+\thicklines\put(20,25){\line(1,0){70}}\put(90,25){\line(0,1){20}}\put(90,45){\line(1,0){70}}\put(160,45){\line(0,1){20}}\put(160,65){\line(1,0){75}}\put(235,65){\line(1,0){140}}
+\put(235,65){\line(0,1){20}}\put(235,85){\line(1,0){70}}\put(305,85){\line(0,1){20}}\put(305,105){\line(1,0){70}}
+\put(1,22){8}\put(0,42){16}\put(0,62){32}\put(0,82){64}\put(0,102){128}\put(85,0){16}\put(155,0){32}\put(230,0){64}\put(295,0){128}
+\end{picture}\end{center}
+\noindent Blue/low branch in the companion SVG is cap 32; orange/high branch is cap 128. The figure is a proved selector diagram, not a performance plot.
+\medskip
+\noindent \textbf{Correction needed.} \texttt{LEAN\_PROOF.md} says the loop doubles only 8 and 16. The cap-128 path can also double 32 and 64. This narrative issue does not change the theorem types. See the companion Markdown, reviewer attestations, and machine receipts for full evidence.
+\end{document}

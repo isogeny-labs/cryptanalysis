@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 560" width="980" height="560" font-family="Helvetica, Arial, sans-serif" font-size="13">
+  <title>PS-5 pipeline: program file to device kernel and CPU emulation</title>
+  <desc>The crypto repository exports PS-3's straight-line program (pdp-slp/1, hashed). pdp_ps5_emit turns it into generated lop3 code. The same generated code is compiled twice: by nvcc as the CUDA kernel (never run here) and by a C compiler as the CPU emulation, which the parity driver uses to replay the PS-0 corpus.</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#444"/></marker>
+    <style>
+      .box{fill:#f4f6fa;stroke:#44546a;stroke-width:1.4}
+      .gen{fill:#fff4d6;stroke:#a67c00;stroke-width:1.4}
+      .dev{fill:#fbe3e3;stroke:#a33;stroke-width:1.6;stroke-dasharray:6 4}
+      .ok{fill:#e3f3e6;stroke:#2e7d32;stroke-width:1.4}
+      .t{fill:#1b1f27}
+      .s{fill:#555;font-size:11.5px}
+      .h{font-weight:bold;font-size:14px;fill:#1b1f27}
+      @media (prefers-color-scheme: dark){
+        .box{fill:#232a36;stroke:#8aa0bd}.gen{fill:#3b3320;stroke:#d9b44a}.dev{fill:#3a2424;stroke:#e57373}.ok{fill:#1f3324;stroke:#6fbf73}
+        .t,.h{fill:#e8ecf2}.s{fill:#aab4c3}
+      }
+    </style>
+  </defs>
+  <rect width="980" height="560" fill="none"/>
+  <text class="h" x="20" y="26">PS-5 on a CPU-only host: what was built, what was run, what was not</text>
+
+  <rect class="box" x="20" y="50" width="250" height="78" rx="6"/>
+  <text class="t" x="32" y="72">crypto: pdp_speedup export-program</text>
+  <text class="s" x="32" y="90">PS-3 straight-line program, batch of 8 tasks</text>
+  <text class="s" x="32" y="108">pdp-slp/1, SHA-256 recorded by PS-2 (l = 8..12)</text>
+
+  <rect class="gen" x="330" y="50" width="250" height="78" rx="6"/>
+  <text class="t" x="342" y="72">pdp_ps5_emit  (suite/cuda)</text>
+  <text class="s" x="342" y="90">re-hashes, validates, one statement per gate</text>
+  <text class="s" x="342" y="108">xor-and gate a^(b&amp;c) = one ternary op (lut 0x78)</text>
+
+  <rect class="gen" x="640" y="50" width="320" height="78" rx="6"/>
+  <text class="t" x="652" y="72">generated  pdp_ps5_lL.h / .inc</text>
+  <text class="s" x="652" y="90">n, l, gate counts, program hash; 65k..127k statements</text>
+  <text class="s" x="652" y="108">PS5_DEF(K, PS5_XAND(PS5_W(a), PS5_W(b), PS5_W(c)))</text>
+
+  <line x1="270" y1="89" x2="326" y2="89" stroke="#444" stroke-width="1.6" marker-end="url(#a)"/>
+  <line x1="580" y1="89" x2="636" y2="89" stroke="#444" stroke-width="1.6" marker-end="url(#a)"/>
+
+  <rect class="dev" x="20" y="190" width="440" height="120" rx="6"/>
+  <text class="h" x="32" y="214">CUDA kernel  pdp_ps5_kernel.cu  +  pdp_ps5_device.cuh</text>
+  <text class="s" x="32" y="234">wires are single-assignment locals; gates = inline PTX lop3.b32</text>
+  <text class="s" x="32" y="252">1 lane = 1 bit of a 32-bit word = 1 pair; 1 thread = 1 job = 8 tasks x 32 lanes</text>
+  <text class="s" x="32" y="270">hits appended with one atomicAdd per non-empty task</text>
+  <text class="t" x="32" y="296" font-weight="bold">NOT RUN: no GPU, no allocation.  Compile check only (see report).</text>
+
+  <rect class="box" x="520" y="190" width="440" height="120" rx="6"/>
+  <text class="h" x="532" y="214">CPU emulation  pdp_ps5_emulate.c  (same header, same .inc)</text>
+  <text class="s" x="532" y="234">wires in one array, body split into chunk functions (host compilers)</text>
+  <text class="s" x="532" y="252">gates: C operators (plain) or the bitwise lop3 model with its table</text>
+  <text class="s" x="532" y="270">job loop replaces the grid; thread-private hit lists</text>
+  <text class="t" x="532" y="296" font-weight="bold">RUN here: this is a CPU measurement, not a device result.</text>
+
+  <path d="M800 128 L800 160 L240 160 L240 186" fill="none" stroke="#444" stroke-width="1.6" marker-end="url(#a)"/>
+  <path d="M800 128 L800 186" fill="none" stroke="#444" stroke-width="1.6" marker-end="url(#a)"/>
+  <text class="s" x="812" y="158">nvcc -O3 -Xptxas -v</text>
+  <text class="s" x="812" y="176">cc -O1</text>
+
+  <rect class="ok" x="520" y="360" width="440" height="168" rx="6"/>
+  <text class="h" x="532" y="384">Parity driver  pdp_ps5_parity.c  (host)</text>
+  <text class="s" x="532" y="404">base points (rational lifts of V), transposed to blocks of 32 lanes</text>
+  <text class="s" x="532" y="422">rows U+- = P +- R, exact; jobs tile every pair (i1, i2 &gt;= i1) once</text>
+  <text class="s" x="532" y="440">every hit lane confirmed, every exceptional lane recomputed (exact)</text>
+  <text class="s" x="532" y="458">per target: full root set and verdict == PS-0; digests == PS-0's</text>
+  <text class="s" x="532" y="476">self-test: 256 lop3 tables, every wire vs interpreter,</text>
+  <text class="s" x="532" y="494">kernel masks vs scalar GF(2^n) formulas on forced-hit lanes</text>
+
+  <rect class="box" x="20" y="400" width="440" height="100" rx="6"/>
+  <text class="h" x="32" y="424">Frozen inputs</text>
+  <text class="s" x="32" y="444">PS-0 corpus l = 8..12 (80 targets each), byte-identical copy + hashes</text>
+  <text class="s" x="32" y="462">PS-0 verdict and root digests (baseline_v1/digests.txt)</text>
+  <text class="s" x="32" y="480">PS-3 program hashes (ps2_scalar/README.md section 5)</text>
+
+  <line x1="460" y1="450" x2="516" y2="450" stroke="#444" stroke-width="1.6" marker-end="url(#a)"/>
+  <line x1="740" y1="310" x2="740" y2="356" stroke="#444" stroke-width="1.6" marker-end="url(#a)"/>
+  <text class="s" x="750" y="340">hit records</text>
+</svg>

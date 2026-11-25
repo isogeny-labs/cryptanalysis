@@ -1,0 +1,23 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-19T05:17:03Z",
+ "id": "PCC-20261119-763b89",
+ "kind": "statement",
+ "producer": {
+  "commit": "16dfd43570f289a6fcce778beaf4e16b40f517d0",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/xedni_rank_decay_20261118/CHECKPOINT_GATE.md",
+    "sha256": "d5556e5496c206748a8521c06828b6198b5dbeb278054ac7775954bdcc6ccfce"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Checkpoint transport and natural-row start status for the 2026-11-19 attempt only; this says nothing about the decay heuristic or future credentialed runs.",
+ "statement": "At pushed head cd0e9e91c, the mandatory Xedni rank-decay checkpoint push and gate exited nonzero for missing upload credentials before any natural rank-decay row was generated."
+}

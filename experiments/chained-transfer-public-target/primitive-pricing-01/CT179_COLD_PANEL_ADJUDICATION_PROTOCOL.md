@@ -1,0 +1,21 @@
+# CT179 — prospective source-only cold-transfer panel adjudication
+
+Date: 2026-11-17 UTC. Standing: **[pcc:unverified]**. This protocol is published **before** scorer code or any timing. This is an offline check of an eventual CT176/CT178 panel, not authorization to run it.
+
+## Locked inputs and exact acceptance
+
+Require original 48-row CT125 public fixture with Git blob `9ac741668dd1ffa9632ff0d58e6f4dd9f2dd18c3`, CT176-v1 manifest, 8 blocks, seed 20261117, 6 arms per block in A/B/B/A/A/A order, all 2,304 unique positions, a single successful terminal record, and no trailing records. Refuse partial, timed-out, censored, altered, reordered, duplicated or failed processes. Use strict JSON: reject duplicate object keys and NaN/Infinity. Independently decode and hash raw base64 stdout/stderr and compare to each recorded digest; parse the single child JSON line and compare frozen index, direction, sector, external scalar *label*, public input, full 19-word target, all 21 exact native call counters, and output validation flags. Require exact positive decimal nanosecond readings, valid exit and complete capture; reject boolean/float replacements.
+
+The original collector checked the host before each launch; that claim cannot be independently recovered from the output, and this adjudicator must label it producer-asserted, not independently attested. The original executable SHA-256 is manifest metadata, not remote execution proof. Preserve immutable panel SHA-256 and the admission/executable metadata in verdict. Do not repair samples or impute missing values.
+
+## Prospective paired estimator (transfer only)
+
+For each packet and block, positions 0,3 are direct A; positions 1,2 are retained B; positions 4,5 are same-arm A/A controls. Define `d_(i,b)=log((A0+A3)/(B1+B2))` from external wall nanoseconds; positive means B transfers faster. Calculate per-packet median across 8 blocks, then separately summarize 16 predeclared strata (2 directions × 4 cofactor sectors × {identity,nonidentity}) by the median packet-level log ratio and exponentiate. Never pool identity/nonidentity, directions or cofactor sectors for a claim. Identity strata contain one fixed packet, so they cannot receive a cross-packet confidence interval. For the five-packet nonidentity strata, provide a seeded percentile bootstrap over *whole packets* (not 40 correlated processes), 2,000 resamples, with 2.5/97.5 percentiles. Report A/A drift as p95 of absolute `log(A4/A5)` in each stratum, raw panel digest, RSS completeness and observed maximum RSS; no selective exclusion or early stopping.
+
+All results are **producer-only cold transfer-route timings**, never complete source-prime discrete-log costs. An apparent B/A transfer win is not an ECDLP win. Output must explicitly retain `complete_single_target_ecdlp_advantage_established: false` and `[pcc:unverified]` irrespective of transfer ratio. Independent 695/701 custody, native 48 parity, same-host `C169,C13a,C13b,N2_actual,D`, complete optimized rho/BSGS/IC/transfer cold solves with setup, LA, inverse, memory and error intervals, and signed PCC remain separate.
+
+## Safe test and change policy
+
+Write source-only synthetic acceptance and mutation controls: malformed JSON/duplicate keys, stdout digest, canonical source/target and counters, incomplete roster, failed terminal, A/A drift, and positive paired-ratio recovery. Test normal and optimized Python; do not launch any native Rust, EKS, Spot, GPU or paid workload. Do not modify the protected evaluator, existing 48 fixture or inherited artifact/PCC workflows; GitHub PR checks/review/merge gates are mandatory.
+
+Evidence reviewed: cryptanalysis `AGENTS.md`, `docs/session-logs/2026-11-17.md`, CT172–CT178 protocols and source, root [crypto #3877](https://github.com/isogeny-labs/crypto/pull/3877) (merged), live [queue #3904](https://github.com/isogeny-labs/crypto/issues/3904), merged [crypto #4215](https://github.com/isogeny-labs/crypto/pull/4215), [cryptanalysis #1523](https://github.com/isogeny-labs/cryptanalysis/pull/1523), [GPU IC #4178](https://github.com/isogeny-labs/crypto/pull/4178). KB MCP and Rust/Cargo are not accessible here; no novelty or mathematical impossibility inference. Separate Richelot work is left untouched.

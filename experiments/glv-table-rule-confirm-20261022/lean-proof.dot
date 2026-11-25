@@ -1,0 +1,19 @@
+digraph GLVTableProof {
+  graph [rankdir=LR, bgcolor="white", pad="0.28", nodesep="0.32", ranksep="0.55"];
+  node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=12,
+        color="#315466", fillcolor="#eef5f8", margin="0.17,0.11"];
+  edge [color="#547080", arrowsize=0.7, fontname="DejaVu Sans", fontsize=10];
+
+  source [label="Pinned C sources\n48 → 12 divisor", fillcolor="#e8edf7"];
+  budget [label="Budget = s / (c · lg)\nlg > 0"];
+  loop [label="Loop from 8, cap 32\nthresholds 16 and 32"];
+  theorem [label="Lean proof\n8, 16, or 32; fixed after two steps\nnew table size ≥ old table size", fillcolor="#dff1e2"];
+  rows [label="Frozen paired rows\n80,000 per arm", fillcolor="#fff1da"];
+  replay [label="Independent analysis replay\nJSON, Markdown, SVG byte-identical", fillcolor="#fff1da"];
+  limit [label="No theorem about solver cost,\nC execution, or wall time", fillcolor="#f8e6e6", color="#9b5b5b"];
+
+  source -> budget -> loop -> theorem;
+  source -> rows -> replay;
+  theorem -> limit [style=dashed, color="#9b5b5b"];
+  replay -> limit [style=dashed, color="#9b5b5b"];
+}

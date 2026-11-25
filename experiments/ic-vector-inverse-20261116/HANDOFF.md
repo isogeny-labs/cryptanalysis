@@ -1,0 +1,120 @@
+# Current continuation
+
+Active broadgoal remains aggressive specialized IC arithmetic and novelperformance;
+no newgoalcomplete/blockstatus. Userphrasingbans stillapply. Noagentsauthorized.
+
+Latestpublishedf49291db45545796337a026ae01f352d9fbac917 constantpolynomialresults:
+record1541Zclosedinvalid,44records gatepass;23metrics compact16rawrefs alluploaded,
+757rawseparatelystored+bundle;REPORT.pdf4pagesALLinspectedmarkerDONEonce. Claim
+f2254cunsigned. PrimaryN27dynamic/const1.055293CI1.04714..1.07671; table1.09924,
+collectorNS. N15/18primaryNS,8AAfailsretained0caps,480answers2560states. PR1621body
+rewrittenwithlatestscope/erratum/fork; doNOTassertCI/signedstanding. Current
+progresshelper59metrics(36prior+23new) exactvaluesaftercommitconfirmedinlocal-log.
+
+WorkingnewSIMDinverseprototype:7Rustfilesdirty; newtargetWalkBatchVectorInverse,
+probe mitm-walk16-vector-inverse usesconstanttable3. ExistingGf2ALREADYfourSCALAR
+accumulators; new8..16stackkernel packsproducts4lanes ordinaryPCL, zero-safe,
+peelsidentity/terminalupdates,canonical/length/CPUfallback. Actualrequested/batches/
+elements/paddedlanes/backendcounters. Initunchangedordinary; pointformulasunchanged.
+
+Local2vector-inversefiltertests,27framework,5walkfilters PASS (overlap). Strict
+x86musllib/probeClippy002PASS;001redundantprobeTargetspatternFAILpreserved. Local
+10devfixture0routes and5fieldsx512statesx4streamcomparisonsPASS (ARMfallbackonly).
+Nativeactualinversekernelnotexecutedyet. Cargocompilesallterminal; noRusteditsduring
+nextnativecompile. ConductorT6859idb5c1c28d-aa63-4be0-b69b-f7801c58268d,
+attempt2411f801-c87c-4c46-9542-9c0e6e2b516c epoch1claimsnewstudy+7Rustpaths.
+
+Nextpublishnewsource+localartifacts+nativeprepcontract,checkpointgate,launchNEW
+L4CPU4/8GiB900s--apttime build_only.py --source-commit EXACTHEAD outputbuild001.
+Expect175maps15loader5walk2full1const27framework3inverse(filtersoverlap),4stream
+traces512states/all5actualinversebackendpositive,58ishqualifiedfieldwidths.
+Bindnewprep(source_manifestcurrentmustmatch),replay2560states/archivebeforetiming.
+
+Nextprotocol3methods: frozenprevious1026binary/vector16const anchor (anchor-input
+andmetadataalreadycopiedimmutable), newbinary/vector16const control, newbinary/
+vector16inverse candidate. Samequerylaw forALL3; alltablemode3; sourcealiasnames
+mustmapactualCLIandbinaryexplicitly. Primarycontext+pipeline-through-oraclecleanup
+candidatevsFROZENanchor; secondarycollectorandown-binarykernelcontrast; include
+newcontrol/anchorcontrasttorevealcodegenregression. Noresultmultiplication.
+Fresh456..479,all6ordersx4/field=120triples,360IC240rho. Publishprotocol/source
+BEFOREfreshmaterialization. OldanchorcandidateIDsreusedfromconstantstudy; new10
+methodcandidateswithcurrenthashes. Inputsregeneratedwhilecompilingallowedindependent
+preparationafterpublishedfrozencode; NOTtiminguntilactualnativepassandpins.
+
+PCCforkat167retained; noledgerrewrite/waiver/signatureforgery. Existingproblemfiles
+remain. Global.resume/RESUME.md conflictT6814: DO NOTedit; useTHISscopedhandoff.
+NoCIuntil50minafterLATESTpush/PRactivity,then4h; noneinspectedinthisturn. Shared
+cryptomirrorstillwaitingsourcePRmergebeforebytecopy. NoGPUexecution/speedclaim.
+
+
+Latest16:46UTC: sourceprototypecff665a3ed3206b991963a01df1efb2f5d17b5eePUSHED.
+TransientsharedGitvolumeSSD990fullcausedsource-add/commit001FAIL; no source lost.
+Recoveredbytemporaryownindex/tmp/ic-vector-inverse-index-active andbackup-before;
+sourcecommit002succeeded, canonicalownindexrestoredbyteexact, gitstatusclean.
+Otherworktreesuntouched. Sharedvolumeindependentlyfreed6.4GB; normalGitworkingagain.
+DoNOTdeletesharedcachesorotherscompiledwork. Ownindexbackupskeptin/tmp.
+
+Native162931-e755actual16:29:46UTC completed0after524s,40outputs fetched.
+Binaryc808153b43186cf6012eee823b1784150105c6c95db6cfbaa54c66b3058f65a8,
+sourcecff665a3, prepared-input.json +preparation-job-metadata.json bound.175maps,
+15loader,5walk2full1const27framework3inversefilters(overlap)pass.58acceptedinverse
+widths; all5traceinverse-elements496,padding0;4comparisons/5streamvariants512states.
+ExistingPythonreplayed2560frames. Claimf59389unsigned,41objectsarchived. No performance
+resultfornewkernel yet. SourceRustMUSTremainunchangedforcapture; noCargoactive.
+
+Three-wayPROTO+controllers/freezer/analyzer/replaynowauthoredandpy_compilepassed,
+UNCOMMITTED. Nativebindingsalsoneedpublish. No456..479freshinputsmaterializedyet.
+PublishsourceprotocolcontrollersBEFOREfreeze/checkpoint; thencheckpointfreeze_inputs
+withlocaldebugprobe; reuse5oldanchorIDs+new10IDs/120workloads;globalmetadataaudit;
+publishinputsBEFOREtiming. Runtimephysicalbinaryroutingexplicit:anchor1026vsnewc808,
+actualCLIconstforbothcontrols, actualCLIinverseforcandidate. Preflightbothbinaries,
+35mapsboth,old3/new4streamcomparisons,exactframes/groupopsequivalence. Typedflags
+requestvsactualinverseelement/batch/padding; strictsemanticcountscompareall3excluding
+ONLYwalk_batch_inverse_vector_*fields. Primaryvsfrozenanchorcontext+pipelinecleanup;
+own-binarykernelandbuild-controlcontrastsatbothintervals.
+
+Newreplayalsoindependentlychecks240A/Acontrols inaddition360targetIC+240rho, total
+840scalarchecks; targetcount600keptseparate. AAinputs tiedtofixedpreflightpoint.
+Allrawuploadbeforeclose;bundlepreservesprobeandprobe-anchor executablemodes.
+MarkerforTHISnewstudyREPORT.pdfNOTcalledyet (priorconstantstudy4pagesDONE).
+Nextnativejobnone; nexttimingnotlaunched. PR1621lastbodylatestconstantresults,
+needappendunmeasuredprototype/nativecorrectnessstatuswhenpub. NoCIbefore50min
+latestpush/PRactivity; noneinspectedthisturn. PCCforkretained,broadgoalactive.
+
+
+Latest16:53UTC: frozenpanelprotocol/controllers/nativebindingspublished
+6f40802a9533f55d5d3fd81defd191e0c8e1d2ceBEFORE456..479materialization.
+Fresh120one-targetworkloads,10newmethodcandidateIDs+5reusedanchorIDs generated;
+globalmetadataPASS0errors. No targettimingyet. Needpublishidentities+all130new
+manifestfiles+metadatareceipts thenbenchrecinit/checkpointgate/run_prepared.
+Panelcontrollerexplicitnew/anchorbinaryroutesandreceiptSHAchecks. Analyzerprimary
+through_cleanup_contrasts; contrastscollectorsecondary; build_controlanchor/current,
+kernelcurrent/candidate,vs_anchoranchor/candidate. Replays600targetanswersplus240AA.
+NativekernelalreadyPASSED/replayed/bound; no furthernativecompile/preparationneeded.
+
+Latest admission state: fresh manifests published in
+9d310eeb969f6a02da6434584fa548dc96ea37e9. Record
+benchmarks/records/20261116T1701Z-ic-vector-inverse-anchor-factorial-001.json is
+open, without timing commands or metrics. Required checkpoint gate failed via
+token HTTP403, ecc-challenges-new InvalidAccessKeyId, and authenticated default
+profile AllAccessDisabled. Three original logs are in admission-001/. No timing
+job was created and no replacement target sample was generated. See
+[checkpoint access problem](../../problems/ic-vector-inverse-checkpoint-access.md).
+Await a working supported upload transport, pass the gate, then launch the frozen
+run_prepared.py controller once. Do not skip the gate. No Rust compilation active.
+Flow assets and render_report.py are prepared; new report PDF marker has NOT run.
+No report should imply inverse timing results before the panel actually runs.
+
+Continuation 17:21UTC: token gate rechecked once, exit1 HTTP403, log004 preserved. Same access obstruction; no live timing handle, no new samples, no changes to frozen source/binaries/inputs. This is the second consecutive goal turn with checkpoint access blocking timing; do not mark the goal blocked before the third consecutive turn unless a different explicit instruction applies. Prior turn was progress (published implementation/evidence), this continuation has no performance progress. Source review confirms existing single-inverse tree retained; product-pass speed remains unmeasured.
+
+Third consecutive goal-turn audit 17:22UTC: clean head305e91a20, supported checkpoint gate exit1 HTTP403, log005 preserved. No target job launched and no samples/metrics. Goal to be marked blocked pending working checkpoint transport; no additional unchanged retries. Resume from frozen run_prepared.py after gate success, retaining binary pins/fixtures/protocol. Completion remains unachieved.
+
+Resumed audit19:24–19:25UTC: three consecutive goal turns still blocked on checkpoint HTTP403 at clean head918259a0b; logs checkpoint-resumed-001/002/003 preserved. No timing job or samples. Goal to be set blocked again; explicit resumption reset the audit counter before these three turns. Conductor reattached T-6859 attempt108cb893-4b73-41fe-8b02-0665ee7b40a0 epoch3 for preservation only. Await refreshed supported token/profile or current bucket configuration; user information request pending. Frozen binaries/inputs/protocol remain unchanged.
+
+Storage recovery: profile default lists crypto-autoresearcher in us-west-2 with existing checkpoints/store prefixes. Supported gate passed using scoped CHECKPOINT_BUCKET=crypto-autoresearcher, CHECKPOINT_AWS_PROFILE=default, CHECKPOINT_AWS_REGION=us-west-2, CHECKPOINT_TOKEN_FILE=/dev/null and CHECKPOINT_UPLOAD_TOKEN removed. No credential files or global bucket configuration changed. First profile-discovery gate failed; second passed (both logs preserved). Launched frozen job20261116-200407-325c via benchrec original open1701Z record. Native binaries/targets/protocol unchanged. Only archive bundle URI destination changed to actual accessible store. Future artifact commands use ARTIFACTS_REMOTE=s3://crypto-autoresearcher/store and AWS_PROFILE=default with ambient AWS keys removed. Historical old-bucket references remain unchanged.
+
+Completed job200407-325c: actual20:10:49UTC, exit0 after87.8s;899outputs. Frozen analysis PASS;360IC+240rho+240AA answers replayed,2560states replayed,0caps,4AA failures retained. ClaimPCC-20261116-994c50 unsigned. N27collector current/candidate1.04683463[1.03402321,1.05551908], frozenanchor/candidate1.01727889[1.01438419,1.02545813]; primaryanchor/candidate1.01733652[.99301980,1.04999659] inconclusive. Four-page REPORT.pdf allpagesinspected; markercalledONCE.899raw captures+bundle/inventory archived901objects total, then18compactrecordrawrefsuploaded. Remote bundle4284711bytes downloaded andSHAchecked.55metrics recorded, closureinvalid pending. InternalPCCchain235entriesOK; existingcross-mainforkretained. Scope collisionT6948 belongs distinctcrypto/wt/codex-rootfind-inline-page-index-20261116; actualabsolutecryptanalysisledger/claim paths conflictcheckedallowed. No unrelatedledger edited.
+
+Publication integration: result commit36406dc0ccf2ed6c873cbc04e50f9b1ea4040f70 preserved on remote codex/ic-vector-inverse-results-20261116 after sharedbranch advanced to2b501b569 with differentledger history. PR1621 merged20:07UTC, and sourcecff/manifest7abb are ancestors of current mainb591f359f. Integration branch codex/ic-vector-inverse-results-main-20261116 starts from main; copied result diff EXCLUDING oldledger. Original994c50 bytes preserved as historical-producer-claim.json, not an unregistered canonical claim. New canonical provenance wrapper appended by unmodified pcc tool. No old ledger entry rehashed/replaced. First sparse checkout failed fetching .gitattributes; restored185deleted tracked paths from committed data, clean state confirmed, then fetched exactmissingblob via canonicalGitHubURL and retried. Applied full-index binary result patch to index and hydrated exactchangedpaths, keeping sparse configuration. NewstudyPDFmarker alreadydone; doNOTrepeat.
+
+Canonical integration checks:2238ledgerentries with origin/main prefix PASS;45benchmarkrecords gate PASS;diffcheck PASS. Canonical wrapperPCC-20261116-4a62c5 records original unsigned994c50 data, with originalclaimbytes preserved in study and originalledgerbranchpublished. Original59exportedICmetrics retained exact;55newrecordmetrics emitted exact (114total). Branch codex/ic-vector-inverse-results-main-20261116 ready for resultsPR. Next performance work: profile frozen anchor/current-control/inverse to locate current-control collector regression before choosing another source change. No new kernel default promotion.

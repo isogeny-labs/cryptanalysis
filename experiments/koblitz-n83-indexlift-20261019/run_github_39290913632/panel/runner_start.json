@@ -1,0 +1,48 @@
+{
+  "arm_wrapper_sha256": "d06f934a79b392bb2f38c8a285f878fe0c60759e7e3601772c67b569f2046d90",
+  "binaries_sha256": {
+    "ic_online_indexlift_r770": "5f72e7664916f4365001448969cf4b55d8f68c9ea5b5478e8f598ed070768869",
+    "rho_tuned_r770": "c3ebfe31809069ccd71b2cc4cdcdc416ed1ca3a5cfad5912a344f53e83a16418"
+  },
+  "cgroup": "/sys/fs/cgroup/system.slice/hosted-compute-agent.service",
+  "execution_cpu": 0,
+  "host": {
+    "affinity": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "architecture": "x86_64",
+    "cgroup_controllers": "cpuset cpu io memory hugetlb pids rdma misc dmem",
+    "cgroup_isolated_cpus": "",
+    "cmdline": "BOOT_IMAGE=/vmlinuz-6.17.0-1022-azure root=PARTUUID=d8f74b2e-a58d-4539-8b59-53da6417ef90 ro console=tty1 console=ttyS0 earlyprintk=ttyS0 nvme_core.io_timeout=240 rootflags=nobarrier,data=writeback,journal_async_commit,commit=30 panic=-1",
+    "compiler": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "cpu_quota": null,
+    "euid": 1001,
+    "host": "runnervm8k3b6",
+    "kernel": "6.17.0-1022-azure",
+    "nohz_full_cpus": "(null)",
+    "numa_nodes": {
+      "node0": "0-3"
+    },
+    "numactl": "/usr/bin/numactl",
+    "online_cpus": "0-3",
+    "os_release": "PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.5 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo",
+    "self_cgroup": "0::/system.slice/hosted-compute-agent.service",
+    "system": "Linux",
+    "virtualization": "microsoft"
+  },
+  "isolated_bench_sha256": "48361f0d0a5138e9e2f1264ff3de689fddb9d1a5181afd089e70c153e3a089cc",
+  "job_start_epoch": 1792433586.0,
+  "log_table_sha256": "a771716f284bb826e7407e1e7b5ef882409c9e7e1df8b8a3ed5b60b421d9f17e",
+  "protocol_sha256": "cc61dfb33790d19ff59156fe26d76c727c0272c5a0b1967311ee1f9b5ce15437",
+  "runner_sha256": "ee5f043cf375eeb4f129996dbec652fec03fb2391b70c21821b1e0aa2fca0505",
+  "runner_started_epoch": 1792434234.5897532,
+  "schedule_sha256": "9b0dc34266d5775d803cdea7186b8c82de684c7e6c21272990b87ea3bb3f0f5c",
+  "smoke_subset": {
+    "max_runs_per_segment": null,
+    "one_per_arm": false,
+    "segments": null
+  }
+}

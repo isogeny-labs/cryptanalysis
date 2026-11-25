@@ -1,0 +1,155 @@
+{
+  "actual_usable_points_B": 30977592,
+  "candidate_id": null,
+  "complete_target_dlp": false,
+  "cpu_timing_claim": "exploratory stage costs only; no host isolation receipt",
+  "curve_id": "EC1N83Ckb1h876c2921cb64",
+  "distinct_root_keys_by_mode": {
+    "hash": [
+      6471680,
+      6471680
+    ],
+    "split-hash": [
+      8000000,
+      8000000
+    ]
+  },
+  "folded_columns_K": 186612,
+  "ic_online_ms": null,
+  "index_satisfiable_states_by_mode": {
+    "hash": [
+      3235840,
+      3235840
+    ],
+    "split-hash": [
+      4000000,
+      4000000
+    ]
+  },
+  "invariant_mismatches": {},
+  "kind": "n83_packed_root_index_capacity_comparison",
+  "medians": {
+    "hash": {
+      "index_build_ns": 2724362291.0,
+      "peak_rss_bytes": 1073954816.0,
+      "rss_after_index_bytes": 1073840128.0,
+      "table_allocated_bytes": 402653184.0,
+      "target_stage_ns": 62.5
+    },
+    "split-hash": {
+      "index_build_ns": 3251712188.0,
+      "peak_rss_bytes": 1052164096.0,
+      "rss_after_index_bytes": 921411584.0,
+      "table_allocated_bytes": 268435456.0,
+      "target_stage_ns": 7401224229.0
+    }
+  },
+  "online_speedup": null,
+  "paired_rows": [
+    {
+      "index_build_ns": 2584299916,
+      "index_pair_states_examined": 3235840,
+      "index_satisfiable_s3_states": 3235840,
+      "mode": "hash",
+      "peak_rss_bytes": 1073954816,
+      "rss_after_index_bytes": 1073840128,
+      "sequence_number": 1,
+      "status": "memory_cap_exceeded",
+      "table_allocated_bytes": 402653184,
+      "table_slots_or_records": 16777216,
+      "target_lookup_comparisons_or_probes": 0,
+      "target_stage_ns": 0,
+      "target_states_scanned": 0,
+      "verified_relation": false
+    },
+    {
+      "index_build_ns": 3081290584,
+      "index_pair_states_examined": 4000000,
+      "index_satisfiable_s3_states": 4000000,
+      "mode": "split-hash",
+      "peak_rss_bytes": 1052164096,
+      "rss_after_index_bytes": 921403392,
+      "sequence_number": 2,
+      "status": "state_cap_no_relation",
+      "table_allocated_bytes": 268435456,
+      "table_slots_or_records": 16777216,
+      "target_lookup_comparisons_or_probes": 37259962,
+      "target_stage_ns": 7124522500,
+      "target_states_scanned": 4000000,
+      "verified_relation": false
+    },
+    {
+      "index_build_ns": 3422133792,
+      "index_pair_states_examined": 4000000,
+      "index_satisfiable_s3_states": 4000000,
+      "mode": "split-hash",
+      "peak_rss_bytes": 1052164096,
+      "rss_after_index_bytes": 921419776,
+      "sequence_number": 3,
+      "status": "state_cap_no_relation",
+      "table_allocated_bytes": 268435456,
+      "table_slots_or_records": 16777216,
+      "target_lookup_comparisons_or_probes": 37259962,
+      "target_stage_ns": 7677925958,
+      "target_states_scanned": 4000000,
+      "verified_relation": false
+    },
+    {
+      "index_build_ns": 2864424666,
+      "index_pair_states_examined": 3235840,
+      "index_satisfiable_s3_states": 3235840,
+      "mode": "hash",
+      "peak_rss_bytes": 1073954816,
+      "rss_after_index_bytes": 1073840128,
+      "sequence_number": 4,
+      "status": "memory_cap_exceeded",
+      "table_allocated_bytes": 402653184,
+      "table_slots_or_records": 16777216,
+      "target_lookup_comparisons_or_probes": 0,
+      "target_stage_ns": 125,
+      "target_states_scanned": 0,
+      "verified_relation": false
+    }
+  ],
+  "proposal_id": "Q2026101905",
+  "protocol_sha256": "b23961441c9d6d82f9e953ee14e2957ad6b785ba76c76bd52d2ebb1be14d66bc",
+  "ranges": {
+    "hash": {
+      "index_build_ns": [
+        2584299916,
+        2864424666
+      ],
+      "peak_rss_bytes": [
+        1073954816,
+        1073954816
+      ],
+      "target_stage_ns": [
+        0,
+        125
+      ]
+    },
+    "split-hash": {
+      "index_build_ns": [
+        3081290584,
+        3422133792
+      ],
+      "peak_rss_bytes": [
+        1052164096,
+        1052164096
+      ],
+      "target_stage_ns": [
+        7124522500,
+        7677925958
+      ]
+    }
+  },
+  "rho_online_ms": null,
+  "run_id": null,
+  "source_sha256": "e2729e7a853300753f9c69ca1c8963490179fa7c616ffaf66c7bf7eef676a626",
+  "status": "validated_bounded_capacity_screen",
+  "within_mode_variation": {
+    "hash": {},
+    "split-hash": {}
+  },
+  "workload_id": "c2f3d05bb9e1"
+}

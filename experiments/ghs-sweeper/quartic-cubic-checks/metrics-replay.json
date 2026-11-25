@@ -1,0 +1,42 @@
+{
+  "command": "import tools/progress_metrics.py; ghs_quartic_evidence(HEAD, 2026-10-01); absent-source control at a2a6c2a8",
+  "scope": "committed-source GHS metric extractor only; other existing extractors unchanged",
+  "elapsed_seconds_execution_receipt_only": 0.0674888160028786,
+  "rows": [
+    {
+      "metric": "ghs.o3.spectral_targets.trace_minus35",
+      "value": 30.0,
+      "date": "2026-10-25",
+      "problem": "binary-cubic-gluing-target-and-novelty",
+      "unit": "count",
+      "better": "neutral",
+      "kind": "gauge",
+      "label": "Published O3 spectral targets at trace -35; map unverified",
+      "source": "experiments/ghs-sweeper/quartic-cubic-checks/census-attempt-1.json"
+    },
+    {
+      "metric": "ghs.o3.spectral_targets.trace_plus35",
+      "value": 3.0,
+      "date": "2026-10-25",
+      "problem": "binary-cubic-gluing-target-and-novelty",
+      "unit": "count",
+      "better": "neutral",
+      "kind": "gauge",
+      "label": "Published O3 spectral targets at trace 35; map unverified",
+      "source": "experiments/ghs-sweeper/quartic-cubic-checks/census-attempt-1.json"
+    },
+    {
+      "metric": "ghs.o3.new_local_source_trace_classes",
+      "value": 2.0,
+      "date": "2026-10-25",
+      "problem": "binary-cubic-gluing-target-and-novelty",
+      "unit": "count",
+      "better": "neutral",
+      "kind": "gauge",
+      "label": "Trace classes absent from the prior local journal; global novelty unproved",
+      "source": "experiments/ghs-sweeper/quartic-cubic-checks/local-missing-trace-audit.json"
+    }
+  ],
+  "absent_source_emits_no_rows": true,
+  "source_commit": "6ee71a2328ddd4b68acfbb37ebb61700e637d0c2"
+}

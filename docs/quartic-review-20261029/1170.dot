@@ -1,0 +1,15 @@
+digraph evidence {
+graph [rankdir=TB, bgcolor="white", pad="0.25"];
+node [shape=box, style="rounded,filled", fillcolor="#eff6ff", color="#155e75", fontname="DejaVu Sans", fontsize=12, margin="0.18"];
+edge [fontname="DejaVu Sans", fontsize=10, color="#475569"];
+n0 [label="Pinned octic resultant cube root"];
+n1 [label="21-digit divisor splits exactly:\n414340033 x 431435018569"];
+n2 [label="Both primes: 18 C points each\n426 C-E point pairs each"];
+n3 [label="Nearby control 414340153:\n18 C points, zero E-point lifts"];
+n4 [label="Finite-field equation checks;\nno scalar recovery or speedup claim"];
+n0 -> n1 [label="scope condition / recorded check", style=solid];
+n1 -> n2 [label="scope condition / recorded check", style=solid];
+n0 -> n3 [label="scope condition / recorded check", style=solid];
+n2 -> n4 [label="scope condition / recorded check", style=dashed];
+n3 -> n4 [label="scope condition / recorded check", style=dashed];
+}

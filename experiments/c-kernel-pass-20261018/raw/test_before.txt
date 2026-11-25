@@ -1,0 +1,120 @@
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+-- Configuring done (0.1s)
+-- Generating done (0.2s)
+-- Build files have been written to: /home/user/cryptanalysis/build
+cmake --build build -j4
+gmake[1]: Entering directory '/home/user/cryptanalysis/build'
+gmake[2]: Entering directory '/home/user/cryptanalysis/build'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build'
+[ 26%] Built target cryptanalysis
+[ 53%] Built target cryptanalysis_static
+gmake[3]: Entering directory '/home/user/cryptanalysis/build'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build'
+[ 58%] Built target ca_bench
+[ 58%] Built target cryptanalysis_cli
+gmake[3]: Entering directory '/home/user/cryptanalysis/build'
+[ 60%] Built target ca
+gmake[3]: Entering directory '/home/user/cryptanalysis/build'
+[ 62%] Built target ca_perfbench
+gmake[3]: Entering directory '/home/user/cryptanalysis/build'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build'
+[ 65%] Built target test_bsgs
+gmake[3]: Entering directory '/home/user/cryptanalysis/build'
+[ 67%] Built target test_rho
+gmake[3]: Entering directory '/home/user/cryptanalysis/build'
+[ 72%] Built target test_modarith
+[ 69%] Built target test_group
+gmake[3]: Entering directory '/home/user/cryptanalysis/build'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build'
+[ 74%] Built target test_kangaroo
+gmake[3]: Entering directory '/home/user/cryptanalysis/build'
+[ 76%] Built target test_grumpy
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build'
+[ 79%] Built target test_precomp
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build'
+[ 81%] Built target test_curve
+[ 83%] Built target test_joint_tau
+gmake[3]: Entering directory '/home/user/cryptanalysis/build'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build'
+[ 86%] Built target test_pohlig
+gmake[3]: Entering directory '/home/user/cryptanalysis/build'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build'
+[ 88%] Built target test_cheon
+[ 90%] Built target test_linalg
+gmake[3]: Entering directory '/home/user/cryptanalysis/build'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build'
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build'
+gmake[3]: Entering directory '/home/user/cryptanalysis/build'
+[ 94%] Built target test_ffi
+[ 95%] Built target test_indexcalc
+[ 97%] Built target test_gpu
+gmake[3]: Leaving directory '/home/user/cryptanalysis/build'
+[100%] Built target test_coord
+gmake[2]: Leaving directory '/home/user/cryptanalysis/build'
+gmake[1]: Leaving directory '/home/user/cryptanalysis/build'
+ctest --test-dir build --output-on-failure -j4
+Internal ctest changing into directory: /home/user/cryptanalysis/build
+Test project /home/user/cryptanalysis/build
+      Start  5: kangaroo
+      Start 13: indexcalc
+      Start 12: linalg
+      Start 16: coord
+ 1/17 Test #12: linalg ...........................   Passed    1.78 sec
+      Start  2: group
+ 2/17 Test  #2: group ............................   Passed    0.89 sec
+      Start  1: modarith
+ 3/17 Test  #1: modarith .........................   Passed    0.12 sec
+      Start 15: gpu
+ 4/17 Test #15: gpu ..............................   Passed    0.16 sec
+      Start  4: rho
+ 5/17 Test  #4: rho ..............................   Passed    0.09 sec
+      Start  7: precomp
+ 6/17 Test  #7: precomp ..........................   Passed    0.06 sec
+      Start  8: curve
+ 7/17 Test #16: coord ............................   Passed    3.86 sec
+      Start 11: cheon
+ 8/17 Test #11: cheon ............................   Passed    0.10 sec
+      Start  3: bsgs
+ 9/17 Test  #3: bsgs .............................   Passed    0.09 sec
+      Start  6: grumpy
+10/17 Test  #6: grumpy ...........................   Passed    0.09 sec
+      Start 14: ffi
+11/17 Test #14: ffi ..............................   Passed    0.07 sec
+      Start 10: pohlig
+12/17 Test #10: pohlig ...........................   Passed    0.04 sec
+      Start  9: joint_tau
+13/17 Test #13: indexcalc ........................   Passed    4.42 sec
+      Start 17: ecc2k130-usecase
+14/17 Test  #9: joint_tau ........................   Passed    0.21 sec
+15/17 Test #17: ecc2k130-usecase .................   Passed    0.25 sec
+16/17 Test  #8: curve ............................   Passed    2.10 sec
+17/17 Test  #5: kangaroo .........................   Passed    6.04 sec
+
+100% tests passed, 0 tests failed out of 17
+
+Total Test time (real) =   6.05 sec
+
+real	0m7.306s
+user	0m10.345s
+sys	0m0.640s

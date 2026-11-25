@@ -1,0 +1,13 @@
+{
+  "schema": "xedni-integral-chord-filter-protocol-v1",
+  "question": "How much of the frozen matched-band zero yield is forced by the integral chord slope condition before CRT coefficient selection?",
+  "input_policy": "reuse all eight field records and all raw target-query rows of the frozen matched subgroup band panel without choosing fields or points anew",
+  "parent_protocol_sha256": "53c871539390ed60cbf28f22569fa0444f983e3b59060bab8bea7083239039b6",
+  "parent_result_sha256": "edbe3a808aa86054c00f15a5ae40814ed2f8452c4316abbe68f41a62f2219b49",
+  "parent_audit_source_sha256": "56f05d94067b8e071d17987aec00d825b9c1ef1c8e0b326d3898562a3d4b2218",
+  "parent_arithmetic_source_sha256": "28dd3e4553bfcedc3c646d5d8d284b137e5494ed3ebec5533d0961f1ea5337a8",
+  "condition": "For distinct integer lifted x coordinates, rational relation U+2V=O on a monic Weierstrass model with integral a1,a2 implies (y_U-y_V)/(x_U-x_V) is an integer",
+  "row_rule": "count each reduced relation once; reconstruct centered integer point lifts from saved t pair and fixed public points; count integral slope, CRT acceptance, and rational relation as nested statuses",
+  "falsifier": "any independently replayed rational-relation row with nonintegral chord slope, or a Lean counterexample to the stated algebraic bridge",
+  "claim_boundary": "necessary filter for the frozen integral-a1-a2 and centered-point lift policy, not a bound over all rational models or alternative point lifts"
+}

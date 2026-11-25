@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-11T23:39:42Z",
+ "id": "PCC-20261111-26a862",
+ "kind": "statement",
+ "producer": {
+  "commit": "5d5dc81faa442de6d9a4ee8144806ab89cf9a3b8",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/successor-r2-full-05.txt",
+    "sha256": "f49d616b62daeb182f88ddf7e2b858f6383bdd0057093491e41c8038cf45e78b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/chained-transfer-reference/evidence/successor-chain-source-12.rs",
+    "sha256": "176d4968e057308043302f399681883f65c23053ebb8c342ce4b63ed11df93e5"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Unsigned R2 actual selected-pairing map passes both COMPLETE12317 C2/T2 rational domains:closed/pointwise equality,dual2,bijections,paired additions,coefficientwise descent,wrong-model rejection and actualscale50/T2[95,93,43,39,92,17,1]. Receipt05 retained. Exact initial whole source05 was not separately frozen;later source12 retains the same R2 constructor/evaluation-test body with additional chain tests. Full changed exact-source guard remains separate."
+}

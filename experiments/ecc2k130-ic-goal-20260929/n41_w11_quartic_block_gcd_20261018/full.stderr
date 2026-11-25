@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w11_quartic_block_gcd_20261018/run_sage_modular2.py", line 155, in <module>
+    degrees[prefix] = fast_gcd_degree(f)
+                      ~~~~~~~~~~~~~~~^^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w11_quartic_block_gcd_20261018/run_sage_modular2.py", line 87, in fast_gcd_degree
+    power_mod_f = power_mod_f**2 % f
+    ^^^^^^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w11_quartic_block_gcd_20261018/run_sage_modular2.py", line 21, in <lambda>
+    signal.signal(signal.SIGALRM, lambda _s, _f: (_ for _ in ()).throw(TimeoutError('quartic block cap')))
+                                                 ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_w11_quartic_block_gcd_20261018/run_sage_modular2.py", line 21, in <genexpr>
+    signal.signal(signal.SIGALRM, lambda _s, _f: (_ for _ in ()).throw(TimeoutError('quartic block cap')))
+TimeoutError: quartic block cap

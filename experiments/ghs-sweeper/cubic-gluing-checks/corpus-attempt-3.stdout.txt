@@ -1,0 +1,47 @@
+{
+  "archive_evidence": {
+    "experiment_checks_sha256": "d7d7d6e696f47badb475fb11f0c7dd33db53a08f9f9f614d01ea7c8c30ad78ee",
+    "group_summaries": {
+      "core": {
+        "rows": 24,
+        "sha256": "d2437155c4472b4a2be8b9c44468d28946b77517a9c175156fd4fc0d884fce1c"
+      },
+      "dependent": {
+        "rows": 19,
+        "sha256": "750197c527bb534142eeed5bb1caa938eefb634ee5f1350af21950be3bb402e5"
+      },
+      "mixed640": {
+        "rows": 17,
+        "sha256": "bb9fdde027acabf210e10887663111f0aa83f716e9d1210bc4c78ee86625ee14"
+      }
+    },
+    "index_sha256": "ab95be5b5acff8b8e53b4e6182b178beb0ab6f5b04c730e8250575f14fce2bd2"
+  },
+  "archive_source_commit": "6d83c09bc224472fedbfa5c1baa7e65b20502573",
+  "archived_byte_identical_files": 91,
+  "current_lean_files": 95,
+  "fresh_native_evidence": {
+    "cubic_axiom_stdout_sha256": "b4dee6b56b0559bc89c9a4dd14584078291f792b3bd1801968e0545214b147c9",
+    "cubic_transitive_audit_sha256": "4b8c23ed0257e3cdbe55c69473373854d2c732b1762b05211e36caaf289cc323",
+    "glv_axiom_stdout_sha256": "a4ed63f9f6c4b9635fabfc960d86744cffd828868dd46f31e9e6c1d5e8bc4779",
+    "glv_historical_live_source_sha256": "4ab176d18c6b8b562fb48aba23e67127a61d59e4450a93d781902c47579fac20",
+    "glv_live_source_commit": "c5aa7b39bfa30e8cdbd46a158c7cbadaa8be3503",
+    "glv_live_source_sha256": "73469fbc151ad905b3659633b5c0702348c17899021458f411e97f752d6d0fef",
+    "glv_receipt_sha256": "90c7c692c62acaadc0e38f837b34224a61d8f480ae376bd1cdc1f716eeed7ab0",
+    "orbit_axiom_stdout_sha256": "59b196e285a0076001592646cfdefe92b000444b79a6da83ff3cc0cc754e7292"
+  },
+  "fresh_native_files": [
+    "experiments/ghs-sweeper/formal/CubicGluing.lean",
+    "experiments/glv-table-rule-confirm-20261022/TableBudget.lean",
+    "experiments/orbit-quotient-summation/lean/AxiomAudit.lean",
+    "experiments/orbit-quotient-summation/lean/OrbitPairIndex.lean"
+  ],
+  "fresh_native_source_sha256": {
+    "experiments/ghs-sweeper/formal/CubicGluing.lean": "5c62ca3cd27f891ef5930f2fbf0488a23e9e9217ea5a32771744be2ca2f62557",
+    "experiments/glv-table-rule-confirm-20261022/TableBudget.lean": "823903d27e906feccfe40f29df7feb7a23669b0c96d0bdc1f79ff0e3bddf93b4",
+    "experiments/orbit-quotient-summation/lean/AxiomAudit.lean": "a9dd5996abaa753224d6855d5490a58679c5eb90aa1d9661fdab2dbacbad1374",
+    "experiments/orbit-quotient-summation/lean/OrbitPairIndex.lean": "32807cd33bdbed15ac178d40eb18b9d268b11d7db514b196ae515d4caba7acd7"
+  },
+  "schema": "cryptanalysis.current_lean_corpus_bridge.v1",
+  "scope": "source-bound historical and fresh Lean builds with recorded allowed axiom outputs; exhaustive theorem audit, semantic fidelity and historical execution remain open"
+}

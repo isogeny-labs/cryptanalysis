@@ -1,0 +1,140 @@
+{
+ "aa_control": {
+  "band": [
+   0.97,
+   1.03
+  ],
+  "cold_point_estimate_inside_band_rate": 1.0,
+  "e2e_point_estimate_inside_band_rate": 1.0,
+  "median_e2e_estimate": 1.0000221260159385,
+  "pairs": 20
+ },
+ "cells": {
+  "1.00": {
+   "attempt_cost_factor": 35.79748423739875,
+   "mc_se": 0.006556247020971678,
+   "median_ci_hi_over_lo": 1.1996410291068713,
+   "median_estimate": 0.9980682666953917,
+   "power": 0.0175
+  },
+  "1.10": {
+   "attempt_cost_factor": 32.15878912569381,
+   "mc_se": 0.02499218627891526,
+   "median_ci_hi_over_lo": 1.1961438335203507,
+   "median_estimate": 1.0951781044399171,
+   "power": 0.5125
+  },
+  "1.25": {
+   "attempt_cost_factor": 27.792354991647905,
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.198944379044915,
+   "median_estimate": 1.2468127357065022,
+   "power": 1.0
+  },
+  "1.50": {
+   "attempt_cost_factor": 22.455602161147347,
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.1912351169871473,
+   "median_estimate": 1.5016620656734743,
+   "power": 1.0
+  },
+  "2.00": {
+   "attempt_cost_factor": 15.78466112302165,
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.1753068942719447,
+   "median_estimate": 2.0077857367107264,
+   "power": 1.0
+  },
+  "4.00": {
+   "attempt_cost_factor": 5.778249565833105,
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.130633541706612,
+   "median_estimate": 4.012021494358503,
+   "power": 1.0
+  },
+  "modelled": {
+   "attempt_cost_factor": 1.0,
+   "mc_se": 5e-08,
+   "median_ci_hi_over_lo": 1.0620043121507297,
+   "median_estimate": 7.675464130563993,
+   "power": 1.0
+  }
+ },
+ "design": {
+  "aa_pairs_per_point": 2,
+  "attempts_per_kM38I_block": 16,
+  "distinct_kM38I_blocks": 30,
+  "planted_pairs_per_point": 1,
+  "points": 10,
+  "primary_pairs": 30,
+  "primary_pairs_per_point": 3,
+  "rank_blocks_kPI": 30
+ },
+ "expected_ratio_at_prior_means": 7.655777746545535,
+ "law_gate": {
+  "archived_pooled_ratio": 1.0304338859315478,
+  "attempts": 480,
+  "band": [
+   0.8,
+   1.2
+  ],
+  "pass_rate_at_archived_law": 1.0,
+  "rejection_rate_for_law_1.5x_worse": 1.0
+ },
+ "method": "simulated receipts drawn from the prior; primary statistic and two-stage paired bootstrap of verify_receipt.py (400 simulations per cell, 500 bootstrap draws each)",
+ "min_delta": 1.5,
+ "planted_control": {
+  "archived_attempt_ratio": 1.9607417615150635,
+  "lower_bound_above_1_rate": 1.0,
+  "pairs": 10
+ },
+ "power_at_min_delta": 1.0,
+ "prior": "inputs/power_prior.json (run 39335956567, the parent's archived Tier 1 run)",
+ "prior_means_ms": {
+  "E2E_A": 160520.83940695002,
+  "E2E_B": 20967.2804934,
+  "cM38I_cold": 16956.73926965,
+  "cPI_cold": 16839.5670447,
+  "kM38I_rank_stage": 4010.5412237500004,
+  "kPI_rank_stage": 143681.27236225002
+ },
+ "runtime": {
+  "fits_one_job": true,
+  "fixed_after_schedule_min": 2.0,
+  "fixed_before_schedule_min": 11.7,
+  "job_limit_min": 300,
+  "job_total_min": 162.76308887351507,
+  "job_total_min_on_a_1.5x_slower_host": 243.14463331027264,
+  "mean_process_wall_s": {
+   "cM10I": 18.641915362238095,
+   "cM38I": 18.896047368428572,
+   "cM38Iaa": 18.88626838845,
+   "cPI": 18.74943992490476,
+   "kM10I": 34.217338465375,
+   "kM38I": 22.851389783125,
+   "kM38IX": 28.35645205525,
+   "kM38Iaa": 22.818355219375,
+   "kPI": 162.633070317,
+   "rT": 3.11217897425
+  },
+  "point_segment_s": 890.6139845117572,
+  "processes_per_point": {
+   "cM38I": 5,
+   "cM38Iaa": 2,
+   "cPI": 3,
+   "kM38I": 6,
+   "kM38IX": 1,
+   "kM38Iaa": 2,
+   "kPI": 3,
+   "rT": 1
+  },
+  "q0_processes": {
+   "cM38I": 1,
+   "cPI": 1
+  },
+  "schedule_min": 149.06308887351508,
+  "time_guard_deadline_min": 285
+ },
+ "schema": 1,
+ "type_i_at_1.00": 0.0175
+}
