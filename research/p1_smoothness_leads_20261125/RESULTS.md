@@ -74,6 +74,35 @@ one run each. This pilot supports a finite, matched **null structural
 observation**, not an asymptotic rank theorem or a timed speedup.
 `[pcc:unverified]`
 
+### Eight-target frozen follow-up
+
+The [frozen protocol](PANEL_PROTOCOL.md) and `panel.py` were committed before
+execution. The run retained all 16 inputs, outputs, compressed logs, and
+`panel/summary.json`. `validate_panel.py` separately enumerated every
+three-point decomposition with the curve group law and checked the solver
+input/output/log hashes; see `panel_validation.json`. All 16 processes exited
+zero, and all four predefined positive controls produced solutions in both
+arms. `[pcc:unverified]`
+
+| Target | Cayley / matched group-law decompositions | Cayley / matched F4 rounds | Geometry equal? |
+|---|---:|---:|:---:|
+| shared `+++` | 6 / 6 | 194 / 194 | yes |
+| shared `-++` | 6 / 6 | 194 / 194 | yes |
+| shared `+-+` | 6 / 12 | 194 / 164 | no |
+| shared `++-` | 6 / 12 | 194 / 164 | no |
+| scalar 1 | 0 / 0 | 22 / 22 | yes |
+| scalar 137 | 0 / 0 | 22 / 22 | yes |
+| scalar 271 | 0 / 0 | 22 / 22 | yes |
+| scalar 997 | 0 / 0 | 22 / 22 | yes |
+
+Every arm reached maximum F4 step degree 10. The two geometric differences
+coincide with **six additional valid decompositions** in the matched-root arm;
+the independently enumerated counts equal `msolve`'s ideal degrees 6 and 12.
+Thus these two cases do not isolate a Cayley-specific solver effect. The six
+equal-count pairs have identical ordered F4 round geometry. Wall times remain
+single-run, subsecond diagnostics and are not used for a speed claim.
+`[pcc:unverified]`
+
 ## Track 2: twisted Edwards symmetry
 
 For \(a=3,d=2\) over \(\mathbb F_{10007}\), the attachment's displayed
