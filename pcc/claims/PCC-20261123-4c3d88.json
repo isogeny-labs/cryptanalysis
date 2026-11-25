@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T22:09:10Z",
+ "id": "PCC-20261123-4c3d88",
+ "kind": "measurement",
+ "producer": {
+  "commit": "77530118893937ebd54e26f90815aaf555cae57a",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m34-and-3arm-20261119/fixed-work.csv",
+    "sha256": "27098e449eeeeb736ea0ae8dd0364aa9bbc45011ff74521e4a7440d105115232"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m34-and-3arm-20261119/fixed_work.py",
+    "sha256": "b4e51fa8b1c89287916e8603c84c5c6053b4385fb8c735389526cfa3be737a59"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m34-and-3arm-20261119",
+ "statement": "For 46 archived E1 M31 profiles the CLI total minus decomposition, with rounding allowances, exceeds each same-target and same-arity panel rho reference. Using the slowest recorded rho for each target, 44 of 46 exceed it."
+}

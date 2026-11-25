@@ -1,0 +1,130 @@
+import Mathlib.Tactic
+import Std.Tactic.BVDecide
+
+namespace M31FourCoverage.WordReduction
+
+private abbrev p : ℕ := 2147483647
+private abbrev radix : ℕ := 2147483648
+
+/-- The high and low parts fit a 32-bit sum and need at most one subtraction.
+The bound includes a product of canonical operands plus two spare moduli. -/
+theorem fold_correct (t : ℕ) (ht : t ≤ (p-1)^2 + 2*p) :
+    let s := t/radix + t%radix
+    s < 2^32 ∧ (if s ≥ p then s-p else s) = t%p := by
+  dsimp only
+  have hq : t/radix < p := (Nat.div_lt_iff_lt_mul (by decide)).mpr
+    (lt_of_le_of_lt ht (by decide))
+  have hr := Nat.mod_lt t (show 0 < radix by decide)
+  have hs : t/radix + t%radix < 2*p := by
+    have eqn : radix = p+1 := by decide
+    omega
+  have hmod : t % p = (t/radix + t%radix) % p := by
+    conv_lhs => rw [← Nat.div_add_mod t radix]
+    simp only [Nat.add_mod, Nat.mul_mod, show radix % p = 1 by decide, one_mul,
+      Nat.mod_mod]
+  constructor
+  · exact lt_trans hs (by decide)
+  · rw [hmod]
+    split_ifs with h
+    · have hsmall : t/radix+t%radix-p < p := by omega
+      exact ((Nat.mod_eq_sub_mod h).trans (Nat.mod_eq_of_lt hsmall)).symm
+    · exact (Nat.mod_eq_of_lt (by omega)).symm
+
+theorem accumulator_bound (a b c : ℕ) (ha : a < p) (hb : b < p) (hc : c ≤ 2*p) :
+    a*b+c ≤ (p-1)^2+2*p := by
+  rw [pow_two]
+  exact Nat.add_le_add (Nat.mul_le_mul (by omega) (by omega)) hc
+
+/-- The additive offset implements two field subtractions without signed words. -/
+theorem offset_correct (t x y : ℕ) (hx : x < p) (hy : y < p) :
+    (t+(2*p-x-y)+x+y)%p = t%p := by
+  have he : t+(2*p-x-y)+x+y = t+2*p := by omega
+  rw [he]
+  simp
+
+theorem ordinate_offset (t y : ℕ) (hy : y < p) :
+    (t+(p-y)+y)%p = t%p := by
+  have he : t+(p-y)+y = t+p := by omega
+  rw [he]
+  simp
+
+theorem accumulator_fits_uint64 : (p-1)^2+2*p < 2^64 := by decide
+
+/-- The Rust M31 affine fast path agrees with reducing the square and
+then subtracting each canonical coordinate separately. -/
+theorem rust_abscissa (s x y : ℕ) (hs : s < p) (hx : x < p) (hy : y < p) :
+    let t := s*s+(2*p-x-y)
+    let q := t/radix+t%radix
+    (if q ≥ p then q-p else q) = ((s*s%p + (p-x))%p + (p-y))%p := by
+  dsimp only
+  have bound := accumulator_bound s s (2*p-x-y) hs hs (by omega)
+  rw [(fold_correct _ bound).2]
+  rw [Nat.mod_add_mod, Nat.add_assoc, Nat.mod_add_mod]
+  congr 1
+  omega
+
+/-- Both variants operate on actual wrapping 32-bit words. -/
+theorem add_carry (a b : BitVec 32) (ha : a < 2147483647) (hb : b ≤ 2147483647) :
+    let s := a+b
+    ((s + ((s+1) >>> 31)) &&& 2147483647) =
+      (if s ≥ 2147483647 then s-2147483647 else s) := by
+  bv_decide
+
+theorem sub_borrow (a b : BitVec 32) (ha : a < 2147483647) (hb : b < 2147483647) :
+    let d := a-b
+    ((d - (d >>> 31)) &&& 2147483647) =
+      (if a ≥ b then a-b else 2147483647-(b-a)) := by
+  bv_decide
+
+/-- With canonical unsigned lanes interpreted as signed positive integers,
+SQDMULH cannot saturate. Its high half supplies exactly the Mersenne quotient. -/
+theorem doubled_square_high (x : ℕ) (hx : x < p) :
+    2*(x*x) < 2^63 ∧ 2*(x*x)/2^32 = x*x/radix := by
+  have h := accumulator_bound x x 0 hx hx (by decide)
+  simp only [Nat.add_zero] at h
+  constructor
+  · have hbound : (p-1)^2 + 2*p < 4611686018427387904 := by decide
+    omega
+  · change 2*(x*x)/4294967296 = x*x/2147483648
+    omega
+
+/-- Unsigned minimum selects the reduced value even when subtraction wraps. -/
+theorem wrapping_min (s : BitVec 32) :
+    (if s ≤ s-2147483647 then s else s-2147483647) = (if s ≥ 2147483647 then s-2147483647 else s) := by
+  bv_decide
+
+theorem neon_square (x : ℕ) (hx : x < p) :
+    let hi := 2*(x*x)/2^32
+    let lo := (x*x%2^32)%radix
+    (if hi+lo ≥ p then hi+lo-p else hi+lo) = x*x%p := by
+  dsimp only
+  rw [(doubled_square_high x hx).2, Nat.mod_mod_of_dvd _ (show radix ∣ 2^32 by decide)]
+  exact (fold_correct _ (accumulator_bound x x 0 hx hx (by decide))).2
+
+/-- The vector multiply used in the prefix/reverse scan permits unequal
+canonical operands. Doubling the signed product stays in range. -/
+theorem neon_product (x y : ℕ) (hx : x < p) (hy : y < p) :
+    let hi := (2*(x*y))/2^32
+    let lo := (x*y%2^32)%radix
+    2*(x*y) < 2^63 ∧ hi+lo < 2^32 ∧
+      (if hi+lo ≥ p then hi+lo-p else hi+lo) = x*y%p := by
+  dsimp only
+  have h := accumulator_bound x y 0 hx hy (by decide)
+  simp only [Nat.add_zero] at h
+  have hb : (p-1)^2 + 2*p < 4611686018427387904 := by decide
+  refine ⟨by omega, ?_⟩
+  have high : 2*(x*y)/2^32 = x*y/radix := by
+    change 2*(x*y)/4294967296 = x*y/2147483648
+    omega
+  rw [high, Nat.mod_mod_of_dvd _ (show radix ∣ 2^32 by decide)]
+  exact fold_correct _ h
+
+/-- Modular difference in the vector finish uses wrapping addition of p
+to the unsigned difference and takes the smaller word. -/
+theorem neon_difference (a b : BitVec 32) (ha : a < 2147483647) (hb : b < 2147483647) :
+    let d := a-b
+    (if d ≤ d+2147483647 then d else d+2147483647) =
+      (if a ≥ b then a-b else a+2147483647-b) := by
+  bv_decide
+
+end M31FourCoverage.WordReduction

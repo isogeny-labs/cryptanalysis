@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T22:34:41Z",
+ "id": "PCC-20261123-81f833",
+ "kind": "measurement",
+ "producer": {
+  "commit": "5c3574c3b50a2b6f34e7dadc50063d02f9b920b3",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/torus7-signed-confirm.csv",
+    "sha256": "d73be1dbf8490608963895fb73e23f548ac86860c7d831eb76b960aa1da981fe"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/torus7-signed-pairs.csv",
+    "sha256": "a3cb3b6bbe019604a9f68888e4f6493a9f636aa72b1c8789664a364eabc146e8"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/signed-pairs.rs",
+    "sha256": "1f50fc23a3939865b29a5c784004cecf9dd0ab4daea7298b6b5764b3b9904c5a"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "The broadcast signed-pair arithmetic prototype with exact lookup measured a 1.267x median paired speedup over general four-lane arithmetic with the same lookup across twelve confirmation rounds on Apple M4 Pro."
+}

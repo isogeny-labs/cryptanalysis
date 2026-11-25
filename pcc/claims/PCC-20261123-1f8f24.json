@@ -1,0 +1,82 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T23:45:26Z",
+ "id": "PCC-20261123-1f8f24",
+ "kind": "measurement",
+ "producer": {
+  "commit": "d5bc13cd591df983bbcc7d2b83d5f516ba9991f4",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "f4922c6e57f53370965c6ab97c669bcc518893d5594e0e588d78fd129f013f6c",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/PairedCubic.lean",
+   "theorem": "M31PairedCubic.opposite_rhs"
+  },
+  {
+   "decl_sha256": "57421d98ab815ef6501fd9794b254614b2144b69b97b94b42d70f4508bca1d1f",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/PairedCubic.lean",
+   "theorem": "M31PairedCubic.fits"
+  },
+  {
+   "decl_sha256": "70cc9867e9929b891e2f3579999036bd09fcb899ff9cbe0e3ad7f33fa4b1a02f",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/PairedCubic.lean",
+   "theorem": "M31PairedCubic.unpack"
+  },
+  {
+   "decl_sha256": "2c53a89b43baf7f82aa4ad4202177fe7dd14ea70d23e5ecaff6672286bcf9cd5",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/PairedCubic.lean",
+   "theorem": "M31PairedCubic.unsigned_order"
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/PairedCubic.lean",
+    "sha256": "53e1e537b87c3150927d34d4152d6dfe258902cd87246e868749a15b578e93d6"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/paired-cubic.rs",
+    "sha256": "0f1279d3c57dab5524320db3d4df5ae5ababcd9b559672d46ff8501b411a9251"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/paired-cubic.csv",
+    "sha256": "9d72f4bbe54c615e854fb10085b21fd046307fce6f45073e381d7bcbef3a84d9"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/paired-sort.csv",
+    "sha256": "b6cb5f4a7d972fbde37583eaa1c0a02594ef3fb57cf3316c26d8b576e11e2aad"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/fiber-half.rs",
+    "sha256": "8c8bfe3e41d36a40be6d34b8cb7b6726f97fea387fb213f660d23889009da1ee"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/neon-lift.rs",
+    "sha256": "a2d84d4a1fbdbef3eba7c6a9ffdbccf34f1f119c2a9aa7ce27fbff46172c9112"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "Sharing the cubic on opposite abscissas and sorting losslessly packed points reduced M31 point-table construction time on the M4 Pro. Within-round median ratios versus the four-lane half-period control were 1.111 on the archived and 1.096 on the holdout panel, 48 wins each."
+}

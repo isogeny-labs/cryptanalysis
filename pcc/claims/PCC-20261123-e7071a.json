@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T23:13:07Z",
+ "id": "PCC-20261123-e7071a",
+ "kind": "measurement",
+ "producer": {
+  "commit": "5e1431723d1fe0c901153f435e3c470fce000b82",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/torus7-smooth.csv",
+    "sha256": "30db6aa4c5bbd7d623ef615135fea330efc4ce906d659097b2605195fdd14425"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/torus7-smooth.gp",
+    "sha256": "d41bd5cf966357c65ce16141067251adc20661cff28549ca867d27c98213b380"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "Across 31 additional selected M31 Torus7 fibers, 88 of 190 coordinates with largest prime factor at most 1024 lifted to the base curve versus 1904 of 3778 remaining coordinates."
+}

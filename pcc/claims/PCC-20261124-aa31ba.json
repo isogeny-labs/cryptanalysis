@@ -1,0 +1,62 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-24T01:01:45Z",
+ "id": "PCC-20261124-aa31ba",
+ "kind": "measurement",
+ "producer": {
+  "commit": "9a1d8a6cf4158197c06b0782f833d4626931ebff",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "ce83f0076f19f60dcb8c78da951c070a12c9f0013759c1219b09340006e64a69",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/ArchiveCheck.lean",
+   "theorem": "M31ArchiveCheck.fixture_identity"
+  },
+  {
+   "decl_sha256": "75ea4c750e6fe71279a4da0f50bc60b84fcca884d02dc2703292e5f2c45100a0",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/ArchiveCheck.lean",
+   "theorem": "M31ArchiveCheck.rounded_bounds"
+  },
+  {
+   "decl_sha256": "e55ebd68b2d8faf9f49b8b78422d3353b707eeb6bed7d22f0e56079f44c2d0b1",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/ArchiveCheck.lean",
+   "theorem": "M31ArchiveCheck.deletion_bound"
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/ArchiveCheck.lean",
+    "sha256": "a796d17fdce888a4360de246e37f64a93cf71d7a9da01033ab388f31efb7eb02"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/ArchiveData.lean",
+    "sha256": "3764224114beef33c5184b8517b4bd46ac51ac6a4b9a4116a0dd85c36fc4ea10"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/archive-accounting.json",
+    "sha256": "f4a05dd6086502e4b3e19fc7b7b6036e4d176fa1966e02af28d35446e2020c1e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/replay-archive-check.py",
+    "sha256": "7102ca03028d23e8ed001919a30bd6b2806a5ad6307c57b4614f1c13f32e70e0"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "For three archived prime31 batched IC cold records, deleting external basis generation and internal setup with all remaining time held fixed yields speedup strictly below 1.000427. The archived basis overlaps the published 71-point table in exactly one point."
+}

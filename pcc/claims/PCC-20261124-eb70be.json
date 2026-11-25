@@ -1,0 +1,89 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-24T00:06:42Z",
+ "id": "PCC-20261124-eb70be",
+ "kind": "theorem",
+ "producer": {
+  "commit": "baffc6307a54add68f55d71f1f3da9cc49e3bf04",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "dc1a345c1be939f9e3c077de94c7d95ac240ae6f435ed1c9d8674d37354bc452",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/CanonicalLift.lean",
+   "theorem": "M31CanonicalLift.signed_candidate"
+  },
+  {
+   "decl_sha256": "9ce79b62eed0f32a0b1d59b7a402aeab6860f6fcac9ce820ecd839f76b4141a3",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/CanonicalLift.lean",
+   "theorem": "M31CanonicalLift.word_spec"
+  },
+  {
+   "decl_sha256": "0823065cc6a9eb918c29fab1a2e3659818d96b231ce2b8c9bb7a0243d2e236e9",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/CanonicalLift.lean",
+   "theorem": "M31CanonicalLift.sorted_keys"
+  },
+  {
+   "decl_sha256": "fb23699fdc64e07db3e8eb660236f82c5a13aa0615151cb9307bea79867d4a92",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/CanonicalLift.lean",
+   "theorem": "M31CanonicalLift.traversal_independent"
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/CanonicalLift.lean",
+    "sha256": "01d4d04d327a165e274f1142ced1774ed6a4246e966e0e93d8253dab8da9e0a0"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/packed-oracle.rs",
+    "sha256": "24345524188c3db3ab79b6de74f49c6da9e0c3c279c538e01f1c960dd590016d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/FiberLift.lean",
+    "sha256": "7e26c2f5c7d43d608abcd43c98050c8001e7e4064daec2bcbd5682cc123ecbfb"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/TerminalRoot.lean",
+    "sha256": "a051f077eadf99b9dd2d81136f00a02439b35384f70f776a12cc8424e0d72fc5"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/PackedTraversal.lean",
+    "sha256": "5e4623031577efcf50bdbfddfe5e9653160ba0596a9466dce56b8cbe12670f4b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/PairedCubic.lean",
+    "sha256": "53e1e537b87c3150927d34d4152d6dfe258902cd87246e868749a15b578e93d6"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/SignedSquare.lean",
+    "sha256": "a2e0fe4fb6dc804ff98f171776cc54b308e928850bb19c7239986568e5e9971c"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "For any finite list of M31 abscissas and any field-value function the modeled sorted packed lift contains exactly the keys encoding input abscissas and their canonical lower-half ordinates. Distinct inputs yield a duplicate-free list. Each supported paired traversal produces the same sorted sequence."
+}

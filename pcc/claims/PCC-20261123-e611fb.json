@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T21:41:05Z",
+ "id": "PCC-20261123-e611fb",
+ "kind": "measurement",
+ "producer": {
+  "commit": "f394d26ade3512d4a15bb621a6ed93ad7f61143d",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/pair-filter-timings.csv",
+    "sha256": "2344dd560a4858cd29541c2fc04f5b8d23562f149931f58702e30f19d67166cd"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/census.cpp",
+    "sha256": "5382d888ee0d0232ec7492a80415ff7ce481545488f6787ff62a23d8deaad90f"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "On the frozen M31 five-prefix histogram, eight local M4 Pro launches per binary gave a median elapsed time below 0.047 seconds with the two-step hash screen and above 1.72 seconds for parent f394d26ad. All 16 outputs matched the frozen CSV."
+}

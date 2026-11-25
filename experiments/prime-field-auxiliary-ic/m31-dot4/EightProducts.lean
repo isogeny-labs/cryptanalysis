@@ -24,11 +24,11 @@ theorem word_carry_reduce (a b : UInt64) (h : a.toNat+b.toNat ≤ 8*2147483646^2
       (a.toNat+b.toNat)%2147483647 := by
   by_cases carry : a+b<a
   · have wrap := (word_carry_test a b).mp carry
-    simp only [if_pos carry, UInt64.toNat_mod, UInt64.toNat_add]
+    simp only [ite_eq_left carry, UInt64.toNat_mod, UInt64.toNat_add]
     change (((a.toNat+b.toNat)%2^64+4)%2^64)%2147483647 = _
     omega
   · have nowrap := mt (word_carry_test a b).mpr carry
-    simp only [if_neg carry, UInt64.toNat_mod, UInt64.toNat_add]
+    simp only [ite_eq_right carry, UInt64.toNat_mod, UInt64.toNat_add]
     change (((a.toNat+b.toNat)%2^64+0)%2^64)%2147483647 = _
     omega
 

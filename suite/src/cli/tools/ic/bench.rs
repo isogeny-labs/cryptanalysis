@@ -38,6 +38,7 @@ use crate::cryptanalysis::ic_framework::plugins::{
     PrimeAbscissaBase, SubtractOracle,
 };
 use crate::cryptanalysis::ic_framework::prime_batch_mitm::PrimeBatchMitmOracle;
+use crate::cryptanalysis::ic_framework::chain_sat::ChainSatOracle;
 use crate::cryptanalysis::ic_framework::solvers::{
     solver_by_name, solver_registry, validate_solver_params,
 };
@@ -229,6 +230,13 @@ fn listing() -> Value {
                                     {"name":"column_solver","means":"0 or1, default0; direct projected column elimination"},
                                     {"name":"inverse_cache","means":"0 or1, default0; prefix inverse-square preparation"}],
                      "needs":"a subspace factor base; native affine projection and exact signed lifts"},
+                    {"name": "chain-sat", "summands": "2..31", "regimes": ["char2", "koblitz"],
+                     "parameters": [{"name":"m","means":"2..31 exact-length summands, repetitions allowed"},
+                                    {"name":"topology","means":"serial or balanced; default serial"},
+                                    {"name":"conflicts","means":"native CDCL conflict budget per target"},
+                                    {"name":"models","means":"maximum candidate models checked per target"},
+                                    {"name":"branching","means":"default or coordinates; coordinates prioritizes network bits over gates"}],
+                     "needs":"native SAT with local S3 blocks; binary-subspace or koblitz-orbit; local blocks require n <= 21"},
                     {"name": "descent-algebraic", "summands": "2, 3 or 4", "regimes": ["char2", "koblitz"],
                      "parameters": [{"name": "m", "means": "summands, 2 (descends S3), 3 (descends S4) or 4 (balanced split of S5)"},{"name": "inter_dim", "means": "m = 4 only: dimension of the subspace span(1..z^(l-1)) the two intermediates are restricted to (the representation filter); default n"}],
                      "needs": "a subspace factor base (binary-subspace or koblitz-orbit) and --solver"},
@@ -638,6 +646,7 @@ fn run_binary(
         let mut mitm = MitmOracle::new(m);
         let mut frob = FrobeniusMitmOracle::new(m, inst);
         let mut affine = AffineS3Oracle::new(inst);
+        let mut chain_sat = ChainSatOracle::new(m, inst);
         let mut batch_mitm = BinaryBatchMitmOracle::default();
         let mut rep_join = RepJoinOracle::new(m);
         let mut algebraic = match or_name {
@@ -664,6 +673,7 @@ fn run_binary(
             "mitm" => &mut mitm,
             "mitm-frobenius" => &mut frob,
             "affine-s3" => &mut affine,
+            "chain-sat" => &mut chain_sat,
             "mitm-batched" => &mut batch_mitm,
             "rep-join" => &mut rep_join,
             "descent-algebraic" => algebraic.as_mut().expect("built above"),

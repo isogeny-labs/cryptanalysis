@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T23:09:24Z",
+ "id": "PCC-20261123-954bfd",
+ "kind": "measurement",
+ "producer": {
+  "commit": "bb11f39dc7471f6ec8be65520d65d603ea8c6736",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/neon-finish-confirm.csv",
+    "sha256": "3373c3e87e2c67b765d52400a1c3baa4bc24d26455effaf799391c8c31a1c3bb"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/neon-finish-trace.csv",
+    "sha256": "b41d4a6aae2b1cc2f49490dd2f82ded728ff801b3172eb1e2acf943ff94d00bb"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/neon-products.rs",
+    "sha256": "4fcae2fe3acc7091d600032f6774a9ff4af3dcbc1ab3d2e145d75148dc646bdf"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "Explicit ARM NEON products plus affine finishing had a 1.054x median scalar/vector time ratio on 16 long warm rounds, but 1.010x on 24 setup-charged 256-batch positive-control rounds; both builds used the same portable table lift."
+}

@@ -1,0 +1,531 @@
+{
+  "schema": "first-actual-inert-genus2-arithmetic-native/v1",
+  "recorded": "2026-11-24T04:30:28.066947+00:00",
+  "source_commit": "f9b1f332144a9949cd5b178718a6320da91b2b1b",
+  "protocol": "PCC-20261124-d648db",
+  "input_lock": "PCC-20261124-674f2c",
+  "complete_input_readback": "maintenance/ct24-ca-genus2-sourceA-all43-complete-readback.json;43 inputs plus lock44 whole files, no errors, before first strict call.",
+  "phases": [
+    {
+      "recorded": "2026-11-24T04:29:41.701276+00:00",
+      "name": "actual-genus2-arithmetic",
+      "expected_exit": 0,
+      "exit": 0,
+      "complete_stdout": {
+        "bytes": 3390,
+        "sha256": "900ee3598c77bb19d867639a8f507526cca80758a6d829bda32931b901f7c38c",
+        "mode": 384
+      },
+      "complete_stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      }
+    },
+    {
+      "recorded": "2026-11-24T04:29:37.687303+00:00",
+      "name": "clippy-version",
+      "expected_exit": 0,
+      "exit": 0,
+      "complete_stdout": {
+        "bytes": 38,
+        "sha256": "514f4171a1bed07e7d27a872fc29ebb3e32360eb297e28acf00ab796f80e1038",
+        "mode": 384
+      },
+      "complete_stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      }
+    },
+    {
+      "recorded": "2026-11-24T04:29:41.021161+00:00",
+      "name": "clippy",
+      "expected_exit": 0,
+      "exit": 0,
+      "complete_stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      },
+      "complete_stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      }
+    },
+    {
+      "recorded": "2026-11-24T04:29:40.845124+00:00",
+      "name": "compile",
+      "expected_exit": 0,
+      "exit": 0,
+      "complete_stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      },
+      "complete_stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      }
+    },
+    {
+      "recorded": "2026-11-24T04:29:37.829437+00:00",
+      "name": "format",
+      "expected_exit": 0,
+      "exit": 0,
+      "complete_stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      },
+      "complete_stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      }
+    },
+    {
+      "recorded": "2026-11-24T04:29:37.626653+00:00",
+      "name": "rustc-version",
+      "expected_exit": 0,
+      "exit": 0,
+      "complete_stdout": {
+        "bytes": 36,
+        "sha256": "55cd0529c005d3f62869ea6e2271bfa9d5196f56dc65a8be00a371af114a4a98",
+        "mode": 384
+      },
+      "complete_stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      }
+    },
+    {
+      "recorded": "2026-11-24T04:29:37.752124+00:00",
+      "name": "rustfmt-version",
+      "expected_exit": 0,
+      "exit": 0,
+      "complete_stdout": {
+        "bytes": 46,
+        "sha256": "5599925a145edaa750ffdd40d2dc1adb031362d0932dd5935e20440a5f51d2be",
+        "mode": 384
+      },
+      "complete_stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      }
+    }
+  ],
+  "guard_failures": [],
+  "complete_native_stdout": {
+    "bytes": 3390,
+    "sha256": "900ee3598c77bb19d867639a8f507526cca80758a6d829bda32931b901f7c38c",
+    "mode": 384
+  },
+  "complete_classes_csv": {
+    "bytes": 4875,
+    "sha256": "39d0ef5d15f1aafa727f10d2dc903b87378b84338b32cb9a89090596e766d08d",
+    "mode": 384
+  },
+  "complete_Cayley_csv": {
+    "bytes": 46010,
+    "sha256": "d56c171a103ccdcd903d69a59ef0f1c0e8f80bba2a3165341ae5fe5c357f3948",
+    "mode": 384
+  },
+  "whole_small_originals": [
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/BUILD_MANIFEST.json",
+      "digest": {
+        "bytes": 27313,
+        "sha256": "08cdd598046ac7512c09cefe65169a45f18d924ee67e03af38ca78aa85a3388d",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/BUILD_MANIFEST.json"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/CONTEXT.json",
+      "digest": {
+        "bytes": 5755,
+        "sha256": "3d581c66cd87dd34b94bbee63233dd82cd136d112a870ff96e483f4243124248",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/CONTEXT.json"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/POST_CALL_MANIFEST.json",
+      "digest": {
+        "bytes": 27695,
+        "sha256": "ae51a490d3e994f3e8a8fcfca1fc77e5bb0a06db4a040c7f4c8cde80b230c33f",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/POST_CALL_MANIFEST.json"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/PRE_CALL_MANIFEST.json",
+      "digest": {
+        "bytes": 27434,
+        "sha256": "49f3694c490065ddcc31c910116fd9f38b7d9b0f99dc619900a58ef4a11011ba",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/PRE_CALL_MANIFEST.json"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/actual-genus2-arithmetic.argv",
+      "digest": {
+        "bytes": 92,
+        "sha256": "28e587b1cd410bba583df3d60b49312d5921ab2506d3b09d42b92dc2e722fe68",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/actual-genus2-arithmetic.argv"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/actual-genus2-arithmetic.phase.json",
+      "digest": {
+        "bytes": 413,
+        "sha256": "9a534b53c40a1589e88baaa4c8bc72387525b7fe0beac1f1a43a42962fdb7f3f",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/actual-genus2-arithmetic.phase.json"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/actual-genus2-arithmetic.stderr",
+      "digest": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/actual-genus2-arithmetic.stderr"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/actual-genus2-arithmetic.stdout",
+      "digest": {
+        "bytes": 3390,
+        "sha256": "900ee3598c77bb19d867639a8f507526cca80758a6d829bda32931b901f7c38c",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/actual-genus2-arithmetic.stdout"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/clippy-version.argv",
+      "digest": {
+        "bytes": 43,
+        "sha256": "76845bb28fc4cca7a47668988a31ba3a650a88808014e5dac29b8f2812391548",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/clippy-version.argv"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/clippy-version.phase.json",
+      "digest": {
+        "bytes": 401,
+        "sha256": "0a4cb7368915d3f0e2078c56d9c0ae9d384d83ecc7bed4a6ba0827472971dfcf",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/clippy-version.phase.json"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/clippy-version.stderr",
+      "digest": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/clippy-version.stderr"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/clippy-version.stdout",
+      "digest": {
+        "bytes": 38,
+        "sha256": "514f4171a1bed07e7d27a872fc29ebb3e32360eb297e28acf00ab796f80e1038",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/clippy-version.stdout"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/clippy.argv",
+      "digest": {
+        "bytes": 269,
+        "sha256": "7c4e46f3564626bcbb9e4cfae8f8d42e0cd4beb09ec2b324a6bd8e56022407a0",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/clippy.argv"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/clippy.phase.json",
+      "digest": {
+        "bytes": 392,
+        "sha256": "a27ad8ba1c841654ebd512785c4475e71e1d08a137aa693f3b18f74ba31a241d",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/clippy.phase.json"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/clippy.stderr",
+      "digest": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/clippy.stderr"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/clippy.stdout",
+      "digest": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/clippy.stdout"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/compile.argv",
+      "digest": {
+        "bytes": 336,
+        "sha256": "5fe96347c5f4b0a53101916dc779d3ab10fe42da85c95c3ed8c14378522147df",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/compile.argv"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/compile.phase.json",
+      "digest": {
+        "bytes": 393,
+        "sha256": "db2df03743c6ff24cdc9885f16027a21c477534ebf83b6d0e82214457f760005",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/compile.phase.json"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/compile.stderr",
+      "digest": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/compile.stderr"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/compile.stdout",
+      "digest": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/compile.stdout"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/final-guards.stderr",
+      "digest": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/final-guards.stderr"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/final-guards.stdout",
+      "digest": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/final-guards.stdout"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/format.argv",
+      "digest": {
+        "bytes": 719,
+        "sha256": "8988758fbea27cadae461278dbe7795032c00dbc071030eaac086ebbe1ec4149",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/format.argv"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/format.phase.json",
+      "digest": {
+        "bytes": 392,
+        "sha256": "5ca0bfd7f5b7ea695147733f5fa9e88192780363ce3ca902f89162406dcaee37",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/format.phase.json"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/format.stderr",
+      "digest": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/format.stderr"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/format.stdout",
+      "digest": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/format.stdout"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/init.stderr",
+      "digest": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/init.stderr"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/init.stdout",
+      "digest": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/init.stdout"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/pre-call.stderr",
+      "digest": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/pre-call.stderr"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/pre-call.stdout",
+      "digest": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/pre-call.stdout"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/rustc-version.argv",
+      "digest": {
+        "bytes": 35,
+        "sha256": "0c84f2e54be6a2a8da3f7574fbb69a9de26a77188e5b56a10aef6e49ded0004f",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/rustc-version.argv"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/rustc-version.phase.json",
+      "digest": {
+        "bytes": 400,
+        "sha256": "58352a18adb10b643dfd867556e093cb6c37746eecf7befaf4bdc10c82506f70",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/rustc-version.phase.json"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/rustc-version.stderr",
+      "digest": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/rustc-version.stderr"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/rustc-version.stdout",
+      "digest": {
+        "bytes": 36,
+        "sha256": "55cd0529c005d3f62869ea6e2271bfa9d5196f56dc65a8be00a371af114a4a98",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/rustc-version.stdout"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/rustfmt-version.argv",
+      "digest": {
+        "bytes": 37,
+        "sha256": "29d02920eed6ed38c5977a39ed0de2ff173f7555bacd2b97b0e8f7ac242bb168",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/rustfmt-version.argv"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/rustfmt-version.phase.json",
+      "digest": {
+        "bytes": 402,
+        "sha256": "73338eea834d2bf5b3c3dd98b521c0f2ee69c8ec6b1e78dff0e38b506abbe787",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/rustfmt-version.phase.json"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/rustfmt-version.stderr",
+      "digest": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/rustfmt-version.stderr"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/rustfmt-version.stdout",
+      "digest": {
+        "bytes": 46,
+        "sha256": "5599925a145edaa750ffdd40d2dc1adb031362d0932dd5935e20440a5f51d2be",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/rustfmt-version.stdout"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/data/cayley.csv",
+      "digest": {
+        "bytes": 46010,
+        "sha256": "d56c171a103ccdcd903d69a59ef0f1c0e8f80bba2a3165341ae5fe5c357f3948",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/data/cayley.csv"
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/data/classes.csv",
+      "digest": {
+        "bytes": 4875,
+        "sha256": "39d0ef5d15f1aafa727f10d2dc903b87378b84338b32cb9a89090596e766d08d",
+        "mode": 384
+      },
+      "whole_committed_copy": "research/chained_genus2_arithmetic_20261124/first-A-native/data/classes.csv"
+    }
+  ],
+  "whole_originals_RAM_pending": [
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/clippy.rmeta",
+      "digest": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mode": 384
+      },
+      "custody": "Entire original remains whole in owned RAM pending approved durable custody; no slicing/compression/substitute."
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/native-built",
+      "digest": {
+        "bytes": 4733416,
+        "sha256": "f28eeac9bab5949946c2e72daa4abf34bf3ed8741a00eae1f74562e296802244",
+        "mode": 448
+      },
+      "custody": "Entire original remains whole in owned RAM pending approved durable custody; no slicing/compression/substitute."
+    },
+    {
+      "path": "/dev/shm/ct24-ca-genus2-firstA-native/qualifier",
+      "digest": {
+        "bytes": 4733416,
+        "sha256": "f28eeac9bab5949946c2e72daa4abf34bf3ed8741a00eae1f74562e296802244",
+        "mode": 365
+      },
+      "custody": "Entire original remains whole in owned RAM pending approved durable custody; no slicing/compression/substitute."
+    }
+  ],
+  "coverage": "2401 candidate ideals;121 actual classes (14 double,84 split,22 quadratic plus identity); full14641 Cantor table agrees with divisor-root p1/p2 elliptic sums;1771561 associativity table triples; all11 transfer inputs and pure BSGS/source replays;four real model/ideal/sign/chain mutations reject relevant original relation and pristine restores.",
+  "scope": "Native complete finite arithmetic and same-producer separate actual-root pushforward route; no independently signed verdict, full Lean geometry, benchmark or novelty clearance."
+}

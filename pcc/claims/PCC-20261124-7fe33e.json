@@ -1,0 +1,67 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-24T01:07:01Z",
+ "id": "PCC-20261124-7fe33e",
+ "kind": "measurement",
+ "producer": {
+  "commit": "5e3e8eab336b3bf8f2ba0487cb74a81e9f6d4c1f",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "582da16cbcc4807061a92863bb29e290a5b7989aa9094ef8e808781f192d5b31",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/TerminalSeparation.lean",
+   "theorem": "M31TerminalSeparation.unique_terminal"
+  },
+  {
+   "decl_sha256": "0fa24e3455365e0c3d03c460547b45a8ae6947924d703ffc37888afba40911e0",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/TerminalSeparation.lean",
+   "theorem": "M31TerminalSeparation.first_collision"
+  },
+  {
+   "decl_sha256": "a0284ff046c6a41f701e8135542316d402a8ef138893aae27251faf95ed90260",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/TerminalSeparation.lean",
+   "theorem": "M31TerminalSeparation.minimum_cover"
+  },
+  {
+   "decl_sha256": "4f3f3a8f75acb102d06f59329e760ff15ba9d845dd0cd89732d6be6232b1b82d",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/TerminalSeparation.lean",
+   "theorem": "M31TerminalSeparation.attainable"
+  },
+  {
+   "decl_sha256": "9a1951513b17179ae18e8c9af99de20c40ad161fd585180975c580ab1b881432",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/TerminalSeparation.lean",
+   "theorem": "M31TerminalSeparation.published_terminal"
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/replay-archive-check.py",
+    "sha256": "c8e3692d2730afcbb9d85aecc6db889b8815dd7209aa77972828df5a829863db"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/ArchiveRoots.lean",
+    "sha256": "c05944eccb20a085d00f2ec4bab551e0e38e26808d474415d14c5185c395af58"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/TerminalSeparation.lean",
+    "sha256": "5af068fa3d9221fa38a0707487aa6e244df07ffa85089acdc39d39f4e1e8dd3b"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "The frozen archived M31 basis needs exactly 17 seventh-iterate terminal labels for x squared minus two. The 32 archived structured roots have distinct images through depth 24 and 30 distinct images at depth 25."
+}

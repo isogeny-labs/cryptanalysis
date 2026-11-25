@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T22:40:25Z",
+ "id": "PCC-20261123-72ce02",
+ "kind": "measurement",
+ "producer": {
+  "commit": "b0e7b2a6c4c477116143b969b44d65fa82851f37",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/setup-batches.csv",
+    "sha256": "4f712ea0b2acd9a80b8aa162337838d99e42555ed74ec4986170c982920c2c82"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/setup-batches.rs",
+    "sha256": "ef68c3291279a858ef94d4666d1d3e7448b74a5469b33f7855918a753118bb16"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "Starting from the same 71 canonical Torus7 abscissas and charging point lift, table preparation and allocation, the signed-pair prototype measured median paired speedups of 1.156x for one and 1.943x for 256 batches in the planted-membership panel across 24 seeds; the full scan counts all matches."
+}

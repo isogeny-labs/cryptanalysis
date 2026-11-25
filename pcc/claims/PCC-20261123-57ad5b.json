@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T22:23:10Z",
+ "id": "PCC-20261123-57ad5b",
+ "kind": "measurement",
+ "producer": {
+  "commit": "a8297638181a799a26e47706afee5e7aa0484ad2",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/rust-operand-shapes.csv",
+    "sha256": "702e1e52d51c3846ec2d8bb3967faae7c2b35beae9f76e608cdec25342ce1039"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/rust-batch-width.rs",
+    "sha256": "eaf92e6fa36677f9f31550142c4b85af0c3cf05307013008b61b29f5f0e6c11e"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "Native Apple M4 Pro shape replay over 24 balanced rounds yielded median paired four-lane versus fused-parent speedups of 1.072x, 1.187x, 1.208x and 1.228x at widths 64, 112, 116 and 142. These are component measurements."
+}

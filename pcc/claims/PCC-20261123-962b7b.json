@@ -1,0 +1,62 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T23:41:54Z",
+ "id": "PCC-20261123-962b7b",
+ "kind": "measurement",
+ "producer": {
+  "commit": "fe10f78727becfcf18bfd7c2b78313cf1d195ea8",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "b0b5f41c70036444aecbd37f353db3018591230e77a74d35252189a6e8dbf4fb",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/HalfOrbit.lean",
+   "theorem": "M31HalfOrbit.stride"
+  },
+  {
+   "decl_sha256": "d3421435a90c057a9de11653d1b1adbc37cf90c592306fa590534f09952cb8c7",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/HalfOrbit.lean",
+   "theorem": "M31HalfOrbit.half_period"
+  },
+  {
+   "decl_sha256": "cd3e56fa4e8fc838330d96388b92ce7ad06bf4cc6730b964678aa904a9a33a38",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/HalfOrbit.lean",
+   "theorem": "M31HalfOrbit.holdout_half_period"
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/HalfOrbit.lean",
+    "sha256": "5e604daff7334e0f43fdd9de78582d52af7cce3354c14df98fb3a467c1970759"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/fiber-half.rs",
+    "sha256": "801da0c1c4dca1db60315d8345dc11cd91e8aed9d145f02d57e4ab70f438e498"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/fiber-half.csv",
+    "sha256": "a3fdcef8d636a1c1cfc471ef76f184746acde6da91c661fa52814083b5580a66"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/fiber-half-holdout.csv",
+    "sha256": "29f153748208609d4bd4515233c66ddfcb58c59f3193901de07d6e0e51ebf64c"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "On an Apple M4 Pro, half-period trace generation using four independent recurrence lanes and matched NEON lifting reduced cold sorted-point table construction time on both 32-terminal panels. Median paired full-to-candidate ratios were 1.151 on the archived panel and 1.145 on disjoint holdout terminals."
+}
