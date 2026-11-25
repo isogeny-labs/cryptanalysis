@@ -1,0 +1,14 @@
+digraph point_prime_control {
+  graph [rankdir=LR, bgcolor="white", pad="0.25", nodesep="0.35", ranksep="0.5", fontname="Helvetica", label="Point-selected prime controls · 2026-11-25", labelloc=t];
+  node [shape=box, style="rounded,filled", fillcolor="#eef4ff", color="#315c8a", fontname="Helvetica"];
+  edge [color="#315c8a", fontname="Helvetica"];
+  d19 [label="D = -19\np = 47, r = 61\nG = (2,1), Q = 3G"];
+  d163 [label="D = -163\np = 43, r = 47\nG = (9,15), Q = 3G"];
+  sel19 [label="x(Q) selects m_Q\n30 distinct x-primes"];
+  sel163 [label="x(Q) selects m_Q\n23 distinct x-primes"];
+  gap [label="Missing operation\nfind action index for arbitrary Q\nwithout enumerating r/2 roots", fillcolor="#fff2e3", color="#a45a14"];
+  d19 -> sel19 [label="coordinates"];
+  d163 -> sel163 [label="coordinates"];
+  sel19 -> gap [label="indices ±3 in fixture"];
+  sel163 -> gap [label="indices ±3 in fixture"];
+}

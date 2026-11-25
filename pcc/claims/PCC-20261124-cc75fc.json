@@ -1,0 +1,23 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-24T17:55:33Z",
+ "id": "PCC-20261124-cc75fc",
+ "kind": "statement",
+ "producer": {
+  "commit": "51353f924fb584e9bb93f91be08b6b40f1da2d8e",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/RAY_CLASS_REDUCTION_AUDIT.md",
+    "sha256": "277f3d55594cc4d8688c74285284c3d9ca594ca481590cf04c4cd5549bab51dc"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Generic-j CM ray modulus n=(pi-1), good reduction, rational prime-order r distinct from p; audit of proposed Weber-value collapse",
+ "statement": "Trivial Artin symbol at p does not collapse the reduced Weber orbit: prime-to-p torsion reduction is injective, so the generic-j orbit of x([u]P) for u mod r up to sign has (r-1)/2 distinct values in Fp. The p=47, r=61, D=-19 control has 30 distinct x-values, contradicting the one-value prediction in IDEA-20260808-5158fa while leaving ray-label extraction unresolved."
+}
