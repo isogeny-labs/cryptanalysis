@@ -33,7 +33,9 @@ distinct question measured by the panel. The group statement is also
 checked in [Lean](formal/TransportGate.lean). The scoped statement is
 `PCC-20261125-9f930e`, with unverified standing. [pcc:unverified]
 
-The [frozen native-base census](NATIVE_THREE_SUM_REPORT.md) selects the same eight-point low-`x` factor-base shape independently on each curve of this `p=1009` horizontal pair. Among all 1068 nonidentity targets, source support is `96` and codomain support is `92`; transporting the source base retains `96`. Same-size random-base controls put the four-point native difference within ordinary finite-instance variation. This fixed coordinate-native rule supplies no endpoint relation-yield gain and does not justify a larger solver panel. Producer claim `PCC-20261125-560b99` is unverified. [pcc:unverified]
+The [frozen native-base census](NATIVE_THREE_SUM_REPORT.md) selects the same eight-point low-`x` factor-base shape independently on each curve of this `p=1009` horizontal pair. Among all 1068 nonidentity targets, source support is `96` and codomain support is `92`; transporting the source base retains `96`. Same-size random-base controls put the four-point native difference within ordinary finite-instance variation. Producer claim `PCC-20261125-560b99` is unverified. [pcc:unverified]
+
+The [same-target native S4 cost screen](NATIVE_THREE_SUM_COST_REPORT.md) explicitly corrects the yield-only stopping rule: lower yield could be offset by cheaper coordinate solving. On four frozen 64-target streams with seven interleaved repeats, every algebraic verdict matches exact rational membership, but the endpoint/source **exact-yield-adjusted** solve-work ratios are `1.0199–1.0842`, above one in all streams. This fixed native base has no supported component gain; setup, collection, and rho costs are still outside the panel. Producer claim `PCC-20261125-c94c66` is unverified. [pcc:unverified]
 
 This pointwise invariant and the separate coordinate-shape question
 were already stated in the earlier
