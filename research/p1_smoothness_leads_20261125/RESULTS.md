@@ -275,6 +275,41 @@ group-point generation, and sparse linear-algebra operation counts are not
 included in the two charge columns. The counts therefore do not establish a
 general cost ordering or a comparison with rho. `[pcc:unverified]`
 
+### Native two-summand F4 panel
+
+The [native protocol](NATIVE_NETWORK_PROTOCOL.md) was committed before input
+generation and solver execution. `native_network.py` generated 12 exact
+`msolve` systems, one positive and one negative case on the base curve and
+each isogenous codomain. Each system has the same two-variable Semaev
+\(f_3\) form and its arm's coordinate-bound factor-base polynomial. The
+negative cases all use the same base target \(R=137G\) transported across
+isogenies; positive cases are the first hit in the predeclared scalar scan.
+Exact `.ms` inputs, compressed raw solver logs/outputs, fixture metadata,
+and [`native/summary.json`](native/summary.json) are retained.
+`validate_native_network.py` rechecks their hashes, F4 summaries, solver
+ideal degrees, and independently enumerated group-law x-pairs; its output is
+[`native/validation.json`](native/validation.json). `[pcc:unverified]`
+
+| Arm | Bound x-roots | F4 rounds (negative / positive) | Max step degree | Ideal degree (negative / positive) |
+|---|---:|---:|---:|---:|
+| Base curve | 11 | 12 / 12 | 13 | 0 / 2 |
+| Degree 7 | 11 | 12 / 12 | 13 | 0 / 2 |
+| First degree 11 | 5 | 6 / 6 | 7 | 0 / 1 |
+| Second degree 11 | 8 | 9 / 9 | 10 | 0 / 2 |
+| First degree 19 | 13 | 14 / 14 | 15 | 0 / 2 |
+| Second degree 19 | 15 | 16 / 16 | 17 | 0 / 2 |
+
+All 12 processes exited zero. Every ideal degree equals the exact count of
+ordered coordinate solutions, which equals the group-law x-pair count on
+these sign-closed factor bases. Within each arm the positive and negative
+cases have the same round count and maximum degree, though their full ordered
+round geometry differs in five of six arms. Single-run solver CPU times are
+about 0.006–0.010 seconds, below useful timing resolution. This panel
+confirms that the per-call F4 work varies with the chosen coordinate base;
+it does not yet price the thousands of relation calls in the cold scan, the
+isogeny maps, or sparse linear algebra. The three named Track 1 `.ms` inputs
+remain separate and unavailable. `[pcc:unverified]`
+
 For secp256k1, \(\psi(x,y)=(\beta x,y)\) and \(\beta^3=1\) do preserve
 \(x^r=1\) exactly when \(3\mid r\). This supplies orbit relations among
 factor-base logarithms. It is an instance of the known GLV endomorphism;
