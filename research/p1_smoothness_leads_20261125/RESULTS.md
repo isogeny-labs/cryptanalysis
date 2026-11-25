@@ -140,6 +140,38 @@ two even-sign substitutions symbolically; a single-sign substitution changes
 the polynomial. These are exact assertions in `verify.py`, not an \(F_4\)
 timing result. `[pcc:unverified]`
 
+The [same-point protocol](EDWARDS_PROTOCOL.md) and its
+[pre-run positive-control amendment](EDWARDS_PROTOCOL_AMENDMENT.md) fix a
+coordinate comparison on \(a=3,d=2\) over \(\mathbb F_{10007}\). The
+birationally equivalent short Weierstrass curve is
+\(Y^2=X^3+6154X+1933\), of order 9920. Four Edwards y-roots
+\(\{\pm4,\pm5\}\) and their eight rational points map to the same eight
+Weierstrass points with x-roots \(\{3343,5348,6678,6682\}\). The bases are
+closed under negation; the Edwards base is also closed under translation by
+its rational two-torsion point. Positive target \((1393,5697)\) on the
+Weierstrass model lies outside the base and has 12 ordered coordinate
+triples in each model. Negative target \((4990,52)\) has none. The
+[`edwards_f4/fixture.json`](edwards_f4/fixture.json) and `edwards_f4.py`
+generate exact inputs. `[pcc:unverified]`
+
+| Control | Model | Expanded \(S_4\) monomials | F4 rounds | Max step degree | Sum of F4 matrix cells | Solver ideal degree |
+|---|---|---:|---:|---:|---:|---:|
+| Positive | Edwards y | 57 | 61 | 12 | 493,142 | 12 |
+| Positive | Weierstrass x | 439 | 61 | 12 | 992,039 | 12 |
+| Negative | Edwards y | 57 | 10 | 12 | 31,956 | 0 |
+| Negative | Weierstrass x | 439 | 10 | 12 | 45,352 | 0 |
+
+All four `msolve -v 2` calls exited zero; their ideal degrees equal an
+independent group-law enumeration. Raw compressed logs and outputs are
+retained under `edwards_f4/`, with summaries and
+[`validation.json`](edwards_f4/validation.json). The Edwards equations used
+smaller matrices, but round counts and maximum degree were equal. Single-run
+wall times were 0.0140 versus 0.0137 seconds on the positive case and 0.0098
+versus 0.0094 on the negative case, too short and close for a timing ratio.
+This checks the raw coordinate systems on one composite-order curve; it does
+not implement the literature's invariant-coordinate reduction or provide a
+prime-order \(\mathbb F_p\) bridge. `[pcc:unverified]`
+
 The twisted Edwards y-coordinate summation polynomial, the even signed
 permutation group \(D_n\), and invariant-coordinate Gröbner reduction already
 appear in [Faugère, Gaudry, Huot, Renault, *Using Symmetries in the Index
