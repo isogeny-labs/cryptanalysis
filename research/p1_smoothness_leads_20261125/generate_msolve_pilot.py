@@ -12,7 +12,7 @@ from sage.all import EllipticCurve, GF, PolynomialRing
 
 
 FIELD = GF(15359)
-CURVE = EllipticCurve(FIELD, [2, 3])
+CURVE = EllipticCurve(FIELD, [2, 8])
 RING = PolynomialRing(FIELD, "X")
 X = RING.gen()
 HERE = Path(__file__).resolve().parent
@@ -34,6 +34,7 @@ def eligible(x):
 
 
 def main():
+    assert int(CURVE.order()) == 15581 and CURVE.order().is_prime()
     # Re((X+i)^6) and Im((X+i)^6), with i^2=-1.
     real = X**6 - 15 * X**4 + 15 * X**2 - 1
     imag = 6 * X**5 - 20 * X**3 + 6 * X
@@ -75,7 +76,7 @@ def main():
 
     record = {
         "field_prime": 15359,
-        "curve_a4_a6": [2, 3],
+        "curve_a4_a6": [2, 8],
         "curve_order": int(CURVE.order()),
         "cayley_seed": seed,
         "cayley_label": int(coset_label),
