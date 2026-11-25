@@ -1,4 +1,10 @@
 #include "common.hpp"
+#ifdef M31_FLAT_INDEX
+#include "../m31-public-hash-layout/flat.hpp"
+using Index = FlatIndex;
+#else
+using Index = std::unordered_map<U, uint32_t, Hasher>;
+#endif
 using Clock = std::chrono::steady_clock;
 int main(int argc, char **argv) {
   if (argc != 4)
@@ -22,7 +28,7 @@ int main(int argc, char **argv) {
     signedPoints.push_back(pt);
     signedPoints.push_back(neg(pt));
   }
-  std::unordered_map<U, uint32_t, Hasher> index;
+  Index index;
   index.reserve(compact ? 250000 : 500000);
   size_t finite = 0;
   for (size_t i = 0; i < signedPoints.size(); ++i) {
