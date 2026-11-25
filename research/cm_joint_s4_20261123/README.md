@@ -113,6 +113,16 @@ Their relation yield and charged solve cost remain open. [pcc:unverified]
 The scoped prior-art and orbit-algebra record is
 `PCC-20261125-c8e274`, with unverified standing. [pcc:unverified]
 
+A related graph-wide study is already tracked at
+`crypto-autoresearcher:problems/isogeny-graph-wide-relation-solver.md`
+and in its [phased executor PR](https://github.com/isogeny-labs/crypto-autoresearcher/pull/2495).
+It distinguishes coordinate-native bases from transported source bases
+and specifies a same-point finalist solve with transfer, setup,
+relations, rank, verification, and matched rho charged. Its bounded
+controls do not replace the still-unadmitted common-target graph run
+or a completed cost comparison. The screens in this PR are narrower;
+they do not supersede that program. [pcc:unverified]
+
 The existing [Crypto APS-E3 orbit-base study](https://github.com/isogeny-labs/crypto/blob/5097d0d45c46c72041ddacca012fe694252ded6d/research/aps_extensions_20261026/README.md)
 already rejects an intrinsic automorphism-orbit zero sum with
 `A=B=0` and retains an informative relation across orbit blocks on
