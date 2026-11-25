@@ -31,18 +31,29 @@ int main(int argc, char **argv) {
   Index index;
   index.reserve(compact ? 250000 : 500000);
   size_t finite = 0;
+  auto visit = [&](size_t i, size_t j, Point pt) {
+    if (pt.inf)
+      return;
+    ++finite;
+    if (compact && (pt.y & 1))
+      return;
+    index.emplace(compact ? pt.x : key(pt), uint32_t((i << 16) | j));
+  };
+#ifdef M31_REFLECT_ROWS
+  for (size_t i = 0; i < signedPoints.size(); i += 2) {
+    auto sums = add_batch(signedPoints[i], signedPoints, i);
+    for (size_t j = i; j < signedPoints.size(); ++j)
+      visit(i, j, sums[j - i]);
+    for (size_t j = i + 1; j < signedPoints.size(); ++j)
+      visit(i + 1, j, neg(sums[(j ^ 1) - i]));
+  }
+#else
   for (size_t i = 0; i < signedPoints.size(); ++i) {
     auto sums = add_batch(signedPoints[i], signedPoints, i);
-    for (size_t off = 0; off < sums.size(); ++off) {
-      Point pt = sums[off];
-      if (pt.inf)
-        continue;
-      ++finite;
-      if (compact && (pt.y & 1))
-        continue;
-      index.emplace(compact ? pt.x : key(pt), uint32_t((i << 16) | (off + i)));
-    }
+    for (size_t off = 0; off < sums.size(); ++off)
+      visit(i, i + off, sums[off]);
   }
+#endif
   auto stop = Clock::now();
   if (finite != 500000)
     return 4;
