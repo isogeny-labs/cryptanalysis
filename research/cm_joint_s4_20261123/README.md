@@ -122,6 +122,8 @@ The [multi-seed common-shift bound](MULTI_SEED_ORBIT_SUPPORT_BOUND.md) extends t
 
 The [frozen inhomogeneous screen](INHOMOGENEOUS_ORBIT_REPORT.md) checks that exception on the same `D=-19` base. The preselected `d=3` target, missed by homogeneous zero sums, has an informative relation on 31 of 32 fixed target-sum queries, including the first: `15G+56Q=O`. Across all 60 target labels, 1,884 of 1,920 fixed queries have an informative witness; coefficient-only replay checks every count. The horizontal and native-scalar orbit points are identical, so this is a point relation without an isogeny-attributable yield gain. At P-192 scale and the optimistic `B=2^45` materialized-base cap, the generic triple-count ceiling requires about `2^59.585` uniform queries per hit and a complete per-query oracle below `2^36.241` addition equivalents merely to leave room beneath the `2^95.826` rho reference. An explicit pair scan exceeds that budget. [pcc:unverified]
 
+The [pair-orbit descriptor gate](ORBIT_PAIR_DESCRIPTOR_GATE.md) compresses an indexed pair table into `O(B)` exponent-gap arcs, with a 42-descriptor/78-pair replay on the same finite base. A direct point-query scan still costs `B*D` arc-membership tests. Charging descriptor storage inside the same optimistic 1 PiB allowance tightens the uniform-query room beneath rho to `2^29.275` additions per complete query. The missing construction is a collective membership oracle with a matched native-scalar control, not more principal ideals. [pcc:unverified]
+
 The scoped prior-art and orbit-algebra record is
 `PCC-20261125-c8e274`, with unverified standing. [pcc:unverified]
 
