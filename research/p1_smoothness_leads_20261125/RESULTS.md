@@ -103,6 +103,26 @@ equal-count pairs have identical ordered F4 round geometry. Wall times remain
 single-run, subsecond diagnostics and are not used for a speed claim.
 `[pcc:unverified]`
 
+### Equal-decomposition confound check
+
+The [balanced protocol](BALANCED_PROTOCOL.md) and `balanced_panel.py` were
+committed before eight further solver calls. The comparison base kept the
+three shared roots and used eligible extras `[5118,1869,3300]`, selected by
+a deterministic group-law filter before solver execution. All eight targets
+then had exactly the same decomposition counts in the two arms: six on each
+positive control and zero on each scalar control. `[pcc:unverified]`
+
+All eight balanced solver calls exited zero. The independently re-enumerated
+group-law counts equaled the balanced arm's ideal degrees, and every ordered
+F4 round-geometry sequence matched the already retained Cayley reference:
+194 rounds for each positive control, 22 for each zero-relation control,
+maximum step degree 10 throughout. `validate_balanced.py` checks the
+compressed-log, input and output hashes and recomputes these comparisons;
+see `balanced/summary.json` and `balanced_validation.json`.
+This is a finite null structural result under equal solution counts. It does
+not establish a general invariant, a full index-calculus cost, or a timing
+advantage. `[pcc:unverified]`
+
 ## Track 2: twisted Edwards symmetry
 
 For \(a=3,d=2\) over \(\mathbb F_{10007}\), the attachment's displayed
