@@ -1,19 +1,31 @@
 {
-  "amendment": 2,
-  "atUnix": 1795756800,
-  "declaredAfterTheMeasuredRun": true,
-  "reason": "The protocol tested factor-base shape. It did not test the dual question: can a cheap statistic of the TARGET select high-yield targets? The counting identity fixes the mean of r over all targets but says nothing about conditioning, and conditioning is nearly free in relative cost (a selector costs ~1e3 ns, one trial costs |F|^ceil(m/2) lookups), so even a 1% lift would be a 1% speedup of the relation phase. Declared after the fact; reported as post hoc.",
-  "addedHypothesis": {
-    "id": "H8_target_selector",
-    "claim": "Some statistic phi(R) costing at most a few hundred arithmetic cycles predicts r(R) well enough to raise relations per trial at production |F|.",
-    "design": {
-      "data": "exact r(R) for every R in E (ecell dump mode), both rungs, three shapes, m in {2,3}; no sampling",
-      "statistics": "x < p/2; v2(x); x mod 3; x mod 5; Legendre(x); floor(log2 x); rational height h(x) = min B with x = a/b, |a|,|b| <= B (EEA, computed in heights.c)",
-      "null": "analytic: under exchangeability of r across targets, a bucket of size n_b has sd = sqrt(sigma^2 (1 - n_b/N)/n_b), so z is exact without resampling; Sidak correction over the buckets tested",
-      "operational_metric": "cost per relation = [(c_gen + c_sel)/f + c_trial] / (lift * mu); a selector wins iff the search term stays below c_trial"
-    },
-    "killLine": "If every non-degenerate bucket has (c_gen+c_sel)/f >> c_trial at production, target selection is not a lever regardless of the lift.",
-    "prediction": "The rational-height statistic separates r, but only through the degenerate case R in F and its first ring; no cheap statistic is a lever."
+ "amendment": 2,
+ "atUnix": 1795756800,
+ "declaredAfterTheMeasuredRun": true,
+ "reason": "The protocol tested factor-base shape. It did not test the dual question: can a cheap statistic of the TARGET select high-yield targets? The counting identity fixes the mean of r over all targets but says nothing about conditioning, and conditioning is nearly free in relative cost (a selector costs ~1e3 ns, one trial costs |F|^ceil(m/2) lookups), so even a 1% lift would be a 1% speedup of the relation phase. Declared after the fact; reported as post hoc.",
+ "addedHypothesis": {
+  "id": "H8_target_selector",
+  "claim": "Some statistic phi(R) costing at most a few hundred arithmetic cycles predicts r(R) well enough to raise relations per trial at production |F|.",
+  "design": {
+   "data": "exact r(R) for every R in E (ecell dump mode), both rungs, three shapes, m in {2,3}; no sampling",
+   "statistics": "x < p/2; v2(x); x mod 3; x mod 5; Legendre(x); floor(log2 x); rational height h(x) = min B with x = a/b, |a|,|b| <= B (EEA, computed in heights.c)",
+   "null": "analytic: under exchangeability of r across targets, a bucket of size n_b has sd = sqrt(sigma^2 (1 - n_b/N)/n_b), so z is exact without resampling; Sidak correction over the buckets tested",
+   "operational_metric": "cost per relation = [(c_gen + c_sel)/f + c_trial] / (lift * mu); a selector wins iff the search term stays below c_trial"
   },
-  "artifacts": ["selector.py", "heightlaw.py", "heights.c", "raw/selector.json", "raw/heightlaw.json"]
+  "killLine": "If every non-degenerate bucket has (c_gen+c_sel)/f >> c_trial at production, target selection is not a lever regardless of the lift.",
+  "prediction": "The rational-height statistic separates r, but only through the degenerate case R in F and its first ring; no cheap statistic is a lever."
+ },
+ "artifacts": [
+  "selector.py",
+  "heightlaw.py",
+  "heights.c",
+  "raw/selector.json",
+  "raw/heightlaw.json"
+ ],
+ "outcome": {
+  "status": "refuted",
+  "measurement": "with an exact in-base bit per target: off the base, 88 height buckets, max |lift-1| = 0.113 and max |z| = 3.31 (expected max of 88 normals is 2.9). On buckets with >= 1e4 targets every lift is 1.00 +- 0.01.",
+  "retraction": "the earlier 'interval height tail' (9.7x -> 1.2x over four octaves) is in-base aliasing: for an interval base the predicate x <= X contains the integers 1..X, which are exactly the targets of height x <= X, so the in-base mask is height-contiguous.",
+  "checked": "m = 2 shows no spike at the same buckets, as predicted for a mechanism that needs {R, P, -P}."
+ }
 }

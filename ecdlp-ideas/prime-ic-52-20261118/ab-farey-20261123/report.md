@@ -250,80 +250,67 @@ which contains no shape at all. Combine with section 3 and section 4:
 
 ---
 
-## 6. Target side (H8, post hoc): what predicts r(R), and why it is not a lever
+## 6. Target side (H8, post hoc): `r(R)` is uniform off the base — and a retraction
 
 The identity fixes the mean of `r` over targets; it says nothing about
 *conditioning*. Conditioning is worth checking because it is nearly free: a
-selector costs ~10³ ns, one trial costs `|F|^{⌈m/2⌉}` lookups, so
-
-    cost per relation = [ (c_gen + c_sel)/f + c_trial ] / (lift·μ)
-
-and the search term `(c_gen+c_sel)/f` only matters when `f` is astronomically
-small. A 1% lift would be a 1% speedup. Measured on the exact `r(R)` for every
-`R` (both rungs, three shapes, `m ∈ {2,3}`), with an analytic null — under
-exchangeability a bucket of size `n_b` has `sd = sqrt(σ²(1−n_b/N)/n_b)`, so the
-z-scores are exact without resampling.
+selector costs ~10³ ns, one trial costs `|F|^{⌈m/2⌉}` lookups, so a 1% lift
+would be a 1% speedup. Measured on the exact `r(R)` for every `R` (both rungs,
+three shapes, `m ∈ {2,3}`), null from exchangeability (`sd_b =
+sqrt(σ²(1−n_b/N)/n_b)`, so no resampling).
 
 **Cheap x-arithmetic statistics: nothing.** `x < p/2`, `v2(x)`, `x mod 3`,
-`x mod 5`, `Legendre(x)`, `floor(log2 x)` all give `|lift − 1| ≤ 0.02` with
-inconsistent signs across rungs and shapes (`raw/selector.json`).
+`x mod 5`, `Legendre(x)`, `floor(log2 x)`: `|lift − 1| ≤ 0.02`, signs
+inconsistent (`raw/selector.json`).
 
-**The rational height does split `r`, but only at `m ≥ 3`, and the two bases
-split it for different reasons.** Buckets by `h/B`, where `h` is the smallest
-`B'` with `x(R) ∈ X(B')` and `B` is the base's own height:
+**The rational height appeared to split `r`. It does not.** An earlier revision
+of this section reported a monotone "height law" — a 9.7× → 1.2× tail over four
+octaves for the interval base — and called it "the first structural property
+the interval base has and the a/b base lacks". **That is retracted.** The dump
+now carries an exact in-base bit per target (`ecell` marks the dlog of every
+base point), and with base elements removed the effect disappears completely:
 
-| shape | m | p | h/B ≤ ½ | ½–1 | 1–2 | 2–4 | 4–8 | 8–16 | ≥16 |
-|---|---|---|---|---|---|---|---|---|---|
-| interval | 3 | 2²⁴ | **9.7** | **5.1** | **2.9** | **2.1** | **1.5** | **1.2** | 0.99 |
-| farey | 3 | 2²⁴ | **109** | **83** | 2.4 | 1.01 | 0.99 | 0.99 | 0.99 |
-| interval | 3 | 2²⁰ | — | — | 2.7 | 1.8 | 1.4 | 1.08 | 0.98 |
-| farey | 3 | 2²⁰ | — | — | 3.0 | 0.97 | 0.98 | 0.98 | 0.98 |
-| any | 2 | both | 1.07 | 1.03 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 |
+| subset | buckets | max lift | max \|z\| | where the max is |
+|---|---|---|---|---|
+| all `R ≠ O` | 116 | 109.3 | 1586 | m=3, h/B ≤ ¼, frac 1.3e-5 |
+| **`R ∉ F`** | **88** | **1.113** | **3.31** | m=3, h/B ≈ ½, frac 5.5e-5 |
 
-Fractions: the 2²⁴ interval cells run `1.3e-5, 5.5e-5, 2.2e-4, 8.9e-4,
-3.5e-3, 1.4e-2` from left to right; the farey `109`/`83` sit at `1.3e-5`/`5.5e-5`.
+Eighty-eight buckets, max |z| = 3.3 — the expected maximum of 88 standard
+normals is 2.9, and Šidák over 88 gives p ≈ 0.06 for that one. On buckets with
+≥ 10⁴ targets, every lift is `1.00 ± 0.01`, at every height scale, for every
+shape, at both rungs.
 
-Two different mechanisms, both real:
+What generated the phantom law: for `R ∈ F` and `m = 3`, `{R, P, −P}` is a
+relation for every `P`, so `r(R) ≥ N/2` — a spike on a set of measure `N/|E|`.
+The height statistic *aliases onto that set*, differently per base, because
 
-* **a/b base: degenerate.** The excess is `h ≲ B`, i.e. targets that are
-  themselves base elements or one ring outside — for `R ∈ F`, `{R, P, −P}` is a
-  relation for every `P`, so `r(R) ≥ N/2` by construction. Beyond `h/B = 2`
-  the a/b base is *depleted* (0.99): all its concentration is on the base
-  itself.
-* **interval base: non-degenerate.** A smooth, monotone tail over four octaves
-  (`9.7 → 1.2` for `h/B = ½ → 16`), on targets that are *not* in the base.
-  This is a real additive-combinatorics fact about 3-fold sumsets of a
-  contiguous small-integer set under the curve law, and it is the first
-  structural property found in this study that the interval base has and the
-  a/b base does not.
-* **`m = 2`: nothing, for either base.** Pair sums are height-equidistributed;
-  the whole phenomenon is a three-sum effect.
+* for the a/b base, `h(R) ≤ B` **is** (a prefix of) the base — a
+  height-contiguous set, giving the clean 109×/83× spike at `h/B ≤ 1`;
+* for the **interval** base, the in-base predicate is `x ≤ X`, which contains
+  the integers `1…X` — and those *are* the targets of height `h(x) = x ≤ X`.
+  So the in-base mask is again height-contiguous, but truncated, and the
+  truncated part masquerades as a decaying tail.
 
-**Operational verdict: dead, and not marginally.** The lifted window at
-production (`B = 2^25.46`, `h/B ≲ 16`) is a fraction `f ≈ 1.216(16B)²/p =
-2^-199.6` of targets, so finding one costs `c_gen/f ≈ 2^212` ns against
-`c_trial = |F|^{3/2}·10 ns = 2^80` ns:
+The mechanistic check confirms it: at `m = 2` the same buckets show **no**
+spike (1.03, 1.00), exactly as predicted — for pairs, `R ∈ F` gives no
+automatic relation, only `R = O` does, and `O` is excluded.
 
-| bits | `|F|` | `B` | window `f` | search/trial | |
-|---|---|---|---|---|---|
-| 32 | 2^6.4 | 2^3.06 | 2^-20.4 | 1.3e6 | dead |
-| 48 | 2^9.6 | 2^4.66 | 2^-33.2 | 3.3e8 | dead |
-| 64 | 2^12.8 | 2^6.26 | 2^-46.0 | 8.4e10 | dead |
-| 256 | 2^51.2 | 2^25.46 | 2^-199.6 | 6.6e39 | dead |
+So the corrected statement is stronger than the one it replaces:
 
-So target selection is not a lever at any rung. What it does buy is a
-**modelling constraint**: any yield model that assumes `r` is uniform over `R`
-is wrong by up to 10× (interval) or 100× (a/b) on a set of measure
-`|F|/p · (window)`, and right on the rest. Every sampled yield number in the
-campaign is unbiased because sampling is uniform — but a *targeted* estimate
-(e.g. "yield of the specific target we descended") is not.
+> Off the base, `r(R)` is uniform in `R` to ±1% on every well-populated bucket
+> — independent of `R`'s height, of the base's shape, of the rung, and of `m`.
+> The only non-uniformity in `r` is the trivially known one, `R ∈ F` at
+> `m ≥ 3`.
 
-**A construction caution this exposed.** A base built as "first `N` points in
-Farey order" is a *prefix* of `X(B)`, not the height ball `X(B)`: at
-`N = 464, B = 32` the prefix covers only ≈ 36% of the points of `X(32)`. So "`R` is in the
+That removes the last target-side lever, and it removes the last reason to
+prefer one *base shape* over another for anything except the base itself.
+
+**Construction caution (this survives the retraction).** A base built as "first
+`N` points in Farey order" is a *prefix* of `X(B)`, not the height ball: at
+`N = 464, B = 32` it covers ≈ 36% of the points of `X(32)`. So "`R` is in the
 base" and "`h(R) ≤ B`" are different predicates, and the difference is visible
-in the `83` vs `232` above. A designed base should be the whole ball (clean,
-height-testable) or record that it is a prefix.
+in the 83 vs 232 above. A designed base should be the whole ball, or record
+that it is a prefix.
 
 ---
 
@@ -364,7 +351,7 @@ this is a library gap, not a gap in the argument.  The quotient count
 | H5 | height advantage survives the doubled variables | **refuted**: exactly cancelled; net `Δα = 0.0011` at 256 bits, 2× variables |
 | H6 | sign-redundant pair lists inflate hits by `2^m` | **confirmed exactly** (4.0000 at m=2, 8.0000 at m=3; distinct relations unchanged) |
 | H7 | compact a/b description can replace the materialised table | **refuted** (post hoc, `PROTOCOL-amendment-1.json`): 135 EEA steps/probe = 1.6·10⁴× a comparison |
-| H8 | a cheap statistic of the target selects high-`r` targets profitably | **refuted as a lever** (post hoc, amendment 2): x-arithmetic is null; the height skew is real but sits on a set of measure 2^-199, costing 6.6e39 trials per relation. It does produce the first interval-over-a/b structural asymmetry |
+| H8 | a cheap statistic of the target selects high-`r` targets profitably | **refuted outright** (post hoc, amendment 2): x-arithmetic is null, and the apparent height law is the in-base spike — off the base, 88 buckets give max \|z\| = 3.3 and `lift = 1.00 ± 0.01`. The earlier "interval height tail" is retracted (§6) |
 
 ### What would have to be true for a/b to win
 Not a higher yield (impossible at fixed `|F|`), not cheaper MITM work
@@ -389,9 +376,10 @@ small unknowns with `m ≥ 3`, which is the whole difficulty.
    needs 51 bits — relevant only if a base must be *specified* rather than
    enumerated.  Section 5 closes the natural follow-up: you cannot swap the
    description for the table (1.6·10⁴× per probe).
-3. As the **null-model twin** of the interval base: any future "yield" claim
-   about a factor base must now beat both, and the identity says the mean is
-   untouchable, so only variance/tail claims survive.
+3. As the **null-model twin** of the interval base: a future claim about a
+   factor base must beat both, and there is nothing left to claim — the mean is
+   fixed by the identity (§3), the per-relation cost is shape-blind (§5), and
+   the distribution is uniform off the base (§6).
 
 ---
 
@@ -443,20 +431,21 @@ predictions:
 ```
 
 ```yaml
-title: "3-fold sumsets of a small-integer base concentrate on small-rational-height targets; sumsets of the a/b base do not"
-class: measurement
-claim: "Measured exactly on all R in E at p = 2^20 and 2^24, m = 3: for the interval base, mean r(R) decays monotonically with the target's rational height h over four octaves -- 9.7x at h/B in [1/4,1/2), 5.1x, 2.9x, 2.1x, 1.5x, 1.2x at h/B in [8,16), 0.99x beyond -- where B is the base's own height. For the farey (a/b) base the excess is confined to h <= 2B and is the degenerate case R in F (r(R) >= N/2); beyond h/B = 2 the a/b base is depleted (0.99x). m = 2 shows nothing for either base, and a random base shows nothing at any m."
-mechanism: "for R in F the multiset {R, P, -P} is a relation for every P, giving r(R) >= N/2: that is the whole a/b skew. The interval tail is a genuine additive-combinatorics property of a contiguous small-integer set under the curve law, and is absent for the multiplicatively homogeneous Farey set."
-novelty_status: "first structural property found that the interval base has and the a/b base lacks; the campaign's yield models assume r is uniform in R"
+title: "r(R) is uniform off the base: the 'target height law' was in-base aliasing (retraction)"
+class: disproof
+claim: "Exact r(R) for every target, both rungs, three shapes, m in {2,3}, with an exact in-base bit per target: restricted to R not in F, 88 height buckets give max |lift-1| = 0.113 (at frac 5.5e-5) and max |z| = 3.31, the expected maximum of 88 standard normals. On buckets with >= 1e4 targets every lift is 1.00 +- 0.01 at every height scale. The only non-uniformity in r is R in F at m >= 3, where {R, P, -P} forces r(R) >= N/2."
+mechanism: "the height statistic aliases onto the in-base set: for the a/b base h(R) <= B is (a prefix of) the base; for the interval base the in-base predicate x <= X contains the integers 1..X, which are exactly the height-x targets. Mechanistic check passed: m = 2 shows no spike at the same buckets, because pairs have no automatic relation for R in F."
+novelty_status: "retracts this study's own earlier 'interval height tail' finding; the corrected statement is stronger"
 citations:
-  - {ref: "raw/heightlaw.json, raw/selector.json", provenance: internal, claim: "lift vs h/B, analytic null z up to 1586", verified_by: "exact enumeration, both rungs"}
-  - {ref: "PROTOCOL-amendment-2.json", provenance: internal, claim: "H8 declared post hoc with the search-cost kill line", verified_by: "this note"}
+  - {ref: "raw/heightlaw.json", provenance: internal, claim: "subset=outside_base rows, 88 buckets, max |z| 3.31", verified_by: "exact enumeration, both rungs, exact in-base mask"}
+  - {ref: "raw/selector.json", provenance: internal, claim: "x-arithmetic statistics null (|lift-1| <= 0.02)", verified_by: "exact enumeration"}
+  - {ref: "PROTOCOL-amendment-2.json", provenance: internal, claim: "H8 declared post hoc", verified_by: "this note"}
 assumptions:
   - "h(x) is the smallest B' with x in X(B'), read off the EEA on (p,x) (heights.c)"
-  - "a base built as the first N Farey fractions is a prefix of X(B), not the height ball, and the two differ by a factor ~3 in coverage at N=464,B=32"
+  - "the in-base bit is exact: ecell marks the dlog of every base point, both signs"
 predictions:
-  - {metric: "lift at h/B in [1,2)", direction: ">2 at m=3, =1 at m=2", minimum_effect: "replicated at both rungs, z>50"}
-  - {metric: "search cost per relation, production", direction: "dead by ~130 bits", minimum_effect: "any construction of a small-height target from kG would reopen it"}
+  - {metric: "lift outside the base", direction: "1.00 at every height", minimum_effect: "|lift-1| > 0.05 with |z| > 4 would reopen"}
+  - {metric: "in-base spike at m=3", direction: ">= N/2", minimum_effect: "absent at m=2 by construction"}
 ```
 
 ## LEADS
@@ -472,15 +461,9 @@ predictions:
    (interval bases get it free; subgroup and mixed bases may not).
 4. **Uniform rank-profile schema** — already LEAD 11 of b7; nothing here
    changes it.
-5. **The interval-base height tail.** Why does the 3-fold sumset of a
-   contiguous small-integer set concentrate on targets of height `≲ 16·X`,
-   while the 3-fold sumset of `X(B)` does not? Measured, replicating across two
-   rungs, absent at m = 2, absent for random bases. This is the only structural
-   advantage of the interval base found so far, and it is unexploited: the
-   window costs `2^199` target generations to sample. A toy question with a
-   clean setup (m = 3, p ~ 2^20, bases of equal size) — but treat it as
-   additive combinatorics, not as an attack, until a way to *construct* a
-   small-height target from a given `kG` exists.
+5. **Withdrawn:** the interval-base "height tail" of the previous revision.
+   It was the in-base spike aliasing onto a height-contiguous set (§6).  Do not
+   reopen it without an exact in-base mask.
 6. **Closed by this note:** the "compact description replaces the table" hope
    for the materialised-sieve backend (135 EEA steps/probe, 1.6·10^4x a
    comparison).  Do not re-propose it without a sub-100-step reconstruction.
