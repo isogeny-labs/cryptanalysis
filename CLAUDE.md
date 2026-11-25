@@ -39,6 +39,13 @@ CI runs `python3 tools/pcc/pcc.py canary` and `ledger verify`. Rule:
 Read **[AGENTS.md](AGENTS.md)**: it is the contract for every runtime, Claude
 Code included.
 
+**Experiment seeds and A/B comparisons** (owner, 2026-11-23): follow
+[docs/experiment-seeds.md](docs/experiment-seeds.md). Freeze complete seed and
+PRNG manifests, pair compatible stages on identical hashed public inputs,
+use stable logical streams across workers, retain independent replicates and
+all outcomes, and replay before claiming reproducibility. Preserve existing
+protocols, admission gates and challenge-witness custody.
+
 The session that opens a PR tracks it until it is merged or closed: it
 subscribes to PR activity (or keeps spaced check-ins: about 50 minutes, then
 about four hours, stopping after three quiet ones), fixes the failures its
