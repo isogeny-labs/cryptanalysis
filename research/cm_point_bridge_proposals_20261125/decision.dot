@@ -1,0 +1,10 @@
+digraph bridge {
+  graph [rankdir=LR, bgcolor="white", fontname="Helvetica"];
+  node [shape=box, style="rounded", fontname="Helvetica", color="#243746"];
+  input [label="Input: E, G, coordinates of Q"];
+  ray [label="A: marked ray resolvent\nseek compact norm recurrence"];
+  chart [label="B: native isogeny charts\nseek target factor-base row"];
+  verify [label="All-scalar finite replay\nindependent group check"];
+  cost [label="Equal-size controls + rank\ncold same-target cost vs rho"];
+  input -> ray; input -> chart; ray -> verify; chart -> verify; verify -> cost;
+}
