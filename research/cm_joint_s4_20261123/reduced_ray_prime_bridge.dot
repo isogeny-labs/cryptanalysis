@@ -1,0 +1,12 @@
+digraph PrimeBridge {
+  graph [rankdir=LR, bgcolor="white", pad="0.2", nodesep="0.45", ranksep="0.7"];
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11, fillcolor="#f0f6ff", color="#3e5d83"];
+  edge [fontname="Helvetica", fontsize=10, color="#51667e"];
+  Q [label="Q=[d]G\nsupplied point"];
+  X [label="x(Q)\nknown coordinate"];
+  M [label="m_Q=(X-x(Q))\nprime of split orbit algebra"];
+  A [label="m_G -> m_Q\naction index d mod ±"];
+  C [label="Compressed action-index extractor\nmissing"];
+  Q -> X -> M -> A;
+  C -> A [style=dashed, color="#aa4c3f", fontcolor="#aa4c3f"];
+}
