@@ -1,0 +1,42 @@
+{
+  "atUnix": 1795584000,
+  "record": "Small-rational-height (a/b) factor base at n = 1: generation cost and relation yield. Closes or opens mythos52-b7 LEAD 8 (ev-leads-pr-records.md).",
+  "question": "Two coupled claims are under test. (1) GENERATION: the a/b base F_B = {x = a/b mod p : gcd(a,b)=1, 1 <= |a|,|b| <= B, b != 0} is the Farey set of order B after the involution x -> 1/x and x -> -x, so it can be produced in O(|F|) time with no gcd test, no set, and O(1) memory, including random access (rank/unrank) for sharding. (2) YIELD: some choice of {a/b} produces MORE relations per target than an interval or random base of the same size, at the same curve and p.",
+
+  "claimBoundary": "Toy prime-field rungs only (p ~ 2^20 and 2^24, E: y^2 = x^3 + 7). Relation yield is measured EXACTLY (full representation function r(R) over the whole group, all m-subsets enumerated), not sampled. No key recovery, no asymptotic sub-rho claim, no secp256k1 numeric claim. The generation result is an algorithmic/constant-factor statement; the yield result is a counting identity plus a first-moment/Var measurement.",
+
+  "design": {
+    "hypotheses": {
+      "H1_count": "|X_ab(B)| = 4*Phi(B) - 1 exactly, where Phi(B) = sum_{k<=B} phi(k) (the b=0 row is excluded because x = a/0 is undefined); equivalently |{(a,b) : 1 <= |a|,|b| <= B, gcd(a,b)=1, b != 0}| = 8*Phi(B) - 2 and x is 2-to-1 on that set. Asymptotically |F| ~ (12/pi^2) B^2 = 1.216 B^2.",
+      "H2_generation": "Farey-recurrence enumeration (mediant step + batch inversion) produces the same x-set as square-scan + gcd + dedupe, at >= 3x the elements/second, with O(1) auxiliary memory; rank/unrank gives uniform random access in O(polylog B) with zero storage.",
+      "H3_mean_invariance": "For any finite F in a finite abelian group G, #{m-multisets of F} = C(|F|+m-1, m) and sum over R of r_F(R) = that number. Hence the mean of r over the group is C(|F|+m-1,m)/|G| for EVERY shape. Corollary: total yield over a uniform random target set is shape-blind. This is the theorem the experiment must confirm exactly (any deviation means the harness is wrong).",
+      "H4_shape_effect": "Shape can change only higher moments: Var(r), max(r), P(r>=1), additive energy. Prediction: interval and a/b and random agree within the exchangeability band (no shape buys expected yield); the informative question is whether any shape has a *tail* advantage at equal mean.",
+      "H5_box_product": "At equal |F| the a/b base reaches base size |F| with HEIGHT B ~ 0.907*sqrt(|F|) while the interval base needs WIDTH ~ |F|. Since the a/b decomposition is bihomogeneous with 2m variables of individual degree 2^(m-1) each, the Jochemsz-May box product is B^(2*m*2^(m-1)) = |F|^(m*2^(m-1)), identical to the interval base's product. So the height advantage is exactly cancelled by the doubled variable count.",
+      "H6_duplicate_inflation": "Enumerating the sign-redundant pair list (a,b) and (-a,-b) inflates HITS by exactly 2^m while distinct relations are unchanged; any measured 'yield' computed by counting hits is inflated by 2^m."
+    },
+    "metrics": [
+      "exact integer equality of |X_ab(B)| against brute force (B <= 96) and against 4*Phi(B)-1 (B <= 2^20)",
+      "elements/second for naive vs Farey vs unrank; peak auxiliary memory",
+      "sum over R of r(R) and C(|F|+m-1,m), per shape, m in {2,3}",
+      "histogram of r over ALL of G: mean, Var, max, #{R : r >= 1}, #{R : r >= 2}",
+      "hit-count ratio under the sign-doubled enumeration",
+      "height B needed for |F| points vs interval width"
+    ],
+    "killLines": [
+      "H1: any mismatch in an exact count -> generator rejected (not a physics result).",
+      "H2: Farey slower than 1.5x naive per element, or unrank round-trip failure -> generation claim downgraded to 'constant factor, no algorithmic content'.",
+      "H3: any shape whose sum r(R) differs from C(|F|+m-1,m) -> harness bug, stop.",
+      "H4: 'a/b yields more relations' is REFUTED in expectation if every shape's mean equals the common value to the last integer; it survives only if some shape has P(r>=1) or max(r) above the permutation null at > 2 sd.",
+      "H5: if the a/b box product is strictly smaller than the interval product at equal |F|, LEAD 8 must be reopened; if equal, LEAD 8 closes as yield-neutral.",
+      "H6: hits/distinct != 2^m -> the redundancy argument is wrong."
+    ]
+  },
+
+  "seeds": "Cellular RNG is a fixed splitmix64 seeded per cell; curve and prime selection is deterministic ascending from 2^20 and 2^24 with p = 3 mod 4, #E prime, E: y^2 = x^3 + 7. Base order is canonical (b ascending, a ascending) so the run is reproducible without a seed for the structured shapes.",
+
+  "budgets": {"maximumRuntimeSeconds": 1800},
+
+  "codeFreeze": {"frozenBeforeRun": true, "files": ["abgen.py", "ecell.c"]},
+
+  "rawOutputs": ["raw/counts.json", "raw/bench.json", "raw/cells.json", "raw/dup.json"]
+}

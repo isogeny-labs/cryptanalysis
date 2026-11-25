@@ -221,6 +221,9 @@ fn s3(x1: &Pol, x2: &Pol, x3: &Pol, a: u64, b: u64, p: u64) -> Pol {
 enum Kind {
     Kummer,
     Dickson,
+    /// Dickson steps on the norm-one torus side: `V = {w + w⁻¹}` for `w` in a
+    /// coset of the `2^t` subgroup of `T₂ ⊂ F_{p²}*` (needs `2^t | p + 1`).
+    Torus,
     Isogeny,
 }
 
@@ -229,6 +232,7 @@ impl Kind {
         match self {
             Kind::Kummer => "kummer",
             Kind::Dickson => "dickson",
+            Kind::Torus => "torus",
             Kind::Isogeny => "isogeny",
         }
     }
@@ -494,6 +498,78 @@ fn dickson(p: u64, t: usize, rng: &mut StdRng) -> Tower {
             steps: vec![Step::Dickson; t],
             c: addm(ut, invm(ut, p), p),
             info: json!({"u": u, "zeta": zeta}),
+        };
+    }
+}
+
+/// `F_{p²} = F_p[√d]` with `d` a non-residue; elements `(re, im)`.
+fn fp2_mul(a: (u64, u64), b: (u64, u64), d: u64, p: u64) -> (u64, u64) {
+    (
+        addm(mulm(a.0, b.0, p), mulm(d, mulm(a.1, b.1, p), p), p),
+        addm(mulm(a.0, b.1, p), mulm(a.1, b.0, p), p),
+    )
+}
+
+fn fp2_pow(mut a: (u64, u64), mut e: u64, d: u64, p: u64) -> (u64, u64) {
+    let mut r = (1, 0);
+    while e > 0 {
+        if e & 1 == 1 {
+            r = fp2_mul(r, a, d, p);
+        }
+        a = fp2_mul(a, a, d, p);
+        e >>= 1;
+    }
+    r
+}
+
+/// Dickson tower on the `p + 1` side: for `w ∈ T₂` (norm one) `w⁻¹ = w̄`,
+/// so `w + w⁻¹ = 2·Re(w) ∈ F_p` and `D₂(x) = x² − 2` maps the trace of `w`
+/// to the trace of `w²`. `V` is the trace image of `u·⟨ζ⟩`, `ζ` of order
+/// `2^t` in `T₂`; the final constant is `Tr(u^{2^t})`.
+fn torus(p: u64, t: usize, rng: &mut StdRng) -> Tower {
+    assert!(
+        (p + 1).is_multiple_of(1u64 << t),
+        "2^{t} does not divide p + 1"
+    );
+    let d = loop {
+        let d = rng.gen_range(2..p);
+        if powm(d, (p - 1) / 2, p) == p - 1 {
+            break d;
+        }
+    };
+    // z^{p-1} = z̄ / z ∈ T₂ (Frobenius is conjugation)
+    let to_t2 = |z: (u64, u64)| fp2_pow(z, p - 1, d, p);
+    let zeta = loop {
+        let z = (rng.gen_range(0..p), rng.gen_range(1..p));
+        let zt = fp2_pow(to_t2(z), (p + 1) >> t, d, p);
+        if t == 0 || fp2_pow(zt, 1u64 << (t - 1), d, p) != (1, 0) {
+            break zt;
+        }
+    };
+    loop {
+        let u = to_t2((rng.gen_range(0..p), rng.gen_range(1..p)));
+        let mut w = u;
+        let mut v = Vec::with_capacity(1 << t);
+        for _ in 0..1u64 << t {
+            v.push(addm(w.0, w.0, p));
+            w = fp2_mul(w, zeta, d, p);
+        }
+        let mut s = v.clone();
+        s.sort_unstable();
+        s.dedup();
+        if s.len() != 1 << t {
+            continue;
+        }
+        let ut = fp2_pow(u, 1u64 << t, d, p);
+        return Tower {
+            kind: Kind::Torus,
+            t,
+            size: 1 << t,
+            v,
+            scale: 1,
+            steps: vec![Step::Dickson; t],
+            c: addm(ut.0, ut.0, p),
+            info: json!({"d": d, "u": [u.0, u.1], "zeta": [zeta.0, zeta.1]}),
         };
     }
 }
@@ -892,6 +968,7 @@ fn build_tower(kind: Kind, p: u64, t: usize, degrees: &[u64], rng: &mut StdRng) 
     let tower = match kind {
         Kind::Kummer => kummer(p, t, rng),
         Kind::Dickson => dickson(p, t, rng),
+        Kind::Torus => torus(p, t, rng),
         Kind::Isogeny if degrees == [2] => isogeny(p, t, rng),
         Kind::Isogeny => isogeny_general(p, t, degrees, rng),
     };
@@ -981,6 +1058,11 @@ enum Control {
     Ladder,
     Naive,
     Null,
+    /// The symmetrised presentation: unknowns are the elementary symmetric
+    /// functions `e_k` of each tower level, `S̃_{m+1}(e; x_R)` replaces the
+    /// `S₃` chain, and each Dickson level is the Graeffe-type map of the
+    /// `e`'s (quadratic). Dickson-step towers with `scale = 1` only.
+    Sym,
 }
 
 impl Control {
@@ -990,6 +1072,7 @@ impl Control {
             Control::Ladder => "ladder",
             Control::Naive => "naive",
             Control::Null => "null",
+            Control::Sym => "sym",
         }
     }
 }
@@ -1071,6 +1154,10 @@ fn system(
         let sol = target.planted.then(|| target.xs.clone());
         return (vec![s, member(0), member(1)], n, sol, 0..0);
     }
+    if control == Control::Sym {
+        let (eqs, n, sol) = sym_system(tower, curve, m, target);
+        return (eqs, n, sol, 0..0);
+    }
     let n = m * t + (m - 2);
     let mut eqs = summation(tower, curve, m, n, target.x_r);
     if control == Control::Null {
@@ -1101,6 +1188,299 @@ fn system(
         }
     }
     (eqs, n, target.solution.clone(), towers)
+}
+
+// ── Symmetrised presentation ───────────────────────────────────────
+
+/// Determinant of a square matrix over `F_p` (Gaussian elimination).
+fn det_mod(mut a: Vec<Vec<u64>>, p: u64) -> u64 {
+    let n = a.len();
+    let mut det = 1u64;
+    for c in 0..n {
+        let Some(r) = (c..n).find(|&r| a[r][c] != 0) else {
+            return 0;
+        };
+        if r != c {
+            a.swap(r, c);
+            det = subm(0, det, p);
+        }
+        det = mulm(det, a[c][c], p);
+        let inv = invm(a[c][c], p);
+        for r in c + 1..n {
+            if a[r][c] != 0 {
+                let f = mulm(a[r][c], inv, p);
+                for k in c..n {
+                    a[r][k] = subm(a[r][k], mulm(f, a[c][k], p), p);
+                }
+            }
+        }
+    }
+    det
+}
+
+/// `Res_U(f, g)` of two univariate polynomials given low → high with their
+/// formal degrees `len − 1` (Sylvester determinant).
+fn resultant(f: &[u64], g: &[u64], p: u64) -> u64 {
+    let (df, dg) = (f.len() - 1, g.len() - 1);
+    let n = df + dg;
+    let mut m = vec![vec![0u64; n]; n];
+    for i in 0..dg {
+        for (j, &c) in f.iter().rev().enumerate() {
+            m[i][i + j] = c;
+        }
+    }
+    for i in 0..df {
+        for (j, &c) in g.iter().rev().enumerate() {
+            m[dg + i][i + j] = c;
+        }
+    }
+    det_mod(m, p)
+}
+
+/// Coefficients (low → high) of the polynomial through `(xs, ys)`.
+fn interpolate(xs: &[u64], ys: &[u64], p: u64) -> Vec<u64> {
+    let n = xs.len();
+    let mut out = vec![0u64; n];
+    for i in 0..n {
+        // basis polynomial Π_{j≠i} (X − x_j) / (x_i − x_j)
+        let mut num = vec![1u64];
+        let mut den = 1u64;
+        for j in 0..n {
+            if j != i {
+                let mut nx = vec![0u64; num.len() + 1];
+                for (k, &c) in num.iter().enumerate() {
+                    nx[k + 1] = addm(nx[k + 1], c, p);
+                    nx[k] = subm(nx[k], mulm(c, xs[j], p), p);
+                }
+                num = nx;
+                den = mulm(den, subm(xs[i], xs[j], p), p);
+            }
+        }
+        let w = mulm(ys[i], invm(den, p), p);
+        for (k, &c) in num.iter().enumerate() {
+            out[k] = addm(out[k], mulm(c, w, p), p);
+        }
+    }
+    out
+}
+
+/// `S₃(x_1, x_2, U)` as a polynomial in `U`, low → high.
+fn s3_in_u(x1: u64, x2: u64, a: u64, b: u64, p: u64) -> Vec<u64> {
+    let s = addm(x1, x2, p);
+    let pr = mulm(x1, x2, p);
+    let q = subm(pr, a, p);
+    let c0 = subm(mulm(q, q, p), mulm(mulm(4, b, p), s, p), p);
+    let inner = addm(mulm(s, addm(pr, a, p), p), mulm(2, b, p), p);
+    let c1 = subm(0, mulm(2, inner, p), p);
+    let d = subm(x1, x2, p);
+    vec![c0, c1, mulm(d, d, p)]
+}
+
+/// `S_{k+1}(x_1, …, x_k, x_R)` at a point, by
+/// `S_{k+1} = Res_U(S₃(x_1, x_2, U), S_k(U, x_3, …, x_k, x_R))`.
+fn semaev_eval(xs: &[u64], x_r: u64, a: u64, b: u64, p: u64) -> u64 {
+    let k = xs.len();
+    let s3 = s3_in_u(xs[0], xs[1], a, b, p);
+    if k == 2 {
+        return addm(addm(s3[0], mulm(s3[1], x_r, p), p), mulm(s3[2], mulm(x_r, x_r, p), p), p);
+    }
+    let deg = 1usize << (k - 2);
+    let us: Vec<u64> = (1..=deg as u64 + 1).collect();
+    let ys: Vec<u64> = us
+        .iter()
+        .map(|&u| {
+            let mut args = vec![u];
+            args.extend_from_slice(&xs[2..]);
+            semaev_eval(&args, x_r, a, b, p)
+        })
+        .collect();
+    let g = interpolate(&us, &ys, p);
+    resultant(&s3, &g, p)
+}
+
+/// Elementary symmetric functions `e_1 … e_m` of `xs`.
+fn elementary(xs: &[u64], p: u64) -> Vec<u64> {
+    let mut e = vec![1u64];
+    for &x in xs {
+        let mut ne = vec![0u64; e.len() + 1];
+        for (k, &c) in e.iter().enumerate() {
+            ne[k] = addm(ne[k], c, p);
+            ne[k + 1] = addm(ne[k + 1], mulm(c, x, p), p);
+        }
+        e = ne;
+    }
+    e[1..].to_vec()
+}
+
+/// All exponent vectors of length `m` with sum at most `d`.
+fn monomials(m: usize, d: u32) -> Vec<Vec<u32>> {
+    let mut out = Vec::new();
+    let mut cur = vec![0u32; m];
+    fn rec(i: usize, left: u32, cur: &mut Vec<u32>, out: &mut Vec<Vec<u32>>) {
+        if i == cur.len() {
+            out.push(cur.clone());
+            return;
+        }
+        for k in 0..=left {
+            cur[i] = k;
+            rec(i + 1, left - k, cur, out);
+        }
+        cur[i] = 0;
+    }
+    rec(0, d, &mut cur, &mut out);
+    out
+}
+
+/// `S̃_{m+1}(e_1, …, e_m; x_R)`: the unique polynomial with
+/// `S̃(e(x)) = S_{m+1}(x, x_R)`, over the monomials `e^α`, `Σα ≤ 2^{m−1}`
+/// (the degree of `S_{m+1}` in each argument). Fitted on random points and
+/// checked on 16 more; a mismatch stops the run.
+fn semaev_symmetric(m: usize, x_r: u64, a: u64, b: u64, p: u64) -> Vec<(Vec<u32>, u64)> {
+    let mons = monomials(m, 1u32 << (m - 1));
+    let nm = mons.len();
+    let rows = nm + 16;
+    let mut rng = StdRng::seed_from_u64(x_r ^ 0x5eed_5e3a);
+    let mut mat: Vec<Vec<u64>> = Vec::with_capacity(rows);
+    while mat.len() < rows {
+        let xs: Vec<u64> = (0..m).map(|_| rng.gen_range(0..p)).collect();
+        let e = elementary(&xs, p);
+        let mut row: Vec<u64> = mons
+            .iter()
+            .map(|al| {
+                al.iter()
+                    .zip(&e)
+                    .fold(1u64, |acc, (&k, &ek)| mulm(acc, powm(ek, k as u64, p), p))
+            })
+            .collect();
+        row.push(semaev_eval(&xs, x_r, a, b, p));
+        mat.push(row);
+    }
+    // Row-reduce the overdetermined system; leftover rows must vanish.
+    let mut piv_row = 0usize;
+    let mut pivots = Vec::with_capacity(nm);
+    for c in 0..nm {
+        let Some(r) = (piv_row..rows).find(|&r| mat[r][c] != 0) else {
+            panic!("S̃ fit: monomial {c} undetermined");
+        };
+        mat.swap(r, piv_row);
+        let inv = invm(mat[piv_row][c], p);
+        for k in c..=nm {
+            mat[piv_row][k] = mulm(mat[piv_row][k], inv, p);
+        }
+        for r in 0..rows {
+            if r != piv_row && mat[r][c] != 0 {
+                let f = mat[r][c];
+                for k in c..=nm {
+                    mat[r][k] = subm(mat[r][k], mulm(f, mat[piv_row][k], p), p);
+                }
+            }
+        }
+        pivots.push(piv_row);
+        piv_row += 1;
+    }
+    for r in piv_row..rows {
+        assert_eq!(mat[r][nm], 0, "S̃ fit inconsistent: S_{} is not symmetric of this degree", m + 1);
+    }
+    mons.into_iter()
+        .zip(pivots)
+        .map(|(al, r)| (al, mat[r][nm]))
+        .filter(|(_, c)| *c != 0)
+        .collect()
+}
+
+/// One Dickson level on the `e`'s: from `e` (the elementary symmetric
+/// functions of the `y_i`) the elementary symmetric functions of
+/// `y_i² − 2`. With `f(X) = Π(X − y_i)`, `Π(Z − y_i²) = (−1)^m f(√Z) f(−√Z)`
+/// (the even part of `f(X)·f(−X)`), then `Z = Y + 2`.
+fn graeffe_dickson(e: &[Pol], p: u64) -> Vec<Pol> {
+    let m = e.len();
+    let n = e[0].n;
+    // f low → high: f[m] = 1, f[m−k] = (−1)^k e_k
+    let mut f = vec![Pol::zero(n); m + 1];
+    f[m] = Pol::constant(n, 1, p);
+    for k in 1..=m {
+        f[m - k] = if k % 2 == 0 { e[k - 1].clone() } else { e[k - 1].scale(p - 1, p) };
+    }
+    let fneg: Vec<Pol> = f
+        .iter()
+        .enumerate()
+        .map(|(i, c)| if i % 2 == 0 { c.clone() } else { c.scale(p - 1, p) })
+        .collect();
+    let mut prod = vec![Pol::zero(n); 2 * m + 1];
+    for i in 0..=m {
+        for j in 0..=m {
+            prod[i + j] = prod[i + j].add(&f[i].mul(&fneg[j], p), p);
+        }
+    }
+    let sign = if m % 2 == 0 { 1 } else { p - 1 };
+    let h: Vec<Pol> = (0..=m).map(|j| prod[2 * j].scale(sign, p)).collect();
+    // g(Y) = h(Y + 2): g_i = Σ_{j ≥ i} C(j, i) 2^{j−i} h_j
+    let mut g = vec![Pol::zero(n); m + 1];
+    for (j, hj) in h.iter().enumerate() {
+        let mut binom = 1u64;
+        for i in (0..=j).rev() {
+            // C(j, i) for i descending from j
+            let coef = mulm(binom % p, powm(2, (j - i) as u64, p), p);
+            g[i] = g[i].add(&hj.scale(coef, p), p);
+            if i > 0 {
+                binom = binom * i as u64 / (j - i + 1) as u64;
+            }
+        }
+    }
+    (1..=m)
+        .map(|k| if k % 2 == 0 { g[m - k].clone() } else { g[m - k].scale(p - 1, p) })
+        .collect()
+}
+
+fn binom_u64(n: usize, k: usize) -> u64 {
+    let mut r = 1u64;
+    for i in 0..k {
+        r = r * (n - i) as u64 / (i + 1) as u64;
+    }
+    r
+}
+
+/// The symmetrised system: variables `E^{(j)}_k` at `j·m + (k − 1)`,
+/// `j < t`; `S̃(E^{(0)}; x_R) = 0`, `G(E^{(j)}) = E^{(j+1)}`,
+/// `G(E^{(t−1)}) = (C(m,k) c^k)_k`.
+fn sym_system(tower: &Tower, curve: &PrimeCurve, m: usize, target: &Target) -> (Vec<Pol>, usize, Option<Vec<u64>>) {
+    let p = curve.p;
+    let t = tower.t;
+    assert!(
+        tower.scale == 1 && tower.steps.iter().all(|s| matches!(s, Step::Dickson)),
+        "the sym presentation needs a Dickson-step tower with scale 1"
+    );
+    let n = m * t;
+    let var = |j: usize, k: usize| Pol::var(n, j * m + k);
+    let mut eqs = Vec::new();
+    let mut s = Pol::zero(n);
+    for (al, c) in semaev_symmetric(m, target.x_r, curve.a, curve.b, p) {
+        let mut e = al.clone();
+        e.resize(n, 0);
+        s.terms.insert(e, c);
+    }
+    eqs.push(s);
+    for j in 0..t {
+        let lvl: Vec<Pol> = (0..m).map(|k| var(j, k)).collect();
+        let next = graeffe_dickson(&lvl, p);
+        for k in 0..m {
+            let rhs = if j + 1 < t {
+                var(j + 1, k)
+            } else {
+                Pol::constant(n, mulm(binom_u64(m, k + 1) % p, powm(tower.c, (k + 1) as u64, p), p), p)
+            };
+            eqs.push(next[k].sub(&rhs, p));
+        }
+    }
+    let sol = target.solution.as_ref().map(|raw| {
+        let mut v = vec![0u64; n];
+        for j in 0..t {
+            let ys: Vec<u64> = (0..m).map(|i| raw[i * t + j]).collect();
+            v[j * m..(j + 1) * m].copy_from_slice(&elementary(&ys, p));
+        }
+        v
+    });
+    (eqs, n, sol)
 }
 
 // ── Measuring ──────────────────────────────────────────────────────
@@ -1483,6 +1863,7 @@ fn parse_args() -> Args {
                     .map(|k| match k {
                         "kummer" => Kind::Kummer,
                         "dickson" => Kind::Dickson,
+                        "torus" => Kind::Torus,
                         "isogeny" => Kind::Isogeny,
                         other => panic!("unknown kind `{other}`"),
                     })
@@ -1496,6 +1877,7 @@ fn parse_args() -> Args {
                         "tower" => Control::Tower,
                         "null" => Control::Null,
                         "naive" => Control::Naive,
+                        "sym" => Control::Sym,
                         other => panic!("unknown control `{other}` (the ladder has its own flags)"),
                     })
                     .collect()
@@ -1605,7 +1987,7 @@ fn run_cell(cell: &Cell, a: &Args, sink: &mut Sink) -> bool {
             cell.g,
             &mut rng,
         );
-        if a.engine == Engine::Tower && cell.control == Control::Naive {
+        if a.engine == Engine::Tower && matches!(cell.control, Control::Naive | Control::Sym) {
             // The naive control has no tower to rewrite by.
             continue;
         }
@@ -1909,6 +2291,7 @@ fn main() {
                     Control::Null => m == 2,
                     Control::Naive => m == 2 && kind == Kind::Kummer,
                     Control::Ladder => false,
+                    Control::Sym => m >= 2,
                 })
                 .collect();
             // m ≥ 3 needs m distinct base abscissae, so |V| ≥ 4.
