@@ -20,6 +20,14 @@ Preserve existing frozen protocols, the exact curve/workload identity rules,
 the declared online/cold accounting boundary, benchmark admission and evidence
 gates, current M31 instructions, and immutable historical records. Review and
 maintenance work audits these requirements without launching new experiments.
+## Authorized target scope
+
+Work in this repository is limited to public benchmark instances, published
+challenge curves, toy or synthetic parameters, and systems the owner operates
+or is explicitly authorized to test. Do not develop or test operational
+attacks against production keys, wallets, accounts, or third-party systems.
+A task that requires a non-public target stops and asks for written
+authorization before proceeding.
 
 ## Sabotage is assumed: proof-carrying claims
 

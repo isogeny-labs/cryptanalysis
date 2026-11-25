@@ -1,3 +1,12 @@
+## Authorized target scope
+
+Work in this repository is limited to public benchmark instances, published
+challenge curves, toy or synthetic parameters, and systems the owner operates
+or is explicitly authorized to test. Do not develop or test operational
+attacks against production keys, wallets, accounts, or third-party systems.
+A task that requires a non-public target stops and asks for written
+authorization before proceeding.
+
 **Goal and first step** (AGENTS.md, "Goal: what to work on next" and "First
 step of every task"): the SessionStart hook prints `tools/goal_brief.py` (the
 pinned goal and items in `docs/ACTIVE.md`, then the newest session-log open
