@@ -22,6 +22,16 @@ maximal-order CM curve and a same-size ordinary control. Distinguish a
 relation identity, component gain, and full single-target gain.
 \[pcc:unverified\]
 
+The `p=47`, `r=61` control has embedding degree `ord_61(47)=3`\; the
+existing maximal-order `p=1009`, `r=1069` pair has `ord_1069(1009)=534`
+(both by exact modular order). A character rule seen only on the first
+control is therefore vulnerable to a small-extension pairing explanation
+under the
+#link("https://doi.org/10.1109/18.259647")[Menezes--Okamoto--Vanstone reduction].
+Require all-scalar replay on the second pair and an
+embedding-degree-aware generic control before attributing an extractor
+to CM ray data. \[pcc:unverified\]
+
 For every arm, retain raw outputs, failures, source revision, seeds, and
 the same query stream. Charge setup, isogeny construction, evaluator,
 relation collection, orientation, storage, linear algebra, descent, and

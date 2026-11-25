@@ -8,6 +8,8 @@
 
 Input to a candidate evaluator is `(E, G, x(Q), y(Q))` and public CM/isogeny data. During evaluation it may not read `d`, a precomputed target label, or a generating endomorphism whose action encodes `d`. In finite controls, a driver may generate `Q=[d]G` to check the output, but `d` must remain outside the evaluator. Freeze the source curve, horizontal edges, point encoding, parameter search, cost units, and pass thresholds before the first outcome. Validate every nonzero `d` on the `D=-19`, `p=47`, `r=61`, `G=(2,1)` control, then an independent maximal-order CM curve and a same-size ordinary control. Distinguish a relation identity, component gain, and full single-target gain. [pcc:unverified]
 
+The `p=47`, `r=61` control has embedding degree `ord_61(47)=3`; the existing maximal-order `p=1009`, `r=1069` pair has `ord_1069(1009)=534` (both by exact modular order). A character rule seen only on the first control is therefore vulnerable to a small-extension pairing explanation under the [Menezes–Okamoto–Vanstone reduction](https://doi.org/10.1109/18.259647). Require all-scalar replay on the second pair and an embedding-degree-aware generic control before attributing an extractor to CM ray data. [pcc:unverified]
+
 For every arm, retain raw outputs, failures, source revision, seeds, and the same query stream. Charge setup, isogeny construction, evaluator, relation collection, orientation, storage, linear algebra, descent, and verification. Compare against matched same-target rho; any reuse amortization is secondary. A source-versus-codomain comparison must include an isomorphic coordinate-model null and a native known-scalar control. [pcc:unverified]
 
 ## Proposal A: compress a marked ray resolvent
