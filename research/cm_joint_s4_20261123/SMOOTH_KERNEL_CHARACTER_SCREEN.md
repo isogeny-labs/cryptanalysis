@@ -3,7 +3,11 @@
 ## Candidate and exact finite construction
 
 A smooth horizontal chain can give a compact evaluation description for a
-high-degree isogeny kernel function. This is a concrete class left open by
+high-degree isogeny kernel function. For the specific `1+pi` kernel,
+the [generic division-polynomial identity](GENERIC_KERNEL_EVALUATION_IDENTITY.md)
+gives a separate `O(log r)` point evaluator without a CM chain. The
+two-edge circuit below is therefore a structural check, not an
+exclusive way to evaluate this function. This is a concrete class left open by
 the [outer-character degree bound](OUTER_CHARACTER_DEGREE_GATE.md): the
 bound concerns rational-map degree, not the cost of a short circuit.
 The candidate here is the field quadratic character of the kernel
