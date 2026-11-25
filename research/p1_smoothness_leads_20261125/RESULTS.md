@@ -248,6 +248,13 @@ or universal overlap. `[pcc:unverified]`
 ### Cold relation-rank and same-target descent check
 
 The [cold protocol](COLD_NETWORK_PROTOCOL.md) was committed before the run.
+This first run is retained as a **contaminated control**: its target
+\(137G\) lies inside the known-scalar precomputation scan range. Excluding
+exactly scalar 137 did not prevent nearby scanned points from identifying the
+target after a shift. Its scalar recovery must not be treated as an
+independent cold target result. The corrected target and protocol follow
+below. `[pcc:unverified]`
+
 `cold_network.py` constructs one two-summand sum table per arm, collects
 known-scalar relations in the fixed scan excluding the target's construction
 scalar, compresses \(P,-P\) pairs, solves each full-rank system over
@@ -257,7 +264,7 @@ construct the public fixture and only for final answer verification, not as a
 relation. The program's exact output is [`cold_network.json`](cold_network.json).
 All six arms reached full rank. `[pcc:unverified]`
 
-| Route | Sign variables | Sum-table additions | Precomputation queries | Target-descent queries | Target shift |
+| Contaminated 137G route | Sign variables | Sum-table additions | Precomputation queries | Target-descent queries | Target shift |
 |---|---:|---:|---:|---:|---:|
 | Base curve reference | 11 | 253 | 738 | 16 | 15 |
 | Strongest isogenous arm | 15 | 465 | 802 | 37 | 36 |
@@ -274,6 +281,27 @@ decomposition oracle is not an F4 solver; isogeny construction/evaluation,
 group-point generation, and sparse linear-algebra operation counts are not
 included in the two charge columns. The counts therefore do not establish a
 general cost ordering or a comparison with rho. `[pcc:unverified]`
+
+The [frozen target correction](COLD_NETWORK_V2_PROTOCOL.md) changed only the
+target to \(R=7001G\), beyond every relation-scan cutoff, and preserved the
+prior record. `cold_network_v2.py` added a check that no descent query on any
+route matched a known-scalar point visited during its arm's precomputation.
+All six arms again reached full rank, and all three routes passed this
+overlap check. [`cold_network_v2.json`](cold_network_v2.json) records the
+exact outcomes. `[pcc:unverified]`
+
+| Corrected route | Sum-table additions | Precomputation queries | Descent queries | Total membership queries |
+|---|---:|---:|---:|---:|
+| Base curve | 253 | 739 | 35 | 774 |
+| Strongest isogenous arm | 465 | 803 | 6 | 809 |
+| Five-arm network | 1,260 | 6,350 | 30 | 6,380 |
+
+The corrected network uses more precomputation and more descent queries than
+the predefined strongest isogenous arm on this fixed target. The recovered
+scalar 7001 passed scalar-multiplication verification; no descent point
+appeared in its arm's known-scalar scan. These are exact group-addition-oracle
+counts under the frozen order, still without native F4, isogeny evaluation,
+or sparse linear algebra in the cold totals. `[pcc:unverified]`
 
 ### Native two-summand F4 panel
 
