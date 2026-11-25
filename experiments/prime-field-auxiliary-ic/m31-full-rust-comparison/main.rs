@@ -156,7 +156,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         b = (b + db) % N;
         point = curve.add(point, dp)?;
         let mut differences = vec![point; minus.len()];
-        curve.batch_add(&mut differences, &minus, &mut scratch)?;
+        if option_env!("M31_TRUSTED_BATCH").is_some() {
+            curve.batch_add_assume_valid(&mut differences, &minus, &mut scratch)?;
+        } else {
+            curve.batch_add(&mut differences, &minus, &mut scratch)?;
+        }
         let Some((k, payload)) = differences
             .iter()
             .enumerate()

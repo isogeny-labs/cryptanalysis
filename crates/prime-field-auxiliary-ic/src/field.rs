@@ -450,6 +450,23 @@ impl<const B: u32> Curve<B> {
         self.batch_add_inner(points, steps, scratch);
         Ok(())
     }
+    /// Add already validated points without repeating curve-membership checks.
+    ///
+    /// Both slices must have equal length. Every finite input must have been
+    /// produced or checked by this curve. This is useful for repeated batch
+    /// walks over a fixed, validated point set.
+    pub fn batch_add_assume_valid(
+        self,
+        points: &mut [Option<Point>],
+        steps: &[Option<Point>],
+        scratch: &mut BatchScratch,
+    ) -> Result<()> {
+        if points.len() != steps.len() {
+            return Err(Error::Invalid("batch length mismatch"));
+        }
+        self.batch_add_inner(points, steps, scratch);
+        Ok(())
+    }
     pub(crate) fn batch_add_inner(
         self,
         points: &mut [Option<Point>],
@@ -843,6 +860,11 @@ mod tests {
             .zip(&steps)
             .map(|(&a, &b)| curve.add(a, b).unwrap())
             .collect();
+        let mut prevalidated = points.clone();
+        curve
+            .batch_add_assume_valid(&mut prevalidated, &steps, &mut BatchScratch::default())
+            .unwrap();
+        assert_eq!(prevalidated, expected);
         curve
             .batch_add(&mut points, &steps, &mut BatchScratch::default())
             .unwrap();
