@@ -1,0 +1,7 @@
+# Frozen high-bit x bitmap mapping confirmation
+
+The preceding three-way screen selected the high 22 bits of the 31-bit x coordinate as the 512 KiB bitmap address. Confirm it against the current multiplicative x hash at the same 512 KiB capacity. Use identical Rust source and frozen public auxiliary/plain M31 fixtures, basis generation, exact sign-packed index, direct pair rows, validated paired collector, relation walk, elimination and answer check. Before timing, require byte-identical complete sorted exact-index maps, positive bitmap marking audit, and the published public answer.
+
+Use seeds 0, 1, 2 and eight rounds per seed per basis: 48 matched blocks, 96 fresh-process arms. Balance arm order within each seed by round parity and shuffle blocks with Python `random.Random(112567)`. Within every block require equal basis digest, scalar, trial count, relation count and index entries. Retain failed and censored arms.
+
+Charge wall and parent-plus-child CPU from before basis regeneration through input writing, Rust process startup, setup, relation collection, elimination, answer verification, output parsing and exit. Compilation, frozen JSON loading and complete map audit precede timing; OS caches are not flushed. Confirm a local implementation gain only if paired wall and CPU medians favor high-bit mapping on both bases with exact workload parity. Report the direct result and its limits; independent signed performance verification remains pending.

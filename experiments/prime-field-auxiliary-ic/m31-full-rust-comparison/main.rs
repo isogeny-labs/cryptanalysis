@@ -14,6 +14,15 @@ const BLOOM_BITS: usize = if option_env!("M31_BLOOM_18").is_some() {
 } else {
     20
 };
+fn bloom_bit(x: u64) -> usize {
+    if option_env!("M31_BLOOM_HASH_HIGH").is_some() {
+        (x as usize) >> (31 - BLOOM_BITS)
+    } else if option_env!("M31_BLOOM_HASH_LOW").is_some() {
+        (x as usize) & ((1 << BLOOM_BITS) - 1)
+    } else {
+        (x.wrapping_mul(0x9e3779b97f4a7c15) >> (64 - BLOOM_BITS)) as usize
+    }
+}
 fn mul(a: u64, b: u64) -> u64 {
     ((a as u128 * b as u128) % N as u128) as u64
 }
@@ -136,8 +145,7 @@ impl FlatIndex {
                 self.len += 1;
             }
             if new_x && !self.x_bitmap.is_empty() {
-                let bit =
-                    (u64::from(x).wrapping_mul(0x9e3779b97f4a7c15) >> (64 - BLOOM_BITS)) as usize;
+                let bit = bloom_bit(u64::from(x));
                 self.x_bitmap[bit >> 6] |= 1u64 << (bit & 63);
             }
         } else {
@@ -170,7 +178,7 @@ impl FlatIndex {
         PACKED_SIGN && self.sign_slots[self.slot(x)].0 == x
     }
     fn may_contain_x_bitmap(&self, x: u64) -> bool {
-        let bit = (x.wrapping_mul(0x9e3779b97f4a7c15) >> (64 - BLOOM_BITS)) as usize;
+        let bit = bloom_bit(x);
         self.x_bitmap[bit >> 6] & (1u64 << (bit & 63)) != 0
     }
     fn dump_sorted(&self, path: &str) -> std::io::Result<()> {
