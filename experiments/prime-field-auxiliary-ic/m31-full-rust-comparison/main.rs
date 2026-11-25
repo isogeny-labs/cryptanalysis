@@ -1,5 +1,5 @@
 use prime_field_auxiliary_ic::{BatchScratch, Curve, Point};
-use std::{collections::HashMap, env, fs, time::Instant};
+use std::{env, fs, time::Instant};
 
 const N: u64 = 2_147_505_293;
 fn mul(a: u64, b: u64) -> u64 {
@@ -29,8 +29,8 @@ fn build(
     curve: Curve<31>,
     signed: &[Option<Point>],
     reflected: bool,
-) -> Result<HashMap<u64, u32>, Box<dyn std::error::Error>> {
-    let mut table = HashMap::with_capacity(500_000);
+) -> Result<FlatIndex, Box<dyn std::error::Error>> {
+    let mut table = FlatIndex::new();
     let mut scratch = BatchScratch::default();
     let stride = if reflected { 2 } else { 1 };
     for i in (0..signed.len()).step_by(stride) {
@@ -38,24 +38,61 @@ fn build(
         curve.batch_add(&mut sums, &signed[i..], &mut scratch)?;
         for (off, &point) in sums.iter().enumerate() {
             if point.is_some() {
-                table
-                    .entry(key(point))
-                    .or_insert(((i as u32) << 16) | (i + off) as u32);
+                table.entry(key(point), ((i as u32) << 16) | (i + off) as u32);
             }
         }
         if reflected {
             for j in i + 1..signed.len() {
                 let point = sums[(j ^ 1) - i].map(|p| curve.negate(p)).transpose()?;
                 if point.is_some() {
-                    table
-                        .entry(key(point))
-                        .or_insert((((i + 1) as u32) << 16) | j as u32);
+                    table.entry(key(point), (((i + 1) as u32) << 16) | j as u32);
                 }
             }
         }
     }
     Ok(table)
 }
+struct FlatIndex {
+    slots: Vec<(u32, u32)>,
+    len: usize,
+}
+impl FlatIndex {
+    fn new() -> Self {
+        Self {
+            slots: vec![(u32::MAX, 0); 1 << 20],
+            len: 0,
+        }
+    }
+    fn slot(&self, key: u32) -> usize {
+        let mut h = u64::from(key).wrapping_add(0x9e3779b97f4a7c15);
+        h = (h ^ (h >> 30)).wrapping_mul(0xbf58476d1ce4e5b9);
+        h = (h ^ (h >> 27)).wrapping_mul(0x94d049bb133111eb);
+        h ^= h >> 31;
+        let mask = self.slots.len() - 1;
+        let mut i = h as usize & mask;
+        while self.slots[i].0 != u32::MAX && self.slots[i].0 != key {
+            i = (i + 1) & mask;
+        }
+        i
+    }
+    fn entry(&mut self, key: u64, payload: u32) {
+        let key = u32::try_from(key).expect("finite M31 key fits in u32");
+        let i = self.slot(key);
+        if self.slots[i].0 == u32::MAX {
+            self.slots[i] = (key, payload);
+            self.len += 1;
+        }
+    }
+    fn get(&self, key: u64) -> Option<u32> {
+        let key = u32::try_from(key).ok()?;
+        let slot = self.slots[self.slot(key)];
+        (slot.0 == key).then_some(slot.1)
+    }
+    fn len(&self) -> usize {
+        self.len
+    }
+}
+
 struct Pivot {
     row: Vec<u64>,
 }
@@ -119,7 +156,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let Some((k, payload)) = differences
             .iter()
             .enumerate()
-            .find_map(|(k, &p)| table.get(&key(p)).map(|&v| (k, v)))
+            .find_map(|(k, &p)| table.get(key(p)).map(|v| (k, v)))
         else {
             continue;
         };
