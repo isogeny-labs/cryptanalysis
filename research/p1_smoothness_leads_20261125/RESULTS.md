@@ -245,6 +245,36 @@ overlap calculation and this normalized-preimage \(x<20\) calculation use
 different bounds and set definitions; neither implies universal disjointness
 or universal overlap. `[pcc:unverified]`
 
+### Cold relation-rank and same-target descent check
+
+The [cold protocol](COLD_NETWORK_PROTOCOL.md) was committed before the run.
+`cold_network.py` constructs one two-summand sum table per arm, collects
+known-scalar relations in the fixed scan excluding the target's construction
+scalar, compresses \(P,-P\) pairs, solves each full-rank system over
+\(\mathbb F_{10193}\), and verifies every recovered base logarithm by scalar
+multiplication. The same target is \(R=137G\) throughout; 137 is used to
+construct the public fixture and only for final answer verification, not as a
+relation. The program's exact output is [`cold_network.json`](cold_network.json).
+All six arms reached full rank. `[pcc:unverified]`
+
+| Route | Sign variables | Sum-table additions | Precomputation queries | Target-descent queries | Target shift |
+|---|---:|---:|---:|---:|---:|
+| Base curve reference | 11 | 253 | 738 | 16 | 15 |
+| Strongest isogenous arm | 15 | 465 | 802 | 37 | 36 |
+| Five-arm network | 52 total | 1,260 | 6,345 | 9 | 1 |
+
+The network found a target relation sooner online, but its five full-rank
+precomputations required 6,345 membership queries versus 802 for the
+strongest isogenous arm. Including descent gives 6,354 versus 839 queries
+under this fixed scan. The program also charged 1,260 versus 465 group
+additions to build the respective sum tables. It checked that the recovered
+scalar reproduces \(R\). This is a finite cold-work counterexample to treating
+the best-of-five hit probability alone as a speed result. Its sum-table
+decomposition oracle is not an F4 solver; isogeny construction/evaluation,
+group-point generation, and sparse linear-algebra operation counts are not
+included in the two charge columns. The counts therefore do not establish a
+general cost ordering or a comparison with rho. `[pcc:unverified]`
+
 For secp256k1, \(\psi(x,y)=(\beta x,y)\) and \(\beta^3=1\) do preserve
 \(x^r=1\) exactly when \(3\mid r\). This supplies orbit relations among
 factor-base logarithms. It is an instance of the known GLV endomorphism;
