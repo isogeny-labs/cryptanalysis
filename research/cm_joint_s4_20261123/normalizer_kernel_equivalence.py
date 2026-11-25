@@ -55,7 +55,7 @@ def census(name, curve, generator, labels):
     mismatches = [row["d"] for row in rows if not row["match"]]
     return {"name": name, "p": p, "r": r, "a": int(a), "b": int(b),
             "generator": [int(generator[0]), int(generator[1])],
-            "kernel_norm": norm, "kernel_degree": kernel.degree(),
+            "kernel_norm": norm, "kernel_degree": int(kernel.degree()),
             "orientation": orientation, "matches": len(rows)-len(mismatches),
             "first_mismatch": mismatches[0] if mismatches else None,
             "mismatches": mismatches, "rows": rows}
