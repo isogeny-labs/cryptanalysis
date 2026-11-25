@@ -43,3 +43,11 @@ The checked Rust API validates intermediate points, so its instruction costs
 differ from the C++ implementation. Compare flat and reflected within one
 implementation. The Rust source and timings have local replay evidence only,
 with independent PCC standing pending. [pcc:unverified]
+
+Use `python3 replay.py --implementation rust --check-only` for correctness
+checks without timing collection. This runs the public reference and collision
+fixtures in both modes, plus expected rejection of altered payloads, truncated
+references, off-curve representatives and incomplete point input. Each invalid
+case must return the Rust checked-error exit code, so an abnormal termination
+also fails the test. The C++ implementation supports --check-only for its
+existing reference comparisons.

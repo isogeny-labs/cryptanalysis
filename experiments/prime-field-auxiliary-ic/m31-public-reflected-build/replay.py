@@ -12,7 +12,7 @@ import tempfile
 source = Path(__file__).resolve().parent.parent / "m31-public-pair-build"
 reference = runpy.run_path(str(source / "replay.py"))
 
-def replay(directory, implementation="cpp"):
+def replay(directory, implementation="cpp", check_only=False):
     if implementation == "rust":
         crate = "crates/prime-field-auxiliary-ic"
         repo = subprocess.check_output(["git", "rev-parse", "--show-toplevel"], cwd=source, text=True).strip()
@@ -45,6 +45,29 @@ def replay(directory, implementation="cpp"):
         for mode in ("flat", "reflected"):
             subprocess.run(["./target/release/public-row-benchmark", "collisions", mode,
                             "collisions.bin"], cwd=directory, check=True, stdout=subprocess.DEVNULL)
+        damaged = bytearray(blob)
+        damaged[4] ^= 1
+        (directory / "wrong-payload.bin").write_bytes(damaged)
+        (directory / "truncated.bin").write_bytes(blob[:-1])
+        (directory / "off-curve").write_text("0 0\n" + "".join(f"{x} {y}\n" for x, y in points[1:]))
+        (directory / "short-input").write_text("1 814455902\n")
+        for mode in ("flat", "reflected"):
+            for input_name, ref_name in [("collisions", "wrong-payload.bin"),
+                                         ("collisions", "truncated.bin"),
+                                         ("off-curve", "collisions.bin"),
+                                         ("short-input", "collisions.bin")]:
+                result = subprocess.run(["./target/release/public-row-benchmark", input_name,
+                                         mode, ref_name], cwd=directory, capture_output=True)
+                if result.returncode != 1:
+                    raise AssertionError(f"Expected checked rejection for {mode}/{input_name}/{ref_name}: {result.returncode}")
+    if check_only:
+        for basis in reference["DIGESTS"]:
+            for mode in ("flat", "reflected"):
+                command = (["./target/release/public-row-benchmark", basis, mode]
+                           if implementation == "rust" else [f"./{mode}", basis, "compact"])
+                subprocess.run(command + [f"{basis}-compact.bin"], cwd=directory,
+                               check=True, stdout=subprocess.DEVNULL)
+        return
     blocks = [(basis, r) for basis in reference["DIGESTS"] for r in range(24)]
     random.Random(112427).shuffle(blocks)
     writer = csv.writer(sys.stdout, lineterminator="\n")
@@ -60,6 +83,7 @@ def replay(directory, implementation="cpp"):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--implementation", choices=["cpp", "rust"], default="cpp")
+    parser.add_argument("--check-only", action="store_true")
     args = parser.parse_args()
     with tempfile.TemporaryDirectory() as tmp:
-        replay(Path(tmp), args.implementation)
+        replay(Path(tmp), args.implementation, args.check_only)
