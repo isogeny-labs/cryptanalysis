@@ -1,0 +1,30 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-25T05:51:05Z",
+ "id": "PCC-20261125-c9fe5e",
+ "kind": "theorem",
+ "producer": {
+  "commit": "ce699b50bc0bfd0038a7673e209a83fe77015aa8",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/TRANSPOSED_ORBIT_MEMBERSHIP_GATE.md",
+    "sha256": "0ad19fe3a3006cd60a900734093de81bfe56170c03723b51fc7264356510f764"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/transposed_orbit_membership_replay.py",
+    "sha256": "8ee44a2d67871c593778ff296e74ccf95eb923b2cbcfefc485f9450351a26d68"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "research/cm_joint_s4_20261123/TRANSPOSED_ORBIT_MEMBERSHIP_GATE.md",
+ "statement": "A descriptor-seed hash answers the two-seed length-L three-sum query by at most B*L inverse-orbit lookups and O(D) descriptor records; on the fixed r=61 control its indexed witnesses match all 1920 frozen queries, while the optimistic P-192 joint-memory count is about 2^83.356 lookups per query."
+}

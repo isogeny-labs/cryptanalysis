@@ -1,0 +1,14 @@
+digraph Gate {
+  graph [rankdir=LR, bgcolor="white", pad="0.2", nodesep="0.45", ranksep="0.75"];
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=12, fillcolor="#f0f6ff", color="#3e5d83"];
+  edge [fontname="Helvetica", fontsize=10, color="#51667e"];
+  P [label="Q = [d]G\npoint coordinates"];
+  X [label="x(Q) in [0,p)\nmodel dependent"];
+  Z [label="z(Q) = -1/(x(Q)-1) mod r\ncomputable ray residue"];
+  D [label="d unknown"];
+  R [label="[1+d(pi-1)]\nscalar-labelled ray class"];
+  P -> X -> Z;
+  P -> D [label="discrete logarithm", style=dashed];
+  D -> R [style=dashed];
+  Z -> R [label="additive scalar rule fails\non screened curves", color="#aa4c3f", fontcolor="#aa4c3f", style=dotted];
+}

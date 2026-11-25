@@ -1,0 +1,11 @@
+digraph Cost {
+  graph [rankdir=LR, bgcolor="white", pad="0.2", nodesep="0.35", ranksep="0.65"];
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11, fillcolor="#f0f6ff", color="#3e5d83"];
+  edge [fontname="Helvetica", fontsize=10, color="#51667e"];
+  B [label="Five 8-point signed bases\nsource A/B, mixed, two random\nall support 96/1068"];
+  Q [label="Same Q=[271]G\n64 natural queries"];
+  M [label="Three isomorphic models\nscales 1, 25, 437"];
+  S [label="5 interleaved S4 solves\nper arm/query/model"];
+  R [label="Mixed/source CPU ratio\n0.984, 0.991, 0.993\ngain gate <= 0.90"];
+  B -> Q -> M -> S -> R;
+}

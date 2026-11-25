@@ -1,0 +1,320 @@
+{
+ "stage": "relation_yield",
+ "n_or_bits": {
+  "bits": [
+   20,
+   24
+  ],
+  "primes": [
+   1046047,
+   16776547
+  ],
+  "curve": "y^2 = x^3 + 7, #E prime (1046779 / 16769119)"
+ },
+ "base_id_or_hash": "sha256:48e9b34f1c5e2b5eb11355480c1a48ba7e2287d862560d980581f986f20a7d6f",
+ "base_id_basis": "sha256 over the 18 (p, m, N, shape) cell identifiers; each cell's base is the canonical enumeration of that shape, so the hash pins the panel, not a materialised set",
+ "eta_or_coverage_policy": "exhaustive: r(R) is computed for EVERY R in E(F_p) by enumerating all C(N+m-1,m) m-multisets; coverage = |E|, no sampling, no CI needed for the value itself (the ci95 field carries the binomial interval a T-target estimate of the same quantity would have, for comparability)",
+ "pr_decomposition_or_hit_rate_with_ci": {
+  "bits19_m2_N512": {
+   "interval": {
+    "value": 0.117616,
+    "ci95": [
+     0.116999,
+     0.118233
+    ],
+    "exact": true,
+    "trials_per_relation": 8.5022,
+    "mean_r": 0.125215,
+    "max_r": 4,
+    "tuples_equals_C": true
+   },
+   "farey": {
+    "value": 0.117494,
+    "ci95": [
+     0.116877,
+     0.118111
+    ],
+    "exact": true,
+    "trials_per_relation": 8.5111,
+    "mean_r": 0.125215,
+    "max_r": 5,
+    "tuples_equals_C": true
+   },
+   "random": {
+    "value": 0.117847,
+    "ci95": [
+     0.117229,
+     0.118465
+    ],
+    "exact": true,
+    "trials_per_relation": 8.4856,
+    "mean_r": 0.125215,
+    "max_r": 4,
+    "tuples_equals_C": true
+   }
+  },
+  "bits19_m2_N1448": {
+   "interval": {
+    "value": 0.634175,
+    "ci95": [
+     0.633252,
+     0.635098
+    ],
+    "exact": true,
+    "trials_per_relation": 1.5769,
+    "mean_r": 1.001504,
+    "max_r": 8,
+    "tuples_equals_C": true
+   },
+   "farey": {
+    "value": 0.633273,
+    "ci95": [
+     0.63235,
+     0.634196
+    ],
+    "exact": true,
+    "trials_per_relation": 1.5791,
+    "mean_r": 1.001504,
+    "max_r": 8,
+    "tuples_equals_C": true
+   },
+   "random": {
+    "value": 0.633617,
+    "ci95": [
+     0.632694,
+     0.63454
+    ],
+    "exact": true,
+    "trials_per_relation": 1.5782,
+    "mean_r": 1.001504,
+    "max_r": 8,
+    "tuples_equals_C": true
+   }
+  },
+  "bits19_m3_N96": {
+   "interval": {
+    "value": 0.12972,
+    "ci95": [
+     0.129076,
+     0.130364
+    ],
+    "exact": true,
+    "trials_per_relation": 7.7089,
+    "mean_r": 0.145299,
+    "max_r": 51,
+    "tuples_equals_C": true
+   },
+   "farey": {
+    "value": 0.129835,
+    "ci95": [
+     0.129191,
+     0.130479
+    ],
+    "exact": true,
+    "trials_per_relation": 7.7021,
+    "mean_r": 0.145299,
+    "max_r": 50,
+    "tuples_equals_C": true
+   },
+   "random": {
+    "value": 0.130685,
+    "ci95": [
+     0.130039,
+     0.131331
+    ],
+    "exact": true,
+    "trials_per_relation": 7.652,
+    "mean_r": 0.145299,
+    "max_r": 49,
+    "tuples_equals_C": true
+   }
+  },
+  "bits19_m3_N184": {
+   "interval": {
+    "value": 0.62872,
+    "ci95": [
+     0.627794,
+     0.629646
+    ],
+    "exact": true,
+    "trials_per_relation": 1.5905,
+    "mean_r": 1.008084,
+    "max_r": 97,
+    "tuples_equals_C": true
+   },
+   "farey": {
+    "value": 0.626822,
+    "ci95": [
+     0.625895,
+     0.627749
+    ],
+    "exact": true,
+    "trials_per_relation": 1.5953,
+    "mean_r": 1.00808,
+    "max_r": 97,
+    "tuples_equals_C": true
+   },
+   "random": {
+    "value": 0.627199,
+    "ci95": [
+     0.626273,
+     0.628125
+    ],
+    "exact": true,
+    "trials_per_relation": 1.5944,
+    "mean_r": 1.008084,
+    "max_r": 97,
+    "tuples_equals_C": true
+   }
+  },
+  "bits23_m2_N5792": {
+   "interval": {
+    "value": 0.63241,
+    "ci95": [
+     0.632179,
+     0.632641
+    ],
+    "exact": true,
+    "trials_per_relation": 1.5813,
+    "mean_r": 1.000269,
+    "max_r": 10,
+    "tuples_equals_C": true
+   },
+   "farey": {
+    "value": 0.632454,
+    "ci95": [
+     0.632223,
+     0.632685
+    ],
+    "exact": true,
+    "trials_per_relation": 1.5811,
+    "mean_r": 1.000269,
+    "max_r": 10,
+    "tuples_equals_C": true
+   },
+   "random": {
+    "value": 0.632386,
+    "ci95": [
+     0.632155,
+     0.632617
+    ],
+    "exact": true,
+    "trials_per_relation": 1.5813,
+    "mean_r": 1.000269,
+    "max_r": 10,
+    "tuples_equals_C": true
+   }
+  },
+  "bits23_m3_N464": {
+   "interval": {
+    "value": 0.628659,
+    "ci95": [
+     0.628428,
+     0.62889
+    ],
+    "exact": true,
+    "trials_per_relation": 1.5907,
+    "mean_r": 0.999299,
+    "max_r": 238,
+    "tuples_equals_C": true
+   },
+   "farey": {
+    "value": 0.629746,
+    "ci95": [
+     0.629515,
+     0.629977
+    ],
+    "exact": true,
+    "trials_per_relation": 1.5879,
+    "mean_r": 0.999299,
+    "max_r": 236,
+    "tuples_equals_C": true
+   },
+   "random": {
+    "value": 0.629788,
+    "ci95": [
+     0.629557,
+     0.630019
+    ],
+    "exact": true,
+    "trials_per_relation": 1.5878,
+    "mean_r": 0.999299,
+    "max_r": 239,
+    "tuples_equals_C": true
+   }
+  }
+ },
+ "trials_per_relation": {
+  "bits19_m2_N512": {
+   "interval": 8.5022,
+   "farey": 8.5111,
+   "random": 8.4856
+  },
+  "bits19_m2_N1448": {
+   "interval": 1.5769,
+   "farey": 1.5791,
+   "random": 1.5782
+  },
+  "bits19_m3_N96": {
+   "interval": 7.7089,
+   "farey": 7.7021,
+   "random": 7.652
+  },
+  "bits19_m3_N184": {
+   "interval": 1.5905,
+   "farey": 1.5953,
+   "random": 1.5944
+  },
+  "bits23_m2_N5792": {
+   "interval": 1.5813,
+   "farey": 1.5811,
+   "random": 1.5813
+  },
+  "bits23_m3_N464": {
+   "interval": 1.5907,
+   "farey": 1.5879,
+   "random": 1.5878
+  }
+ },
+ "target_mix": {
+  "natural": 1.0,
+  "natural_public_synthetic": 1.0,
+  "planted_sat": 0.0,
+  "proven_unsat": 0.0
+ },
+ "identity_check": {
+  "statement": "sum over R of r(R) = C(N+m-1,m) for every base shape",
+  "holds_in_all_cells": true,
+  "lean": "Check/Farey.lean::sum_repCount (ordered form, |F|^m)"
+ },
+ "shape_effect": {
+  "statement": "mean r is identical across shapes to 6 dp at equal |F|; P(r>=1) differs by <= 2e-3 with no stable sign",
+  "farey_minus_interval_bits20_m2": -0.000902,
+  "farey_minus_interval_bits24_m2": 4.4e-05,
+  "farey_minus_interval_bits20_m3": -0.001898,
+  "farey_minus_interval_bits24_m3": 0.001087
+ },
+ "uniformity_off_base": {
+  "statement": "r(R) is uniform in R outside the base: 88 height buckets, max |lift-1| = 0.113, max |z| = 3.31 (expected max of 88 standard normals 3.0)",
+  "artifact": "raw/heightlaw.json (subset=outside_base)",
+  "only_non_uniformity": "R in F at m>=3, where {R,P,-P} gives r(R) >= N/2 (Check/Farey.lean::repCount_three_ge_of_mem)"
+ },
+ "verdict": "PRIME_YIELD_SHAPE_AND_TARGET_BLIND_EXACT_DISTRIBUTION",
+ "fixture_hash": "sha256:7088eadcc27275f994c18679c873b157264311525b39e738bdf07e6d849b8209",
+ "executable_or_source_hash": "sha256:02b3b19f88e8b7f6c2a7b894f23a90a937ff01949cf6a25896e35cb49a0c50ed",
+ "host_id": {
+  "node": "Mac.attlocal.net",
+  "platform": "macOS-27.2-arm64-arm-64bit"
+ },
+ "resource_caps": {
+  "cpus": 14,
+  "peak_rss_note": "single process; the 2^24 rung needs one |E|-sized uint32 array (67 MB)"
+ },
+ "seeds": "splitmix64 seed 11 for the random shape; interval and Farey shapes are seed-free (canonical enumeration)",
+ "claim_boundary_non_claims": [
+  "toy rungs only (20 and 24 bits); not secp256k1",
+  "no key recovery and no asymptotic sub-rho claim",
+  "no claim that any base shape or target statistic raises the expected yield",
+  "values are exact enumerations, not sampled estimates"
+ ]
+}

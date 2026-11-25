@@ -1,0 +1,23 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-24T06:05:29Z",
+ "id": "PCC-20261124-ee500b",
+ "kind": "statement",
+ "producer": {
+  "commit": "72d4f8aec9bdce8d27a0212ec5a3764772373152",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/p192_tower_horizontal_s5_results.jsonl",
+    "sha256": "c4dbbd89e4f989062c425427ee4962e9ff5f827b5796a46c569d1edf90cc102e"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "P-192 depth-2 auxiliary fiber, three serial repeats of planted and seeded-negative queries, source/mapped5/joint5",
+ "statement": "In the recorded bounded P-192 panel, all 18 runs completed and their algebraic SAT verdicts matched exact group truth. The mapped5 arm had lower median Groebner time on both retained queries but higher median full process wall time than source; joint5 was slower on both metrics."
+}

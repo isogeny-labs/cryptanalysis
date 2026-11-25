@@ -1,0 +1,30 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-25T05:29:49Z",
+ "id": "PCC-20261125-d663c9",
+ "kind": "theorem",
+ "producer": {
+  "commit": "ab17584abecb2f550d16ed2d338f15b382ddeab3",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/MULTI_SEED_ORBIT_SUPPORT_BOUND.md",
+    "sha256": "81387465f5fe593b1a30764b2f9c60e484cbbadc4e0beb8cf4f516f03f94b1c8"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/multi_seed_orbit_support_bound.py",
+    "sha256": "e616a670917bfbc368e5f13227bf80da32e68ceaa9cabb4afcf4d87d32430075"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "research/cm_joint_s4_20261123/MULTI_SEED_ORBIT_SUPPORT_BOUND.md",
+ "statement": "For s fixed publicly labelled seed blocks and signed length-L arcs of a common unit multiplier, the number of scalar labels admitting an informative homogeneous three-sum is at most binom(2sL+2,3)-binom(2s(L-1)+2,3)."
+}
