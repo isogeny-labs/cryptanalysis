@@ -118,6 +118,8 @@ The [frozen two-seed orbit census](TWO_SEED_ORBIT_REPORT.md) tests the first exc
 
 The [two-seed support bound](TWO_SEED_ORBIT_SUPPORT_BOUND.md) shows why its cubic count of indexed triples overstates target reach. For any two independent public seed vectors and a shared length-`L` geometric orbit, the informative three-sum support outside at most two zero-seed labels is at most `8L(2L-1)`: ratios of orbit powers retain only two exponent differences. Under an optimistic P-192 1 PiB materialized-base cap, `L<=2^43` and a fixed arc reaches fewer than `2^90` of roughly `2^192` target labels. A target-independent schedule needs about `2^101` arc tests to cover half the labels, above the `2^95.826` rho reference if each test costs at least one addition equivalent. The bound leaves coordinate-selected seeds, larger implicit bases, more seed blocks, higher arity, and batch oracles outside its scope. [pcc:unverified]
 
+The [multi-seed common-shift bound](MULTI_SEED_ORBIT_SUPPORT_BOUND.md) extends the homogeneous zero-sum count to `s` publicly labelled orbit blocks: at most `binom(2sL+2,3)-binom(2s(L-1)+2,3)` distinct target labels can have an informative relation. Under the same materialized-base cap and one-addition-equivalent test assumption, its optimistic 50% coverage threshold exceeds rho for every `s<=36`; `s=37` is the first count it does not exclude. The result does not apply to an **inhomogeneous** query `P1+P2+P3=[a]G+[b]Q`, because the fixed right-hand side breaks common scaling. That target-sum mechanism remains a separate candidate requiring a relation oracle and full cost accounting. [pcc:unverified]
+
 The scoped prior-art and orbit-algebra record is
 `PCC-20261125-c8e274`, with unverified standing. [pcc:unverified]
 
