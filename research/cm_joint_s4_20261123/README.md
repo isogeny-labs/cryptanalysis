@@ -124,6 +124,8 @@ The [frozen inhomogeneous screen](INHOMOGENEOUS_ORBIT_REPORT.md) checks that exc
 
 The [pair-orbit descriptor gate](ORBIT_PAIR_DESCRIPTOR_GATE.md) compresses an indexed pair table into `O(B)` exponent-gap arcs, with a 42-descriptor/78-pair replay on the same finite base. A direct point-query scan still costs `B*D` arc-membership tests. Charging descriptor storage inside the same optimistic 1 PiB allowance tightens the uniform-query room beneath rho to `2^29.275` additions per complete query. The missing construction is a collective membership oracle with a matched native-scalar control, not more principal ideals. [pcc:unverified]
 
+The [transposed orbit-membership gate](TRANSPOSED_ORBIT_MEMBERSHIP_GATE.md) hashes descriptor seeds and checks `B*L` transformed points per target-sum query. Its Sage replay matches all 1,920 fixed finite queries, including indexed witnesses. Under the same optimistic P-192 memory cap, that is still about `2^83.356` lookups per query, far beyond the complete-query budget. The gate also connects the method to the earlier implicit orbit-membership proposal and the existing point-to-ray homomorphism obstruction, so the remaining lead is explicitly a nonadditive coordinate-based oracle. [pcc:unverified]
+
 The scoped prior-art and orbit-algebra record is
 `PCC-20261125-c8e274`, with unverified standing. [pcc:unverified]
 
