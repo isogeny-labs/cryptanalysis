@@ -230,8 +230,15 @@ have pairwise intersections of 1 to 15 targets. The network-only union hit
 probability is \(0.113902\), close to the \(0.113396\) independent-hit
 counterfactual for these unequal arms. It is \(2.574\) times the strongest
 single-arm hit probability, while the true factor-base union contains 104
-points versus that arm's 30. This confirms a finite best-of-five hit gain,
-but also the corresponding larger logarithm system. It does not establish
+points versus that arm's 30. Every coordinate-bound set contains both \(P\)
+and \(-P\); the normalized isogeny pullbacks preserve this pairing. Since the
+group has odd prime order and none of these bases contains the identity, the
+104 network points form exactly 52 sign pairs, while the strongest arm's 30
+points form 15. These are the distinct logarithm variables after applying
+\(\log(-P)=-\log(P)\), before any further relation reduction. Thus the
+same \(104/30=52/15\) dimension ratio survives the elementary sign
+compression. This confirms a finite best-of-five hit gain, but also the
+corresponding larger logarithm system. It does not establish
 that the network beats selecting its best arm once precomputation, per-arm
 solver calls, and linear algebra are charged. The earlier \(x<250\) dual-image
 overlap calculation and this normalized-preimage \(x<20\) calculation use
