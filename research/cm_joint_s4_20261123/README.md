@@ -33,6 +33,20 @@ distinct question measured by the panel. The group statement is also
 checked in [Lean](formal/TransportGate.lean). The scoped statement is
 `PCC-20261125-9f930e`, with unverified standing. [pcc:unverified]
 
+This pointwise invariant and the separate coordinate-shape question
+were already stated in the earlier
+[`IDEA-20260906-5b4930`](https://github.com/isogeny-labs/crypto-autoresearcher/blob/main/ledger/proposals/IDEA-20260906-5b4930.yaml)
+proposal. The [coset transport and label screen](COSET_TRANSPORT_LABEL_GATE.md)
+checks that this fixed degree-five edge turns every fully liftable
+`B=4,6,7,8` coset in the enumerated cells from a two-term source
+vanishing polynomial into a dense endpoint polynomial. It also prices
+uniform rejection sampling as a way to attach APS labels to a
+preselected coordinate base; at the stated P-192 memory cap, the
+expected draw count for one accepted labelled point already exceeds
+the rho reference. These are scoped shape and sampling results, not a
+solver or full-log speed claim. The record is `PCC-20261125-b8dbb8`,
+with unverified standing. [pcc:unverified]
+
 The fixed-instance count is recorded as `PCC-20261124-89e12e` with
 unverified standing. [pcc:unverified]
 
