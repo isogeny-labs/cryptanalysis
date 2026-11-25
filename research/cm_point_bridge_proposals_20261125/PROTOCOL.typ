@@ -52,6 +52,14 @@ quotient, without expanding all cosets. A norm identity for an unmarked
 kernel product is insufficient. This is a hypothesis, not an algorithm.
 \[pcc:unverified\]
 
+The index set `{[h]T:h in H}` is a multiplicative scalar orbit, whereas
+an isogeny norm multiplies values over additive translates by its
+kernel. Since `E[r]` has prime order on the rational line, a nonempty
+orbit excluding `O` cannot itself be an additive kernel. Therefore a
+standard kernel norm does not directly compress `U_H`\; the proposed
+recurrence must explain an additional mechanism that converts between
+these index sets. \[pcc:unverified\]
+
 #strong[First experiment:] specify `u`, `H`, the normalization at `G`,
 and the recurrence #emph[symbolically] before examining scalar labels.
 Give code whose evaluator accepts `Q` solely through coordinates. On all
