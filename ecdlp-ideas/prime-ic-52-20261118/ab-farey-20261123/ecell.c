@@ -270,6 +270,24 @@ int main(int argc, char **argv) {
             if (c > mx_x) mx_x = c;
         }
     }
+    /* optional dump for post-hoc feature analysis: [n][cnt[n]][xval[n]] */
+    if (argc > 8 && !strcmp(argv[7], "dump")) {
+        uint32_t *xval = calloc(n, sizeof(uint32_t));
+        for (uint64_t x = 1; x < P; x++) {
+            uint32_t k = tab[x];
+            if (k && k < n) {                       /* x(P) = x(-P) */
+                xval[k] = (uint32_t)x;
+                xval[(n - k) % n] = (uint32_t)x;
+            }
+        }
+        FILE *g = fopen(argv[8], "wb");
+        if (!g) { fprintf(stderr, "cannot dump %s\n", argv[8]); return 1; }
+        fwrite(&n, 4, 1, g);
+        fwrite(cnt, 4, n, g);
+        fwrite(xval, 4, n, g);
+        fclose(g);
+        free(xval);
+    }
     /* histogram of r */
     uint32_t hmax = mx + 2;
     uint64_t *hist = calloc(hmax, sizeof(uint64_t));
