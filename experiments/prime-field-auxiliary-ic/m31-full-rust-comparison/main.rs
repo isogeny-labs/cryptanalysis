@@ -140,6 +140,12 @@ impl FlatIndex {
     fn len(&self) -> usize {
         self.len
     }
+    fn contains_x(&self, x: u64) -> bool {
+        let Ok(x) = u32::try_from(x) else {
+            return false;
+        };
+        PACKED_SIGN && self.sign_slots[self.slot(x)].0 == x
+    }
     fn dump_sorted(&self, path: &str) -> std::io::Result<()> {
         let mut pairs = Vec::with_capacity(self.len);
         if PACKED_SIGN {
@@ -234,7 +240,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         b = (b + db) % N;
         point = curve.add(point, dp)?;
         let mut differences = vec![point; minus.len()];
-        if option_env!("M31_PAIR_BATCH").is_some() {
+        if option_env!("M31_X_FILTER").is_some() {
+            curve.batch_add_paired_x_filtered_assume_valid(
+                point,
+                &minus,
+                &mut differences,
+                &mut scratch,
+                |x| table.contains_x(x),
+            )?;
+        } else if option_env!("M31_PAIR_BATCH").is_some() {
             curve.batch_add_paired_x_assume_valid(point, &minus, &mut differences, &mut scratch)?;
         } else if option_env!("M31_TRUSTED_BATCH").is_some() {
             curve.batch_add_assume_valid(&mut differences, &minus, &mut scratch)?;

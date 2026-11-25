@@ -5,6 +5,7 @@ import json
 import os
 import random
 import resource
+import shutil
 import subprocess
 import sys
 import tarfile
@@ -59,6 +60,7 @@ def main():
         tmp = Path(tmp)
         archive = subprocess.check_output(["git", "archive", "HEAD", "crates/prime-field-auxiliary-ic"], cwd=ROOT)
         subprocess.run(["tar", "-xf", "-", "-C", str(tmp)], input=archive, check=True)
+        shutil.copy2(Path(ROOT) / "crates/prime-field-auxiliary-ic/src/field.rs", tmp / "crates/prime-field-auxiliary-ic/src/field.rs")
         (tmp / "src").mkdir()
         (tmp / "src/main.rs").write_bytes((HERE / "main.rs").read_bytes())
         (tmp / "Cargo.toml").write_text('[package]\nname="m31-full-comparison"\nversion="0.1.0"\nedition="2021"\n[dependencies]\nprime-field-auxiliary-ic={path="crates/prime-field-auxiliary-ic"}\n')
@@ -70,7 +72,7 @@ def main():
             path = f"comparison/field31/{basis}/public.json"
             fixtures[basis] = json.loads(frozen(path))
         blocks = [(basis, seed, round_number) for basis in fixtures for seed in range(3) for round_number in range(8)]
-        random.Random(112527).shuffle(blocks)
+        random.Random(int(os.environ.get("M31_REPLAY_ORDER_SEED", "112527"))).shuffle(blocks)
         writer = csv.writer(sys.stdout, lineterminator="\n")
         writer.writerow(["basis", "seed", "round", "position", "mode", "basis_sha256", "scalar", "trials", "relations", "entries", "setup_ns", "table_ns", "elimination_ns", "rust_total_ns", "charged_wall_ns", "charged_cpu_ns"])
         for basis, seed, round_number in blocks:

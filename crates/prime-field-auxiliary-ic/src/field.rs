@@ -479,11 +479,29 @@ impl<const B: u32> Curve<B> {
         output: &mut [Option<Point>],
         scratch: &mut BatchScratch,
     ) -> Result<()> {
+        self.batch_add_paired_x_filtered_assume_valid(point, steps, output, scratch, |_| true)
+    }
+    /// Apply an exact x-coordinate rejection filter before materializing y.
+    ///
+    /// The predicate must return false only when no accepted point with that
+    /// x-coordinate exists. A rejected output is represented by `None`; the
+    /// caller must not interpret that `None` as an actual group identity.
+    /// Finite inputs must already have been checked against this curve.
+    pub fn batch_add_paired_x_filtered_assume_valid<P: FnMut(u64) -> bool>(
+        self,
+        point: Option<Point>,
+        steps: &[Option<Point>],
+        output: &mut [Option<Point>],
+        scratch: &mut BatchScratch,
+        mut may_contain_x: P,
+    ) -> Result<()> {
         if steps.len() != output.len() || steps.len() % 2 != 0 {
             return Err(Error::Invalid("paired batch length mismatch"));
         }
         let Some(left) = point else {
-            output.copy_from_slice(steps);
+            for (result, &step) in output.iter_mut().zip(steps) {
+                *result = step.filter(|p| may_contain_x(p.x));
+            }
             return Ok(());
         };
         let count = steps.len() / 2;
@@ -517,8 +535,10 @@ impl<const B: u32> Curve<B> {
         for pair in (0..count).rev() {
             let den = scratch.denominators[pair];
             if den == 0 {
-                output[2 * pair] = self.add_inner(point, steps[2 * pair]);
-                output[2 * pair + 1] = self.add_inner(point, steps[2 * pair + 1]);
+                for offset in 0..2 {
+                    let result = self.add_inner(point, steps[2 * pair + offset]);
+                    output[2 * pair + offset] = result.filter(|p| may_contain_x(p.x));
+                }
                 continue;
             }
             let lane = pair % 4;
@@ -528,7 +548,21 @@ impl<const B: u32> Curve<B> {
                 let right = steps[2 * pair + offset].expect("generic paired step");
                 let numerator = F::<B>::sub(right.y, left.y);
                 let slope = F::<B>::mul(numerator, inv);
-                output[2 * pair + offset] = Some(self.finish_add(left, right, slope));
+                let x = if B == 31 {
+                    let p = F::<B>::P;
+                    let accumulator = slope * slope + (2 * p - left.x - right.x);
+                    F::<B>::add(accumulator >> 31, accumulator & p)
+                } else {
+                    F::<B>::sub(F::<B>::sub(F::<B>::sq(slope), left.x), right.x)
+                };
+                output[2 * pair + offset] = if may_contain_x(x) {
+                    Some(Point {
+                        x,
+                        y: F::<B>::sub(F::<B>::mul(slope, F::<B>::sub(left.x, x)), left.y),
+                    })
+                } else {
+                    None
+                };
             }
         }
         Ok(())
@@ -970,6 +1004,22 @@ mod tests {
                     )
                     .unwrap();
                 assert_eq!(actual, expected);
+                let mut filtered = vec![None; steps.len()];
+                curve
+                    .batch_add_paired_x_filtered_assume_valid(
+                        point,
+                        &steps,
+                        &mut filtered,
+                        &mut BatchScratch::default(),
+                        |x| x % 5 == 0,
+                    )
+                    .unwrap();
+                let expected_filtered: Vec<_> = expected
+                    .iter()
+                    .copied()
+                    .map(|p| p.filter(|q| q.x() % 5 == 0))
+                    .collect();
+                assert_eq!(filtered, expected_filtered);
             }
             assert!(curve
                 .batch_add_paired_x_assume_valid(
