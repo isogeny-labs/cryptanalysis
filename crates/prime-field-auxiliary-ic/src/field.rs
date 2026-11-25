@@ -467,6 +467,72 @@ impl<const B: u32> Curve<B> {
         self.batch_add_inner(points, steps, scratch);
         Ok(())
     }
+    /// Add one validated point to adjacent pairs of validated steps.
+    ///
+    /// Pairs with equal x coordinates share one affine denominator inverse.
+    /// Other pairs and exceptional chords use individual additions. The caller
+    /// must have checked every finite input against this curve.
+    pub fn batch_add_paired_x_assume_valid(
+        self,
+        point: Option<Point>,
+        steps: &[Option<Point>],
+        output: &mut [Option<Point>],
+        scratch: &mut BatchScratch,
+    ) -> Result<()> {
+        if steps.len() != output.len() || steps.len() % 2 != 0 {
+            return Err(Error::Invalid("paired batch length mismatch"));
+        }
+        let Some(left) = point else {
+            output.copy_from_slice(steps);
+            return Ok(());
+        };
+        let count = steps.len() / 2;
+        scratch.prefix.resize(count, 0);
+        scratch.denominators.resize(count, 0);
+        let mut products = [1u64; 4];
+        for pair in 0..count {
+            let lane = pair % 4;
+            scratch.prefix[pair] = products[lane];
+            let den = match (steps[2 * pair], steps[2 * pair + 1]) {
+                (Some(a), Some(b)) if a.x == b.x && a.x != left.x => F::<B>::sub(a.x, left.x),
+                _ => 0,
+            };
+            scratch.denominators[pair] = den;
+            if den != 0 {
+                products[lane] = F::<B>::mul(products[lane], den);
+            }
+        }
+        let mut previous = [1u64; 4];
+        let mut total = 1;
+        for lane in 0..4 {
+            previous[lane] = total;
+            total = F::<B>::mul(total, products[lane]);
+        }
+        let mut carry = F::<B>::inv(total);
+        for lane in (0..4).rev() {
+            let product = products[lane];
+            products[lane] = F::<B>::mul(carry, previous[lane]);
+            carry = F::<B>::mul(carry, product);
+        }
+        for pair in (0..count).rev() {
+            let den = scratch.denominators[pair];
+            if den == 0 {
+                output[2 * pair] = self.add_inner(point, steps[2 * pair]);
+                output[2 * pair + 1] = self.add_inner(point, steps[2 * pair + 1]);
+                continue;
+            }
+            let lane = pair % 4;
+            let inv = F::<B>::mul(products[lane], scratch.prefix[pair]);
+            products[lane] = F::<B>::mul(products[lane], den);
+            for offset in 0..2 {
+                let right = steps[2 * pair + offset].expect("generic paired step");
+                let numerator = F::<B>::sub(right.y, left.y);
+                let slope = F::<B>::mul(numerator, inv);
+                output[2 * pair + offset] = Some(self.finish_add(left, right, slope));
+            }
+        }
+        Ok(())
+    }
     pub(crate) fn batch_add_inner(
         self,
         points: &mut [Option<Point>],
@@ -872,6 +938,53 @@ mod tests {
         assert!(curve
             .batch_add(&mut points, &steps[..63], &mut BatchScratch::default())
             .is_err());
+    }
+    #[test]
+    fn paired_x_batch_matches_checked_batch_and_exceptions() {
+        fn compare<const B: u32>(curve: Curve<B>, g: Point) {
+            let h = curve.add(Some(g), Some(g)).unwrap().unwrap();
+            let neg_g = curve.negate(g).unwrap();
+            let neg_h = curve.negate(h).unwrap();
+            let mut steps = Vec::with_capacity(1000);
+            for i in 0..500 {
+                let pair = match i % 4 {
+                    0 => [Some(g), Some(neg_g)],
+                    1 => [Some(h), Some(neg_h)],
+                    2 => [None, None],
+                    _ => [Some(g), Some(h)],
+                };
+                steps.extend(pair);
+            }
+            for point in [None, Some(g), Some(neg_g), Some(h)] {
+                let mut expected = vec![point; steps.len()];
+                curve
+                    .batch_add(&mut expected, &steps, &mut BatchScratch::default())
+                    .unwrap();
+                let mut actual = vec![None; steps.len()];
+                curve
+                    .batch_add_paired_x_assume_valid(
+                        point,
+                        &steps,
+                        &mut actual,
+                        &mut BatchScratch::default(),
+                    )
+                    .unwrap();
+                assert_eq!(actual, expected);
+            }
+            assert!(curve
+                .batch_add_paired_x_assume_valid(
+                    Some(g),
+                    &steps[..999],
+                    &mut vec![None; 999],
+                    &mut BatchScratch::default(),
+                )
+                .is_err());
+        }
+        let small = Curve::<7>::new(2, 51).unwrap();
+        compare(small, small.point(3, 46).unwrap());
+        let m31 = Curve::<31>::new(1, 0).unwrap();
+        let g = (1..).find_map(|x| m31.lift_x(x).unwrap()).unwrap();
+        compare(m31, g);
     }
     #[test]
     fn striped_batches_share_tangents_and_handle_partial_lanes() {

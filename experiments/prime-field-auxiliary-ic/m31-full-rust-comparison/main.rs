@@ -234,7 +234,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         b = (b + db) % N;
         point = curve.add(point, dp)?;
         let mut differences = vec![point; minus.len()];
-        if option_env!("M31_TRUSTED_BATCH").is_some() {
+        if option_env!("M31_PAIR_BATCH").is_some() {
+            curve.batch_add_paired_x_assume_valid(point, &minus, &mut differences, &mut scratch)?;
+        } else if option_env!("M31_TRUSTED_BATCH").is_some() {
             curve.batch_add_assume_valid(&mut differences, &minus, &mut scratch)?;
         } else {
             curve.batch_add(&mut differences, &minus, &mut scratch)?;
