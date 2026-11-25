@@ -1,0 +1,44 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-25T05:01:51Z",
+ "id": "PCC-20261125-b956f1",
+ "kind": "statement",
+ "producer": {
+  "commit": "0a6dc3f6b476f46e3dd13b5cb4441c272e0fb3dd",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/NORMALIZER_KERNEL_EQUIVALENCE_REPORT.md",
+    "sha256": "595e103e7ee3b4fc4eb4c1162577cbc2b1f5b16de709c46717c6e0371158b152"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/normalizer_kernel_equivalence_results.json",
+    "sha256": "8ba5a1c890244282de87762751fdec389e0ccc997931bf716040043c7903a34f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/normalizer_kernel_full_results.json",
+    "sha256": "86d1ba6ed39dc16071801be00661b98cabf3af7709013db7eafebe9271838744"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/generic_kernel_eval_check.py",
+    "sha256": "38b1f5a8d4919d5895c291a33e3b3bd60e3f9db795ce70a05808976ca1687dde"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "research/cm_joint_s4_20261123/NORMALIZER_KERNEL_EQUIVALENCE_REPORT.md",
+ "statement": "Finite kernel-versus-EDS-normalizer character checks agreed on all 52 D=-163 points and all 1068 points at each p=1009 horizontal endpoint; the generic kernel-value identity was also checked exactly on these and the D=-19 controls."
+}

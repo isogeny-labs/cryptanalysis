@@ -1,0 +1,30 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-25T05:09:25Z",
+ "id": "PCC-20261125-cb1e40",
+ "kind": "theorem",
+ "producer": {
+  "commit": "bd3384cecd1bfe0e51b56f62f839508ab59de293",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/EDS_KERNEL_NORMALIZER_IDENTITY.md",
+    "sha256": "4668ed04e4e3086d2d0f28d07cbec85becc79a5eb0a0eee9a0eec77a38cf2c3b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/eds_kernel_normalizer_value_check.py",
+    "sha256": "28e0c0ded5fc4d88ad3c5df69c835d2daa9f7a5862348ab9011303637209964f"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "research/cm_joint_s4_20261123/EDS_KERNEL_NORMALIZER_IDENTITY.md",
+ "statement": "For E/F_p of odd prime rational order r>=5 with gcd(r,p-1)=1, the monic x-kernel polynomial K of 1+Frobenius satisfies K(x(P))=2y(P)Phi(P)^r for every nonzero rational P, where Phi is the Lauter-Stange EDS normalizer."
+}
