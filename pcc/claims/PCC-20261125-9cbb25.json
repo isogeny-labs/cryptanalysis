@@ -1,0 +1,22 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-25T21:51:41Z",
+ "id": "PCC-20261125-9cbb25",
+ "kind": "theorem",
+ "producer": {
+  "commit": "d569bcc69831f45a944f8459df1ca483011db532",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "48c1191c0162d01991ac883683430ea8a9929eb9785c85640bdb328bed90df32",
+   "kind": "lean",
+   "path": "experiments/prime-field-auxiliary-ic/m31-full-rust-comparison/Bloom.lean",
+   "theorem": "Bloom.first_payload_preserved"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Logical bitmap and lookup model in experiments/prime-field-auxiliary-ic/m31-full-rust-comparison/Bloom.lean; Rust machine-code refinement and measured cost are outside this theorem.",
+ "statement": "For a bitmap that marks the hash of every inserted x, collisions cannot create a false negative, and suppressing candidates with a cleared bit preserves the first successful payload under exact-index support."
+}
