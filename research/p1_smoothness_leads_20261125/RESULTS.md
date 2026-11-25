@@ -151,12 +151,30 @@ does not itself imply an eightfold wall-time reduction for an arbitrary
 the factor-base equations, and measure full solver work on matched inputs.
 
 An odd-order group \(E(\mathbb F_p)\) has no rational point of order two.
-Every twisted Edwards model over \(\mathbb F_p\) has \((0,-1)\), a rational
-point of order two. Thus a prime-order curve has no such model over
-\(\mathbb F_p\). Passing to \(\mathbb F_{p^2}\) can make the model available,
-but translation by its new two-torsion point generally does not preserve the
-embedded \(E(\mathbb F_p)\) factor base. This is the missing prime-field
-bridge; the attachment's proposed comparison does not establish it.
+Every twisted Edwards model has \((0,-1)\), a rational point of order two.
+The attachment's claim that a prime-order curve such as P-256 can acquire
+Edwards coordinates over \(\mathbb F_{p^2}\) is also false. Write
+\(n=\#E(\mathbb F_p)\) and \(t=p+1-n\). For odd \(p\) and odd \(n\), \(t\)
+is odd, and the standard extension-order identity gives
+
+\[
+\#E(\mathbb F_{p^2})=(p+1-t)(p+1+t)
+=n\bigl(2(p+1)-n\bigr),
+\]
+
+which is odd. Hence neither \(\mathbb F_p\) nor \(\mathbb F_{p^2}\)
+contains the required two-torsion point. For a short Weierstrass model,
+its two-torsion polynomial \(x^3+Ax+B\) has no root over \(\mathbb F_p\);
+as a separable cubic it is irreducible, so its first roots occur over
+\(\mathbb F_{p^3}\). This identifies the first possible extension for
+two-torsion, not a guarantee of a twisted Edwards model there. Even after
+passing to a suitable extension, one must show that the sign action
+preserves the embedded \(E(\mathbb F_p)\) factor base. See
+[Bernstein et al., *Twisted Edwards Curves*, §2](https://cr-yp-to.viacache.net/newelliptic/twisted-20080313.pdf)
+for the order-two point and
+[NIST SP 800-186](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-186.pdf)
+for P-256's prime order and cofactor one. The displayed group-order identity
+independently checks the quadratic-extension obstruction. `[pcc:unverified]`
 
 ## Track 3: isogeny network
 
