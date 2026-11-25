@@ -56,6 +56,7 @@ fn build(
 struct FlatIndex {
     slots: Vec<(u32, u32)>,
     sign_slots: Vec<(u32, u32, u32)>,
+    x_bitmap: Vec<u64>,
     len: usize,
 }
 impl FlatIndex {
@@ -68,6 +69,11 @@ impl FlatIndex {
             },
             sign_slots: if PACKED_SIGN {
                 vec![(u32::MAX, u32::MAX, u32::MAX); 1 << 19]
+            } else {
+                Vec::new()
+            },
+            x_bitmap: if option_env!("M31_X_BLOOM").is_some() {
+                vec![0; 1 << 14]
             } else {
                 Vec::new()
             },
@@ -105,7 +111,8 @@ impl FlatIndex {
             let x = key >> 1;
             let i = self.slot(x);
             let slot = &mut self.sign_slots[i];
-            if slot.0 == u32::MAX {
+            let new_x = slot.0 == u32::MAX;
+            if new_x {
                 slot.0 = x;
             }
             let value = if key & 1 == 0 {
@@ -116,6 +123,10 @@ impl FlatIndex {
             if *value == u32::MAX {
                 *value = payload;
                 self.len += 1;
+            }
+            if new_x && !self.x_bitmap.is_empty() {
+                let bit = (u64::from(x).wrapping_mul(0x9e3779b97f4a7c15) >> 44) as usize;
+                self.x_bitmap[bit >> 6] |= 1u64 << (bit & 63);
             }
         } else {
             let i = self.slot(key);
@@ -146,7 +157,18 @@ impl FlatIndex {
         };
         PACKED_SIGN && self.sign_slots[self.slot(x)].0 == x
     }
+    fn may_contain_x_bitmap(&self, x: u64) -> bool {
+        let bit = (x.wrapping_mul(0x9e3779b97f4a7c15) >> 44) as usize;
+        self.x_bitmap[bit >> 6] & (1u64 << (bit & 63)) != 0
+    }
     fn dump_sorted(&self, path: &str) -> std::io::Result<()> {
+        if !self.x_bitmap.is_empty() {
+            for &(x, _, _) in &self.sign_slots {
+                if x != u32::MAX {
+                    assert!(self.may_contain_x_bitmap(u64::from(x)));
+                }
+            }
+        }
         let mut pairs = Vec::with_capacity(self.len);
         if PACKED_SIGN {
             for &(x, even, odd) in &self.sign_slots {
@@ -240,7 +262,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         b = (b + db) % N;
         point = curve.add(point, dp)?;
         let mut differences = vec![point; minus.len()];
-        if option_env!("M31_X_FILTER").is_some() {
+        if option_env!("M31_X_BLOOM").is_some() {
+            curve.batch_add_paired_x_filtered_assume_valid(
+                point,
+                &minus,
+                &mut differences,
+                &mut scratch,
+                |x| table.may_contain_x_bitmap(x),
+            )?;
+        } else if option_env!("M31_X_FILTER").is_some() {
             curve.batch_add_paired_x_filtered_assume_valid(
                 point,
                 &minus,
