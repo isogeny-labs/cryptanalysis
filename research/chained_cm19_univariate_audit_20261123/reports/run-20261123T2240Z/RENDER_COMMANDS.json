@@ -1,0 +1,48 @@
+{
+  "cwd": "/dev/shm/chained-cm19-univariate-audit23/research/chained_cm19_univariate_audit_20261123/reports/run-20261123T2240Z",
+  "environment": {
+    "XDG_CACHE_HOME": "/dev/shm/ct23-report-font-cache",
+    "XDG_CONFIG_HOME": "/dev/shm/ct23-report-config",
+    "SOURCE_DATE_EPOCH": "1795442400"
+  },
+  "argv": [
+    [
+      "dot",
+      "-Tsvg",
+      "audit.dot",
+      "-o",
+      "audit.svg"
+    ],
+    [
+      "inkscape",
+      "audit.svg",
+      "--export-type=pdf",
+      "--export-filename=audit.pdf"
+    ],
+    [
+      "pdflatex",
+      "-interaction=nonstopmode",
+      "-halt-on-error",
+      "-output-directory",
+      "/dev/shm/ct23-ca-report-render-v1",
+      "REPORT.tex"
+    ],
+    [
+      "pdflatex",
+      "-interaction=nonstopmode",
+      "-halt-on-error",
+      "-output-directory",
+      "/dev/shm/ct23-ca-report-render-v2",
+      "REPORT.tex"
+    ],
+    [
+      "pdftoppm",
+      "-scale-to",
+      "1550",
+      "-png",
+      "/dev/shm/ct23-ca-report-render-v2/REPORT.pdf",
+      "/dev/shm/ct23-ca-report-render-v2/page"
+    ]
+  ],
+  "native_or_formal_reexecution": false
+}

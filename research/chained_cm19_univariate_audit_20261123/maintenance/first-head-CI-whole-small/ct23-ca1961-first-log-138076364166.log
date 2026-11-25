@@ -1,0 +1,360 @@
+﻿2026-11-23T22:55:54.8586183Z Current runner version: '2.338.2'
+2026-11-23T22:55:54.8607312Z ##[group]Runner Image Provisioner
+2026-11-23T22:55:54.8608073Z Hosted Compute Agent
+2026-11-23T22:55:54.8608564Z Version: 20261111.635
+2026-11-23T22:55:54.8609082Z Commit: b8a594ea514ff44cadb5342986c68b1eac6e22ed
+2026-11-23T22:55:54.8609739Z Build Date: 2026-11-11T01:49:01Z
+2026-11-23T22:55:54.8610296Z Worker ID: {6b9f9168-0f8e-4fda-a6d9-04d16360826d}
+2026-11-23T22:55:54.8610846Z Region: westus3
+2026-11-23T22:55:54.8611342Z Cloud: Azure
+2026-11-23T22:55:54.8611783Z ##[endgroup]
+2026-11-23T22:55:54.8613296Z ##[group]Operating System
+2026-11-23T22:55:54.8613832Z Ubuntu
+2026-11-23T22:55:54.8614288Z 26.04.1
+2026-11-23T22:55:54.8614763Z LTS
+2026-11-23T22:55:54.8615181Z ##[endgroup]
+2026-11-23T22:55:54.8615683Z ##[group]Runner Image
+2026-11-23T22:55:54.8616187Z Image: ubuntu-26.04
+2026-11-23T22:55:54.8616644Z Version: 20261116.202.1
+2026-11-23T22:55:54.8617697Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261116.202/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-23T22:55:54.8618960Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261116.202
+2026-11-23T22:55:54.8619753Z ##[endgroup]
+2026-11-23T22:55:54.8620685Z ##[group]GITHUB_TOKEN Permissions
+2026-11-23T22:55:54.8622395Z Contents: read
+2026-11-23T22:55:54.8622912Z Metadata: read
+2026-11-23T22:55:54.8623561Z ##[endgroup]
+2026-11-23T22:55:54.8625192Z Secret source: Actions
+2026-11-23T22:55:54.8626054Z Cache mode: write
+2026-11-23T22:55:54.8626914Z Prepare workflow directory
+2026-11-23T22:55:54.9589347Z Prepare all required actions
+2026-11-23T22:55:54.9628033Z Getting action download info
+2026-11-23T22:55:55.2350039Z Download action repository 'actions/checkout@v7' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-11-23T22:55:55.3549083Z Download action repository 'actions/setup-python@v7' (SHA:6d4fd22b20465ccc0f7354476588e8df7c9ca0e0)
+2026-11-23T22:55:55.6021797Z Complete job name: source-receipts
+2026-11-23T22:55:55.8854803Z ##[group]Run actions/checkout@v7
+2026-11-23T22:55:55.8855493Z with:
+2026-11-23T22:55:55.8855832Z   filter: blob:none
+2026-11-23T22:55:55.8856212Z   sparse-checkout-cone-mode: false
+2026-11-23T22:55:55.8856964Z   sparse-checkout: /lean-toolchain
+/**/lean-toolchain
+/**/*.lean
+/**/*lean-receipt.json
+/tools/audit_lean_evidence.py
+
+2026-11-23T22:55:55.8857733Z   repository: isogeny-labs/cryptanalysis
+2026-11-23T22:55:55.8860814Z   token: ***
+2026-11-23T22:55:55.8861162Z   ssh-strict: true
+2026-11-23T22:55:55.8861518Z   ssh-user: git
+2026-11-23T22:55:55.8861880Z   persist-credentials: true
+2026-11-23T22:55:55.8862270Z   clean: true
+2026-11-23T22:55:55.8862603Z   fetch-depth: 1
+2026-11-23T22:55:55.8862936Z   fetch-tags: false
+2026-11-23T22:55:55.8863427Z   show-progress: true
+2026-11-23T22:55:55.8863778Z   lfs: false
+2026-11-23T22:55:55.8864098Z   submodules: false
+2026-11-23T22:55:55.8864457Z   set-safe-directory: true
+2026-11-23T22:55:55.8864863Z   allow-unsafe-pr-checkout: false
+2026-11-23T22:55:55.8865456Z ##[endgroup]
+2026-11-23T22:55:56.4225491Z Syncing repository: isogeny-labs/cryptanalysis
+2026-11-23T22:55:56.4228122Z ##[group]Getting Git version info
+2026-11-23T22:55:56.4229272Z Working directory is '/home/runner/work/cryptanalysis/cryptanalysis'
+2026-11-23T22:55:56.4230917Z [command]/usr/bin/git version
+2026-11-23T22:55:56.4231697Z git version 2.56.1
+2026-11-23T22:55:56.4242365Z ##[endgroup]
+2026-11-23T22:55:56.4247926Z Temporarily overriding HOME='/home/runner/work/_temp/877680ab-60e8-4f55-88a6-7f355b0fb4b0' before making global git config changes
+2026-11-23T22:55:56.4249959Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-23T22:55:56.4254575Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cryptanalysis/cryptanalysis
+2026-11-23T22:55:56.4300724Z Deleting the contents of '/home/runner/work/cryptanalysis/cryptanalysis'
+2026-11-23T22:55:56.4302708Z ##[group]Determining repository object format
+2026-11-23T22:55:56.4304380Z ##[endgroup]
+2026-11-23T22:55:56.4305755Z ##[group]Initializing the repository
+2026-11-23T22:55:56.4307711Z [command]/usr/bin/git init /home/runner/work/cryptanalysis/cryptanalysis
+2026-11-23T22:55:56.4887109Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-23T22:55:56.4888113Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-23T22:55:56.4888900Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-23T22:55:56.4889529Z hint: call:
+2026-11-23T22:55:56.4889877Z hint:
+2026-11-23T22:55:56.4890356Z hint: 	git config --global init.defaultBranch <name>
+2026-11-23T22:55:56.4890899Z hint:
+2026-11-23T22:55:56.4891412Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-23T22:55:56.4892207Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-23T22:55:56.4892839Z hint:
+2026-11-23T22:55:56.4893404Z hint: 	git branch -m <name>
+2026-11-23T22:55:56.4893895Z hint:
+2026-11-23T22:55:56.4894456Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-23T22:55:56.4902389Z Initialized empty Git repository in /home/runner/work/cryptanalysis/cryptanalysis/.git/
+2026-11-23T22:55:56.4913565Z [command]/usr/bin/git remote add origin https://github.com/isogeny-labs/cryptanalysis
+2026-11-23T22:55:56.4958113Z ##[endgroup]
+2026-11-23T22:55:56.4958888Z ##[group]Disabling automatic garbage collection
+2026-11-23T22:55:56.4960493Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-23T22:55:56.4988867Z ##[endgroup]
+2026-11-23T22:55:56.4990139Z ##[group]Setting up auth
+2026-11-23T22:55:56.4990899Z Removing SSH command configuration
+2026-11-23T22:55:56.4994157Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-23T22:55:56.5022872Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-23T22:55:56.5528345Z Removing HTTP extra header
+2026-11-23T22:55:56.5532862Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-23T22:55:56.5560144Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-23T22:55:56.5790059Z Removing includeIf entries pointing to credentials config files
+2026-11-23T22:55:56.5793695Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-23T22:55:56.5821545Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-23T22:55:56.6050277Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-5ff51d62-a5bc-4ed6-930a-8ca664a2e52b.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-23T22:55:56.6081832Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path /home/runner/work/_temp/git-credentials-5ff51d62-a5bc-4ed6-930a-8ca664a2e52b.config
+2026-11-23T22:55:56.6117788Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-5ff51d62-a5bc-4ed6-930a-8ca664a2e52b.config
+2026-11-23T22:55:56.6143948Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-5ff51d62-a5bc-4ed6-930a-8ca664a2e52b.config
+2026-11-23T22:55:56.6170484Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-5ff51d62-a5bc-4ed6-930a-8ca664a2e52b.config
+2026-11-23T22:55:56.6199754Z ##[endgroup]
+2026-11-23T22:55:56.6200360Z ##[group]Fetching the repository
+2026-11-23T22:55:56.6205181Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --filter=blob:none --depth=1 origin +a55a512557ebf72eda966df1a418578e2f2a03ab:refs/remotes/pull/1961/merge
+2026-11-23T22:55:57.6540964Z From https://github.com/isogeny-labs/cryptanalysis
+2026-11-23T22:55:57.6542566Z  * [new ref]         a55a512557ebf72eda966df1a418578e2f2a03ab -> pull/1961/merge
+2026-11-23T22:55:57.6545919Z ##[endgroup]
+2026-11-23T22:55:57.6547104Z ##[group]Determining the checkout info
+2026-11-23T22:55:57.6548357Z ##[endgroup]
+2026-11-23T22:55:57.6549578Z ##[group]Setting up sparse checkout
+2026-11-23T22:55:57.6550450Z [command]/usr/bin/git config core.sparseCheckout true
+2026-11-23T22:55:57.6581174Z [command]/usr/bin/git rev-parse --git-path info/sparse-checkout
+2026-11-23T22:55:57.6601969Z .git/info/sparse-checkout
+2026-11-23T22:55:57.6609120Z ##[endgroup]
+2026-11-23T22:55:57.6610733Z ##[group]Checking out the ref
+2026-11-23T22:55:57.6612552Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/1961/merge
+2026-11-23T22:55:59.0583393Z Updating files:   0% (1/1549)
+2026-11-23T22:55:59.0588941Z Updating files:   1% (16/1549)
+2026-11-23T22:55:59.0599373Z Updating files:   2% (31/1549)
+2026-11-23T22:55:59.4005163Z Updating files:   3% (47/1549)
+2026-11-23T22:55:59.4013318Z Updating files:   4% (62/1549)
+2026-11-23T22:55:59.4024722Z Updating files:   5% (78/1549)
+2026-11-23T22:55:59.4046347Z Updating files:   6% (93/1549)
+2026-11-23T22:55:59.4058613Z Updating files:   7% (109/1549)
+2026-11-23T22:55:59.7595775Z Updating files:   8% (124/1549)
+2026-11-23T22:55:59.7605305Z Updating files:   9% (140/1549)
+2026-11-23T22:56:00.0956679Z Updating files:  10% (155/1549)
+2026-11-23T22:56:00.0965318Z Updating files:  10% (156/1549)
+2026-11-23T22:56:00.0971875Z Updating files:  11% (171/1549)
+2026-11-23T22:56:00.4367624Z Updating files:  12% (186/1549)
+2026-11-23T22:56:00.8487868Z Updating files:  13% (202/1549)
+2026-11-23T22:56:00.8494289Z Updating files:  14% (217/1549)
+2026-11-23T22:56:00.8501136Z Updating files:  15% (233/1549)
+2026-11-23T22:56:00.8511808Z Updating files:  16% (248/1549)
+2026-11-23T22:56:00.8518852Z Updating files:  17% (264/1549)
+2026-11-23T22:56:00.8526350Z Updating files:  18% (279/1549)
+2026-11-23T22:56:00.8533533Z Updating files:  19% (295/1549)
+2026-11-23T22:56:00.8541249Z Updating files:  20% (310/1549)
+2026-11-23T22:56:00.8548268Z Updating files:  21% (326/1549)
+2026-11-23T22:56:00.8556820Z Updating files:  22% (341/1549)
+2026-11-23T22:56:00.8564160Z Updating files:  23% (357/1549)
+2026-11-23T22:56:00.8571559Z Updating files:  24% (372/1549)
+2026-11-23T22:56:01.7370801Z Updating files:  25% (388/1549)
+2026-11-23T22:56:01.7423181Z Updating files:  26% (403/1549)
+2026-11-23T22:56:02.0814522Z Updating files:  27% (419/1549)
+2026-11-23T22:56:02.4250016Z Updating files:  27% (423/1549)
+2026-11-23T22:56:02.4265562Z Updating files:  28% (434/1549)
+2026-11-23T22:56:02.4265880Z Updating files:  29% (450/1549)
+2026-11-23T22:56:02.4273562Z Updating files:  30% (465/1549)
+2026-11-23T22:56:02.4283820Z Updating files:  31% (481/1549)
+2026-11-23T22:56:02.4286614Z Updating files:  32% (496/1549)
+2026-11-23T22:56:02.4293942Z Updating files:  33% (512/1549)
+2026-11-23T22:56:03.1491703Z Updating files:  34% (527/1549)
+2026-11-23T22:56:03.1492130Z Updating files:  34% (542/1549)
+2026-11-23T22:56:03.9892934Z Updating files:  35% (543/1549)
+2026-11-23T22:56:03.9895448Z Updating files:  35% (550/1549)
+2026-11-23T22:56:04.6818291Z Updating files:  36% (558/1549)
+2026-11-23T22:56:04.6824070Z Updating files:  37% (574/1549)
+2026-11-23T22:56:04.6832266Z Updating files:  38% (589/1549)
+2026-11-23T22:56:05.0339138Z Updating files:  39% (605/1549)
+2026-11-23T22:56:05.0348387Z Updating files:  40% (620/1549)
+2026-11-23T22:56:05.0357742Z Updating files:  41% (636/1549)
+2026-11-23T22:56:05.0366732Z Updating files:  42% (651/1549)
+2026-11-23T22:56:05.0376818Z Updating files:  43% (667/1549)
+2026-11-23T22:56:05.0387187Z Updating files:  44% (682/1549)
+2026-11-23T22:56:05.0395433Z Updating files:  45% (698/1549)
+2026-11-23T22:56:05.0405205Z Updating files:  46% (713/1549)
+2026-11-23T22:56:05.0414789Z Updating files:  47% (729/1549)
+2026-11-23T22:56:05.0424004Z Updating files:  48% (744/1549)
+2026-11-23T22:56:05.0491912Z Updating files:  49% (760/1549)
+2026-11-23T22:56:05.0503717Z Updating files:  50% (775/1549)
+2026-11-23T22:56:05.7771629Z Updating files:  51% (790/1549)
+2026-11-23T22:56:05.7777778Z Updating files:  52% (806/1549)
+2026-11-23T22:56:06.1192096Z Updating files:  53% (821/1549)
+2026-11-23T22:56:06.1197095Z Updating files:  53% (824/1549)
+2026-11-23T22:56:06.1203820Z Updating files:  54% (837/1549)
+2026-11-23T22:56:06.1210874Z Updating files:  55% (852/1549)
+2026-11-23T22:56:06.1217650Z Updating files:  56% (868/1549)
+2026-11-23T22:56:06.1226288Z Updating files:  57% (883/1549)
+2026-11-23T22:56:06.1235461Z Updating files:  58% (899/1549)
+2026-11-23T22:56:06.1244538Z Updating files:  59% (914/1549)
+2026-11-23T22:56:06.1253213Z Updating files:  60% (930/1549)
+2026-11-23T22:56:06.1260817Z Updating files:  61% (945/1549)
+2026-11-23T22:56:06.1283584Z Updating files:  62% (961/1549)
+2026-11-23T22:56:06.1283913Z Updating files:  63% (976/1549)
+2026-11-23T22:56:06.5303330Z Updating files:  64% (992/1549)
+2026-11-23T22:56:06.5310233Z Updating files:  65% (1007/1549)
+2026-11-23T22:56:07.0788808Z Updating files:  66% (1023/1549)
+2026-11-23T22:56:07.0795813Z Updating files:  66% (1028/1549)
+2026-11-23T22:56:07.0803633Z Updating files:  67% (1038/1549)
+2026-11-23T22:56:07.0810215Z Updating files:  68% (1054/1549)
+2026-11-23T22:56:07.0818197Z Updating files:  69% (1069/1549)
+2026-11-23T22:56:07.0826403Z Updating files:  70% (1085/1549)
+2026-11-23T22:56:07.0835694Z Updating files:  71% (1100/1549)
+2026-11-23T22:56:07.0840389Z Updating files:  72% (1116/1549)
+2026-11-23T22:56:07.0845978Z Updating files:  73% (1131/1549)
+2026-11-23T22:56:07.0855850Z Updating files:  74% (1147/1549)
+2026-11-23T22:56:07.0863132Z Updating files:  75% (1162/1549)
+2026-11-23T22:56:07.0871841Z Updating files:  76% (1178/1549)
+2026-11-23T22:56:07.0879023Z Updating files:  77% (1193/1549)
+2026-11-23T22:56:07.0887575Z Updating files:  78% (1209/1549)
+2026-11-23T22:56:07.0899366Z Updating files:  79% (1224/1549)
+2026-11-23T22:56:07.0908752Z Updating files:  80% (1240/1549)
+2026-11-23T22:56:07.0917786Z Updating files:  81% (1255/1549)
+2026-11-23T22:56:07.0923497Z Updating files:  82% (1271/1549)
+2026-11-23T22:56:07.0929502Z Updating files:  83% (1286/1549)
+2026-11-23T22:56:07.0934237Z Updating files:  84% (1302/1549)
+2026-11-23T22:56:07.0939687Z Updating files:  85% (1317/1549)
+2026-11-23T22:56:07.0949377Z Updating files:  86% (1333/1549)
+2026-11-23T22:56:07.0958511Z Updating files:  87% (1348/1549)
+2026-11-23T22:56:07.0968426Z Updating files:  88% (1364/1549)
+2026-11-23T22:56:07.0975229Z Updating files:  89% (1379/1549)
+2026-11-23T22:56:07.0980556Z Updating files:  90% (1395/1549)
+2026-11-23T22:56:07.0989010Z Updating files:  91% (1410/1549)
+2026-11-23T22:56:07.0997050Z Updating files:  92% (1426/1549)
+2026-11-23T22:56:07.1002902Z Updating files:  93% (1441/1549)
+2026-11-23T22:56:07.1009777Z Updating files:  94% (1457/1549)
+2026-11-23T22:56:07.1015701Z Updating files:  95% (1472/1549)
+2026-11-23T22:56:07.1024103Z Updating files:  96% (1488/1549)
+2026-11-23T22:56:07.8052238Z Updating files:  97% (1503/1549)
+2026-11-23T22:56:07.8060316Z Updating files:  98% (1519/1549)
+2026-11-23T22:56:08.1510722Z Updating files:  99% (1534/1549)
+2026-11-23T22:56:08.1511018Z Updating files:  99% (1548/1549)
+2026-11-23T22:56:08.1511233Z Updating files: 100% (1549/1549)
+2026-11-23T22:56:08.1511441Z Updating files: 100% (1549/1549), done.
+2026-11-23T22:56:08.2485467Z Note: switching to 'refs/remotes/pull/1961/merge'.
+2026-11-23T22:56:08.2485817Z 
+2026-11-23T22:56:08.2486069Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-23T22:56:08.2486656Z changes and commit them, and you can discard any commits you make in this
+2026-11-23T22:56:08.2487232Z state without impacting any branches by switching back to a branch.
+2026-11-23T22:56:08.2487537Z 
+2026-11-23T22:56:08.2487769Z If you want to create a new branch to retain commits you create, you may
+2026-11-23T22:56:08.2488516Z do so (now or later) by using -c with the switch command. Example:
+2026-11-23T22:56:08.2488807Z 
+2026-11-23T22:56:08.2488921Z   git switch -c <new-branch-name>
+2026-11-23T22:56:08.2489122Z 
+2026-11-23T22:56:08.2489229Z Or undo this operation with:
+2026-11-23T22:56:08.2489418Z 
+2026-11-23T22:56:08.2489519Z   git switch -
+2026-11-23T22:56:08.2489654Z 
+2026-11-23T22:56:08.2489905Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-23T22:56:08.2490256Z 
+2026-11-23T22:56:08.2490671Z HEAD is now at a55a512 Merge 6d99cfc9995b80198c2e1fc233c23690feb5d12d into 5005bedbe4fd4f1a43456918dd255fd2cbc4a5d1
+2026-11-23T22:56:08.2518128Z ##[endgroup]
+2026-11-23T22:56:08.2569057Z [command]/usr/bin/git log -1 --format=%H
+2026-11-23T22:56:08.2596660Z a55a512557ebf72eda966df1a418578e2f2a03ab
+2026-11-23T22:56:08.4589473Z ##[group]Run actions/setup-python@v7
+2026-11-23T22:56:08.4589700Z with:
+2026-11-23T22:56:08.4589864Z   python-version: 3.12
+2026-11-23T22:56:08.4590060Z   check-latest: false
+2026-11-23T22:56:08.4592042Z   token: ***
+2026-11-23T22:56:08.4592315Z   mirror: https://raw.githubusercontent.com/actions/python-versions/main
+2026-11-23T22:56:08.4592622Z   update-environment: true
+2026-11-23T22:56:08.4592816Z   allow-prereleases: false
+2026-11-23T22:56:08.4593138Z   freethreaded: false
+2026-11-23T22:56:08.4593313Z ##[endgroup]
+2026-11-23T22:56:08.5569970Z ##[group]Installed versions
+2026-11-23T22:56:08.5649124Z Successfully set up CPython (3.12.16)
+2026-11-23T22:56:08.5649701Z ##[endgroup]
+2026-11-23T22:56:08.6242308Z ##[group]Run python3 tools/audit_lean_evidence.py
+2026-11-23T22:56:08.6242728Z [36;1mpython3 tools/audit_lean_evidence.py[0m
+2026-11-23T22:56:08.6288525Z shell: /usr/bin/bash -e {0}
+2026-11-23T22:56:08.6288741Z env:
+2026-11-23T22:56:08.6288967Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-23T22:56:08.6289348Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-23T22:56:08.6289711Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-23T22:56:08.6290036Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-23T22:56:08.6290328Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-23T22:56:08.6290622Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-23T22:56:08.6290874Z ##[endgroup]
+2026-11-23T22:56:10.5902311Z 1082 Lean files; 0 unpinned; 14/14 receipt hashes match; 50 files with forbidden tokens
+2026-11-23T22:56:10.5903899Z FAIL files_with_forbidden_tokens: experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Consumer-proof-tools/selftest/fail/Axiom.lean
+2026-11-23T22:56:10.5905305Z FAIL files_with_forbidden_tokens: experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Consumer-proof-tools/selftest/fail/Native.lean
+2026-11-23T22:56:10.5906630Z FAIL files_with_forbidden_tokens: experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Consumer-proof-tools/selftest/fail/Sorry.lean
+2026-11-23T22:56:10.5907926Z FAIL files_with_forbidden_tokens: experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Consumer-proof-tools/selftest/pass/Trusted.lean
+2026-11-23T22:56:10.5909322Z FAIL files_with_forbidden_tokens: experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/fail/Axiom.lean
+2026-11-23T22:56:10.5910528Z FAIL files_with_forbidden_tokens: experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/fail/Native.lean
+2026-11-23T22:56:10.5911736Z FAIL files_with_forbidden_tokens: experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/fail/Sorry.lean
+2026-11-23T22:56:10.5913653Z FAIL files_with_forbidden_tokens: experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/pass/Trusted.lean
+2026-11-23T22:56:10.5915706Z FAIL files_with_forbidden_tokens: experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/project-omitted/Bad.lean
+2026-11-23T22:56:10.5917903Z FAIL files_with_forbidden_tokens: experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/project-quoted/hyphen-dir/Hidden.lean
+2026-11-23T22:56:10.5919424Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/M31ProjectionChain.lean
+2026-11-23T22:56:10.5920091Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/M31ReflectedFiber.lean
+2026-11-23T22:56:10.5920609Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-affine-label-bound/AffinePair.lean
+2026-11-23T22:56:10.5921178Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-affine-label-bound/BooleanDegree.lean
+2026-11-23T22:56:10.5922002Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-affine-label-bound/CoefficientClasses.lean
+2026-11-23T22:56:10.5922583Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-affine-label-bound/CrossCurve.lean
+2026-11-23T22:56:10.5923416Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-affine-label-bound/ExtensionMultiplicity.lean
+2026-11-23T22:56:10.5924004Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-affine-label-bound/History.lean
+2026-11-23T22:56:10.5924585Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-affine-label-bound/IsogenyOrders.lean
+2026-11-23T22:56:10.5925146Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-affine-label-bound/PointOrders.lean
+2026-11-23T22:56:10.5925691Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-affine-label-bound/Positions.lean
+2026-11-23T22:56:10.5926253Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-affine-label-bound/QuadraticTower.lean
+2026-11-23T22:56:10.5926822Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-affine-label-bound/SetupCoverage.lean
+2026-11-23T22:56:10.5927378Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-affine-label-bound/TensorCuts.lean
+2026-11-23T22:56:10.5927936Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-affine-label-bound/TwistSmoothness.lean
+2026-11-23T22:56:10.5928496Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-binary-cycles/FirstCycle.lean
+2026-11-23T22:56:10.5929008Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-boolean-lifts/Address.lean
+2026-11-23T22:56:10.5929529Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-boolean-lifts/BitWitnesses.lean
+2026-11-23T22:56:10.5930060Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-boolean-lifts/CubicSpan.lean
+2026-11-23T22:56:10.5930579Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-boolean-lifts/Projection.lean
+2026-11-23T22:56:10.5931107Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-extension-traces/TraceScreen.lean
+2026-11-23T22:56:10.5931631Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-field-ffi/CosetInverse.lean
+2026-11-23T22:56:10.5932131Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-group-order/Card.lean
+2026-11-23T22:56:10.5932773Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-group-order/SignedCapacity.lean
+2026-11-23T22:56:10.5933549Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-group-order/TorusDimension.lean
+2026-11-23T22:56:10.5934071Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-incidence-core/ScaleBound.lean
+2026-11-23T22:56:10.5934589Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-inversion-chain/Chain.lean
+2026-11-23T22:56:10.5935129Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-reflection-count/CoordinateLookup.lean
+2026-11-23T22:56:10.5935687Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-reflection-count/Correlation.lean
+2026-11-23T22:56:10.5936235Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-reflection-count/FixtureHash.lean
+2026-11-23T22:56:10.5936782Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-reflection-count/QuotientOrders.lean
+2026-11-23T22:56:10.5937316Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-reflection-count/Shifted.lean
+2026-11-23T22:56:10.5937822Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-root-cache/Root.lean
+2026-11-23T22:56:10.5938340Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-rotation-smoothness/ShellTwist.lean
+2026-11-23T22:56:10.5938998Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-signed-graph-counts/Counts.lean
+2026-11-23T22:56:10.5939531Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-smooth-seeds/Smooth.lean
+2026-11-23T22:56:10.5940062Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-stopping-calibration/TailBound.lean
+2026-11-23T22:56:10.5940603Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-twist-joint/ExtensionOrder.lean
+2026-11-23T22:56:10.5941127Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-twist-joint/Reciprocal.lean
+2026-11-23T22:56:10.5941645Z FAIL files_with_forbidden_tokens: experiments/prime-field-auxiliary-ic/m31-twist-joint/TraceSeparation.lean
+2026-11-23T22:56:10.6012231Z Separate axiom audit required for: experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-auditor-heap-limit-failure-03/entire-original-attempt03.lean, experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-final-06/LPGraphCases02.lean, experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-original-defaults-success-04/entire-original-attempt04.lean, experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-thread-limit-failure-01/entire-original-attempt01.lean, experiments/chained-transfer-lp-presentation-01/evidence/direct-graph-proof-thread-limit-failure-02/entire-original-attempt02.lean, experiments/chained-transfer-lp-presentation-01/evidence/foundation-native-first-build-failure-01/LPProjection.first-source.lean, experiments/chained-transfer-lp-presentation-01/evidence/static-Lean-startup-VM-diagnostic-01/minimal.lean, experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/entire-proof-source/LPProjection.lean, experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Consumer-proof-tools/AuditAxioms.lean, experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Consumer-proof-tools/AuditHeckeAxioms.lean, experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Consumer-proof-tools/selftest/fail/Axiom.lean, experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Consumer-proof-tools/selftest/fail/BuildError.lean, experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Consumer-proof-tools/selftest/fail/Empty.lean, experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Consumer-proof-tools/selftest/fail/Native.lean, experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Consumer-proof-tools/selftest/fail/Sorry.lean, experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Consumer-proof-tools/selftest/pass/Good.lean, experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Consumer-proof-tools/selftest/pass/Trusted.lean, experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/AuditAxioms.lean, experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/fail/Axiom.lean, experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/fail/BuildError.lean, experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/fail/Empty.lean, experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/fail/Native.lean, experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/fail/Sorry.lean, experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/pass/Good.lean, experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/pass/Trusted.lean, experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/project-omitted/Bad.lean, experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/project-omitted/Good.lean, experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/project-quoted/Good.lean, experiments/chained-transfer-lp-presentation-01/evidence/whole-development-CI-missing-original-identity-fixture-01/all85-original-members/original-Root-proof-tools/selftest/project-quoted/hyphen-dir/Hidden.lean, experiments/chained-transfer-lp-presentation-01/lean/LPGraphCases02.lean, experiments/chained-transfer-lp-presentation-01/lean/LPProjection.lean, experiments/chained-transfer-public-target/beta-complete-evaluator/lean/CRTProjectionIdentity.lean, experiments/chained-transfer-public-target/beta-complete-evaluator/lean/CompleteRationalBeta.lean, experiments/chained-transfer-public-target/beta-rational-lift/lean/QuadraticNormIdentity.lean, experiments/chained-transfer-public-target/beta-rational-lift/lean/QuadraticRationalLift.lean, experiments/chained-transfer-public-target/bitangents/lean/BitangentAlgebra.lean, experiments/chained-transfer-public-target/chain-kernels/lean/ChainKernels.lean, experiments/chained-transfer-public-target/evidence/arithmetic-audit-native-acceptance-04/actual-root04-cryptanalysis__experiments__chained-transfer-public-target__norm-assisted-ic__lean__NormAssistedSampling.lean, experiments/chained-transfer-public-target/evidence/beta-CRT-caller-failure-01/executed-source/lean/CRTProjectionIdentity.lean, experiments/chained-transfer-public-target/evidence/beta-CRT-caller-failure-01/executed-source/lean/CompleteRationalBeta.lean, experiments/chained-transfer-public-target/evidence/beta-CRT-projection-acceptance-02/lean/CRTProjectionIdentity.lean, experiments/chained-transfer-public-target/evidence/beta-CRT-projection-acceptance-02/native/executed-source/lean/CRTProjectionIdentity.lean, experiments/chained-transfer-public-target/evidence/beta-CRT-projection-acceptance-02/native/executed-source/lean/CompleteRationalBeta.lean, experiments/chained-transfer-public-target/evidence/beta-complete-Lean-acceptance-03/CompleteRationalBeta.lean, experiments/chained-transfer-public-target/evidence/beta-complete-Lean-failure-01/CompleteRationalBeta.lean, experiments/chained-transfer-public-target/evidence/beta-complete-accounting-acceptance-05/executed-source/lean/CRTProjectionIdentity.lean, experiments/chained-transfer-public-target/evidence/beta-complete-accounting-acceptance-05/executed-source/lean/CompleteRationalBeta.lean, experiments/chained-transfer-public-target/evidence/beta-complete-exceptional-native-04/executed-source/lean/CompleteRationalBeta.lean, experiments/chained-transfer-public-target/evidence/beta-producer-cwd-controls-01/QuadraticNormIdentity.lean, experiments/chained-transfer-public-target/evidence/beta-quadratic-Picard-acceptance-02/executed-source/lean/QuadraticRationalLift.lean, experiments/chained-transfer-public-target/evidence/beta-quadratic-norm-identity-acceptance-04/executed-QuadraticNormIdentity.lean, experiments/chained-transfer-public-target/evidence/beta-rational-lift-Lean-acceptance-02/executed-QuadraticRationalLift.lean, experiments/chained-transfer-public-target/evidence/beta-rational-lift-Lean-failure-01/QuadraticRationalLift.lean, experiments/chained-transfer-public-target/evidence/fixed-chain-evaluator-build-02/earlier-seven-lemma-source.lean, experiments/chained-transfer-public-target/evidence/induced-transfer-proof-CI-acceptance-01/independent-complete-receipt-check/actual-consumer-InducedFullTransfer.lean, experiments/chained-transfer-public-target/evidence/induced-transfer-proof-CI-acceptance-01/independent-complete-receipt-check/actual-producer-InducedFullTransfer.lean, experiments/chained-transfer-public-target/evidence/induced-transfer-proof-CI-acceptance-01/whole-artifact/actual-consumer-InducedFullTransfer.lean, experiments/chained-transfer-public-target/evidence/induced-transfer-proof-CI-acceptance-01/whole-artifact/actual-producer-InducedFullTransfer.lean, experiments/chained-transfer-public-target/evidence/induced-transfer-proof-CI-source-01/whole-local-original-driver/actual-consumer-InducedFullTransfer.lean, experiments/chained-transfer-public-target/evidence/induced-transfer-proof-CI-source-01/whole-local-original-driver/actual-producer-InducedFullTransfer.lean, experiments/chained-transfer-public-target/evidence/nondual13-nonsquare-proof-01/attempt01/NonsquareResidues.lean, experiments/chained-transfer-public-target/evidence/nondual13-nonsquare-proof-01/attempt02/NonsquareResidues.lean, experiments/chained-transfer-public-target/evidence/observer-storage-proof-01/original-gates/CounterStorage.lean, experiments/chained-transfer-public-target/evidence/odd-product-Lean-failed-01/original-OddProductChain.lean, experiments/chained-transfer-public-target/evidence/original-fixed-model-IC-compiled-02/reused-original-proofs/actual-NewTargetIC.lean, experiments/chained-transfer-public-target/evidence/original-fixed-model-sampler-compiled-01/reused-original-proofs/actual-NormAssistedSampling.lean, experiments/chained-transfer-public-target/evidence/original-induced-full-transfer-proof-01/original-gates/actual-source.lean, experiments/chained-transfer-public-target/evidence/original-kernel-proof-failure-01/KernelCensus.failed01.lean, experiments/chained-transfer-public-target/evidence/original-relation-kernel-proof-01/original-gates/RelationKernel.lean, experiments/chained-transfer-public-target/evidence/paired-fourth-discriminant-proof-01/original-gates/actual-source.lean, experiments/chained-transfer-public-target/evidence/paired-fourth-three-pair-proof-01/original-gates/actual-compiled-source.lean, experiments/chained-transfer-public-target/evidence/twisted-pair-homogeneity-proof-02/failed-tool-setup-01/TwistHomogeneity.lean, experiments/chained-transfer-public-target/evidence/twisted-pair-homogeneity-proof-02/original-gates/TwistHomogeneity.lean, experiments/chained-transfer-public-target/evidence/twisted-pair-inverse-factor-proof-01/original-gates/TwistingFactor.lean, experiments/chained-transfer-public-target/evidence/twisted-pair-old-prime-proof-01/original-gates/OldPrimeObstruction.lean, experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01/lean/ChainDescent.lean, experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01/lean/FullGroupNorm.lean, experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-02/lean/NormPointReuse.lean, experiments/chained-transfer-public-target/formal/PublicOriginConvention.lean, experiments/chained-transfer-public-target/gluing-maps/lean/GluingChain.lean, experiments/chained-transfer-public-target/gluing-models/lean/GluingModels.lean, experiments/chained-transfer-public-target/kernel-census/lean/KernelStructure.lean, experiments/chained-transfer-public-target/native/lean/PublicTargetBridge.lean, experiments/chained-transfer-public-target/new-target-ic/lean/NewTargetIC.lean, experiments/chained-transfer-public-target/nondual13-next-preflight/lean/NonsquareResidues.lean, experiments/chained-transfer-public-target/norm-arithmetic-storage-02/lean/CounterStorage.lean, experiments/chained-transfer-public-target/norm-assisted-ic/lean/NormAssistedSampling.lean, experiments/chained-transfer-public-target/odd-product-maps/lean/OddProductChain.lean, experiments/chained-transfer-public-target/odd-product-refinements/lean/OddProductRefinement.lean, experiments/chained-transfer-public-target/odd-source/lean/OddSource.lean, experiments/chained-transfer-public-target/original-full-evaluator-01/lean/OriginalFullChain.lean, experiments/chained-transfer-public-target/original-full-evaluator-01/lean/PrimeRecovery.lean, experiments/chained-transfer-public-target/original-induced-transfer-01/lean/InducedFullTransfer.lean, experiments/chained-transfer-public-target/original-kernel-census-01/lean/KernelCensus.lean, experiments/chained-transfer-public-target/original-prime-chain-01/lean/PrimeReprojection.lean, experiments/chained-transfer-public-target/original-relation-rank-01/lean/RelationKernel.lean, experiments/chained-transfer-public-target/paired-fourth-preflight/lean/FourthObstruction.lean, experiments/chained-transfer-public-target/paired-fourth-preflight/lean/ThreePairNorm.lean, experiments/chained-transfer-public-target/prime-field/NoBaseFieldCurve.lean, experiments/chained-transfer-public-target/twisted-pair-preflight/lean/OldPrimeObstruction.lean, experiments/chained-transfer-public-target/twisted-pair-preflight/lean/TwistHomogeneity.lean, experiments/chained-transfer-public-target/twisted-pair-preflight/lean/TwistingFactor.lean, experiments/chained-transfer-public-target/two-primary/FrobeniusSix.lean, experiments/ecc2k130-ic-goal-20260929/n41_product_region_span_gate_20261013/LeanProbe.lean, experiments/ecc2k130-ic-goal-20260929/n41_quotient_trace_cubic_20261023/MathlibDependencyProbe.lean, experiments/ic-s3-direct-coefficients-20261115/AuditS3.lean, experiments/orbit-quotient-summation/lean/OrbitPairIndex.lean, experiments/prime-field-auxiliary-ic/ArchivedLoopBound.lean, experiments/prime-field-auxiliary-ic/DistinctBatchRows.lean, experiments/prime-field-auxiliary-ic/M31LabelDegree.lean, experiments/prime-field-auxiliary-ic/M31ProjectionChain.lean, experiments/prime-field-auxiliary-ic/M31ProjectionLabel.lean, experiments/prime-field-auxiliary-ic/M31Reduction.lean, experiments/prime-field-auxiliary-ic/M31ReflectedFiber.lean, experiments/prime-field-auxiliary-ic/M31SquareDepth.lean, experiments/prime-field-auxiliary-ic/M31TwistGraph.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/AffinePair.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/BooleanDegree.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/CoefficientClasses.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/ColdLoopBudget.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/CrossCurve.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/ExtensionMultiplicity.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/HashCollision.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/HasseWitnesses.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/History.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/IsogenyOrders.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/LagOverlap.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/MersenneReduction.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/MixedTwistSum.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/OddExtension.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/PointOrders.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/Positions.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/PublicEquations.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/QuadraticCopy.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/QuadraticTower.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/SetupCoverage.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/TensorCuts.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/TransportedRows.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/TwistSmoothness.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/TwistTransfer.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/TwoTorsionModels.lean, experiments/prime-field-auxiliary-ic/m31-affine-label-bound/XOnlyAddition.lean, experiments/prime-field-auxiliary-ic/m31-balanced-square/Prune.lean, experiments/prime-field-auxiliary-ic/m31-balanced-square/Signed.lean, experiments/prime-field-auxiliary-ic/m31-binary-cycles/FirstCycle.lean, experiments/prime-field-auxiliary-ic/m31-boolean-lifts/Address.lean, experiments/prime-field-auxiliary-ic/m31-boolean-lifts/BitWitnesses.lean, experiments/prime-field-auxiliary-ic/m31-boolean-lifts/BitmapCoverage.lean, experiments/prime-field-auxiliary-ic/m31-boolean-lifts/BlockDistance.lean, experiments/prime-field-auxiliary-ic/m31-boolean-lifts/CubicSpan.lean, experiments/prime-field-auxiliary-ic/m31-boolean-lifts/Degree.lean, experiments/prime-field-auxiliary-ic/m31-boolean-lifts/Directory.lean, experiments/prime-field-auxiliary-ic/m31-boolean-lifts/Holdout.lean, experiments/prime-field-auxiliary-ic/m31-boolean-lifts/Projection.lean, experiments/prime-field-auxiliary-ic/m31-boolean-lifts/SignatureIndex.lean, experiments/prime-field-auxiliary-ic/m31-boolean-lifts/SmoothOrbit.lean, experiments/prime-field-auxiliary-ic/m31-boolean-lifts/SquareEdges.lean, experiments/prime-field-auxiliary-ic/m31-census-attribution/RateBounds.lean, experiments/prime-field-auxiliary-ic/m31-census-attribution/Witness.lean, experiments/prime-field-auxiliary-ic/m31-curve-triple-census/Detectability.lean, experiments/prime-field-auxiliary-ic/m31-dot4/EightProducts.lean, experiments/prime-field-auxiliary-ic/m31-dot4/FourProducts.lean, experiments/prime-field-auxiliary-ic/m31-doubling-smooth/Duplication.lean, experiments/prime-field-auxiliary-ic/m31-extension-traces/TraceScreen.lean, experiments/prime-field-auxiliary-ic/m31-fiber-histogram/Coverage.lean, experiments/prime-field-auxiliary-ic/m31-field-ffi/CosetInverse.lean, experiments/prime-field-auxiliary-ic/m31-field-ffi/Fold.lean, experiments/prime-field-auxiliary-ic/m31-field-ffi/InverseSchedule.lean, experiments/prime-field-auxiliary-ic/m31-field-ffi/Lane.lean, experiments/prime-field-auxiliary-ic/m31-field-ffi/Tail.lean, experiments/prime-field-auxiliary-ic/m31-group-order/Card.lean, experiments/prime-field-auxiliary-ic/m31-group-order/SignedCapacity.lean, experiments/prime-field-auxiliary-ic/m31-group-order/TorusDimension.lean, experiments/prime-field-auxiliary-ic/m31-group-order/Translation.lean, experiments/prime-field-auxiliary-ic/m31-group-order/TripleCapacity.lean, experiments/prime-field-auxiliary-ic/m31-incidence-core/Leaf.lean, experiments/prime-field-auxiliary-ic/m31-incidence-core/ScaleBound.lean, experiments/prime-field-auxiliary-ic/m31-inverse-arithmetic/Heap.lean, experiments/prime-field-auxiliary-ic/m31-inverse-arithmetic/Tree.lean, experiments/prime-field-auxiliary-ic/m31-inversion-chain/Chain.lean, experiments/prime-field-auxiliary-ic/m31-joint-lift-census/Recurrence.lean, experiments/prime-field-auxiliary-ic/m31-lazy-threshold/Early.lean, experiments/prime-field-auxiliary-ic/m31-lift-census/Reciprocal.lean, experiments/prime-field-auxiliary-ic/m31-lift-census/Recurrences.lean, experiments/prime-field-auxiliary-ic/m31-marginal-bounds/Marginals.lean, experiments/prime-field-auxiliary-ic/m31-metal-inverse/SplitWord.lean, experiments/prime-field-auxiliary-ic/m31-metal-lifts/FieldCoverage.lean, experiments/prime-field-auxiliary-ic/m31-metal-lifts/SingleChild.lean, experiments/prime-field-auxiliary-ic/m31-metal-lifts/SupportOrder.lean, experiments/prime-field-auxiliary-ic/m31-metal-width/Stride.lean, experiments/prime-field-auxiliary-ic/m31-native-product/Product.lean, experiments/prime-field-auxiliary-ic/m31-native-product/archived-lifts/layer-walk/Layer.lean, experiments/prime-field-auxiliary-ic/m31-native-root/HighSquare.lean, experiments/prime-field-auxiliary-ic/m31-native-smooth-filter/Strip.lean, experiments/prime-field-auxiliary-ic/m31-pairwise-bounds/Pairwise.lean, experiments/prime-field-auxiliary-ic/m31-panel-coverage/Coverage.lean, experiments/prime-field-auxiliary-ic/m31-polynomial-intersection/RootIntersection.lean, experiments/prime-field-auxiliary-ic/m31-prefix-width/Residuals.lean, experiments/prime-field-auxiliary-ic/m31-projection-controls/Ceiling.lean, experiments/prime-field-auxiliary-ic/m31-public-certificate-replay/PhaseFloor.lean, experiments/prime-field-auxiliary-ic/m31-public-certificate-replay/Window.lean, experiments/prime-field-auxiliary-ic/m31-reflection-count/CoordinateLookup.lean, experiments/prime-field-auxiliary-ic/m31-reflection-count/Correlation.lean, experiments/prime-field-auxiliary-ic/m31-reflection-count/EligiblePair.lean, experiments/prime-field-auxiliary-ic/m31-reflection-count/FixtureHash.lean, experiments/prime-field-auxiliary-ic/m31-reflection-count/QuotientOrders.lean, experiments/prime-field-auxiliary-ic/m31-reflection-count/ReflectionErrors.lean, experiments/prime-field-auxiliary-ic/m31-reflection-count/Shifted.lean, experiments/prime-field-auxiliary-ic/m31-reflection-timing/Reflection.lean, experiments/prime-field-auxiliary-ic/m31-root-cache/Root.lean, experiments/prime-field-auxiliary-ic/m31-rotation-smoothness/FirstBound.lean, experiments/prime-field-auxiliary-ic/m31-rotation-smoothness/LiftBatch.lean, experiments/prime-field-auxiliary-ic/m31-rotation-smoothness/OrbitKey.lean, experiments/prime-field-auxiliary-ic/m31-rotation-smoothness/Rotate.lean, experiments/prime-field-auxiliary-ic/m31-rotation-smoothness/RotationWindow.lean, experiments/prime-field-auxiliary-ic/m31-rotation-smoothness/SquareTest.lean, experiments/prime-field-auxiliary-ic/m31-rotation-smoothness/TwistBandBound.lean, experiments/prime-field-auxiliary-ic/m31-rotation-smoothness/partition-timing/BucketFilter.lean, experiments/prime-field-auxiliary-ic/m31-rotation-smoothness/partition-timing/MulWord.lean, experiments/prime-field-auxiliary-ic/m31-rotation-smoothness/product-support/Product.lean, experiments/prime-field-auxiliary-ic/m31-rotation-smoothness/reciprocal-lifts/PackedPhase.lean, experiments/prime-field-auxiliary-ic/m31-rotation-smoothness/reciprocal-lifts/PooledPhase.lean, experiments/prime-field-auxiliary-ic/m31-rotation-smoothness/reciprocal-lifts/ScreeningCost.lean, experiments/prime-field-auxiliary-ic/m31-rotation-smoothness/reciprocal-lifts/SignedProduct.lean, experiments/prime-field-auxiliary-ic/m31-rotation-smoothness/reciprocal-lifts/Transport.lean, experiments/prime-field-auxiliary-ic/m31-signed-graph-counts/Counts.lean, experiments/prime-field-auxiliary-ic/m31-signed-smooth-census/Signed.lean, experiments/prime-field-auxiliary-ic/m31-smooth-basis-setup/Divisor.lean, experiments/prime-field-auxiliary-ic/m31-smooth-fibers/Tag.lean, experiments/prime-field-auxiliary-ic/m31-smooth-seeds/Smooth.lean, experiments/prime-field-auxiliary-ic/m31-smooth-sumsets/Multiplicity.lean, experiments/prime-field-auxiliary-ic/m31-smooth-triples/Cancellation.lean, experiments/prime-field-auxiliary-ic/m31-stopping-calibration/TailBound.lean, experiments/prime-field-auxiliary-ic/m31-subset-frontier/Frontier.lean, experiments/prime-field-auxiliary-ic/m31-subset-frontier/PairKeys.lean, experiments/prime-field-auxiliary-ic/m31-threshold-screen/BreakEven.lean, experiments/prime-field-auxiliary-ic/m31-triple-probe-bound/MissCost.lean, experiments/prime-field-auxiliary-ic/m31-twist-joint/ExtensionOrder.lean, experiments/prime-field-auxiliary-ic/m31-twist-joint/OrbitCubic.lean, experiments/prime-field-auxiliary-ic/m31-twist-joint/Reciprocal.lean, experiments/prime-field-auxiliary-ic/m31-twist-joint/Reduction.lean, experiments/prime-field-auxiliary-ic/m31-twist-joint/TraceSeparation.lean, experiments/prime-field-auxiliary-ic/m31-walk-hit-overlap/Overlap.lean, experiments/prime-field-auxiliary-ic/rust-validation/field-fibers-20261115/formal/lakefile.lean, experiments/prime-j0-nearest-digit-12211-20261014/SplitPrime12211NearestSelector.lean, experiments/xedni-public-first-large-holdout-20261115/formal/probes/OrderProbe.lean, experiments/xedni-public-first-large-holdout-20261115/formal/probes/PointFormulaProbe.lean, research/base-point-independence-20261108/formal/BasePointIndependence.lean, research/handbook-ff-ic-ideas-20261103/formal/HandbookIC.lean, research/xedni_rank_decay_20261118/formal/XedniRankClassification.lean, verification/pqc-assay/lean/Modarith.lean
+2026-11-23T22:56:10.6091689Z ##[error]Process completed with exit code 1.
+2026-11-23T22:56:11.0179366Z Post job cleanup.
+2026-11-23T22:56:11.0905327Z [command]/usr/bin/git version
+2026-11-23T22:56:11.0945968Z git version 2.56.1
+2026-11-23T22:56:11.0976344Z Temporarily overriding HOME='/home/runner/work/_temp/cea703fd-b2c4-47de-ad35-5d265bfb223d' before making global git config changes
+2026-11-23T22:56:11.0977810Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-23T22:56:11.0981220Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/cryptanalysis/cryptanalysis
+2026-11-23T22:56:11.1016368Z Removing SSH command configuration
+2026-11-23T22:56:11.1022363Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-23T22:56:11.1066478Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-23T22:56:11.1533612Z Removing HTTP extra header
+2026-11-23T22:56:11.1534356Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-23T22:56:11.1571734Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-23T22:56:11.1998576Z Removing includeIf entries pointing to credentials config files
+2026-11-23T22:56:11.2004931Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-23T22:56:11.2032207Z includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path
+2026-11-23T22:56:11.2033444Z includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path
+2026-11-23T22:56:11.2034011Z includeif.gitdir:/github/workspace/.git.path
+2026-11-23T22:56:11.2034396Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-23T22:56:11.2039206Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path
+2026-11-23T22:56:11.2060649Z /home/runner/work/_temp/git-credentials-5ff51d62-a5bc-4ed6-930a-8ca664a2e52b.config
+2026-11-23T22:56:11.2068076Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-5ff51d62\-a5bc\-4ed6\-930a\-8ca664a2e52b\.config
+2026-11-23T22:56:11.2101971Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path
+2026-11-23T22:56:11.2123175Z /home/runner/work/_temp/git-credentials-5ff51d62-a5bc-4ed6-930a-8ca664a2e52b.config
+2026-11-23T22:56:11.2130278Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/cryptanalysis/cryptanalysis/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-5ff51d62\-a5bc\-4ed6\-930a\-8ca664a2e52b\.config
+2026-11-23T22:56:11.2159024Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-23T22:56:11.2178951Z /github/runner_temp/git-credentials-5ff51d62-a5bc-4ed6-930a-8ca664a2e52b.config
+2026-11-23T22:56:11.2185625Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-5ff51d62\-a5bc\-4ed6\-930a\-8ca664a2e52b\.config
+2026-11-23T22:56:11.2217923Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-23T22:56:11.2241038Z /github/runner_temp/git-credentials-5ff51d62-a5bc-4ed6-930a-8ca664a2e52b.config
+2026-11-23T22:56:11.2247634Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-5ff51d62\-a5bc\-4ed6\-930a\-8ca664a2e52b\.config
+2026-11-23T22:56:11.2281809Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-23T22:56:11.2725353Z Removing credentials config '/home/runner/work/_temp/git-credentials-5ff51d62-a5bc-4ed6-930a-8ca664a2e52b.config'
+2026-11-23T22:56:11.2883366Z Cleaning up orphan processes

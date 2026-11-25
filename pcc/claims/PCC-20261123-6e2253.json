@@ -1,0 +1,23 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T22:12:37Z",
+ "id": "PCC-20261123-6e2253",
+ "kind": "statement",
+ "producer": {
+  "commit": "8278b6d3b47371325846b58dd37a79a1328a2d0d",
+  "model": "GPT-6",
+  "session": "chained-transfers-20261123"
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/chained_cm19_univariate_audit_20261123/FIRST_A_COMPILE_NEGATIVE.json",
+    "sha256": "78222b0d2602d03ab1d2cac67eebc272a7bcce42fac8427475590a491549e097"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "First auditA source8278b6d full39-input/lock readback before strict calls: three versions/format0, compile1 on unused C::neg with warnings denied. Full original diagnostics/phase/guard records retained; guard failures empty, no Clippy or native unit call/qualifier. Preserve sourceA, repair only new version. [pcc:unverified]"
+}
