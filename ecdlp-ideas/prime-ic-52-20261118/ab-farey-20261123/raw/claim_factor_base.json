@@ -1,0 +1,74 @@
+{
+ "stage": "factor_base",
+ "n_or_bits": {
+  "bits": [
+   20,
+   24
+  ],
+  "toy_scale_note": "the construction result is size-independent; the two rungs are where the yield panel was measured"
+ },
+ "factor_base_size_F": {
+  "formula": "|X(B)| = 4*Phi(B) - 1, Phi(B) = sum_{b<=B} phi(b)",
+  "asymptotic": "12/pi^2 * B^2 = 1.2158542 * B^2",
+  "examples": {
+   "1024": 1275855,
+   "4096": 20400079,
+   "16384": 326397351,
+   "65536": 5222059703,
+   "262144": 83553058575,
+   "1048576": 1336846396983
+  }
+ },
+ "orbit_count_K": {
+  "equals_F": true,
+  "values": [
+   184,
+   464,
+   1448,
+   5792
+  ],
+  "note": "no orbit reduction applies to this base; K = |F| exactly, stated explicitly as the schema requires"
+ },
+ "dimension_l_or_dim": 1,
+ "construction_method": "farey_mediant_recurrence+batch_inversion",
+ "materialized": true,
+ "materialized_note": "toy cells materialise the base to run the exact enumeration; the construction itself is non-materialising and index-addressable at any size",
+ "construction_wall_ms": {
+  "B_2^12": 9354.0,
+  "naive_square_scan_B_2^12": 41245.0,
+  "speedup": 4.41,
+  "elements": 20400079,
+  "note": "Python 3.12, one core; the structural saving is 3.3x fewer pair steps (Phi(B) vs B^2) plus no gcd and no hash set"
+ },
+ "retained_bytes": 0,
+ "retained_bytes_note": "streaming generator is O(1); the naive equivalent retains an |X|-element hash set (8*|X| bytes)",
+ "index_addressable": {
+  "unrank_us_at_B_2^20": 58.32,
+  "base_size_at_B_2^20": 1336846396983,
+  "method": "rank = Phi(b-1) + #{a'<=a : gcd(a',b)=1}; unrank by bisecting the totient prefix and an inclusion-exclusion k-th-coprime search",
+  "use": "shards a 10^12-element base with zero storage and no communication"
+ },
+ "count_checks": {
+  "brute_force_max_B": 96,
+  "identity_asserted_to_B": 4096,
+  "lean": "Check/Farey.lean::farey_card"
+ },
+ "verdict": "PRIME_AB_FAREY_BASE_O1_STREAMING_AND_INDEXABLE",
+ "fixture_hash": "sha256:7088eadcc27275f994c18679c873b157264311525b39e738bdf07e6d849b8209",
+ "executable_or_source_hash": "sha256:02b3b19f88e8b7f6c2a7b894f23a90a937ff01949cf6a25896e35cb49a0c50ed",
+ "host_id": {
+  "node": "Mac.attlocal.net",
+  "platform": "macOS-27.2-arm64-arm-64bit"
+ },
+ "resource_caps": {
+  "cpus": 14,
+  "peak_rss_note": "single process; the 2^24 rung needs one |E|-sized uint32 array (67 MB)"
+ },
+ "seeds": "splitmix64 seed 11 for the random shape; interval and Farey shapes are seed-free (canonical enumeration)",
+ "claim_boundary_non_claims": [
+  "toy rungs only (20 and 24 bits); not secp256k1",
+  "no key recovery and no asymptotic sub-rho claim",
+  "no claim that any base shape or target statistic raises the expected yield",
+  "values are exact enumerations, not sampled estimates"
+ ]
+}

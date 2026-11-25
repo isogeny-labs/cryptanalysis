@@ -1,0 +1,19 @@
+{
+  "amendment": 1,
+  "atUnix": 1795670400,
+  "declaredAfterTheMeasuredRun": true,
+  "reason": "The pre-registered protocol (PROTOCOL.json) tested yield and the Jochemsz-May box product. It left the *cost* side stated by argument: 'both shapes have O(1) membership tests'. That is wrong for the a/b base once the base cannot be materialised, and the difference is measurable. This amendment adds H7 with a pre-registered kill line, declared after the fact, and reports it as such in report.md section 7.",
+  "addedHypothesis": {
+    "id": "H7_inner_loop",
+    "claim": "For the only prime-field IC backend that exists (the materialised-sieve backend of rung-slope-20261119, whose tables reach 8.6 GB at k = 56), the a/b base's compact description can substitute for the materialised table because membership is testable from the defining data in O(log B) arithmetic steps.",
+    "design": {
+      "predicate": "interval: x <= X (one comparison). a/b: rational reconstruction, EEA on (p, x), stop at the first remainder r_i <= B (sound because |t_i| is non-decreasing), accept iff |t_i| <= B and r_i = t_i*x mod p.",
+      "validity": "exact whenever 2*B^2 < p (Wang). At alpha = 0.2, B = p^0.1, so 2B^2 = p^0.2 << p.",
+      "correctness_test": "exhaustive over ALL x in F_p for 44 (p,B) pairs, p in {1019,4093,10007,40009,100003} and B in {1,2,3,5,8,13,21,34,55,89}; plus a recall test on 108 planted elements at production height.",
+      "counted_metric": "EEA divisions per probe at p = secp256k1, B = 2^26, plus one 256/256-bit division ~ 120 cycles at 3 GHz; compare with one comparison ~ 1 cycle."
+    },
+    "killLine": "If the a/b predicate is within 10x of the interval comparison at equal |F|, compactness is a viable substitute for the table and the a/b base keeps a real niche. Above that, the table cannot be replaced by the description.",
+    "prediction": "1.6e4x (about 14 bits per probe)."
+  },
+  "artifacts": ["membership.py", "raw/membership.json"]
+}
