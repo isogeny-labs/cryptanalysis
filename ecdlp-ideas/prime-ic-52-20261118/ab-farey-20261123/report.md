@@ -367,13 +367,21 @@ this is a library gap, not a gap in the argument.  The quotient count
 | H8 | a cheap statistic of the target selects high-`r` targets profitably | **refuted as a lever** (post hoc, amendment 2): x-arithmetic is null; the height skew is real but sits on a set of measure 2^-199, costing 6.6e39 trials per relation. It does produce the first interval-over-a/b structural asymmetry |
 
 ### What would have to be true for a/b to win
-Not a higher yield (impossible at fixed `|F|`) and not a smaller box product
-(cancelled).  The only surviving possibility is a *search algorithm* that
-exploits `(P¹)^m`-bihomogeneity to beat the MITM floor `|F|^{⌈m/2⌉}` — i.e. a
-solver, not a base.  That is a different hypothesis with its own kill test
-(solving degree of the bihomogeneous `S_{m+1}` vs the interval encoding at
-equal `|F|`, on a 32-bit rung), and it should be filed separately; the base
-choice contributes nothing to it.
+Not a higher yield (impossible at fixed `|F|`), not cheaper MITM work
+(shape-blind, see the shadow price), and not a smaller box product
+(cancelled).  The only surviving possibility is a *sub-MITM solver* that
+exploits `(P¹)^m`-bihomogeneity directly.
+
+**Withdrawing the test proposed in the previous revision.** That revision
+filed "compare the solving degree of the bihomogeneous `S_{m+1}` with the
+interval encoding at equal `|F|`" as lead 1.  It is ill-posed at `n = 1`: with
+`m` unknowns and one Semaev equation the system is positive-dimensional, so
+there is no solving degree to compare — the determined system exists only
+after Weil descent (`n ≥ 2`), which is why FFD/d_reg is the right object in the
+*binary* literature and the wrong one here.  In the prime case the right object
+is the small-root bound, and that is the box product priced in §4.  Anyone
+reviving this should first exhibit a determined polynomial system in `2m`
+small unknowns with `m ≥ 3`, which is the whole difficulty.
 
 ### Where the a/b base still earns its keep
 1. As a **shardable, storage-free description** of a large base (rank/unrank).
