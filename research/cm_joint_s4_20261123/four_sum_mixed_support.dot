@@ -1,0 +1,12 @@
+digraph four_sum_support {
+  graph [rankdir=LR, bgcolor="white", pad="0.2", nodesep="0.3", ranksep="0.4", fontname="Helvetica", label="Fixed bases, four-summand support · 2026-11-25", labelloc=t];
+  node [shape=box, style="rounded,filled", fillcolor="#edf4fc", color="#315c8a", fontname="Helvetica"];
+  edge [fontname="Helvetica", color="#315c8a"];
+  src [label="source base\n4 signed x-orbits\n8 points"];
+  mix [label="mixed base\n2 source + 2 endpoint pullbacks\n8 points"];
+  sums [label="330 indexed 4-multisets\nexact point-group sums"];
+  out [label="nonidentity support\nsource 216 · mixed 218\nrandom controls 220, 224", fillcolor="#fff2e3", color="#a45a14"];
+  src -> sums;
+  mix -> sums;
+  sums -> out;
+}
