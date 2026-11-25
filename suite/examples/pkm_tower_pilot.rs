@@ -221,6 +221,9 @@ fn s3(x1: &Pol, x2: &Pol, x3: &Pol, a: u64, b: u64, p: u64) -> Pol {
 enum Kind {
     Kummer,
     Dickson,
+    /// Dickson steps on the norm-one torus side: `V = {w + w⁻¹}` for `w` in a
+    /// coset of the `2^t` subgroup of `T₂ ⊂ F_{p²}*` (needs `2^t | p + 1`).
+    Torus,
     Isogeny,
 }
 
@@ -229,6 +232,7 @@ impl Kind {
         match self {
             Kind::Kummer => "kummer",
             Kind::Dickson => "dickson",
+            Kind::Torus => "torus",
             Kind::Isogeny => "isogeny",
         }
     }
@@ -494,6 +498,78 @@ fn dickson(p: u64, t: usize, rng: &mut StdRng) -> Tower {
             steps: vec![Step::Dickson; t],
             c: addm(ut, invm(ut, p), p),
             info: json!({"u": u, "zeta": zeta}),
+        };
+    }
+}
+
+/// `F_{p²} = F_p[√d]` with `d` a non-residue; elements `(re, im)`.
+fn fp2_mul(a: (u64, u64), b: (u64, u64), d: u64, p: u64) -> (u64, u64) {
+    (
+        addm(mulm(a.0, b.0, p), mulm(d, mulm(a.1, b.1, p), p), p),
+        addm(mulm(a.0, b.1, p), mulm(a.1, b.0, p), p),
+    )
+}
+
+fn fp2_pow(mut a: (u64, u64), mut e: u64, d: u64, p: u64) -> (u64, u64) {
+    let mut r = (1, 0);
+    while e > 0 {
+        if e & 1 == 1 {
+            r = fp2_mul(r, a, d, p);
+        }
+        a = fp2_mul(a, a, d, p);
+        e >>= 1;
+    }
+    r
+}
+
+/// Dickson tower on the `p + 1` side: for `w ∈ T₂` (norm one) `w⁻¹ = w̄`,
+/// so `w + w⁻¹ = 2·Re(w) ∈ F_p` and `D₂(x) = x² − 2` maps the trace of `w`
+/// to the trace of `w²`. `V` is the trace image of `u·⟨ζ⟩`, `ζ` of order
+/// `2^t` in `T₂`; the final constant is `Tr(u^{2^t})`.
+fn torus(p: u64, t: usize, rng: &mut StdRng) -> Tower {
+    assert!(
+        (p + 1).is_multiple_of(1u64 << t),
+        "2^{t} does not divide p + 1"
+    );
+    let d = loop {
+        let d = rng.gen_range(2..p);
+        if powm(d, (p - 1) / 2, p) == p - 1 {
+            break d;
+        }
+    };
+    // z^{p-1} = z̄ / z ∈ T₂ (Frobenius is conjugation)
+    let to_t2 = |z: (u64, u64)| fp2_pow(z, p - 1, d, p);
+    let zeta = loop {
+        let z = (rng.gen_range(0..p), rng.gen_range(1..p));
+        let zt = fp2_pow(to_t2(z), (p + 1) >> t, d, p);
+        if t == 0 || fp2_pow(zt, 1u64 << (t - 1), d, p) != (1, 0) {
+            break zt;
+        }
+    };
+    loop {
+        let u = to_t2((rng.gen_range(0..p), rng.gen_range(1..p)));
+        let mut w = u;
+        let mut v = Vec::with_capacity(1 << t);
+        for _ in 0..1u64 << t {
+            v.push(addm(w.0, w.0, p));
+            w = fp2_mul(w, zeta, d, p);
+        }
+        let mut s = v.clone();
+        s.sort_unstable();
+        s.dedup();
+        if s.len() != 1 << t {
+            continue;
+        }
+        let ut = fp2_pow(u, 1u64 << t, d, p);
+        return Tower {
+            kind: Kind::Torus,
+            t,
+            size: 1 << t,
+            v,
+            scale: 1,
+            steps: vec![Step::Dickson; t],
+            c: addm(ut.0, ut.0, p),
+            info: json!({"d": d, "u": [u.0, u.1], "zeta": [zeta.0, zeta.1]}),
         };
     }
 }
@@ -892,6 +968,7 @@ fn build_tower(kind: Kind, p: u64, t: usize, degrees: &[u64], rng: &mut StdRng) 
     let tower = match kind {
         Kind::Kummer => kummer(p, t, rng),
         Kind::Dickson => dickson(p, t, rng),
+        Kind::Torus => torus(p, t, rng),
         Kind::Isogeny if degrees == [2] => isogeny(p, t, rng),
         Kind::Isogeny => isogeny_general(p, t, degrees, rng),
     };
@@ -1483,6 +1560,7 @@ fn parse_args() -> Args {
                     .map(|k| match k {
                         "kummer" => Kind::Kummer,
                         "dickson" => Kind::Dickson,
+                        "torus" => Kind::Torus,
                         "isogeny" => Kind::Isogeny,
                         other => panic!("unknown kind `{other}`"),
                     })
