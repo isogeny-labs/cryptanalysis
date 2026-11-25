@@ -217,3 +217,8 @@ jobs:
               for field in ('basis_sha256', 'trials', 'relations', 'entries'):
                   assert arms['flat'][field] == arms['sign_packed'][field]
           PY
+      - name: Kernel-check sign-packed first-payload theorem
+        run: |
+          curl -fsSL --connect-timeout 15 --max-time 120 https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o "$RUNNER_TEMP/elan-init.sh"
+          sh "$RUNNER_TEMP/elan-init.sh" -y --no-modify-path --default-toolchain leanprover/lean4:v4.36.0
+          "$HOME/.elan/bin/lean" experiments/prime-field-auxiliary-ic/m31-full-rust-comparison/SignPacked.lean
