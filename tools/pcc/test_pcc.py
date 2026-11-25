@@ -119,6 +119,15 @@ class CertificateSubgroupTests(unittest.TestCase):
         self.assertTrue(pcc.verify_zk_solve_certificate(cert, reasons), reasons)
 
 
+class PrimalityTests(unittest.TestCase):
+    def test_thirteenth_prime_base_rejects_psi_12(self):
+        # psi_12 passes the first twelve prime bases through 37, but base 41
+        # rejects it. It is below psi_13 and therefore guards the exact base
+        # set used with the deterministic cutoff.
+        psi_12 = 318_665_857_834_031_151_167_461
+        self.assertFalse(pcc.is_probable_prime(psi_12))
+
+
 class CanaryTests(unittest.TestCase):
     def test_every_sabotage_class_is_rejected(self):
         out = io.StringIO()
@@ -525,6 +534,7 @@ class ClaimTypeTests(unittest.TestCase):
     def test_historical_rejection_preserves_payload_and_never_admits_claim(self):
         cid = "PCC-20261112-111111"
         self.write_claim(cid, "2026-11-12T00:00:00Z", None)
+        path = self.repo / pcc.CLAIMS_DIR / f"{cid}.json"
         original = path.read_bytes()
         self.commit("inherited untyped payload")
         self.reject_missing_type(cid)
@@ -539,21 +549,33 @@ class ClaimTypeTests(unittest.TestCase):
 
     def test_rejection_cannot_cover_a_new_claim_or_mutated_payload(self):
         cid = "PCC-20261112-222222"
+        self.write_claim(cid, "2026-11-12T00:00:00Z", None)
+        self.reject_missing_type(cid)
+        result = run(["ledger", "verify", "--base", "HEAD"], self.repo)
         self.assertEqual(result.returncode, 1)
         self.assertIn("already present in the base", result.stdout)
         self.commit("retained rejection")
+        path = self.repo / pcc.CLAIMS_DIR / f"{cid}.json"
         path.write_bytes(path.read_bytes() + b" ")
+        result = run(["ledger", "verify", "--base", "HEAD"], self.repo)
+        self.assertEqual(result.returncode, 1)
         self.assertIn("payload or expected", result.stdout)
 
     def test_rejection_manifest_cannot_drop_or_rewrite_existing_entries(self):
         cid = "PCC-20261112-333333"
+        self.write_claim(cid, "2026-11-12T00:00:00Z", None)
         manifest = self.reject_missing_type(cid)
+        self.commit("retained rejection")
         manifest["records"] = {}
+        (self.repo / pcc.SCHEMA_REJECTIONS_PATH).write_text(json.dumps(manifest))
+        result = run(["ledger", "verify", "--base", "HEAD"], self.repo)
+        self.assertEqual(result.returncode, 1)
         self.assertIn("only be appended", result.stdout)
 
     def test_malformed_kinds_return_failed_verdict_with_real_signed_pass(self):
         cid = "PCC-20261119-666666"
         self.write_claim(cid, "2026-11-19T00:00:00Z", "data")
+        path = self.repo / pcc.CLAIMS_DIR / f"{cid}.json"
         original = json.loads(path.read_text())
         keyring = pcc.load_keyring(self.repo / pcc.KEYRING_PATH)
         for field in ("claim", "proof"):
@@ -585,6 +607,7 @@ class ClaimTypeTests(unittest.TestCase):
 
     def test_current_signed_pass_cannot_promote_schema_invalid_payload(self):
         cid = "PCC-20261112-444444"
+        self.write_claim(cid, "2026-11-12T00:00:00Z", None)
         claim = json.loads((self.repo / pcc.CLAIMS_DIR / f"{cid}.json").read_text())
         verdict = {"type": "verdict", "body": {"claim_id": cid,
             "claim_sha256": pcc.claim_digest(claim), "verdict": "pass", "commit": "a" * 40}}
@@ -595,11 +618,6 @@ class ClaimTypeTests(unittest.TestCase):
         self.assertTrue(result["verdicts"][0]["signed"])
         self.assertEqual(result["standing"], "failed")
         self.assertTrue(result["schema_rejected"])
-
-
-
-
-
 
     def populate(self):
         for i in range(30):
