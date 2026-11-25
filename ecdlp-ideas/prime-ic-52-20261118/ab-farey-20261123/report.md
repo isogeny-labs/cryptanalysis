@@ -276,7 +276,7 @@ base point), and with base elements removed the effect disappears completely:
 | **`R ∉ F`** | **88** | **1.113** | **3.31** | m=3, h/B ≈ ½, frac 5.5e-5 |
 
 Eighty-eight buckets, max |z| = 3.3 — the expected maximum of 88 standard
-normals is 2.9, and Šidák over 88 gives p ≈ 0.06 for that one. On buckets with
+normals is 3.0, and Šidák over 88 gives p ≈ 0.08 for that one. On buckets with
 ≥ 10⁴ targets, every lift is `1.00 ± 0.01`, at every height scale, for every
 shape, at both rungs.
 
@@ -293,7 +293,9 @@ The height statistic *aliases onto that set*, differently per base, because
 
 The mechanistic check confirms it: at `m = 2` the same buckets show **no**
 spike (1.03, 1.00), exactly as predicted — for pairs, `R ∈ F` gives no
-automatic relation, only `R = O` does, and `O` is excluded.
+automatic relation, only `R = O` does, and `O` is excluded.  And the `≥`
+direction of the spike is a theorem, not a fit: `repCount_three_ge_of_mem`
+(§7) proves `|F| ≤ repCount F 3 R` for every `R ∈ F` in a negation-closed `F`.
 
 So the corrected statement is stronger than the one it replaces:
 
@@ -323,7 +325,8 @@ no `sorry`; `raw/axioms.txt`:
     mean_shape_blind  ⊂ {propext, Classical.choice, Quot.sound}
     card_coprime_Icc  ⊂ {propext, Classical.choice, Quot.sound}
     farey_card        ⊂ {propext, Classical.choice, Quot.sound}
-    box_product       ⊂ {propext}
+    box_product            ⊂ {propext}
+    repCount_three_ge_of_mem ⊂ {propext, Classical.choice, Quot.sound}
 
 * `sum_repCount : Σ g, repCount F m g = |F|^m` — the load-bearing statement.
 * `mean_shape_blind : |F₁| = |F₂| → Σ_g repCount F₁ m g = Σ_g repCount F₂ m g`.
@@ -331,12 +334,18 @@ no `sorry`; `raw/axioms.txt`:
   preserves coprimality: `Nat.coprime_self_sub_left`).
 * `farey_card : #fareyPairs B = Σ_{b≤B} φ(b)`.
 * `box_product : (B·B)^{m·d} = B^{2·m·d}`.
+* `repCount_three_ge_of_mem : R ∈ F → |F| ≤ repCount F 3 R` for any
+  negation-closed `F` in an abelian group — the in-base spike of §6, and the
+  only non-uniformity of `r` anywhere in this report.  Proof: `P ↦ (R, P, −P)`
+  injects `F` into the fibre.
 
 Not formalised, and why: the *unordered* count `C(|F|+m−1,m)` needs
 `#(s.sym n) = C(|F|+n−1,n)`, which Mathlib does not have for `n > 2`; the
 ordered statement gives the same conclusion (both totals are shape-blind), so
-this is a library gap, not a gap in the argument.  The quotient count
-`|X(B)| = 4Φ(B) − 1` is checked by brute force rather than proved.
+this is a library gap, not a gap in the argument.  The *exact* value at the
+spike (`= N` ordered, `= N/2` unordered) also needs the same count.  The
+quotient count `|X(B)| = 4Φ(B) − 1` is checked by brute force rather than
+proved.
 
 ---
 
@@ -440,6 +449,7 @@ citations:
   - {ref: "raw/heightlaw.json", provenance: internal, claim: "subset=outside_base rows, 88 buckets, max |z| 3.31", verified_by: "exact enumeration, both rungs, exact in-base mask"}
   - {ref: "raw/selector.json", provenance: internal, claim: "x-arithmetic statistics null (|lift-1| <= 0.02)", verified_by: "exact enumeration"}
   - {ref: "PROTOCOL-amendment-2.json", provenance: internal, claim: "H8 declared post hoc", verified_by: "this note"}
+  - {ref: "Check/Farey.lean::repCount_three_ge_of_mem", provenance: internal, claim: "R in F implies |F| <= repCount F 3 R for negation-closed F", verified_by: "lean 4.28, axioms clean"}
 assumptions:
   - "h(x) is the smallest B' with x in X(B'), read off the EEA on (p,x) (heights.c)"
   - "the in-base bit is exact: ecell marks the dlog of every base point, both signs"

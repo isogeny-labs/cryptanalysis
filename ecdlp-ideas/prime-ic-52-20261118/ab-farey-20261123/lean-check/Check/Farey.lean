@@ -158,3 +158,59 @@ interval product. -/
 theorem box_product (B m d : ℕ) : (B * B) ^ (m * d) = B ^ (2 * m * d) := by ring
 
 end ABFarey
+
+/-! ## Part 4: the one non-uniformity in `r`, proved
+
+Section 6 of the report retracts a height law and replaces it with: the only
+non-uniformity in the representation count is the trivially known one, that a
+target which is itself a base element has at least `|F|` ordered representations
+at `m = 3` (`{R, P, -P}` for every `P`).  That is what the measurement sees as
+an in-base spike; here it is a theorem.
+-/
+
+namespace ABFarey
+
+section Spike
+
+variable {H : Type*} [AddCommGroup H] [DecidableEq H] [Fintype H]
+
+/-- The triple `(R, P, -P)`. -/
+def spikeTriple (R P : H) : Fin 3 → H := ![R, P, -P]
+
+lemma spikeTriple_inj (R : H) : Function.Injective (spikeTriple R) := by
+  intro P Q h
+  have h1 := congrFun h 1
+  simpa [spikeTriple] using h1
+
+lemma spikeTriple_mem (F : Finset H) (R : H) (hR : R ∈ F)
+    (hneg : ∀ x ∈ F, -x ∈ F) {P : H} (hP : P ∈ F) :
+    spikeTriple R P ∈ tuples F 3 := by
+  simp only [tuples, Fintype.mem_piFinset]
+  intro i
+  fin_cases i
+  · simpa [spikeTriple] using hR
+  · simpa [spikeTriple] using hP
+  · simpa [spikeTriple] using hneg P hP
+
+omit [DecidableEq H] [Fintype H] in
+lemma spikeTriple_sum (R P : H) : (∑ i, spikeTriple R P i) = R := by
+  simp [spikeTriple, Fin.sum_univ_three]
+
+/-- **The in-base spike.** A target that is a base element has at least `|F|`
+ordered 3-term representations from `F`, for any negation-closed `F`. -/
+theorem repCount_three_ge_of_mem (F : Finset H) (R : H) (hR : R ∈ F)
+    (hneg : ∀ x ∈ F, -x ∈ F) : F.card ≤ repCount F 3 R := by
+  have hinj : Set.InjOn (spikeTriple R) ↑F := fun a _ b _ h => spikeTriple_inj R h
+  have hsub : F.image (spikeTriple R) ⊆
+      (tuples F 3).filter (fun v => ∑ i, v i = R) := by
+    intro v hv
+    obtain ⟨P, hP, rfl⟩ := Finset.mem_image.mp hv
+    exact Finset.mem_filter.mpr
+      ⟨spikeTriple_mem F R hR hneg hP, spikeTriple_sum R P⟩
+  calc F.card = (F.image (spikeTriple R)).card := (Finset.card_image_of_injOn hinj).symm
+    _ ≤ ((tuples F 3).filter (fun v => ∑ i, v i = R)).card := Finset.card_le_card hsub
+    _ = repCount F 3 R := rfl
+
+end Spike
+
+end ABFarey
