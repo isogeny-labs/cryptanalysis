@@ -1,0 +1,348 @@
+name: CT244 exact-source C169 C13 D primitive probe
+on:
+  pull_request:
+    paths:
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct244_primitive_probe.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct248_scoped_sample_audit.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct300_authentic_fixture_guard.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct302_full_native_gate.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct304_execution_receipt_gate.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct310_bounded_native_pair_producer.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct316_process_rss.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT316_BOUNDED_NATIVE_RSS_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct310_source_mock_full_pair_smoke.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct311_directional_scoped_pricer.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT311_DIRECTIONAL_PRIMITIVE_FRONTIER_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT310_BOUNDED_FULL_PAIR_PRODUCER_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT304_RAW_CAPTURE_CUSTODY_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT309_NATIVE_WALL_NESTING_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT302_FULL_NATIVE_POPULATION_ADMISSION_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT300_AUTHENTIC_SCALAR_FIX_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT301_NATIVE_FIXTURE_BOUND_ADMISSION_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT248_SCOPED_PRIMITIVE_SAMPLES_PROTOCOL.md'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT244_PRIMITIVE_PRICING_PROTOCOL.md'
+      - '.github/workflows/ct244-source-primitive-probe.yml'
+permissions:
+  contents: read
+jobs:
+  pinned-source-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experiments/chained-transfer-public-target/fixed-jacobian-chain-evaluator-01
+            experiments/chained-transfer-public-target/norm-point-reuse-01
+            experiments/chained-transfer-public-target/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json
+      - name: Python compile and exact-original mutation rejection
+        shell: bash
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target
+          python3 -m py_compile "$root/norm-point-reuse-01/ct244_primitive_probe.py"
+          python3 -S "$root/norm-point-reuse-01/ct244_primitive_probe.py" --original "$root/fixed-jacobian-chain-evaluator-01" --self-test
+          python3 -O -S "$root/norm-point-reuse-01/ct244_primitive_probe.py" --original "$root/fixed-jacobian-chain-evaluator-01" --self-test
+      - name: CT248 independent sample-integrity control (synthetic only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          script=experiments/chained-transfer-public-target/norm-point-reuse-01/ct248_scoped_sample_audit.py
+          python3 -m py_compile "$script"
+          python3 -S "$script" --self-test
+          python3 -O -S "$script" --self-test
+      - name: CT300 actual frozen 48-vector source admission (synthetic clock only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target
+          script="$root/norm-point-reuse-01/ct300_authentic_fixture_guard.py"
+          fixture="$root/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json"
+          python3 -m py_compile "$script"
+          python3 -S "$script" --fixture "$fixture" > /tmp/ct300-normal.json
+          python3 -O -S "$script" --fixture "$fixture" > /tmp/ct300-optimized.json
+          cmp /tmp/ct300-normal.json /tmp/ct300-optimized.json
+          cat /tmp/ct300-normal.json
+      - name: CT301 actual CLI immutable fixture binding (mock times only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target
+          script="$root/norm-point-reuse-01/ct248_scoped_sample_audit.py"
+          guard="$root/norm-point-reuse-01/ct300_authentic_fixture_guard.py"
+          fixture="$root/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json"
+          python3 -S - <<'PY'
+          from pathlib import Path
+          import sys
+          root = Path("experiments/chained-transfer-public-target")
+          sys.path.insert(0, str((root / "norm-point-reuse-01").resolve()))
+          import ct300_authentic_fixture_guard as ct300
+          fixture = (root / "evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json").read_bytes()
+          source = ct300.load_frozen(fixture)
+          Path("/tmp/ct301-mock-only.log").write_text(ct300.build_mock_transcript(source))
+          print("CT301_MOCK_CLOCK_ONLY: authentic 48 rows; zero synthetic ns; NO native execution")
+          PY
+          python3 -S "$script" --log /tmp/ct301-mock-only.log --fixture "$fixture" > /tmp/ct301-normal.json
+          python3 -O -S "$script" --log /tmp/ct301-mock-only.log --fixture "$fixture" > /tmp/ct301-optimized.json
+          cmp /tmp/ct301-normal.json /tmp/ct301-optimized.json
+          python3 -S - <<'PY'
+          import json
+          v = json.load(open("/tmp/ct301-normal.json", encoding="utf8"))
+          assert v["selected_vectors"] == 48 and v["scoped_samples"] == 144
+          assert v["complete_single_target_cost"] is None
+          assert v["native_timing_reproduced_by_independent_runner"] is False
+          print("CT301_SOURCE_BOUND_CLI_PASS; synthetic only, no timing/PCC claim")
+          PY
+          if python3 -S "$script" --log /tmp/ct301-mock-only.log > /tmp/ct301-missing.out 2> /tmp/ct301-missing.err; then
+            echo 'ERROR: native --log accepted without --fixture' >&2; exit 1
+          fi
+          grep -F 'CT301 requires --fixture' /tmp/ct301-missing.err
+          if python3 -S "$script" --log /tmp/ct301-mock-only.log --fixture /dev/null > /tmp/ct301-wrong.out 2> /tmp/ct301-wrong.err; then
+            echo 'ERROR: native --log accepted a wrong authentic source' >&2; exit 1
+          fi
+          grep -F 'Git blob mismatch' /tmp/ct301-wrong.err
+      - name: CT302 full 695 dual-population source-only mock audit (not native timing)
+        shell: bash
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target
+          script="$root/norm-point-reuse-01/ct302_full_native_gate.py"
+          fixture="$root/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json"
+          python3 -m py_compile "$script"
+          python3 -S "$script" --self-test --fixture "$fixture" > /tmp/ct302-normal.json
+          python3 -O -S "$script" --self-test --fixture "$fixture" > /tmp/ct302-opt.json
+          cmp /tmp/ct302-normal.json /tmp/ct302-opt.json
+          python3 -S - <<'PY'
+          import json
+          x=json.load(open('/tmp/ct302-normal.json', encoding='utf-8'))
+          assert x["authentic_selected_fixture_rows"] == 48
+          assert x["synthetic_other_population_rows"] == 694
+          assert x["synthetic_zero_ns_clock_samples"] == 144
+          assert x["synthetic_mutations_rejected"] == 10
+          assert x["native_execution_performed"] is False
+          print("CT302_SOURCE_ONLY_PASS", x["synthetic_mutations_rejected"],
+                "negative controls; 695 synthetic-plus-authentic-source rows; no native execution")
+          PY
+          if python3 -S "$script" --optimized /dev/null --fixture "$fixture" > /tmp/ct302-partial.out 2> /tmp/ct302-partial.err; then
+            echo 'ERROR: CT302 accepted one-sided native log' >&2; exit 1
+          fi
+          grep -F 'CT302 requires BOTH complete native logs' /tmp/ct302-partial.err
+      - name: CT304 bounded process capture custody (synthetic receipts only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          script=experiments/chained-transfer-public-target/norm-point-reuse-01/ct304_execution_receipt_gate.py
+          python3 -W error -m py_compile "$script"
+          python3 -W error -S "$script" --self-test > /tmp/ct304-normal.json
+          python3 -W error -O -S "$script" --self-test > /tmp/ct304-opt.json
+          cmp /tmp/ct304-normal.json /tmp/ct304-opt.json
+          python3 -S - <<'PY'
+          import json
+          x=json.load(open('/tmp/ct304-normal.json', encoding='utf8'))
+          assert x['synthetic_positive']==1
+          assert x['synthetic_mutations_rejected']==15
+          assert x['synthetic_parser_mutations_rejected']==3
+          assert x['native_executions']==0 and x['physical_timings']==0
+          assert x['pcc']=='unverified'
+          print("CT304_SOURCE_ONLY_PASS 15 capture mutations + 3 parser controls; no native process")
+          PY
+          fixture=experiments/chained-transfer-public-target/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json
+          python3 -W error -S "$script" --self-test --fixture "$fixture" > /tmp/ct304-integrated-normal.json
+          python3 -W error -O -S "$script" --self-test --fixture "$fixture" > /tmp/ct304-integrated-opt.json
+          cmp /tmp/ct304-integrated-normal.json /tmp/ct304-integrated-opt.json
+          python3 -S - <<'PY'
+          import json
+          x=json.load(open('/tmp/ct304-integrated-normal.json', encoding='utf8'))
+          assert x["authentic_source_selected_rows"]==48
+          assert x["synthetic_other_rows"]==694
+          assert x["synthetic_zero_ns_clock_samples"]==144
+          assert x["synthetic_integrated_positive"]==1
+          assert x["synthetic_integrated_mutations_rejected"]==7
+          assert x["synthetic_clock_nesting_positive"]==1
+          assert x["native_executions"]==0 and x["pcc"]=="unverified"
+          print("CT304_FROZEN_SOURCE_MOCK_INTEGRATION_PASS seven extra tamper controls including impossible nested wall; no native process")
+          PY
+          if python3 -S "$script" --original /dev/null --fixture /dev/null > /tmp/ct304-partial.out 2> /tmp/ct304-partial.err; then
+            echo 'ERROR: CT304 admitted a one-sided receipt' >&2; exit 1
+          fi
+          grep -F 'CT304 requires both raw logs' /tmp/ct304-partial.err
+      - name: Checkout immutable CT176 bounded capture source (read-only, not model objects)
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          ref: e89b9db54d358d3a2749acf6d5277b0300bc3ba2
+          path: _ct310_pinned
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            experiments/chained-transfer-public-target/primitive-pricing-01/ct176_cold_process_collector.py
+      - name: CT316 positive actual benign Linux OS RSS and 18 refusal controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          script=experiments/chained-transfer-public-target/norm-point-reuse-01/ct316_process_rss.py
+          test -x /usr/bin/time
+          python3 -W error -m py_compile "$script"
+          python3 -W error -S "$script" --self-test > /tmp/ct316-normal.json
+          python3 -W error -O -S "$script" --self-test > /tmp/ct316-optimized.json
+          cmp /tmp/ct316-normal.json /tmp/ct316-optimized.json
+          python3 -S - <<'PY'
+          import json
+          x=json.load(open('/tmp/ct316-normal.json', encoding='utf-8'))
+          assert x['benign_os_child_rss_measured']==1, x
+          assert x['mutations_refused']==18, x
+          assert x['native_jacobian_models_executed']==0 and x['pcc']=='unverified', x
+          print('CT316_BENIGN_OS_RSS_PASS: 1 genuine OS RSS on harmless child, 18 corrupted controls refused; ZERO original native models')
+          PY
+      - name: CT310 plan-only full-log capture producer (mock inputs, bounded benign subprocess)
+        shell: bash
+        run: |
+          set -euo pipefail
+          script=experiments/chained-transfer-public-target/norm-point-reuse-01/ct310_bounded_native_pair_producer.py
+          python3 -W error -m py_compile "$script"
+          python3 -W error -S "$script" > /tmp/ct310-plan.json
+          python3 -W error -S "$script" --self-test > /tmp/ct310-normal.json
+          python3 -W error -O -S "$script" --self-test > /tmp/ct310-opt.json
+          cmp /tmp/ct310-normal.json /tmp/ct310-opt.json
+          python3 -S - <<'PY'
+          from pathlib import Path
+          import sys
+          sys.path.insert(0, str(Path('experiments/chained-transfer-public-target/norm-point-reuse-01').resolve()))
+          import ct310_bounded_native_pair_producer as ct310
+          import json
+          plan=json.loads(Path('/tmp/ct310-plan.json').read_text())
+          test=json.loads(Path('/tmp/ct310-normal.json').read_text())
+          assert plan['native_models_executed']==0
+          assert (test['mock_positive'],test['mock_mutations_rejected'])==(1,8)
+          assert test['failed_partial_capture_receipts']==4
+          assert test['synthetic_digest_mutations_detected']==4
+          assert test['native_models_executed']==0 and test['authenticated_s3_artifacts']==0
+          source=Path('_ct310_pinned/experiments/chained-transfer-public-target/primitive-pricing-01/ct176_cold_process_collector.py')
+          child=ct310.locked_collector(source)
+          rc,out,err,error=child.bounded_subprocess([sys.executable,'-c','print("CT310_BENIGN_MOCK_ONLY")'],2)
+          assert (rc,error)==(0,None) and out.strip()==b'CT310_BENIGN_MOCK_ONLY'
+          child.MAX_CAPTURE=1024
+          rc,out,err,error=child.bounded_subprocess([sys.executable,'-c','print("Z"*5000)'],2)
+          assert error=='capture limit exceeded' and len(out)<=1025
+          rc,out,err,error=child.bounded_subprocess([sys.executable,'-c','import time;time.sleep(2)'],0.2)
+          assert error=='timeout'
+          import hashlib, tempfile
+          with tempfile.TemporaryDirectory(prefix='ct310-retention-mock-') as td:
+              d=Path(td)
+              exe=d/'mock-src'; exe.write_bytes(b'mock-executable-bytes')
+              h=hashlib.sha256(exe.read_bytes()).hexdigest()
+              retained=ct310.retain_binary(exe,d/'retained.bin',h)
+              assert retained.read_bytes()==exe.read_bytes()
+              try: ct310.retain_binary(exe,d/'forged.bin','0'*64)
+              except ValueError: pass
+              else: raise AssertionError('forged retained binary admitted')
+              document={'schema':'ct310-external-six-object-custody-reference/v1',
+                'remote':'s3','sts_preflight_success':True,
+                'tool_source_commit':'a'*40,'config_git_blob':'b'*40,
+                'owner_approval_reference':'SYNTHETIC-ONLY-NOT-A-REAL-APPROVAL',
+                'objects':[{'key':f'mock-object-{i}', 'bytes':i+1,'sha256':f'{i:064x}'} for i in range(6)]}
+              custody=d/'source-custody.json'
+              custody.write_text(json.dumps(document))
+              bound=hashlib.sha256(custody.read_bytes()).hexdigest()
+              assert ct310.custody_lock(custody,bound)==bound
+              document['sts_preflight_success']=False
+              custody.write_text(json.dumps(document))
+              try: ct310.custody_lock(custody,hashlib.sha256(custody.read_bytes()).hexdigest())
+              except ValueError: pass
+              else: raise AssertionError('failed STS mock accepted')
+              try: ct310.custody_lock(custody,bound)
+              except ValueError: pass
+              else: raise AssertionError('changed custody receipt SHA accepted')
+          print('CT313_SOURCE_ONLY_PASS: 4 SHA-bound negative child capture receipts, 4 tampered digest controls, plan-only; bounded benign subprocess; 0 native models')
+          PY
+          if python3 -S "$script" --execute --timeout-seconds 1 --panel-wall-seconds 1 > /tmp/ct310-unadmitted.out 2> /tmp/ct310-unadmitted.err; then
+            echo "CT310 improperly accepted execution without owner/provider admission" >&2
+            exit 1
+          fi
+          grep -F 'real execution additionally needs owner/provider approval' /tmp/ct310-unadmitted.err
+      - name: CT310 whole-695 mocked producer-to-CT304 auditor handshake (benign Python scripts only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          script=experiments/chained-transfer-public-target/norm-point-reuse-01/ct310_source_mock_full_pair_smoke.py
+          fixture=experiments/chained-transfer-public-target/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json
+          collector=_ct310_pinned/experiments/chained-transfer-public-target/primitive-pricing-01/ct176_cold_process_collector.py
+          python3 -W error -m py_compile "$script"
+          python3 -W error -S "$script" --fixture "$fixture" --ct176-source "$collector" > /tmp/ct310-full-mock-normal.json
+          python3 -W error -O -S "$script" --fixture "$fixture" --ct176-source "$collector" > /tmp/ct310-full-mock-opt.json
+          cmp /tmp/ct310-full-mock-normal.json /tmp/ct310-full-mock-opt.json
+          python3 -S - <<'PY'
+          import json
+          v=json.load(open('/tmp/ct310-full-mock-normal.json'))
+          assert v['original_selected_authentic_rows']==48
+          assert v['synthetic_other_rows']==694 and v['synthetic_scoped_clocks']==144
+          assert v['producer_auditor_mock_acceptances']==1
+          assert v['mutated_full_log_mock_rejections']==1
+          assert v['ct311_full_pair_zero_clock_rejections']==1
+          assert v['benign_python_child_processes']==4
+          assert v['ct316_benign_os_rss_receipts_admitted']==2
+          assert v['original_native_model_executions']==0 and v['ecdlp_complete_solve'] is False
+          assert v['pcc']=='unverified'
+          print('CT310_FULL_MOCK_HANDSHAKE_PASS: four benign Python subprocesses; 695 source rows with 694 fabricated; no native math')
+          PY
+      - name: CT311 complete-source directional C169 C13 D scoped pricer (mock clocks ONLY)
+        shell: bash
+        run: |
+          set -euo pipefail
+          script=experiments/chained-transfer-public-target/norm-point-reuse-01/ct311_directional_scoped_pricer.py
+          fixture=experiments/chained-transfer-public-target/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json
+          python3 -W error -m py_compile "$script"
+          python3 -W error -S "$script" --self-test --fixture "$fixture" > /tmp/ct311-normal.json
+          python3 -W error -O -S "$script" --self-test --fixture "$fixture" > /tmp/ct311-opt.json
+          cmp /tmp/ct311-normal.json /tmp/ct311-opt.json
+          python3 -S - <<'PY'
+          import json
+          r=json.load(open('/tmp/ct311-normal.json',encoding='utf8'))
+          assert r["frozen_selected_source_rows"]==48
+          assert r["synthetic_primitive_timing_rows"]==144
+          assert r["positive_directional_controls"]==2
+          assert r["negative_directional_controls"]==2
+          assert r["negative_sector_reversal_controls"]==1
+          assert r["zero_called_clock_mutations_rejected"]==3
+          assert r["exact_crlf_raw_sha256_controls"]==1
+          assert r["original_native_model_executions"]==0
+          assert r["physical_primitive_timings"]==0 and r["pcc"]=="unverified"
+          print("CT312_DIRECTIONAL_MISSING_CLOCK_RAW_BYTES_PASS; 48 real source rows, 144 fabricated clocks, three zero-clock refusals, exact CRLF hash; no native solve")
+          PY
+          if python3 -S "$script" --fixture "$fixture" > /tmp/ct311-missing.out 2> /tmp/ct311-missing.err; then
+            echo 'ERROR: CT311 production accepted without complete CT310 capture' >&2; exit 1
+          fi
+          grep -F 'production requires --capture-dir' /tmp/ct311-missing.err
+      - name: Create separate guarded Rust package and parse with rustfmt
+        shell: bash
+        run: |
+          set -euo pipefail
+          root=experiments/chained-transfer-public-target
+          python3 -S "$root/norm-point-reuse-01/ct244_primitive_probe.py" \
+            --original "$root/fixed-jacobian-chain-evaluator-01" \
+            --out "$root/fixed-jacobian-chain-priced-01" > /tmp/ct244-receipt.json
+          rustfmt --edition 2021 --config skip_children=true --emit stdout "$root/fixed-jacobian-chain-priced-01/src/lib.rs" > /dev/null
+          python3 -S - <<'PY'
+          import json
+          from pathlib import Path
+          d=Path('experiments/chained-transfer-public-target/fixed-jacobian-chain-priced-01')
+          r=json.loads((d/'CT244_SOURCE_RECEIPT.json').read_text())
+          assert r['source_blob']=='8016634385d76207b23a3eb3a4dae9b0366ac68d'
+          assert len(r['clock_slots']) == 7
+          assert r['measurements'] is None
+          s=(d/'src/lib.rs').read_text()
+          assert s.count('ct244_record(')==3
+          assert 'if ep(n.norm(&entry.class)?) != entry.norm {' in s
+          assert 'CT244_PRIMITIVE_TIMING' in s
+          assert 'CT248_PRIMITIVE_SAMPLE' in s
+          assert 'CT248 C13: epoch clock' in s
+          assert 'CT248 C169: epoch clock' in s
+          assert 'CT248 D: epoch clock' in s
+          assert r['ct248_selected_tests_blob']=='bcd27773a7b179c3beeb3d5782a5de97a7df19f2'
+          assert r['ct248_source_arms']==144
+          print('CT248_SOURCE_GUARD_PASS seven slots and 144 scoped epochs; no native timing')
+          PY
+      - name: Scope
+        run: echo "Source-only and rustfmt parsing; does not attest native compilation, all 695-record parity, primitive pricing, physical timing or PCC."

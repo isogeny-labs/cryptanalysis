@@ -1,0 +1,63 @@
+name: CT325 original CT324 24-child block audit (NO native execution)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ct325-independent-block-audit.yml'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/ct325_independent_block_audit.py'
+      - 'experiments/chained-transfer-public-target/norm-point-reuse-01/CT325_*'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  frozen-record-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Exact branch checkout with no write credentials
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Download unchanged CT324 completed public artifact by run and name
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p ct325-raw
+          gh run download 45104053819 --repo isogeny-labs/cryptanalysis \
+            --name ct324-public-raw-panel --dir ct325-raw
+          test "$(stat -c%s ct325-raw/ct324-panel.json)" = 14435
+          echo "0ded77e0a6c955d27383b96d2aff128a680f32436328df199f385fd0ae2a5667  ct325-raw/ct324-panel.json" | sha256sum -c -
+      - name: Original-only record audit, normal/-O parity, mutation controls
+        run: |
+          set -euo pipefail
+          d=experiments/chained-transfer-public-target/norm-point-reuse-01
+          python3 -S -m py_compile "$d/ct325_independent_block_audit.py"
+          python3 -S "$d/ct325_independent_block_audit.py" --panel ct325-raw/ct324-panel.json --self-test | tee ct325-controls.json
+          python3 -O -S "$d/ct325_independent_block_audit.py" --panel ct325-raw/ct324-panel.json --self-test | cmp - ct325-controls.json
+          python3 -S "$d/ct325_independent_block_audit.py" --panel ct325-raw/ct324-panel.json | tee ct325-reanalysis.json
+          python3 -O -S "$d/ct325_independent_block_audit.py" --panel ct325-raw/ct324-panel.json | cmp - ct325-reanalysis.json
+          cp ct325-raw/ct324-panel.json ct325-bad.json
+          python3 -S - <<'PY'
+          from pathlib import Path
+          p=Path('ct325-bad.json')
+          b=bytearray(p.read_bytes())
+          b[100] ^= 1
+          p.write_bytes(b)
+          PY
+          if python3 -S "$d/ct325_independent_block_audit.py" --panel ct325-bad.json; then
+            echo 'ERROR: changed SHA was accepted' >&2
+            exit 1
+          fi
+          echo 'CT325_RECORD_ONLY_PASS; native_runs=0; target_blocks=4; semantic_mutations=14; signed_pcc=false [pcc:unverified]'
+      - name: Preserve independent record-only results even if the check failed
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ct325-independent-block-audit
+          path: |
+            ct325-controls.json
+            ct325-reanalysis.json
+          if-no-files-found: ignore
+          retention-days: 30

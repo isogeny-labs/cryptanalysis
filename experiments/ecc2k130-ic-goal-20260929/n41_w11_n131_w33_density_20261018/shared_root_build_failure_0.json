@@ -1,0 +1,9 @@
+{
+  "exception": "AssertionError in circuit.halftrace: square(result) XOR result != coefficient",
+  "fix": "apply F2-linear extension h(y)=halftrace(y XOR trace(y)) to each coefficient; retain trace-zero equation on their sum",
+  "formula_created": false,
+  "protocol_sha256": "2bbb7d9a394a253a993d588746dc05ce2e9ec012c08e953dc4bfefdafc0740a5",
+  "source_sha256": "836073d97d0921b69e1731ae8a7ba4b44f38a03b7da2543f1fea591f47466f10",
+  "stage": "first checked-Sage shared-root build",
+  "status": "PRODUCER_FAILURE_HALFTRACE_NONZERO_COEFFICIENT"
+}

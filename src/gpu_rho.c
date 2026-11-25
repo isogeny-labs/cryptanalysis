@@ -368,6 +368,17 @@ static ca_status gpu_rho_solve(const ca_group *g, const ca_elem *base,
      * is undefined, so clamp it.  (Anything near this makes distinguished
      * points so rare that a work limit is essential; see ca_gpu.h.) */
     if (dp > 63) dp = 63;
+    {
+        /* As in rho.c: a walk's post-collision cycle has about sqrt(n)
+         * steps, and with distinguished points rarer than that it holds
+         * none, so the collision is never reported and the runaway guard
+         * (which grows with 2^dp) ends a solvable search with
+         * CA_ERR_NOT_FOUND, or never fires.  Cap dp at floor(log2 n)/2 - 2
+         * (2^dp <= sqrt(n)/4); the automatic choice is always below it. */
+        int dp_cap = ilog2u(n) / 2 - 2;
+        if (dp_cap < 0) dp_cap = 0;
+        if (dp > dp_cap) dp = dp_cap;
+    }
     a.dp_mask = dp ? ((1ULL << dp) - 1) : 0;
     a.abandon_shift = (uint32_t)dp;
     gpu_rho_checkpoint_header identity, saved;
@@ -430,7 +441,7 @@ static ca_status gpu_rho_solve(const ca_group *g, const ca_elem *base,
     uint64_t setup_ops = 0;
     for (uint32_t i = 0; i < a.r; i++) {
         uint64_t al = ca_rng_below(&rng, n), be = ca_rng_below(&rng, n);
-        ca_elem t1, t2, m;
+        ca_elem t1 = {{0}}, t2 = {{0}}, m = {{0}};
         ca_group_mul(g, &t1, base, al, &setup_ops);
         ca_group_mul(g, &t2, target, be, &setup_ops);
         ca_group_op(g, &m, &t1, &t2);

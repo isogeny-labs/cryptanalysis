@@ -1,0 +1,11 @@
+{
+  "schema": "xedni-affine-reduction-bridge-protocol-v1",
+  "question": "Do the exact rational addition paths from T to bT and -aT remain p-integral with unit chord or tangent denominators at every step?",
+  "source": "../xedni-known-relation-lifts-20261118/run-result.json",
+  "source_sha256": "a34dd1b580483815d7f4dc61877eae9935b16873b8f9bc908b24c2e51a25154e",
+  "admission": "all 13 exact_relation rows in source order; retain every scalar-addition step from T to max(abs(b),a)T",
+  "addition_path": "start at T; repeatedly add T; use tangent when x coordinates agree, vertical branch when inverse, otherwise chord",
+  "regularity": "both input coordinates p-integral and the rational slope denominator p-adic unit; record every exceptional branch",
+  "checks": "independent Fraction arithmetic, exact curve equation, reduction after every addition, finite-field addition on reduced inputs, final P1/P2 coordinates and public U/V",
+  "status": "frozen before execution"
+}

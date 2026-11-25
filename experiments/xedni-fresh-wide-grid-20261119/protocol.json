@@ -1,0 +1,126 @@
+{
+  "candidate_law": "center U,V; enumerate (-2,-1,0,1,2)^4 lexicographically; interpolate unique short Weierstrass model for distinct x; verify nonsingular curve and coefficient/point reductions; equal-x opposite exception has one centered construction",
+  "claim_boundary": "fresh deterministic finite panel and finite grid; no statistical independent-trial or online-speed claim",
+  "curve_coefficients": [
+    -1,
+    -2
+  ],
+  "expected_queries": 512,
+  "expected_vector_tests": 6656,
+  "field_registry_sha256": "b18127c392b904559ac12512642ab0322eaa3b9b72a61f45dacf4a2fb8c9a25c",
+  "fields": [
+    {
+      "order": 331,
+      "p": 313,
+      "q": 331
+    },
+    {
+      "order": 439,
+      "p": 421,
+      "q": 439
+    },
+    {
+      "order": 419,
+      "p": 431,
+      "q": 419
+    },
+    {
+      "order": 571,
+      "p": 547,
+      "q": 571
+    },
+    {
+      "order": 599,
+      "p": 571,
+      "q": 599
+    },
+    {
+      "order": 626,
+      "p": 593,
+      "q": 313
+    },
+    {
+      "order": 586,
+      "p": 617,
+      "q": 293
+    },
+    {
+      "order": 706,
+      "p": 677,
+      "q": 353
+    }
+  ],
+  "generator_law": "first x ascending then y ascending whose cofactor multiple has exact prime order q",
+  "offsets": [
+    0,
+    1,
+    2,
+    3,
+    5,
+    8,
+    13,
+    21
+  ],
+  "query_law": "first 16 lexicographic ordered distinct offsets with both public U=Q-t1G and V=Q-t2G nonidentity",
+  "relation_tests": "all 13 fixed vectors on selected lifts; on every public hit, test every valid frozen candidate by exact rational group law",
+  "resource_cap_seconds": 300,
+  "retention": "retain all public vectors, every candidate attempt including failures, and every public-hit candidate outcome; missing phase means unknown, not zero",
+  "schema": "xedni-fresh-wide-grid-protocol-v1",
+  "selection_rule": "minimum full-model height max bit length of A,B,x1,y1,x2,y2, lexicographic shift tie; selection completed before vector tests",
+  "target_law": "w=1+SHA256(xedni-wide-grid-v1|p|j) mod (q-1), j=0..3; new label, separate from prior panels",
+  "vector_family_sha256": "a84d901d47138c196c56e870a574f7a76761bf93aaaec3dac4fd4e9d50c4e24c",
+  "vectors": [
+    [
+      1,
+      -6
+    ],
+    [
+      2,
+      -1
+    ],
+    [
+      6,
+      5
+    ],
+    [
+      5,
+      4
+    ],
+    [
+      6,
+      1
+    ],
+    [
+      5,
+      3
+    ],
+    [
+      4,
+      -5
+    ],
+    [
+      6,
+      -1
+    ],
+    [
+      5,
+      -1
+    ],
+    [
+      6,
+      -5
+    ],
+    [
+      1,
+      5
+    ],
+    [
+      4,
+      -1
+    ],
+    [
+      4,
+      1
+    ]
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "descent_diagnostic": {
+    "browser_surface_status": "unavailable: gaas-browser sandbox could not be initialized",
+    "external_validation_completed": false,
+    "local_magma_available": false,
+    "local_sage_available": false,
+    "magma_input": "handoff/p256_descent_diagnostic.m",
+    "public_calculator_http_status": 401,
+    "required_checks": [
+      "Dixmier-Ohno moduli are Frobenius-rational",
+      "the quartic is isomorphic to its p-Frobenius conjugate",
+      "an isomorphism satisfies the order-three projective cocycle",
+      "Hilbert 90 yields a nonsingular F_p quartic with matching moduli"
+    ]
+  },
+  "exact_field_audit": {
+    "all_coefficients_fixed_by_p": false,
+    "all_coefficients_fixed_by_p_cubed": true,
+    "all_quadratic_extension_components_zero": true,
+    "ambient_torsion_field_degree": 6,
+    "minimal_field_conclusion": "the displayed candidate is over F_(p^3), not over F_p"
+  },
+  "format": "nist-p256-descent-status-v1",
+  "local_frobenius_bitangent_audit": {
+    "all_odd_characteristics": 28,
+    "artifact": "artifacts/p256_aronhold_frobenius.json",
+    "consequence": "only one of the seven known Aronhold lines is Frobenius-stable; the other six map among the 21 unconstructed bitangents, so the seven-line data alone cannot determine the projective Frobenius isomorphism",
+    "known_aronhold_lines_preserved": 1,
+    "orbit_histogram": {
+      "1": 1,
+      "3": 9
+    },
+    "rational_bitangents_predicted": 1,
+    "seven_line_shortcut_available": false
+  },
+  "obstruction_certificate": {
+    "forbidden_claim": "the P-256 quotient has been constructed over the NIST base field",
+    "precise_missing_capability": "equations for the remaining 21 bitangents or a ternary-quartic isomorphism/Galois-descent computation over a 256-bit finite field",
+    "preserved_reproducer": "run handoff/p256_descent_diagnostic.m in Magma 2.29 with the quartic package",
+    "safe_claim": "P-256 reconstruction reaches an exact F_(p^3) candidate; F_p descent remains unverified",
+    "type": "computational validation obstruction, not a proven mathematical non-descent"
+  },
+  "reconstruction": {
+    "aronhold_bitangent_checks": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "candidate_artifact": "artifacts/p256_finite_field_theta.json",
+    "candidate_constructed": true,
+    "quartic_term_count": 15,
+    "theta_pattern": {
+      "even_nonzero": 36,
+      "odd_zero": 28,
+      "violations": []
+    }
+  },
+  "status": "extension-field quotient candidate complete; base-field descent blocked on independent ternary-quartic tooling"
+}

@@ -1,3 +1,12 @@
+## Authorized target scope
+
+Work in this repository is limited to public benchmark instances, published
+challenge curves, toy or synthetic parameters, and systems the owner operates
+or is explicitly authorized to test. Do not develop or test operational
+attacks against production keys, wallets, accounts, or third-party systems.
+A task that requires a non-public target stops and asks for written
+authorization before proceeding.
+
 **Goal and first step** (AGENTS.md, "Goal: what to work on next" and "First
 step of every task"): the SessionStart hook prints `tools/goal_brief.py` (the
 pinned goal and items in `docs/ACTIVE.md`, then the newest session-log open
@@ -53,8 +62,8 @@ database (ecdb)".
 cross-repository retrieval layer. Query it before a literature or lead claim,
 a factor-base/solver choice, a novelty or "not tried" statement, or a subagent
 handoff; read the best hits and record the `source_id`/`repo:path`. Canonical
-procedure: `crypto:.agents/skills/research-kb/SKILL.md`; local skill
-`research-kb`; fallback `scripts/research-kb`. AGENTS.md, "Shared knowledge
+procedure: the trunk skill `isogeny-labs/workspace:.agents/skills/research-kb/SKILL.md`
+(loads as `research-kb` from a workspace checkout); fallback `scripts/research-kb`. AGENTS.md, "Shared knowledge
 base"; lab contract §11.
 
 

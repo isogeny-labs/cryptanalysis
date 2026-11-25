@@ -1,0 +1,15 @@
+Command:
+RUSTUP_HOME=/workspace/.rustup CARGO_HOME=/workspace/.cargo RUSTUP_TOOLCHAIN=1.87.0 /workspace/.cargo/bin/cargo test --locked --release --lib cryptanalysis::xedni_lift::tests -- --nocapture
+
+running 13 tests
+all 13 `cryptanalysis::xedni_lift::tests` controls passed, including
+`chord_origin_preserves_all_relation_points_and_known_source_shift` and
+`target_chord_origin_recovers_zero_explicit_target_coefficient`.
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 3199 filtered out
+
+Exit status: 0
+
+Earlier command error retained: adding `--exact` to the filtered invocation
+selected zero tests (3211 filtered out).  The command above corrected the
+invocation and executed both chord-origin controls.

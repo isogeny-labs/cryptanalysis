@@ -1,0 +1,159 @@
+{
+  "schema": "xedni-rank-decay-power/v1",
+  "date": "2026-11-18",
+  "natural_data_included": false,
+  "purpose": "Exact arithmetic behind the prospective scale and analysis gates; this is not an execution allocation or an observed result.",
+  "signed_rate_convention": {
+    "model": "q(p) = kappa * p^beta",
+    "paper_scale": "1/p corresponds to beta = -1",
+    "slower_decay_gate": "simultaneous lower confidence bound beta > -0.8"
+  },
+  "reference_scale": {
+    "p": 4294967296,
+    "p_exact": "2^32",
+    "note": "2^32 is a reference scale, not a prime in the execution manifest."
+  },
+  "expected_event_arithmetic": {
+    "assumed_kappa": 1,
+    "target_expected_events": 30,
+    "formula": "N = ceil(30 / q), q = p^beta",
+    "interpretation": "Expected-count arithmetic per cell under independent equal-rate proposals; it is not a specified-power sample size.",
+    "rows": [
+      {
+        "beta": -1,
+        "q_exact": "2^-32",
+        "q_decimal": "0.00000000023283064365386962890625",
+        "trials": 128849018880
+      },
+      {
+        "beta": -0.75,
+        "q_exact": "2^-24",
+        "q_decimal": "0.000000059604644775390625",
+        "trials": 503316480
+      },
+      {
+        "beta": -0.5,
+        "q_exact": "2^-16",
+        "q_decimal": "0.0000152587890625",
+        "trials": 1966080
+      }
+    ]
+  },
+  "zero_event_bound": {
+    "null_boundary": "q0 = p^-0.75 = 2^-24",
+    "alpha": "0.05",
+    "exact_binomial_formula": "N = ceil(log(alpha) / log(1 - q0))",
+    "exact_binomial_trials": 50260046,
+    "minimality_certificate": "(1 - 2^-24)^50260046 <= 0.05 < (1 - 2^-24)^50260045",
+    "poisson_approximation_formula": "ceil(-log(alpha) / q0)",
+    "poisson_approximation_trials": 50260048,
+    "scope": "One fixed-rate independent Bernoulli cell. Selection, clustering, overdispersion, censoring, and multiplicity require separate treatment."
+  },
+  "profile_slope": {
+    "sampling_model": "S_i independently distributed Poisson(N_i * exp(alpha) * p_i^beta)",
+    "profile_log_likelihood_up_to_beta_independent_constants": "ell_p(beta) = sum_i S_i * (log(N_i) + beta*log(p_i)) - S * log(sum_i N_i*p_i^beta), where S=sum_i S_i",
+    "conditional_weights": "w_i(beta) = N_i*p_i^beta / sum_j N_j*p_j^beta",
+    "finite_mle_equation": "sum_i S_i*log(p_i)/S = sum_i w_i(beta_hat)*log(p_i)",
+    "boundary_mle": "beta_hat=-infinity if every event is at the smallest p; beta_hat=+infinity if every event is at the largest p",
+    "sign_check": "beta=-1 is the 1/p line; beta nearer zero is slower decay",
+    "role": "Executable conditional-Poisson sensitivity; it does not replace the protocol-frozen binomial complementary-log-log model."
+  },
+  "simultaneous_conservative_interval": {
+    "method": "Conditional Hoeffding inversion with a two-sided Bonferroni union bound",
+    "prospectively_frozen_profile_count": "M counts the joint Poisson, binomial-cloglog, and cluster-robust roster across both co-primary endpoints, stages, denominators, and unresolved allocations",
+    "familywise_error": "alpha",
+    "per_tail_error": "delta = alpha/(2*M)",
+    "event_log_prime_mean": "xbar = sum_i S_i*log(p_i)/S",
+    "range": "R = max_i log(p_i) - min_i log(p_i)",
+    "hoeffding_radius": "c = R*sqrt(log(1/delta)/(2*S)) = R*sqrt(log(2*M/alpha)/(2*S))",
+    "model_mean": "mu(beta) = sum_i w_i(beta)*log(p_i)",
+    "lower_bound": "Solve mu(beta_L)=xbar-c; beta_L=-infinity when xbar-c <= min_i log(p_i)",
+    "upper_bound": "Solve mu(beta_U)=xbar+c; beta_U=+infinity when xbar+c >= max_i log(p_i)",
+    "coverage_claim": "At least 1-alpha simultaneously over the M prospectively counted profiles, conditional on their event totals, under the stated Poisson allocation model. Dependence between reported profiles does not invalidate the union bound.",
+    "decision_use": "analyze.py uses beta_L, not an asymptotic likelihood-ratio interval, for every admitted/proposed and all-failure/all-success curve-rank and useful-recovery Poisson profile in discovery and fresh replication."
+  },
+  "frozen_model_and_cluster_gate": {
+    "useful_event_min_bits": 20,
+    "primary_series_count": 180,
+    "simultaneous_profile_count": 4320,
+    "familywise_alpha": 0.05,
+    "cluster_bootstrap_replicates": 172800,
+    "binomial_model": "S~Binomial(N,q); cloglog(q)=alpha+beta*log(p)",
+    "inverse_link": "q_i = 1 - exp(-exp(alpha + beta*log(p_i)))",
+    "binomial_log_likelihood": "ell(alpha,beta) = sum_i [S_i*log(q_i) + (N_i-S_i)*log(1-q_i)]",
+    "binomial_profile_lower": "Profile alpha numerically; with z=Phi^-1(1-alpha_FWER/(2*M)), beta_L is the lower solution ell_p(beta_L)=ell_p(beta_hat)-z^2/2. This profile-likelihood bound is asymptotic and is retained as a sensitivity, not mislabeled finite-sample exact.",
+    "cluster_bootstrap": "Within each bit size, resample prime clusters with replacement; within each sampled prime, resample (source_id,curve_id) clusters with replacement; refit binomial cloglog in each replicate; take the empirical alpha_FWER/(2*M) lower quantile of signed beta.",
+    "cluster_bootstrap_minimum_replicates": "B >= ceil(2*M/alpha_FWER), so the Bonferroni tail contains at least one empirical order-statistic slot. Production rejects smaller B; tiny B is permitted only by a non-CLI synthetic-test override.",
+    "cluster_bootstrap_caveat": "The hierarchical bootstrap is a predeclared overdispersion sensitivity, not an exact finite-sample coverage theorem. The conditional Poisson Hoeffding inversion remains the explicitly finite-sample-conservative interval under its model.",
+    "co_primary_endpoints": [
+      "certified curve rank < r",
+      "certified nontrivial selected-point relation with invertible target coefficient and exact scalar replay"
+    ],
+    "separation_rule": "Curve rank >= r does not imply selected-point independence or failed recovery; the endpoints have independent YES/NO/UNKNOWN classifications.",
+    "required_sensitivities": [
+      "binomial_cloglog",
+      "cluster_robust_cloglog"
+    ],
+    "accepted_cluster_methods": [
+      "cluster_bootstrap_cloglog"
+    ],
+    "cluster_keys": [
+      "bits",
+      "p",
+      "source_id",
+      "curve_id"
+    ],
+    "artifact_binding": "The separately frozen sensitivity artifact must match the exact canonical row-set SHA-256 and PROTOCOL.md SHA-256, match the local sensitivity.py SHA-256, match the trusted FREEZE.json SHA-256, contain the complete profile roster, and equal executable recomputation.",
+    "semantic_freeze_binding": "FREEZE.json must independently fix familywise alpha, total simultaneous hypothesis count, both endpoints, both denominators, both unresolved allocations, all three methods, cluster keys, cluster method, replicate count, and cluster seed. A digest reference without these matching semantics is rejected.",
+    "fail_closed_rule": "No DEFEATED_IN_SCOPE decision is possible when the artifact is absent, incomplete, digest-mismatched, or has any required signed-beta lower bound <= -0.8."
+  },
+  "open_hard_gates": {
+    "mixed_unresolved_allocation": "Uniform all-failure and all-success corners do not bound a slope: allocating unknown successes at low p and failures at high p can be worse. Production DEFEATED_IN_SCOPE is hard-blocked until every required model rigorously minimizes its signed-beta lower bound over S_i in [A_i,A_i+U_i].",
+    "raw_provenance": "Production DEFEATED_IN_SCOPE is hard-blocked until rows are executable-bound to the frozen roster, prime manifest, stage seeds, and actual raw rank-adapter and relation-certificate digests. Self-declared JSON identifiers are insufficient.",
+    "relation_inventory": "A replayed false, trivial, or noninvertible candidate does not establish absence of another useful relation. Production is hard-blocked until every proposal and coexistence class is inventoried under a deterministic any-useful rule, with exact proof digests; ranked non-successes otherwise remain UNKNOWN.",
+    "public_private_boundary": "The selector and relation-proposal processes must consume a hash-linked redacted public record containing no source or target scalars. The private evaluator may use them only for exact replay. A self-declared uses_source_scalars=false field is not an enforceable anti-circularity boundary.",
+    "natural_executor": "The deterministic runner plans rosters and exercises control interfaces, but it intentionally has no natural-row executor until relation/recovery integration, complete work accounting, and the evidence bindings above exist.",
+    "test_overrides": "Internal synthetic tests can exercise downstream Boolean logic with explicitly named test-only overrides. No CLI exposes those overrides, and any output records when they were active."
+  },
+  "decision_scale_caveats": [
+    "The JKSST/Silverman analysis contains height and coefficient constants; kappa=1 is a transparent scale calculation, not a theorem-derived constant.",
+    "Thirty expected events is not thirty observed certified nontrivial useful recoveries.",
+    "No high-bit factorial run is claimed to be affordable by these numbers.",
+    "No natural rank or recovery row, binomial-cloglog sensitivity, or cluster-robust sensitivity is bundled with this file."
+  ],
+  "provenance": [
+    {
+      "id": "JKSST2000",
+      "citation": "M. J. Jacobson Jr., N. Koblitz, J. H. Silverman, A. Stein, and E. Teske, Analysis of the Xedni Calculus Attack, Designs, Codes and Cryptography 20 (2000), 41-64.",
+      "doi": "10.1023/A:1008312401197",
+      "url": "https://pages.cpsc.ucalgary.ca/~jacobs/PDF/xedni.pdf",
+      "used_for": "Conditional 1/p-style counting argument and its height/coefficient premises; see Sections 3.2, 4, 5.1, 5.2, and 5.4."
+    },
+    {
+      "id": "Silverman2000",
+      "citation": "J. H. Silverman, The Xedni Calculus and the Elliptic Curve Discrete Logarithm Problem, Designs, Codes and Cryptography 20 (2000), 5-40.",
+      "doi": "10.1023/A:1008319518035",
+      "used_for": "Original Xedni construction and local-condition context."
+    },
+    {
+      "id": "local_protocol",
+      "path": "PROTOCOL.md",
+      "used_for": "Frozen factors, signed-beta gate, stages, and decision rule."
+    },
+    {
+      "id": "mechanism_amendment",
+      "path": "AMENDMENT.md",
+      "used_for": "Six prospective mechanism panels and denominator/cost rules."
+    },
+    {
+      "id": "implementation",
+      "path": "analyze.py",
+      "used_for": "Executable schema validation, endpoint allocation, profile MLE, conservative interval, and decision gate."
+    },
+    {
+      "id": "sensitivity_implementation",
+      "path": "sensitivity.py",
+      "used_for": "Executable binomial complementary-log-log profiling, within-prime source/curve cluster bootstrap, and reproducible sensitivity artifact generation."
+    }
+  ]
+}

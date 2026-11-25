@@ -44,10 +44,76 @@
 //! - **A. Bogdanov, M. Wang**, *Zero correlation linear cryptanalysis
 //!   with reduced data complexity*, FSE 2012.
 
+#[cfg(test)]
 use super::reduced::SBOX;
+use crate::cryptanalysis::sym_ir::primitives::aes128;
+use crate::cryptanalysis::sym_ir::Primitive;
+use crate::cryptanalysis::sym_techniques::impossible::{
+    CellValue, FinalRound, Model, SearchBudget,
+};
+use crate::cryptanalysis::sym_techniques::zero_correlation as generic;
 use crate::visualize::color::{paint, FG_BRIGHT_GREEN, FG_BRIGHT_RED};
 use rand::rngs::StdRng;
 use rand::{RngCore, SeedableRng};
+use std::sync::OnceLock;
+
+/// The AES S-box layer of the IR description of AES, built once.
+fn ir_aes() -> &'static Primitive {
+    static P: OnceLock<Primitive> = OnceLock::new();
+    P.get_or_init(|| aes128::reduced(1, false))
+}
+
+/// Pairs `(input byte, output byte)` such that the single-byte mask pair
+/// has correlation zero over `nr` AES rounds according to the generic
+/// miss-in-the-middle search of
+/// [`sym_techniques::zero_correlation`](crate::cryptanalysis::sym_techniques::zero_correlation)
+/// on the IR description (`final_mix_columns` selects whether the last
+/// round keeps MixColumns). Byte `4c + r` is column `c`, row `r`. The list
+/// holds the pairs the word-level model can exclude; absence of a pair is
+/// not evidence that its correlation is non-zero.
+pub fn derived_zero_correlation_byte_pairs(
+    nr: usize,
+    final_mix_columns: bool,
+) -> Vec<(usize, usize)> {
+    let p = aes128::reduced(nr, final_mix_columns);
+    let mut out = Vec::new();
+    for i in 0..16 {
+        for j in 0..16 {
+            let hit = generic::check_zero_correlation(
+                &p,
+                nr,
+                FinalRound::AsGiven,
+                Model::Word,
+                &[CellValue {
+                    cell: i,
+                    value: None,
+                }],
+                &[CellValue {
+                    cell: j,
+                    value: None,
+                }],
+            )
+            .expect("AES IR is modelled");
+            if hit.is_some() {
+                out.push((i, j));
+            }
+        }
+    }
+    out
+}
+
+/// Longest zero-correlation hull the generic search reaches on the AES-128
+/// IR within `budget` (see
+/// [`longest_zero_correlation`](crate::cryptanalysis::sym_techniques::zero_correlation::longest_zero_correlation)).
+/// Returns the number of rounds and whether the last MixColumns was
+/// dropped, or `None` if nothing was found.
+pub fn longest_derived_zero_correlation(budget: &SearchBudget) -> Option<(usize, bool)> {
+    let p = aes128::aes128();
+    generic::longest_zero_correlation(&p, budget)
+        .ok()?
+        .best
+        .map(|d| (d.rounds, d.final_linear_dropped))
+}
 
 /// Inner product of two bytes interpreted as 8-bit vectors over F_2.
 #[inline]
@@ -60,16 +126,9 @@ pub fn inner_product(a: u8, b: u8) -> u8 {
 ///
 /// Returns `c = 2 · #{x : ⟨α,x⟩ = ⟨β, SBox(x)⟩} / 256 − 1`.
 pub fn sbox_correlation(alpha: u8, beta: u8) -> f64 {
-    let mut matches: i32 = 0;
-    for x in 0u32..256 {
-        let x = x as u8;
-        let lhs = inner_product(alpha, x);
-        let rhs = inner_product(beta, SBOX[x as usize]);
-        if lhs == rhs {
-            matches += 1;
-        }
-    }
-    (2.0 * matches as f64 / 256.0) - 1.0
+    // Delegates to the generic routine over the S-box of the IR
+    // description of AES; same formula, same result.
+    generic::sbox_correlation(&ir_aes().sboxes[0], alpha as u32, beta as u32)
 }
 
 /// **Empirical correlation** of `(α → β)` on a black-box function
@@ -277,5 +336,11 @@ mod tests {
     fn demo_zero_correlation_pairs() {
         let pairs = enumerate_zero_correlation_pairs(0.05);
         println!("\n{}", format_zc_report(&pairs, 20));
+    }
+
+    #[test]
+    fn derived_zero_correlation_pairs() {
+        assert_eq!(derived_zero_correlation_byte_pairs(4, false).len(), 256);
+        assert!(derived_zero_correlation_byte_pairs(5, false).is_empty());
     }
 }

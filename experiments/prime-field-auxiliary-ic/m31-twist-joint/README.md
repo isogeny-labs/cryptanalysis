@@ -1,0 +1,9 @@
+# Joint lift labels on the M31 curve and its quadratic twist
+
+Let f(x) = x³ + 2x + 14 and t(x) = x³ + 2x − 14. For the reflected input, t(−x) = −f(x). Since −1 is a nonsquare and both group orders are odd, the reflected lift labels are complementary everywhere. At the same input, the labels have a different joint distribution.
+
+Write χ for the quadratic character, extended by zero, and g(u) = u³ + 4u² + 4u − 196. The character product is χ(g(x²)). Each u has 1+χ(u) square roots, so its full-field sum splits into the sums of χ(g(u)) and χ(u g(u)). In the latter sum, set v = 1/u away from zero. The factor u⁴ disappears from the character, leaving χ(1 + 4v + 4v² − 196v³). Extending this sum back to v=0 contributes one, which must be subtracted. Scaling coordinates to a monic cubic gives the second elliptic trace in joint.gp. Reduction.lean checks the polynomial identities. PARI evaluates the two auxiliary traces as 68941 and 37001 and the correlation sum as −105943. Direct enumeration at 91 smaller primes checks the trace reduction independently.
+
+For the exact prime, neither cubic vanishes because each elliptic group has odd order. With signs i,j in {−1,1} the joint count is (p + i Σχ(f) + j Σχ(t) + ij Σχ(ft))/4. Both signs positive occurs at 536844426 coordinates, only the original positive at 536908220, only the twist positive at 536886575, and neither positive at 536844426. On the 32 coordinates in ../m31-boolean-lifts/Projection.lean the corresponding counts are 11, 6, 11 and 4.
+
+Under a uniform coordinate, the most accurate prediction using only the same-input twist bit is to flip it, correct at 1073794795 coordinates (50.002467%). Always predicting a lift is correct at 1073752646 (50.000504%). The absolute difference is 42149 coordinates out of the full field. On the frozen fiber, 6 of 17 actual lifts have negative twist label, so filtering them out loses valid coordinates.

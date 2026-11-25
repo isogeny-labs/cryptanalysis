@@ -124,7 +124,7 @@ jobs:
           python -m unittest test_solver test_resultants test_optimized optimized.test_v2 -v
       - name: Retain extraction diagnostics on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: prime-field-ic-extraction-diagnostics
           path: ${{ runner.temp }}/prime-field-ic/algebraic/tests/**/extraction.log

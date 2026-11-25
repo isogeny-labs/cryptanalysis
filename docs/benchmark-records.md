@@ -54,6 +54,23 @@ The serial HEAD loop took 0.7 s (bucket region) to 1.0 s (us-west-2) per
 object, which passed the job's 15-minute limit once the records named about
 1,000 raw objects (1,561 on 2026-11-11).
 
+A `validation` file also counts as retained when it is kept only as a
+lossless gzip archive: a committed `derived-encodings/<stem>.json` receipt
+next to it names the archive and pins the SHA-256 and byte count of both the
+logical file and the archive, and the archive is in the checkout with those
+bytes or in a `.artifacts.json` manifest with that digest (with
+`--verify-s3`, also in the store). `tools/hydrate_bench_validations.py`
+restores and verifies the logical file from that archive; CI runs it before
+`check`. Record paths (`reports`, `entries`, `raw[].path`, `validation`) must
+be nonempty strings; anything else is reported as a malformed record.
+The `problem` series key must be a nonempty string. Both the gate and report
+refuse malformed keys before writing any progress output.
+The record itself must be a JSON object, commits must be 40-character lowercase
+hex strings, metric units must be known strings, and supplied metrics must be
+objects in a list, including for invalid and censored runs. The gate reports
+these errors instead of a Python traceback; malformed measured commit and
+unit fields are refused before progress output is written.
+
 ### Closed raw data when a checkout path is reused
 
 `living_paths` remains an accepted configuration field for evolving catalogs.

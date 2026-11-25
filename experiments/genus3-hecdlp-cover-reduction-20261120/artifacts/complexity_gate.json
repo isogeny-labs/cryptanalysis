@@ -1,0 +1,73 @@
+{
+  "curves": {
+    "P-224": {
+      "complexity_changing_gate": {
+        "excluded_as_non_speedups": [
+          "dimension reduction that retracts to the original ECDLP",
+          "a same-field genus-3 Jacobian followed by soft-O(p) index calculus",
+          "constant-factor GLV/GLS decompositions marketed as exponent changes"
+        ],
+        "required_evidence_for_a_pass": [
+          "a representation over a genuinely smaller field F_q with quantified q versus p, or",
+          "a rigorously analyzed destination algorithm with exponent below 1/2 in p, or",
+          "a separate exploitable group-order/endomorphism weakness with full subgroup accounting"
+        ],
+        "same_field_cover_or_isogeny_passes": false
+      },
+      "conclusion": "The standard (3,3,3) quotient over the native NIST prime field is not a drastic ECDLP reduction.",
+      "curve": "P-224",
+      "native_field": "F_p with p prime",
+      "same_field_costs": {
+        "destination_minus_rho_log2_at_nominal_size": 112.0,
+        "elliptic_pollard_rho_exponent_in_p": 0.5,
+        "plane_quartic_index_calculus_soft_exponent_in_p": 1.0,
+        "winner": "elliptic Pollard rho"
+      },
+      "subfield_lattice_certificate": {
+        "application": "m=1 has only d=1, so F_p has no proper finite subfield.",
+        "cubic_descent_equation": "p=q^3",
+        "cubic_descent_possible_for_prime_p": false,
+        "proper_same_characteristic_subfield_exists": false,
+        "reason": "a prime cannot be a nontrivial perfect cube",
+        "theorem": "The subfields of F_(p^m) are exactly F_(p^d) for d dividing m."
+      }
+    },
+    "P-256": {
+      "complexity_changing_gate": {
+        "excluded_as_non_speedups": [
+          "dimension reduction that retracts to the original ECDLP",
+          "a same-field genus-3 Jacobian followed by soft-O(p) index calculus",
+          "constant-factor GLV/GLS decompositions marketed as exponent changes"
+        ],
+        "required_evidence_for_a_pass": [
+          "a representation over a genuinely smaller field F_q with quantified q versus p, or",
+          "a rigorously analyzed destination algorithm with exponent below 1/2 in p, or",
+          "a separate exploitable group-order/endomorphism weakness with full subgroup accounting"
+        ],
+        "same_field_cover_or_isogeny_passes": false
+      },
+      "conclusion": "The standard (3,3,3) quotient over the native NIST prime field is not a drastic ECDLP reduction.",
+      "curve": "P-256",
+      "native_field": "F_p with p prime",
+      "same_field_costs": {
+        "destination_minus_rho_log2_at_nominal_size": 128.0,
+        "elliptic_pollard_rho_exponent_in_p": 0.5,
+        "plane_quartic_index_calculus_soft_exponent_in_p": 1.0,
+        "winner": "elliptic Pollard rho"
+      },
+      "subfield_lattice_certificate": {
+        "application": "m=1 has only d=1, so F_p has no proper finite subfield.",
+        "cubic_descent_equation": "p=q^3",
+        "cubic_descent_possible_for_prime_p": false,
+        "proper_same_characteristic_subfield_exists": false,
+        "reason": "a prime cannot be a nontrivial perfect cube",
+        "theorem": "The subfields of F_(p^m) are exactly F_(p^d) for d dividing m."
+      }
+    }
+  },
+  "format": "nist-cover-complexity-gate-v1",
+  "research_filter": {
+    "continue": "only mechanisms satisfying one of the explicit pass conditions",
+    "stop": "additional same-field covers or isogenies without a sub-rho destination algorithm"
+  }
+}

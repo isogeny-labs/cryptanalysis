@@ -1,0 +1,23 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T02:59:11Z",
+ "id": "PCC-20261123-c9ae3c",
+ "kind": "theorem",
+ "producer": {
+  "commit": "7f82ec82b2497decc1528e08f0267f3fc4f515ae",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "f1f34b80d77acb24a227edf7a619e52a53e328438108b5a695a7efbaca7919ef",
+   "kind": "lean",
+   "path": "experiments/prime-field-auxiliary-ic/m31-census-attribution/RateBounds.lean",
+   "sha256": "c8012a249ac63ba3f4d15ae116bcbaeb0e3fd8ef9777c75c028ad3447043ba2b",
+   "theorem": "M31ArchivedRates.rate_band"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "For three archived M31 query counts, the ratio of mean loop times per tested query lies strictly between 1.38 and 1.43 for all durations within 1 ms of the respective archived values."
+}

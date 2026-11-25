@@ -101,7 +101,7 @@ jobs:
           cat ct138-evidence/audit.json
       - name: Preserve source guard, compiler outputs and any raw measurements
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ct138-batch-width-evidence
           path: ct138-evidence/

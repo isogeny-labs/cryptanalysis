@@ -1,0 +1,23 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T01:57:16Z",
+ "id": "PCC-20261123-0a6ba7",
+ "kind": "theorem",
+ "producer": {
+  "commit": "396e0cad487d41f60ae842ddb6ba1c272d030872",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "1e9087b3a864c56354b19ac9ba76168bcc0c9af39b70eae51ef3966fb7613b69",
+   "kind": "lean",
+   "path": "experiments/prime-field-auxiliary-ic/m31-rotation-smoothness/OrbitKey.lean",
+   "sha256": "e6f28c9d2bb1ea07a9c148e478b4da9329e98b07e8be5ff86800955e422fa74c",
+   "theorem": "M31Rotation.orbitKey_extend"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Multiplying an M31 field element by a factor updates its orbit key and reciprocal key by componentwise multiplication."
+}

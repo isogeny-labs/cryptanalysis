@@ -7,7 +7,9 @@ pin=$(cat "$study_dir/upstream-commit.txt")
 [[ $pin =~ ^[0-9a-f]{40}$ ]] || { echo 'invalid source revision' >&2; exit 2; }
 git -C "$upstream_root" cat-file -e "$pin^{commit}"
 (cd "$upstream_root" && sha256sum --check "$study_dir/upstream.sha256")
-(cd "$repo_root" && sha256sum --check "$study_dir/reference.sha256")
+python3 "$study_dir/verify-fp-chain-input-transition.py" current-reference \
+  --repo "$repo_root" \
+  --transition "$study_dir/evidence/fp-chain-successor-inputs-01/transition.json"
 (cd "$upstream_root" && sha256sum --check "$study_dir/seven-reference.sha256")
 (cd "$upstream_root" && sha256sum --check "$study_dir/seven-independent.sha256")
 cargo --version

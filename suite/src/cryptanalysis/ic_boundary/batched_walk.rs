@@ -22,6 +22,7 @@ fn add_canonical(a: u64, b: u64, m: u64) -> u64 {
     }
 }
 
+#[derive(Clone)]
 struct Lane<E> {
     point: E,
     a: u64,
@@ -31,6 +32,7 @@ struct Lane<E> {
     permutation: [usize; LANES],
 }
 
+#[derive(Clone)]
 pub(super) struct BatchedWalker<E: Copy> {
     generator: E,
     target: E,

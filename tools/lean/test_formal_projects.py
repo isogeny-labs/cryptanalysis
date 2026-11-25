@@ -107,7 +107,7 @@ class FormalProjectControls(unittest.TestCase):
         output = Path(args[args.index("-o") + 1])
         source = Path(args[-1])
         dependency = source.parent / "B.olean"
-        inherited = dependency.read_bytes() if source.stem == "A" and dependency.exists() else b""
+        inherited = dependency.read_bytes() if source.stem in {"A", "Z"} and dependency.exists() else b""
         output.write_bytes(b"synthetic unit object, not Lean: " + source.read_bytes() + inherited)
         self.calls.append((source.stem, source.read_bytes()))
         return SimpleNamespace(stdout=f"'{source.stem}.result' depends on axioms: [{self.axioms}]\n")
@@ -128,6 +128,52 @@ class FormalProjectControls(unittest.TestCase):
         self.write_manifest()
         self.checked()
         self.assertEqual([name for name, _ in self.calls], ["B", "A", "B", "A"])
+
+    def test_native_header_whitespace_and_import_modifiers_preserve_dependencies(self):
+        for directive in ("  import B", "import\n B", "\ufeffimport B",
+                          "module\npublic import B", "module\nmeta import B",
+                          "module\nimport all B", "module\npublic meta import B"):
+            with self.subTest(directive=directive):
+                self.bind(self.projects[0] + "/A.lean", directive +
+                          "\nnamespace A\ntheorem result : True := True.intro\n"
+                          "#print axioms A.result\nend A\n")
+                graphs, orders = formal.validate(self.root, self.record)
+                self.assertEqual(graphs[self.projects[0]]["A"]["imports"], ["B"])
+                self.assertEqual(orders[self.projects[0]], ["B", "A"])
+
+    def test_multiline_import_cannot_hide_a_changed_dependency_from_native_cache(self):
+        for project in self.projects:
+            del self.record["files"][project + "/A.lean"]
+            (self.root / project / "A.lean").unlink()
+            self.bind(project + "/Z.lean", "import\n B\nnamespace Z\n"
+                      "theorem result : True := True.intro\n#print axioms Z.result\nend Z\n")
+        self.bind(self.projects[1] + "/B.lean",
+                  (self.root / self.projects[1] / "B.lean").read_text() + "-- changed dependency\n")
+        self.write_manifest()
+        self.checked()
+        self.assertEqual([name for name, _ in self.calls], ["B", "Z", "B", "Z"])
+
+    def test_header_parser_preserves_quoted_components_and_ignores_body_strings(self):
+        source = ('/- outer /- nested -/ comment -/\nmodule\nprelude\n'
+                  'public import\n «B»\nmeta import Lean\nimport all Std.Data\n'
+                  'def text := "import Missing"\n')
+        self.assertEqual(formal.module_imports(source), [("B",), ("Lean",), ("Std", "Data")])
+        self.assertEqual(formal.module_imports("import «B.X»\ndef n := 1\n"), [("B.X",)])
+        for source in ("import «B", "import «»", "import «B»x", "import B."):
+            with self.subTest(source=source), self.assertRaises(ValueError):
+                formal.module_imports(source)
+
+    def test_multiline_unknown_import_and_dependency_cycle_still_fail_closed(self):
+        self.bind(self.projects[0] + "/A.lean", "import\n Missing\n"
+                  "theorem result : True := True.intro\n#print axioms result\n")
+        with self.assertRaisesRegex(ValueError, "unbound formal module"):
+            formal.validate(self.root, self.record)
+        self.bind(self.projects[0] + "/A.lean", "import\n B\nnamespace A\n"
+                  "theorem result : True := True.intro\n#print axioms A.result\nend A\n")
+        self.bind(self.projects[0] + "/B.lean", "import\n A\nnamespace B\n"
+                  "theorem result : True := True.intro\n#print axioms B.result\nend B\n")
+        with self.assertRaisesRegex(ValueError, "cyclic"):
+            formal.validate(self.root, self.record)
 
     def test_original_internal_symlink_is_bound_and_its_change_is_refused(self):
         path = self.projects[1] + "/B.lean"

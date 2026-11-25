@@ -1,0 +1,677 @@
+{
+  "schema": "experiment.protocol/v1",
+  "protocol_id": "CURVE-REPRESENTATION-CONTROLLED-20261118",
+  "version": 1,
+  "created": "2026-11-18",
+  "repository": "cryptanalysis",
+  "study_dir": "experiments/curve-representation-controlled-20261118",
+  "authors": [
+    "Codex"
+  ],
+  "links": {
+    "pr": "https://github.com/isogeny-labs/cryptanalysis/pull/1767",
+    "plan": "PLAN.md",
+    "source_manifest": "source-sha256.json",
+    "source_manifest_sha256": "aba59014fd2c37e730e90127cb6b2f4ad770ff61d7e7823a27ad9fb489203929",
+    "admission": "pending explicit exception or normal checkpoint/host admission"
+  },
+  "question": "How do four equivalent three-summand relation formulations compare on fixed growing toy instances in point-checked usable relations, time, memory, rejection, timeout, rank and complete/censored collection cost?",
+  "claims": [
+    {
+      "id": "C-correctness",
+      "class": "exact_computation",
+      "text": "Every accepted relation agrees with the exact finite-set oracle and source-group equation; disagreement remains a wrong-answer outcome.",
+      "decided_by": []
+    },
+    {
+      "id": "C-qualification",
+      "class": "out_of_scope",
+      "text": "No qualified speedup, asymptotic improvement, or cryptographic-size attack is established by ordinary-host exploratory timings.",
+      "decided_by": []
+    }
+  ],
+  "hypotheses": [],
+  "arms": [
+    {
+      "id": "montgomery",
+      "role": "baseline",
+      "description": "montgomery polynomial representation",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "85c08cd198e983b22fe295647864428c455bd72e",
+        "build": null,
+        "binary_sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7",
+        "flags": {
+          "monomial_order": "lex",
+          "groebner_method": "f5b",
+          "summands": "3",
+          "sympy_version": "1.14.0",
+          "source_manifest": "source-sha256.json"
+        },
+        "env": {
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "PYTHONHASHSEED": "0"
+        },
+        "threads": 1
+      },
+      "parameters": {
+        "model": "montgomery"
+      }
+    },
+    {
+      "id": "edwards",
+      "role": "candidate",
+      "description": "edwards polynomial representation",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "85c08cd198e983b22fe295647864428c455bd72e",
+        "build": null,
+        "binary_sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7",
+        "flags": {
+          "monomial_order": "lex",
+          "groebner_method": "f5b",
+          "summands": "3",
+          "sympy_version": "1.14.0",
+          "source_manifest": "source-sha256.json"
+        },
+        "env": {
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "PYTHONHASHSEED": "0"
+        },
+        "threads": 1
+      },
+      "parameters": {
+        "model": "edwards"
+      },
+      "same_instrument_as": "montgomery"
+    },
+    {
+      "id": "invariant",
+      "role": "candidate",
+      "description": "invariant polynomial representation",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "85c08cd198e983b22fe295647864428c455bd72e",
+        "build": null,
+        "binary_sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7",
+        "flags": {
+          "monomial_order": "lex",
+          "groebner_method": "f5b",
+          "summands": "3",
+          "sympy_version": "1.14.0",
+          "source_manifest": "source-sha256.json"
+        },
+        "env": {
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "PYTHONHASHSEED": "0"
+        },
+        "threads": 1
+      },
+      "parameters": {
+        "model": "invariant"
+      },
+      "same_instrument_as": "montgomery"
+    },
+    {
+      "id": "retained",
+      "role": "candidate",
+      "description": "retained polynomial representation",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "85c08cd198e983b22fe295647864428c455bd72e",
+        "build": null,
+        "binary_sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7",
+        "flags": {
+          "monomial_order": "lex",
+          "groebner_method": "f5b",
+          "summands": "3",
+          "sympy_version": "1.14.0",
+          "source_manifest": "source-sha256.json"
+        },
+        "env": {
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "PYTHONHASHSEED": "0"
+        },
+        "threads": 1
+      },
+      "parameters": {
+        "model": "retained"
+      },
+      "same_instrument_as": "montgomery"
+    },
+    {
+      "id": "montgomery-aa",
+      "role": "control_aa",
+      "description": "montgomery-aa polynomial representation",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "85c08cd198e983b22fe295647864428c455bd72e",
+        "build": null,
+        "binary_sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7",
+        "flags": {
+          "monomial_order": "lex",
+          "groebner_method": "f5b",
+          "summands": "3",
+          "sympy_version": "1.14.0",
+          "source_manifest": "source-sha256.json"
+        },
+        "env": {
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "PYTHONHASHSEED": "0"
+        },
+        "threads": 1
+      },
+      "parameters": {
+        "model": "montgomery-aa"
+      },
+      "same_instrument_as": "montgomery"
+    },
+    {
+      "id": "weierstrass",
+      "role": "baseline",
+      "description": "weierstrass polynomial representation",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "85c08cd198e983b22fe295647864428c455bd72e",
+        "build": null,
+        "binary_sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7",
+        "flags": {
+          "monomial_order": "lex",
+          "groebner_method": "f5b",
+          "summands": "3",
+          "sympy_version": "1.14.0",
+          "source_manifest": "source-sha256.json"
+        },
+        "env": {
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "PYTHONHASHSEED": "0"
+        },
+        "threads": 1
+      },
+      "parameters": {
+        "model": "weierstrass"
+      },
+      "same_instrument_as": "montgomery"
+    },
+    {
+      "id": "weierstrass-aa",
+      "role": "control_aa",
+      "description": "weierstrass-aa polynomial representation",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "85c08cd198e983b22fe295647864428c455bd72e",
+        "build": null,
+        "binary_sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7",
+        "flags": {
+          "monomial_order": "lex",
+          "groebner_method": "f5b",
+          "summands": "3",
+          "sympy_version": "1.14.0",
+          "source_manifest": "source-sha256.json"
+        },
+        "env": {
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "PYTHONHASHSEED": "0"
+        },
+        "threads": 1
+      },
+      "parameters": {
+        "model": "weierstrass-aa"
+      },
+      "same_instrument_as": "montgomery"
+    },
+    {
+      "id": "positive",
+      "role": "control_positive",
+      "description": "nested correctness-control observation emitted by each collector, excluded from ordinary yield",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "85c08cd198e983b22fe295647864428c455bd72e",
+        "build": null,
+        "binary_sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7",
+        "flags": {
+          "monomial_order": "lex",
+          "groebner_method": "f5b",
+          "summands": "3",
+          "sympy_version": "1.14.0",
+          "source_manifest": "source-sha256.json"
+        },
+        "env": {
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "PYTHONHASHSEED": "0"
+        },
+        "threads": 1
+      },
+      "parameters": {
+        "scope": "control_only"
+      }
+    },
+    {
+      "id": "negative",
+      "role": "control_negative",
+      "description": "nested correctness-control observation emitted by each collector, excluded from ordinary yield",
+      "instrument": {
+        "repo": "cryptanalysis",
+        "commit": "85c08cd198e983b22fe295647864428c455bd72e",
+        "build": null,
+        "binary_sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7",
+        "flags": {
+          "monomial_order": "lex",
+          "groebner_method": "f5b",
+          "summands": "3",
+          "sympy_version": "1.14.0",
+          "source_manifest": "source-sha256.json"
+        },
+        "env": {
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "PYTHONHASHSEED": "0"
+        },
+        "threads": 1
+      },
+      "parameters": {
+        "scope": "control_only"
+      }
+    }
+  ],
+  "controls": {
+    "aa": {
+      "present": true,
+      "comparison": "C-aa",
+      "not_applicable_reason": null
+    },
+    "positive": {
+      "present": true,
+      "arm": "positive",
+      "expected_detection": "internal planted triples and cancellation fixture; all applicable arms checked",
+      "not_applicable_reason": null
+    },
+    "negative": {
+      "present": true,
+      "arm": "negative",
+      "null_population": {
+        "description": "ordinary fixed-base query with no source-group decomposition",
+        "generator": "first nonidentity target absent from exact oracle, if any",
+        "n": 1,
+        "why_n": "deterministic correctness null per instance; not a statistical null sample",
+        "matched_on": [
+          "curve",
+          "base",
+          "solver",
+          "limits"
+        ]
+      },
+      "not_applicable_reason": null
+    }
+  },
+  "variable_ledger": {
+    "independent": [
+      {
+        "name": "representation",
+        "levels": [
+          "montgomery",
+          "edwards",
+          "invariant",
+          "retained",
+          "montgomery-aa",
+          "weierstrass",
+          "weierstrass-aa"
+        ]
+      }
+    ],
+    "factors": [
+      {
+        "name": "curve_base_target_queries",
+        "treatment": "fixed",
+        "how": "same geometric base and query stream within each applicable instance/seed"
+      },
+      {
+        "name": "solver_and_threads",
+        "treatment": "fixed",
+        "how": "same Python/SymPy implementation, lex/f5b, one exposed CPU and one thread"
+      },
+      {
+        "name": "arm_order",
+        "treatment": "randomized",
+        "how": "seeded shuffle within every instance/seed"
+      },
+      {
+        "name": "host_and_layout",
+        "treatment": "measured",
+        "how": "fresh child per collection; affinity, CPU/model/NUMA visibility, cgroup limits/counters, pressure and rusage retained; no exclusive isolation asserted"
+      },
+      {
+        "name": "control_field_and_order",
+        "treatment": "crossed",
+        "how": "same-field and exact-subgroup-order controls are separate; remaining confounding is explicit"
+      },
+      {
+        "name": "analyst",
+        "treatment": "fixed",
+        "how": "analysis script source-hashed before affected data; no masked labels"
+      }
+    ],
+    "comparisons": [
+      {
+        "id": "C-representation",
+        "arms": [
+          "montgomery",
+          "edwards",
+          "invariant",
+          "retained"
+        ],
+        "differs_in": [
+          "representation"
+        ],
+        "design": "one_factor"
+      },
+      {
+        "id": "C-aa",
+        "arms": [
+          "montgomery",
+          "montgomery-aa"
+        ],
+        "differs_in": [],
+        "design": "aa"
+      }
+    ],
+    "aa_not_applicable": null,
+    "crosses_map": false
+  },
+  "randomization": {
+    "arm_order": "interleaved",
+    "arm_order_reason": null,
+    "seed_derivation": {
+      "method": "explicit_list",
+      "seeds": [
+        2026111801,
+        2026111802
+      ],
+      "nonce": null,
+      "note": "same seeds for all arms; fixture content hash offsets the random stream"
+    },
+    "instance_sampling": {
+      "rule": "fixed six fields; first admissible source coefficient; first matching controls within fixed finite bounds; fixtures.py",
+      "independent_of_arm": true
+    },
+    "blinding": {
+      "analysis_labels_masked": false,
+      "how": "descriptive pilot; frozen analysis and no winner decision",
+      "unmasked_at": null
+    }
+  },
+  "sample_size": {
+    "instances": 18,
+    "replicates": 2,
+    "warmups": 1,
+    "power": {
+      "method": "other",
+      "alpha": 0.05,
+      "tests_in_family": 1,
+      "correction": "none",
+      "rank_test_n": null,
+      "min_attainable_two_sided_p": null,
+      "passes": true,
+      "note": "descriptive bounded panel, no hypothesis rejection or power claim; six source sizes with two seeds and two control families"
+    },
+    "preflight_runtime": {
+      "fixed_seconds": null,
+      "per_sample_seconds": null,
+      "threads": 1,
+      "estimated_total_seconds": 7920,
+      "measured_on": "upper resource bound only: at most 132 collector children x 60 seconds; unit fixtures are not panel timing samples"
+    }
+  },
+  "metrics": {
+    "primary": [
+      {
+        "id": "usable_relations",
+        "name": "usable_relations",
+        "unit": "count",
+        "kind": "counted",
+        "definition": "distinct nonzero source-group coefficient rows accepted per ordinary query; duplicate queries remain charged",
+        "source": "cells/*.json and summary.json",
+        "aggregation": "per_row",
+        "resolution": "native integer counter or clock ns",
+        "uncertainty": "none_exact"
+      },
+      {
+        "id": "rank",
+        "name": "rank",
+        "unit": "count",
+        "kind": "counted",
+        "definition": "rank over the exact prime subgroup order",
+        "source": "cells/*.json and summary.json",
+        "aggregation": "per_row",
+        "resolution": "native integer counter or clock ns",
+        "uncertainty": "none_exact"
+      }
+    ],
+    "secondary": [
+      {
+        "id": "pdp_ns_per_usable_relation",
+        "name": "pdp_ns_per_usable_relation",
+        "unit": "ns/relation",
+        "kind": "derived",
+        "definition": "total PDP wall including failed/time-limited attempts divided by accepted rows; null if denominator zero",
+        "source": "cells/*.json and summary.json",
+        "aggregation": "per_row",
+        "resolution": "native integer counter or clock ns",
+        "uncertainty": "range",
+        "formula": "sum(all attempted PDP wall_ns) / sum(usable_relations); null if zero denominator"
+      },
+      {
+        "id": "process_peak_rss",
+        "name": "process_peak_rss",
+        "unit": "KiB",
+        "kind": "counted",
+        "definition": "OS wait4 child peak RSS for complete or killed worker; includes interpreter and controls",
+        "source": "cells/*.json and summary.json",
+        "aggregation": "per_row",
+        "resolution": "native integer counter or clock ns",
+        "uncertainty": "none_exact"
+      },
+      {
+        "id": "rejection_rate",
+        "name": "rejection_rate",
+        "unit": "fraction",
+        "kind": "rate",
+        "definition": "coordinate candidates failing source-group lifting; null when no candidates",
+        "source": "cells/*.json and summary.json",
+        "aggregation": "per_row",
+        "resolution": "native integer counter or clock ns",
+        "uncertainty": "none_exact"
+      },
+      {
+        "id": "complete_collection_wall",
+        "name": "complete_collection_wall",
+        "unit": "ns",
+        "kind": "timed",
+        "definition": "query/PDP/lift/rank/recovery/audit/checkpoint interval; null unless full rank and scalar replay; no cold-end-to-end claim",
+        "source": "cells/*.json and summary.json",
+        "aggregation": "per_row",
+        "resolution": "native integer counter or clock ns",
+        "uncertainty": "range"
+      },
+      {
+        "id": "timeout_rate",
+        "name": "timeout_rate",
+        "unit": "fraction",
+        "kind": "rate",
+        "definition": "timed-out ordinary queries over attempted ordinary queries",
+        "source": "cells/*.json and summary.json",
+        "aggregation": "per_row",
+        "resolution": "native integer counter or clock ns",
+        "uncertainty": "none_exact"
+      }
+    ]
+  },
+  "measurement": {
+    "isolation_required": "tierD",
+    "warmups": 1,
+    "order": "randomized",
+    "clock": "monotonic",
+    "counters": [
+      "accepted rows",
+      "rejected coordinate tuples",
+      "rank",
+      "ru_maxrss",
+      "ru_utime",
+      "ru_stime"
+    ],
+    "record": [
+      "cpu_model",
+      "platform",
+      "allowed_cpus",
+      "selected_cpu",
+      "cgroup",
+      "isolation_receipt",
+      "source_sha256",
+      "worker rusage"
+    ],
+    "timed_primary_justification": null
+  },
+  "execution": {
+    "backend": "local",
+    "queue": null,
+    "placement": {
+      "threads": 1,
+      "selected_cpu": "minimum permitted affinity CPU",
+      "exclusive": false,
+      "gpu": false,
+      "admission": "pending; ordinary CPU option requires explicit user exception"
+    },
+    "measurement_class": "measurement",
+    "timeout_seconds": 7920,
+    "checkpoint": {
+      "policy": "application",
+      "interval_seconds": 60,
+      "grace_seconds": 5,
+      "restore_validation": "manifest_sha256",
+      "after_restore": {
+        "wall_time": "invalid",
+        "counted_units": "valid"
+      }
+    },
+    "retries": {
+      "infrastructure_only": true,
+      "max_attempts": 1
+    }
+  },
+  "stopping_rules": [
+    {
+      "kind": "fixed_n",
+      "rule": "fixed six source fields, up to two control families, two seeds, applicable arms only; <=132 collector cells",
+      "preregistered": true
+    },
+    {
+      "kind": "fixed_n",
+      "rule": "24 ordinary queries per collector or full rank/recovery first; 2-second complete PDP limit and 60-second child limit; retain censoring",
+      "preregistered": true
+    }
+  ],
+  "invalidation_rules": [
+    "wrong answers remain rows and do not enter accepted relations",
+    "planted-control miss is invalid/inconclusive, never negative yield evidence",
+    "ordinary-host clocks cannot establish a qualified speedup"
+  ],
+  "decision_rule": {
+    "text": "Report the per-arm observed data, A/A spread and censoring. No qualified timing advantage is decided without separate admitted isolation and independent verification.",
+    "comparison_ids": [
+      "C-representation"
+    ],
+    "threshold": "no winner selection in this descriptive pilot",
+    "statistic": "per-instance/seed observed phase totals, accepted counts, rank, peak RSS and censoring",
+    "interval": "no inferential interval claimed for unqualified host timings",
+    "multiple_comparison_correction": "none",
+    "effect_size_measure": "observed differences are descriptive, not a speedup verdict",
+    "verdict_vocabulary": [
+      "descriptive_only",
+      "inconclusive",
+      "invalid_measurement",
+      "censored",
+      "blocked"
+    ]
+  },
+  "analysis_plan": {
+    "script": {
+      "path": "experiments/curve-representation-controlled-20261118/analyze.py",
+      "sha256": "3bdfe092c3252f79ce76871e296d52cd5cebc0c0663257d814d3a6fa75a8de1d"
+    },
+    "inputs": [
+      "cells/*.json"
+    ],
+    "outputs": [
+      "summary.json"
+    ],
+    "blinded": false,
+    "frozen_before_data": true
+  },
+  "reporting": {
+    "export_schema": "experiment.export/v1",
+    "review_schema": "experiment.review/v1",
+    "graphs": [
+      "phase costs, accepted-row denominators, rejection/timeout and RSS by source size with A/A shown"
+    ],
+    "report_dir": "report"
+  },
+  "inadmissible": [
+    "changing seeds, base selection, solver, limits or workloads after affected data without a new version",
+    "treating a missing/zero denominator as zero cost",
+    "calling a timed-out or rank-deficient collection complete",
+    "calling ordinary-host timings a qualified speedup",
+    "treating cofactor-1 nonapplicable models as failed attacks",
+    "launching before actual user exception or normal checkpoint/host admission"
+  ],
+  "literature": [
+    {
+      "ref": "https://www.jstage.jst.go.jp/article/transfun/E102.A/9/E102.A_1061/_article/-char/en",
+      "provenance": "retrieved",
+      "claim": "model comparisons motivate controlled equation-system comparison; only publisher abstract accessible",
+      "verified_by": "producer source inspection, not signed independent PCC"
+    },
+    {
+      "ref": "https://christophe.petit.web.ulb.be/files/16PKC_primeECDLP.pdf",
+      "provenance": "retrieved",
+      "claim": "prime-field rational-map systems and limits; no practical improvement inferred",
+      "verified_by": "producer full-text inspection"
+    },
+    {
+      "ref": "https://www.degruyterbrill.com/document/doi/10.1515/jmc-2019-0029/html",
+      "provenance": "retrieved",
+      "claim": "conditional, method-specific solver lower-bound analysis; not a universal impossibility result",
+      "verified_by": "producer source inspection"
+    },
+    {
+      "ref": "https://github.com/isogeny-labs/cryptanalysis/pull/1728",
+      "provenance": "internal",
+      "claim": "earlier exploratory figures and timeout informed this design; not fresh panel evidence",
+      "verified_by": "producer inspection"
+    }
+  ],
+  "amendments": [],
+  "freeze": {
+    "status": "frozen",
+    "protocol_sha256": "d30f250e5d237c9e8bd399ebea313289aa08e803affd15a2e38facba33eae738",
+    "commit": "85c08cd198e983b22fe295647864428c455bd72e",
+    "frozen_at": "2026-11-18T07:20:13Z",
+    "filed_before_affected_data": true
+  }
+}

@@ -1,0 +1,64 @@
+failures: []
+
+ p     n_bits  seedsA seedsB | S_A mean | S_B mean | S_B/S_A paired mean [95% CI] | S_rho mean | S_A/rho | S_B/rho | wall A s | wall B s
+   271   24.2   6      6    |     4572 |     2602 | 0.563 [0.488,0.635] (n=6) | 1.47 |     4033 |     2166 |       5 |       3
+   523   27.1   6      6    |     3836 |     1806 | 0.470 [0.444,0.499] (n=6) | 1.30 |     3290 |     1552 |      12 |       6
+  1039   30.1   6      6    |     3267 |     1239 | 0.383 [0.346,0.417] (n=6) | 1.29 |     2595 |      994 |      28 |      10
+  2083   33.1   6      6    |     2969 |      908 | 0.312 [0.278,0.336] (n=6) | 1.65 |     2098 |      650 |      72 |      23
+  4159   36.1   6      6    |     2432 |      823 | 0.338 [0.328,0.351] (n=6) | 1.22 |     2353 |      793 |     166 |      58
+  8317   39.1   6      6    |     2130 |      735 | 0.345 [0.332,0.359] (n=6) | 1.50 |     1532 |      530 |     406 |     141
+ 16657   42.1   4      6    |     1823 |      638 | 0.349 [0.339,0.358] (n=4) | 2.02 |     1837 |      501 |     997 |     343
+
+[original4] sizes [271, 523, 1039, 2083]
+  exponent A: 0.432 [0.396,0.473] seeds=[1, 2, 3, 4]
+  exponent B: 0.335 [0.309,0.376] seeds=[1, 2, 3, 4]
+  paired B-A: -0.097 [-0.149,-0.054] seeds=[1, 2, 3, 4], B lower on 4/4
+
+[extended_all] sizes [271, 523, 1039, 2083, 4159, 8317, 16657]
+  exponent A: 0.426 [0.419,0.434] seeds=[1, 2, 3, 4]
+  exponent B: 0.390 [0.381,0.405] seeds=[1, 2, 3, 4]
+  paired B-A: -0.036 [-0.043,-0.029] seeds=[1, 2, 3, 4], B lower on 4/4
+
+[top4] sizes [2083, 4159, 8317, 16657]
+  exponent A: 0.418 [0.392,0.436] seeds=[1, 2, 3, 4]
+  exponent B: 0.439 [0.430,0.448] seeds=[1, 2, 3, 4]
+  paired B-A: 0.022 [0.005,0.048] seeds=[1, 2, 3, 4], B lower on 0/4
+
+[top3] sizes [4159, 8317, 16657]
+  exponent A: 0.431 [0.424,0.438] seeds=[1, 2, 3, 4]
+  exponent B: 0.445 [0.432,0.457] seeds=[1, 2, 3, 4]
+  paired B-A: 0.014 [0.004,0.020] seeds=[1, 2, 3, 4], B lower on 1/4
+
+[new_three_only] sizes [4159, 8317, 16657]
+  exponent A: 0.431 [0.424,0.438] seeds=[1, 2, 3, 4]
+  exponent B: 0.445 [0.432,0.457] seeds=[1, 2, 3, 4]
+  paired B-A: 0.014 [0.004,0.020] seeds=[1, 2, 3, 4], B lower on 1/4
+
+local slopes d log2 ops / d log2 n between consecutive sizes (mean over seeds with both cells)
+  A ['271-523: 0.410 (n=4)', '523-1039: 0.414 (n=4)', '1039-2083: 0.475 (n=4)', '2083-4159: 0.384 (n=4)', '4159-8317: 0.437 (n=4)', '8317-16657: 0.425 (n=4)']
+  B ['271-523: 0.338 (n=4)', '523-1039: 0.300 (n=4)', '1039-2083: 0.378 (n=4)', '2083-4159: 0.422 (n=4)', '4159-8317: 0.456 (n=4)', '8317-16657: 0.434 (n=4)']
+
+distance to rho, ratio of mean S over seeds / mean rho S (same seeds)
+  p=   271  A/rho     3113   B/rho     1772
+  p=   523  A/rho     2949   B/rho     1388
+  p=  1039  A/rho     2538   B/rho      963
+  p=  2083  A/rho     1800   B/rho      551
+  p=  4159  A/rho     1986   B/rho      672
+  p=  8317  A/rho     1421   B/rho      490
+  p= 16657  A/rho      904   B/rho      317
+
+S-accounting audit (per size, arm B and A means)
+  A p=   271 LA share of total_ops  0.02% (merge  0.00%)  wall us/charged-op: LA+harvest    0.323  relation-phase    0.264  ratio   1.22
+  A p=   523 LA share of total_ops  0.03% (merge  0.00%)  wall us/charged-op: LA+harvest    0.225  relation-phase    0.257  ratio   0.87
+  A p=  1039 LA share of total_ops  0.03% (merge  0.00%)  wall us/charged-op: LA+harvest    0.239  relation-phase    0.255  ratio   0.94
+  A p=  2083 LA share of total_ops  0.03% (merge  0.00%)  wall us/charged-op: LA+harvest    0.194  relation-phase    0.253  ratio   0.77
+  A p=  4159 LA share of total_ops  0.04% (merge  0.00%)  wall us/charged-op: LA+harvest    0.141  relation-phase    0.255  ratio   0.55
+  A p=  8317 LA share of total_ops  0.04% (merge  0.00%)  wall us/charged-op: LA+harvest    0.127  relation-phase    0.251  ratio   0.51
+  A p= 16657 LA share of total_ops  0.05% (merge  0.00%)  wall us/charged-op: LA+harvest    0.112  relation-phase    0.255  ratio   0.44
+  B p=   271 LA share of total_ops  0.04% (merge  0.01%)  wall us/charged-op: LA+harvest    0.184  relation-phase    0.257  ratio   0.72
+  B p=   523 LA share of total_ops  0.07% (merge  0.01%)  wall us/charged-op: LA+harvest    0.134  relation-phase    0.255  ratio   0.53
+  B p=  1039 LA share of total_ops  0.17% (merge  0.02%)  wall us/charged-op: LA+harvest    0.093  relation-phase    0.247  ratio   0.38
+  B p=  2083 LA share of total_ops  0.42% (merge  0.02%)  wall us/charged-op: LA+harvest    0.077  relation-phase    0.266  ratio   0.29
+  B p=  4159 LA share of total_ops  0.87% (merge  0.04%)  wall us/charged-op: LA+harvest    0.072  relation-phase    0.263  ratio   0.27
+  B p=  8317 LA share of total_ops  1.15% (merge  0.07%)  wall us/charged-op: LA+harvest    0.073  relation-phase    0.255  ratio   0.29
+  B p= 16657 LA share of total_ops  2.34% (merge  0.13%)  wall us/charged-op: LA+harvest    0.080  relation-phase    0.254  ratio   0.31

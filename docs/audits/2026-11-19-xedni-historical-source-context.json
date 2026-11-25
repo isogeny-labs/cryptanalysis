@@ -1,0 +1,47 @@
+{
+  "schema": "engineering.correctness-repair/v1",
+  "claim_status": "pcc:unverified",
+  "baseline_commit": "33f536a37f959fa2dc1201239cb1d32e45079f6a",
+  "failure_run": 44584942328,
+  "failure_job": 135775252004,
+  "defect": "A frozen source-bound receipt was checked against the evolving current Rust source rather than the receipt-declared source revision",
+  "scope": "Historical source binding only; current Rust implementation receives no new proof claim",
+  "source_commit": "545de2e1c91a301b342b45317f402be4497647ba",
+  "implementation": "Pin the original receipt bytes and commit; snapshot six exact inputs, retrieve three original Git blobs, verify receipt hashes, run the original native checker, and verify snapshot hashes after execution",
+  "frozen_artifacts_changed": false,
+  "baseline_native_checker": "Fails on changed current Rust hash",
+  "candidate_authentic_native_control": {
+    "schema": "lab.xedni-historical-context-native-control/v1",
+    "standing": "unverified",
+    "original_checker_on_current_Rust": {
+      "exit": 1,
+      "stderr": "proof check failed: suite/src/cryptanalysis/xedni_lift.rs: SHA-256 mismatch: 260df17994f6b2be3e75c3b45f75f12f6a1629d78d0b9762969e825d19b96fdd\n"
+    },
+    "candidate_dispatch": "passed actual unchanged Lean4.34.1 checker with original declared Git commit545de2e1c91a301b342b45317f402be4497647ba",
+    "proof_sha256": "c39148eaf547acb4f8ea7c752413a83946b43557181ef55da86ac3f5f466e757",
+    "current_root_all_six_inputs_unchanged": {
+      "research/xedni_lift_optimizer_20261101/lean/receipt.json": "061866fe58a06b0ed1e32efbf795a0d311360e2e14a3924c04e57b2f707396af",
+      "research/xedni_lift_optimizer_20261101/lean/XedniAffineCoset.lean": "c39148eaf547acb4f8ea7c752413a83946b43557181ef55da86ac3f5f466e757",
+      "research/xedni_lift_optimizer_20261101/lean/check.py": "2de54fd792c4664c9426f671f118faffd59c346fea31254fe18061fede261834",
+      "suite/src/cryptanalysis/xedni_lift.rs": "260df17994f6b2be3e75c3b45f75f12f6a1629d78d0b9762969e825d19b96fdd",
+      "suite/src/cryptanalysis/lattice.rs": "0687b6c0c20a61300023d96ac83de271adc0fc1e1a372114acd5ed7a83dd6c0b",
+      "lean-toolchain": "d5edba4e4b8faad9c1baeadb265716d20d03be4d1a2647dc5e35b0c0325bea7b"
+    },
+    "current_Rust_260df_hash_is_preserved": true,
+    "original_receipt_checker_and_Lean_unchanged": true,
+    "scope": "Historical source binding only; current Rust implementation receives no new proof claim"
+  },
+  "regression_controls": {
+    "result": "pass",
+    "tests": 159,
+    "log_sha256": "146b0dcde19f79912b5b06a572728df74b0bf69bebced9758cda4e96e8740c55",
+    "new_historical_context_controls": 10
+  },
+  "literature_and_source_review": [
+    "research/xedni_lift_optimizer_20261101/lean/check.py",
+    "research/xedni_lift_optimizer_20261101/lean/receipt.json",
+    "tools/lean/current-corpus-gate.py"
+  ],
+  "candidate_hosted_ci": "pending",
+  "performance_measurement": "none"
+}

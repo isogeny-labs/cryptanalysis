@@ -4,6 +4,7 @@
 //! ic bench --list                       what can be plugged in where
 //! ic bench --bits 16 --factor-base prime-abscissa:size=24 \
 //!          --oracle mitm:negation_folded=1 --targets walk
+//! ic bench --fp2-bits 20 --factor-base fp2-subfield --oracle fp2-weil
 //! ic bench --sweep sweep.json --out docs/ic/runs/sweep-YYYY-MM-DD.json
 //! ```
 //!
@@ -24,14 +25,19 @@ use crate::cryptanalysis::ic_boundary::{
     BinaryGroup, BinaryInstance, Calibration, CountedGroup, GroupOps, PinOutcome, PrimeCurve,
     PrimeInstance, RhoResult,
 };
+use crate::cryptanalysis::ic_fp2::{
+    calibrate_fp_units, find_fp2_curve, Fp2Curve, Fp2Instance, Fp2SubfieldBase, Fp2WeilOracle,
+};
 use crate::cryptanalysis::ic_framework::affine::AffineS3Oracle;
 use crate::cryptanalysis::ic_framework::batch_mitm::BinaryBatchMitmOracle;
+use crate::cryptanalysis::ic_framework::rep_join::RepJoinOracle;
 use crate::cryptanalysis::ic_framework::hashed::{HashedAffineBase, HashedTensorOracle};
 use crate::cryptanalysis::ic_framework::linalg::MATRIX_NAMES;
 use crate::cryptanalysis::ic_framework::plugins::{
     BinarySubspaceBase, DescentAlgebraicOracle, FrobeniusMitmOracle, KoblitzOrbitBase, MitmOracle,
     PrimeAbscissaBase, SubtractOracle,
 };
+use crate::cryptanalysis::ic_framework::prime_batch_mitm::PrimeBatchMitmOracle;
 use crate::cryptanalysis::ic_framework::solvers::{
     solver_by_name, solver_registry, validate_solver_params,
 };
@@ -55,6 +61,10 @@ pub struct BenchArgs {
     /// Koblitz instance of this field degree.
     #[arg(long)]
     pub koblitz_degree: Option<u32>,
+    /// `F_{p²}` instance whose prime-order subgroup has about this many
+    /// bits (`p ≈ 2^{bits/2}`, random curve not defined over `F_p`).
+    #[arg(long)]
+    pub fp2_bits: Option<u32>,
     /// Largest cofactor a random binary curve may have.  The boundary
     /// ladders use 8, so `S = ops / sqrt(r)` is taken over a subgroup
     /// close to the whole group, as on every ledger row; a larger bound
@@ -91,6 +101,12 @@ pub struct BenchArgs {
     /// averaged into the `vs rho` column; 0 leaves the column empty.
     #[arg(long, default_value_t = 16)]
     pub rho_runs: usize,
+    /// Threads for the relation phase (and the matched rho runs); 0 is
+    /// every available core.  Wall time only: every count, row, `S` and
+    /// recovered logarithm are those of `--threads 1`.  An oracle that
+    /// cannot fork stays serial.
+    #[arg(long, default_value_t = 1)]
+    pub threads: usize,
     /// A JSON file of configurations to sweep.  See the framework
     /// documentation for the schema.
     #[arg(long)]
@@ -144,6 +160,8 @@ fn listing() -> Value {
                         {"name": "steps", "means": "enumeration and per-target contraction budget in charged primitive steps"}]},
                     {"name": "binary-subspace", "regimes": ["char2", "koblitz"],
                      "parameters": [{"name": "dimension", "means": "F_2-dimension of the abscissa subspace"}]},
+                    {"name": "fp2-subfield", "regimes": ["fp2"],
+                     "parameters": [{"name": "size", "means": "abscissae in F_p in the base, smallest x0 first; default all (about p/2)"}]},
                     {"name": "koblitz-orbit", "regimes": ["koblitz"],
                      "parameters": [
                         {"name": "divisor", "means": "comma-separated factor indices selecting the Frobenius-invariant subspace"},
@@ -157,6 +175,10 @@ fn listing() -> Value {
                 "plugins": [
                     {"name": "random", "means": "a fresh [a]G + [b]Q per trial: two scalar multiplications"},
                     {"name": "walk", "means": "an r-adding walk: one addition per trial, with a repeat guard"},
+                    {"name": "walk-batch16", "means": "sixteen walk lanes stepped together with one shared inversion; native pair addition where the group has it"},
+                    {"name": "walk-batch16-scalar", "means": "the same sixteen lanes added one at a time: the control for walk-batch16"},
+                    {"name": "walk-batch16-vector", "means": "sixteen lanes with the vector pair formulas after the shared inverse"},
+                    {"name": "walk-batch16-vector-inverse", "means": "sixteen lanes with a vectorised shared inverse as well"},
                 ],
             },
             {
@@ -164,14 +186,28 @@ fn listing() -> Value {
                 "trait": "DecompositionOracle",
                 "what_it_chooses": "how a target is written as a sum of factor-base points",
                 "plugins": [
-                    {"name": "subtract", "summands": 2, "regimes": ["prime", "char2", "koblitz"],
+                    {"name": "subtract", "summands": 2, "regimes": ["prime", "char2", "koblitz", "fp2"],
                      "parameters": []},
                     {"name": "subtract-binary-batch", "summands": 2, "regimes": ["char2", "koblitz"],
                      "parameters": [{"name": "block", "means": "batch size 1..4096, default 32"},
                                     {"name": "lazy", "means": "1 (default) to finish only candidate ordinates; 0 for full batch"}]},
-                    {"name": "mitm", "summands": "2 or 3", "regimes": ["prime", "char2", "koblitz"],
+                    {"name": "mitm", "summands": "2 or 3", "regimes": ["prime", "char2", "koblitz", "fp2"],
                      "parameters": [{"name": "native_setup_pricing", "means": "0 or1, default0; whole native setup with observed arithmetic diagnostics"},{"name": "negation_folded", "means": "1 to halve the table's additions"},
+                                    {"name": "coset_filter", "means": "1 to build only the pairs whose coset classes in E/<G> cancel (m = 2, cofactor > 1); cofactor 2 reads the class from Tr(x) = Tr(a) for free"},
                                     {"name": "m", "means": "summands, 2 or 3"}]},
+                    {"name": "mitm-prime-batched", "summands": "2 or 3", "regimes": ["prime"],
+                     "parameters": [{"name": "m", "means": "summands, 2 or 3"},
+                                    {"name": "negation_folded", "means": "1 (default) to charge the folded build's additions, 0 the full build's; same table either way"},
+                                    {"name": "native_setup_pricing", "means": "1 (default) charges the batched preparation as measured nanoseconds; 0 charges the scalar build's additions"},
+                                    {"name": "native_probe_pricing", "means": "1 (default) charges m = 3 candidate arithmetic as measured nanoseconds; 0 charges one addition per candidate point"},
+                                    {"name": "chunk", "means": "pairs per batched inversion while preparing, default 1024"},
+                                    {"name": "probe_chunk", "means": "abscissae per batched inversion while probing at m = 3, default 16"}],
+                     "needs": "the mitm pair table (same entries and witnesses) prepared with one inversion per abscissa pair and Montgomery batch inversion; lookups and hit verification stay counted as for mitm"},
+                    {"name": "rep-join", "summands": "2..9", "regimes": ["prime", "char2", "koblitz", "fp2"],
+                     "parameters": [{"name": "m", "means": "summands, 2..=9"},
+                                    {"name": "filter_bits", "means": "d in 0..=32: pair sums kept only when their abscissa hash lies in a 2^-d subset (the representation filter); 0 = plain MITM at m"},
+                                    {"name": "filter_seed", "means": "filter hash seed, default 1"}],
+                     "needs": "generic: the (m-2)-tuple search is exhaustive, so the filter saves memory and lookups, never additions (Delaplace-May 2019 without the summation-polynomial enumeration)"},
                     {"name": "hashed-tensor", "summands": "2..8", "regimes": ["prime"],
                      "parameters": [
                         {"name": "slots", "means": "independent affine-hashed slot bases, 2..=8; must match hashed-affine"},
@@ -180,17 +216,21 @@ fn listing() -> Value {
                         {"name": "s", "means": "shared hash prime; must match hashed-affine"},
                         {"name": "steps", "means": "per-target contraction budget in charged primitive steps"}],
                      "needs": "hashed-affine with identical slots, seed, tau and s; contraction primitive steps are uncalibrated, so do not read S as a priced end-to-end cost"},
+                    {"name": "fp2-weil", "summands": 2, "regimes": ["fp2"],
+                     "parameters": [],
+                     "needs": "fp2-subfield: Gaudry/Diem n = 2, the Weil restriction of S3(x1, x2, x_R) over F_p in (x1 + x2, x1 x2), roots by gcd(g, X^p - X) and Cantor-Zassenhaus; F_p multiplications, inversions and square roots counted and priced at this host's measured F_p units"},
                     {"name": "mitm-frobenius", "summands": "2 or 3", "regimes": ["koblitz"],
-                     "parameters": [{"name": "m", "means": "summands, 2 or 3"}]},
+                     "parameters": [{"name": "m", "means": "summands, 2 or 3"},
+                                    {"name": "coset_filter", "means": "1 to build only the representative-point pairs whose coset classes in E/<G> cancel (m = 2, cofactor > 1)"}]},
                     {"name": "mitm-batched", "summands": "2", "regimes": ["char2", "koblitz"],
-                     "parameters": [{"name":"vector_prepare","means":"0 scalar default,1 vector,2 vector with packed squaring <=32 bits; guarded AVX2/PCLMUL, exact fallback"},{"name":"scalar_prepare","means":"0 or1, default0; original preparation, fixed-m2 queries"},{"name":"adaptive_prepare","means":"0 or1, default0; scalar at <=64 abscissae, cached above"},{"name":"prefix_inverse_cache","means":"0 or1, default0; bounded inverse reuse, generic fallback"},{"name":"x_only","means":"0 or1, default0; abscissa-only preparation"},{"name":"batch_size","means":"1..=65536, default1024; ordered batch preparation"}]},
+                     "parameters": [{"name":"vector_prepare","means":"0 scalar default,1 vector,2 vector with packed squaring <=32 bits; guarded AVX2/PCLMUL, exact fallback"},{"name":"scalar_prepare","means":"0 or1, default0; original preparation, fixed-m2 queries"},{"name":"adaptive_prepare","means":"0 or1, default0; scalar at <=64 abscissae, cached above"},{"name":"prefix_inverse_cache","means":"0 or1, default0; bounded inverse reuse, generic fallback"},{"name":"x_only","means":"0 or1, default0; abscissa-only preparation"},{"name":"batch_size","means":"1..=65536, default1024; ordered batch preparation"},{"name":"suppress_indexed_counter","means":"0 default or1; setup-state experiment omitting only the indexed-pair metadata entry"}]},
                     {"name": "affine-s3", "summands": "2", "regimes": ["char2", "koblitz"],
                      "parameters": [{"name":"max_residual","means":"0..20, default12; complete subtraction fallback beyond it"},
                                     {"name":"column_solver","means":"0 or1, default0; direct projected column elimination"},
                                     {"name":"inverse_cache","means":"0 or1, default0; prefix inverse-square preparation"}],
                      "needs":"a subspace factor base; native affine projection and exact signed lifts"},
-                    {"name": "descent-algebraic", "summands": "2 or 3", "regimes": ["char2", "koblitz"],
-                     "parameters": [{"name": "m", "means": "summands, 2 (descends S3) or 3 (descends S4)"}],
+                    {"name": "descent-algebraic", "summands": "2, 3 or 4", "regimes": ["char2", "koblitz"],
+                     "parameters": [{"name": "m", "means": "summands, 2 (descends S3), 3 (descends S4) or 4 (balanced split of S5)"},{"name": "inter_dim", "means": "m = 4 only: dimension of the subspace span(1..z^(l-1)) the two intermediates are restricted to (the representation filter); default n"}],
                      "needs": "a subspace factor base (binary-subspace or koblitz-orbit) and --solver"},
                 ],
             },
@@ -296,27 +336,52 @@ struct RhoReference {
 /// logarithms.  `walk(target, planted, seed, max_steps)` runs one; the
 /// seeds and targets are the same for every walk, so two references on
 /// one instance are paired.
-fn rho_reference_for<G: CountedGroup>(
+///
+/// The runs are independent (each has its own seed and target), so with
+/// `threads > 1` they run concurrently and are collected in run order:
+/// the reference is the serial one, sooner.
+#[allow(clippy::too_many_arguments)]
+fn rho_reference_for<G: CountedGroup + Sync>(
     g: &G,
     generator: G::Elt,
     r: u64,
     seed: u64,
     repeats: usize,
     runs: usize,
-    mut walk: impl FnMut(G::Elt, u64, u64, u64) -> RhoResult,
-) -> Option<RhoReference> {
+    threads: usize,
+    walk: impl Fn(G::Elt, u64, u64, u64) -> RhoResult + Sync,
+) -> Option<RhoReference>
+where
+    G::Elt: Send + Sync,
+{
+    use rayon::prelude::*;
     if runs == 0 || r < 3 {
         return None;
     }
     let max_steps = (generic_floor_ops(r as f64, 1.0) * 64.0) as u64 + 4096;
-    let mut per_run = Vec::with_capacity(runs);
-    let (mut method, mut automorphisms) = (String::new(), 1);
-    for k in 0..runs {
+    let one = |k: usize| {
         let planted = planted_log(seed, k % repeats.max(1), r);
         let mut ops = GroupOps::default();
         let target = g.mul(&mut ops, generator, planted);
         let run_seed = seed ^ (0x5248_4F00 + k as u64);
-        let res = walk(target, planted, run_seed, max_steps);
+        (
+            planted,
+            run_seed,
+            walk(target, planted, run_seed, max_steps),
+        )
+    };
+    let results: Vec<(u64, u64, RhoResult)> = if threads > 1 {
+        rayon::ThreadPoolBuilder::new()
+            .num_threads(threads)
+            .build()
+            .map(|pool| pool.install(|| (0..runs).into_par_iter().map(one).collect()))
+            .unwrap_or_else(|_| (0..runs).map(one).collect())
+    } else {
+        (0..runs).map(one).collect()
+    };
+    let mut per_run = Vec::with_capacity(runs);
+    let (mut method, mut automorphisms) = (String::new(), 1);
+    for (planted, run_seed, res) in results {
         method = res.method.clone();
         automorphisms = res.automorphisms;
         per_run.push(RhoRun {
@@ -364,30 +429,65 @@ struct RhoReferences {
 /// `S`, because on toy subgroups the signed walk's set-up (thirty-two
 /// parallel walks started by scalar multiplications) outweighs what
 /// the Frobenius saves.  The plain walk rides along as the before mark.
-fn matched_rho(instance: &Instance, seed: u64, repeats: usize, runs: usize) -> RhoReferences {
+fn matched_rho(
+    instance: &Instance,
+    seed: u64,
+    repeats: usize,
+    runs: usize,
+    threads: usize,
+) -> RhoReferences {
     match instance {
         Instance::Prime(i) => {
             let (g, gen, r) = (&i.curve, i.generator_point(), i.r);
             RhoReferences {
-                matched: rho_reference_for(g, gen, r, seed, repeats, runs, |t, _, s, cap| {
+                matched: rho_reference_for(
+                    g,
+                    gen,
+                    r,
+                    seed,
+                    repeats,
+                    runs,
+                    threads,
+                    |t, _, s, cap| rho_reference_negation(g, gen, t, r, s, cap),
+                ),
+                plain: rho_reference_for(
+                    g,
+                    gen,
+                    r,
+                    seed,
+                    repeats,
+                    runs,
+                    threads,
+                    |t, _, s, cap| rho_reference(g, gen, t, r, s, cap),
+                ),
+                candidates: Vec::new(),
+                rule: "negation map (A = 2): the only eligible automorphism of this curve",
+            }
+        }
+        Instance::Fp2(i) => {
+            let (g, gen, r) = (&i.curve, i.generator, i.r);
+            RhoReferences {
+                matched: rho_reference_for(g, gen, r, seed, repeats, runs, threads, |t, _, s, cap| {
                     rho_reference_negation(g, gen, t, r, s, cap)
                 }),
-                plain: rho_reference_for(g, gen, r, seed, repeats, runs, |t, _, s, cap| {
+                plain: rho_reference_for(g, gen, r, seed, repeats, runs, threads, |t, _, s, cap| {
                     rho_reference(g, gen, t, r, s, cap)
                 }),
                 candidates: Vec::new(),
-                rule: "negation map (A = 2): the only eligible automorphism of this curve",
+                rule: "negation map (A = 2): a generic curve over F_{p^2} not defined over F_p, so no Frobenius endomorphism acts on it; the negation is the only eligible automorphism",
             }
         }
         Instance::Binary(i) => {
             let bg = BinaryGroup(&i.fast);
             let (gen, r) = (i.generator, i.r);
-            let negation = rho_reference_for(&bg, gen, r, seed, repeats, runs, |t, _, s, cap| {
-                rho_reference_negation(&bg, gen, t, r, s, cap)
-            });
-            let plain = rho_reference_for(&bg, gen, r, seed, repeats, runs, |t, _, s, cap| {
-                rho_reference(&bg, gen, t, r, s, cap)
-            });
+            let negation =
+                rho_reference_for(&bg, gen, r, seed, repeats, runs, threads, |t, _, s, cap| {
+                    rho_reference_negation(&bg, gen, t, r, s, cap)
+                });
+            let plain =
+                rho_reference_for(&bg, gen, r, seed, repeats, runs, threads, |t, _, s, cap| {
+                    rho_reference(&bg, gen, t, r, s, cap)
+                });
             if i.koblitz.is_none() {
                 return RhoReferences {
                     matched: negation,
@@ -396,10 +496,19 @@ fn matched_rho(instance: &Instance, seed: u64, repeats: usize, runs: usize) -> R
                     rule: "negation map (A = 2): the only eligible automorphism of this curve",
                 };
             }
-            let signed = rho_reference_for(&bg, gen, r, seed, repeats, runs, |t, planted, s, _| {
-                signed_frobenius_rho(i, t, planted, s)
-                    .expect("a Koblitz instance carries its curve")
-            });
+            let signed = rho_reference_for(
+                &bg,
+                gen,
+                r,
+                seed,
+                repeats,
+                runs,
+                threads,
+                |t, planted, s, _| {
+                    signed_frobenius_rho(i, t, planted, s)
+                        .expect("a Koblitz instance carries its curve")
+                },
+            );
             let mut candidates: Vec<RhoReference> = signed.into_iter().chain(negation).collect();
             // The cheaper of the eligible walks, among those that verified.
             let best = candidates
@@ -462,13 +571,17 @@ fn run_prime(
         let mut subtract = SubtractOracle;
         let mut mitm = MitmOracle::new(m);
         let mut hashed = HashedTensorOracle::new();
+        let mut prime_batched = PrimeBatchMitmOracle::new(m);
+        let mut rep_join = RepJoinOracle::new(m);
         let oracle: &mut dyn DecompositionOracle<_> = match or_name {
             "subtract" => &mut subtract,
             "mitm" => &mut mitm,
+            "mitm-prime-batched" => &mut prime_batched,
+            "rep-join" => &mut rep_join,
             "hashed-tensor" => &mut hashed,
             other => {
                 return Err(format!(
-                    "oracle `{other}` is not available on a prime-field curve; try subtract, mitm or hashed-tensor"
+                    "oracle `{other}` is not available on a prime-field curve; try subtract, mitm, rep-join or hashed-tensor"
                 ))
             }
         };
@@ -520,11 +633,13 @@ fn run_binary(
         spec.seed = spec.seed.wrapping_add(rep as u64 * 0x9E37);
         let m = spec.oracle_params.u64_or("m", 2)? as u32;
         let mut subtract = SubtractOracle;
-        let mut subtract_binary = crate::cryptanalysis::ic_framework::binary_subtract::BinarySubtractOracle::new();
+        let mut subtract_binary =
+            crate::cryptanalysis::ic_framework::binary_subtract::BinarySubtractOracle::new();
         let mut mitm = MitmOracle::new(m);
         let mut frob = FrobeniusMitmOracle::new(m, inst);
         let mut affine = AffineS3Oracle::new(inst);
         let mut batch_mitm = BinaryBatchMitmOracle::default();
+        let mut rep_join = RepJoinOracle::new(m);
         let mut algebraic = match or_name {
             "descent-algebraic" => {
                 let raw = spec.solver.as_deref().ok_or(
@@ -550,8 +665,69 @@ fn run_binary(
             "mitm-frobenius" => &mut frob,
             "affine-s3" => &mut affine,
             "mitm-batched" => &mut batch_mitm,
+            "rep-join" => &mut rep_join,
             "descent-algebraic" => algebraic.as_mut().expect("built above"),
             other => return Err(format!("oracle `{other}` is not available here")),
+        };
+        out.push(run_pipeline(
+            &ctx, &spec, base, oracle, planted, calib, rho_s,
+        )?);
+    }
+    Ok(out)
+}
+
+/// One `F_{p²}` configuration, over `repeats` targets.
+fn run_fp2(
+    inst: &Fp2Instance,
+    spec: &PipelineSpec,
+    args: &BenchArgs,
+    calib: &Calibration,
+    rho_s: Option<f64>,
+) -> Result<Vec<RunReport>, String> {
+    let fb_name = spec.factor_base.as_str();
+    let or_name = spec.oracle.as_str();
+    let subfield = Fp2SubfieldBase { instance: inst };
+    let base: &dyn FactorBaseBuilder<Fp2Curve> = match fb_name {
+        "fp2-subfield" => &subfield,
+        other => {
+            return Err(format!(
+                "factor base `{other}` is not available on an F_{{p^2}} curve; try fp2-subfield"
+            ))
+        }
+    };
+    let mut out = Vec::new();
+    for rep in 0..args.repeats.max(1) {
+        let mut ops = GroupOps::default();
+        let g = inst.generator;
+        let planted = planted_log(spec.seed, rep, inst.r);
+        let q = inst.curve.mul(&mut ops, g, planted);
+        let ctx = InstanceCtx {
+            group: &inst.curve,
+            generator: g,
+            target: q,
+            r: inst.r,
+            cofactor: inst.cofactor,
+            group_order: inst.group_order,
+            name: inst.name.clone(),
+            field_degree: None,
+        };
+        let mut spec = spec.clone();
+        spec.seed = spec.seed.wrapping_add(rep as u64 * 0x9E37);
+        let m = spec.oracle_params.u64_or("m", 2)? as u32;
+        let mut subtract = SubtractOracle;
+        let mut mitm = MitmOracle::new(m);
+        let mut rep_join = RepJoinOracle::new(m);
+        let mut weil = Fp2WeilOracle::new(inst);
+        let oracle: &mut dyn DecompositionOracle<_> = match or_name {
+            "subtract" => &mut subtract,
+            "mitm" => &mut mitm,
+            "rep-join" => &mut rep_join,
+            "fp2-weil" => &mut weil,
+            other => {
+                return Err(format!(
+                    "oracle `{other}` is not available on an F_{{p^2}} curve; try subtract, mitm, rep-join or fp2-weil"
+                ))
+            }
         };
         out.push(run_pipeline(
             &ctx, &spec, base, oracle, planted, calib, rho_s,
@@ -565,6 +741,7 @@ fn run_binary(
 enum Instance {
     Prime(PrimeInstance),
     Binary(Box<BinaryInstance>),
+    Fp2(Fp2Instance),
 }
 
 impl Instance {
@@ -572,6 +749,7 @@ impl Instance {
         match self {
             Instance::Prime(i) => &i.name,
             Instance::Binary(i) => &i.name,
+            Instance::Fp2(i) => &i.name,
         }
     }
 }
@@ -665,29 +843,322 @@ fn spec_from(
         max_trials: defaults.max_trials,
         seed: defaults.seed,
         solver_budget_seconds: defaults.solver_budget_seconds,
+        threads: resolve_threads(defaults.threads),
     })
+}
+
+// ── Checking a configuration before any work ───────────────────────
+
+/// Edit distance, for "did you mean".
+fn edit_distance(a: &str, b: &str) -> usize {
+    let b: Vec<char> = b.chars().collect();
+    let mut row: Vec<usize> = (0..=b.len()).collect();
+    for (i, ca) in a.chars().enumerate() {
+        let mut prev = row[0];
+        row[0] = i + 1;
+        for (j, &cb) in b.iter().enumerate() {
+            let cur = row[j + 1];
+            row[j + 1] = (prev + usize::from(ca != cb)).min(row[j] + 1).min(cur + 1);
+            prev = cur;
+        }
+    }
+    row[b.len()]
+}
+
+/// The closest of `candidates` to `word`, when it is close enough to be a typo.
+fn did_you_mean<'a>(word: &str, candidates: impl IntoIterator<Item = &'a str>) -> Option<&'a str> {
+    let limit = (word.chars().count() / 3).max(2);
+    candidates
+        .into_iter()
+        .map(|c| (edit_distance(word, c), c))
+        .filter(|(d, _)| *d <= limit)
+        .min_by_key(|(d, _)| *d)
+        .map(|(_, c)| c)
+}
+
+fn hint(word: &str, candidates: &[&str]) -> String {
+    match did_you_mean(word, candidates.iter().copied()) {
+        Some(c) => format!("; did you mean `{c}`?"),
+        None => format!("; choose one of {}", candidates.join(", ")),
+    }
+}
+
+/// What checking a configuration up front found.
+#[derive(Debug, Default, PartialEq)]
+struct Checked {
+    /// The configuration cannot mean anything: a misspelt name or key, a
+    /// summand count the oracle does not take.  Fatal before any work.
+    errors: Vec<String>,
+    /// Real plug-ins that do not apply to this regime.  Fatal for a
+    /// single configuration; a sweep matrix reports them as skipped.
+    inapplicable: Vec<String>,
+    /// Keys the catalogue does not declare and nothing resembles: passed
+    /// through to the plug-in, which may read them, with a note.
+    warnings: Vec<String>,
+}
+
+/// Summand counts a catalogue entry admits: `2`, `"2"`, `"2 or 3"`, `"2..8"`.
+fn summand_range(v: &Value) -> Option<(u64, u64)> {
+    if let Some(n) = v.as_u64() {
+        return Some((n, n));
+    }
+    let s = v.as_str()?.replace(' ', "");
+    if let Some((a, b)) = s.split_once("..") {
+        return Some((
+            a.trim_start_matches('=').parse().ok()?,
+            b.trim_start_matches('=').parse().ok()?,
+        ));
+    }
+    if let Some((a, b)) = s.split_once("or") {
+        return Some((a.parse().ok()?, b.parse().ok()?));
+    }
+    let n = s.parse().ok()?;
+    Some((n, n))
+}
+
+/// Check one stage's plug-in against the catalogue: its name, regime and
+/// parameter keys.  Returns the catalogue entry when the name is known.
+fn check_plugin<'c>(
+    stage_label: &str,
+    flag: &str,
+    name: &str,
+    params: &Params,
+    regime: &str,
+    entries: &'c [Value],
+    implicit: &[&str],
+    out: &mut Checked,
+) -> Option<&'c Value> {
+    let names: Vec<&str> = entries.iter().filter_map(|e| e["name"].as_str()).collect();
+    let Some(entry) = entries.iter().find(|e| e["name"] == name) else {
+        out.errors.push(format!(
+            "unknown {stage_label} `{name}` ({flag}){}",
+            hint(name, &names)
+        ));
+        return None;
+    };
+    if let Some(regimes) = entry["regimes"].as_array() {
+        if !regimes.iter().any(|r| r == regime) {
+            let here: Vec<&str> = entries
+                .iter()
+                .filter(|e| {
+                    e["regimes"]
+                        .as_array()
+                        .is_some_and(|rs| rs.iter().any(|r| r == regime))
+                })
+                .filter_map(|e| e["name"].as_str())
+                .collect();
+            let on: Vec<&str> = regimes.iter().filter_map(|r| r.as_str()).collect();
+            out.inapplicable.push(format!(
+                "{stage_label} `{name}` runs on {} curves, not {regime}; on {regime} use {}",
+                on.join("/"),
+                here.join(", ")
+            ));
+        }
+    }
+    let mut declared: Vec<&str> = entry["parameters"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .filter_map(|p| p["name"].as_str())
+        .collect();
+    for k in implicit {
+        if !declared.contains(k) {
+            declared.push(k);
+        }
+    }
+    for key in params.0.keys() {
+        if declared.contains(&key.as_str()) {
+            continue;
+        }
+        match did_you_mean(key, declared.iter().copied()) {
+            Some(c) => out.errors.push(format!(
+                "{stage_label} `{name}` has no parameter `{key}`; did you mean `{c}`?"
+            )),
+            None => out.warnings.push(format!(
+                "{stage_label} `{name}` does not declare `{key}` (declared: {}); passing it through",
+                if declared.is_empty() { "none".to_string() } else { declared.join(", ") }
+            )),
+        }
+    }
+    Some(entry)
+}
+
+/// Check a whole configuration against `ic bench --list`, the regime and
+/// the CLI defaults.  Nothing is built or run.
+fn check_config(
+    cfg: &std::collections::BTreeMap<String, String>,
+    args: &BenchArgs,
+    regime: &str,
+    catalogue: &Value,
+) -> Checked {
+    let mut out = Checked::default();
+    let stage = |name: &str| -> Vec<Value> {
+        catalogue["stages"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .find(|s| s["stage"] == name)
+            .and_then(|s| s["plugins"].as_array().cloned())
+            .unwrap_or_default()
+    };
+    for key in cfg.keys() {
+        const KEYS: &[&str] = &["factor_base", "oracle", "targets", "solver", "linalg"];
+        if !KEYS.contains(&key.as_str()) {
+            out.errors.push(format!(
+                "configuration key `{key}` is not one of {}{}",
+                KEYS.join(", "),
+                hint(key, KEYS)
+                    .split(';')
+                    .next_back()
+                    .map(|h| format!(";{h}"))
+                    .unwrap_or_default()
+            ));
+        }
+    }
+    let fb = cfg.get("factor_base").or(args.factor_base.as_ref());
+    let or = cfg.get("oracle").or(args.oracle.as_ref());
+    match fb {
+        None => out.errors.push(
+            "no factor base: pass --factor-base NAME[:k=v,...] (ic bench --list shows them)".into(),
+        ),
+        Some(raw) => match parse_plugin(raw) {
+            Err(e) => out.errors.push(format!("--factor-base `{raw}`: {e}")),
+            Ok((name, params)) => {
+                check_plugin(
+                    "factor base",
+                    "--factor-base",
+                    &name,
+                    &params,
+                    regime,
+                    &stage("factor base"),
+                    &[],
+                    &mut out,
+                );
+            }
+        },
+    }
+    match or {
+        None => out.errors.push(
+            "no decomposition oracle: pass --oracle NAME[:k=v,...] (ic bench --list shows them)"
+                .into(),
+        ),
+        Some(raw) => match parse_plugin(raw) {
+            Err(e) => out.errors.push(format!("--oracle `{raw}`: {e}")),
+            Ok((name, params)) => {
+                let entries = stage("point decomposition");
+                // Every oracle may be given `m`: the runner reads it for all of them.
+                if let Some(entry) = check_plugin(
+                    "oracle",
+                    "--oracle",
+                    &name,
+                    &params,
+                    regime,
+                    &entries,
+                    &["m"],
+                    &mut out,
+                ) {
+                    if let Some(raw_m) = params.get("m") {
+                        match raw_m.parse::<u64>() {
+                            Err(_) => out
+                                .errors
+                                .push(format!("oracle `{name}`: m = `{raw_m}` is not a number")),
+                            Ok(m) => {
+                                if let Some((lo, hi)) = summand_range(&entry["summands"]) {
+                                    if m < lo || m > hi {
+                                        let takes = if lo == hi {
+                                            format!("m = {lo}")
+                                        } else if hi == lo + 1 {
+                                            format!("m = {lo} or {hi}")
+                                        } else {
+                                            format!("m = {lo}..{hi}")
+                                        };
+                                        out.errors.push(format!(
+                                            "oracle `{name}` takes {takes}, not m = {m}"
+                                        ));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    let algebraic = entry["needs"]
+                        .as_str()
+                        .is_some_and(|n| n.contains("--solver"));
+                    let solver = cfg.get("solver").or(args.solver.as_ref());
+                    if algebraic && solver.is_none() {
+                        out.errors.push(format!("oracle `{name}` needs --solver NAME (ic bench --list shows the engines)"));
+                    }
+                    if !algebraic
+                        && solver.is_some()
+                        && cfg.get("solver").is_none()
+                        && args.sweep.is_none()
+                    {
+                        out.warnings.push(format!(
+                            "oracle `{name}` solves no polynomial system; --solver is ignored"
+                        ));
+                    }
+                }
+            }
+        },
+    }
+    let tg = cfg.get("targets").unwrap_or(&args.targets);
+    if Targets::parse(tg).is_err() {
+        const TARGETS: &[&str] = &[
+            "random",
+            "walk",
+            "walk-batch16",
+            "walk-batch16-scalar",
+            "walk-batch16-vector",
+            "walk-batch16-vector-inverse",
+        ];
+        out.errors.push(format!(
+            "unknown target source `{tg}` (--targets){}",
+            hint(tg, TARGETS)
+        ));
+    }
+    let la = cfg.get("linalg").unwrap_or(&args.linalg);
+    let matrices: Vec<&str> = MATRIX_NAMES.iter().map(|(n, _)| *n).collect();
+    if !la.is_empty() && !matrices.contains(&la.as_str()) {
+        out.errors.push(format!(
+            "unknown relation matrix `{la}` (--linalg){}",
+            hint(la, &matrices)
+        ));
+    }
+    if let Some(raw) = cfg.get("solver").or(args.solver.as_ref()) {
+        if let Ok((name, _)) = parse_plugin(raw) {
+            if solver_by_name(&name).is_err() {
+                let names: Vec<String> = solver_registry()
+                    .iter()
+                    .map(|s| s.name().to_string())
+                    .collect();
+                let refs: Vec<&str> = names.iter().map(|s| s.as_str()).collect();
+                out.errors.push(format!(
+                    "unknown solver `{name}` (--solver){}",
+                    hint(&name, &refs)
+                ));
+            }
+        }
+    }
+    out
+}
+
+/// `--threads 0` is every core this process may run on.
+fn resolve_threads(threads: usize) -> usize {
+    if threads == 0 {
+        std::thread::available_parallelism().map_or(1, |n| n.get())
+    } else {
+        threads
+    }
 }
 
 pub fn run(args: BenchArgs, json_only: bool) -> Result<Value, String> {
     if args.list {
         let l = listing();
-        if !json_only {
-            eprintln!("{}", serde_json::to_string_pretty(&l).unwrap_or_default());
-        }
         return Ok(json!({
             "schema_version": 1,
             "operation": "bench-list",
             "status": "complete",
             "registry": l,
         }));
-    }
-
-    // Validate the solver name up front, so a typo fails before a long
-    // run rather than after it.
-    if let Some(name) = &args.solver {
-        let (n, params) = parse_plugin(name)?;
-        solver_by_name(&n)?;
-        validate_solver_params(&n, &params)?;
     }
 
     // Either a sweep file or the flags describe the work.
@@ -722,12 +1193,18 @@ pub fn run(args: BenchArgs, json_only: bool) -> Result<Value, String> {
             )
         }
         None => {
-            let (regime, degree) = match (args.bits, args.char2_degree, args.koblitz_degree) {
-                (Some(b), None, None) => ("prime".to_string(), b),
-                (None, Some(n), None) => ("char2".to_string(), n),
-                (None, None, Some(n)) => ("koblitz".to_string(), n),
+            let (regime, degree) = match (
+                args.bits,
+                args.char2_degree,
+                args.koblitz_degree,
+                args.fp2_bits,
+            ) {
+                (Some(b), None, None, None) => ("prime".to_string(), b),
+                (None, Some(n), None, None) => ("char2".to_string(), n),
+                (None, None, Some(n), None) => ("koblitz".to_string(), n),
+                (None, None, None, Some(k)) => ("fp2".to_string(), k),
                 _ => return Err(
-                    "choose exactly one of --bits, --char2-degree, --koblitz-degree, or --sweep"
+                    "choose exactly one of --bits, --char2-degree, --koblitz-degree, --fp2-bits, or --sweep"
                         .into(),
                 ),
             };
@@ -742,6 +1219,53 @@ pub fn run(args: BenchArgs, json_only: bool) -> Result<Value, String> {
             ((regime, degree), vec![one], args.clone())
         }
     };
+
+    // Every configuration is checked against the catalogue before the
+    // instance, the calibration or the rho runs: a misspelt name or key,
+    // or a summand count an oracle does not take, fails in milliseconds
+    // with a suggestion instead of after minutes as a skipped row.
+    let catalogue = listing();
+    let mut usage: Vec<String> = Vec::new();
+    let mut inapplicable: Vec<Value> = Vec::new();
+    let sweep = args.sweep.is_some();
+    for (k, cfg) in configs.iter().enumerate() {
+        let checked = check_config(cfg, &args, &instance_spec.0, &catalogue);
+        let at = |m: &String| {
+            if configs.len() > 1 {
+                format!("configuration {}: {m}", k + 1)
+            } else {
+                m.clone()
+            }
+        };
+        usage.extend(checked.errors.iter().map(at));
+        if sweep {
+            if !checked.inapplicable.is_empty() && checked.errors.is_empty() {
+                inapplicable.push(json!({"index": k, "why": checked.inapplicable.join("; ")}));
+            }
+        } else {
+            usage.extend(checked.inapplicable.iter().map(at));
+        }
+        if !json_only {
+            for w in &checked.warnings {
+                eprintln!("ic bench: note: {}", at(w));
+            }
+        }
+    }
+    if !usage.is_empty() {
+        return Err(format!(
+            "usage: ic bench was not started:\n  {}\n(ic bench --list shows every plug-in, its parameters and the regimes it runs on)",
+            usage.join("\n  ")
+        ));
+    }
+    if !json_only {
+        for s in &inapplicable {
+            eprintln!(
+                "ic bench: configuration {} will be skipped: {}",
+                s["index"].as_u64().unwrap_or(0) + 1,
+                s["why"].as_str().unwrap_or("")
+            );
+        }
+    }
 
     // A sweep may override the CLI default solver per configuration.
     // Reject malformed SAT encoding before calibrations, rho or a target.
@@ -777,9 +1301,17 @@ pub fn run(args: BenchArgs, json_only: bool) -> Result<Value, String> {
                 .or_else(|| koblitz_instance(0, degree))
                 .ok_or_else(|| format!("no Koblitz instance at degree {degree}"))?,
         )),
+        "fp2" => Instance::Fp2(find_fp2_curve(degree, args.seed, args.max_cofactor).ok_or_else(
+            || {
+                format!(
+                    "no F_{{p^2}} instance at {degree} bits (12..=60) with cofactor at most {}",
+                    args.max_cofactor
+                )
+            },
+        )?),
         other => {
             return Err(format!(
-                "unknown regime `{other}`; try prime, char2 or koblitz"
+                "unknown regime `{other}`; try prime, char2, koblitz or fp2"
             ))
         }
     };
@@ -789,12 +1321,39 @@ pub fn run(args: BenchArgs, json_only: bool) -> Result<Value, String> {
             calibration_for(&i.curve, &sample_prime_points(i), "prime", &i.name, i.r)
         }
         Instance::Binary(i) => calibration_for_binary(i, &regime),
+        Instance::Fp2(i) => {
+            let mut ops = GroupOps::default();
+            let points: Vec<_> = (1..=8u64)
+                .map(|k| i.curve.mul(&mut ops, i.generator, k))
+                .collect();
+            let (mut calib, _) = calibration_for(&i.curve, &points, "fp2", &i.name, i.r);
+            // The F_p units the fp2 base and the fp2-weil oracle count.
+            // The repository's table has no fp2 entry, so every factor is
+            // this host's measurement; re-pin to record that.
+            calibrate_fp_units(i.p(), &mut calib);
+            // One pair-table probe, measured on a real table over a small
+            // subfield base.  (The prime path leaves this unit at the
+            // pinned ratio, or zero on a generated curve; measuring it here
+            // keeps the oracles' lookups from being free.)
+            let small = crate::cryptanalysis::ic_fp2::fp2_subfield_factor_base(i, Some(64));
+            calib.ns_per_lookup =
+                crate::cryptanalysis::ic_boundary::PairTable::build(&i.curve, &small)
+                    .calibrate_lookup(1_000_000);
+            let pins = calib.pin("fp2", &i.name);
+            (calib, pins)
+        }
     };
 
     let started = std::time::Instant::now();
     // The method boundary on this instance, before any configuration:
     // every row's `vs rho` is its S over the matched reference's mean.
-    let references = matched_rho(&instance, args.seed, args.repeats, args.rho_runs);
+    let references = matched_rho(
+        &instance,
+        args.seed,
+        args.repeats,
+        args.rho_runs,
+        resolve_threads(args.threads),
+    );
     let rho = &references.matched;
     let rho_s = rho.as_ref().filter(|r| r.all_verified).map(|r| r.mean_s);
     if !json_only {
@@ -834,6 +1393,7 @@ pub fn run(args: BenchArgs, json_only: bool) -> Result<Value, String> {
         let outcome = match &instance {
             Instance::Prime(i) => run_prime(i, &spec, &args, &calib, rho_s),
             Instance::Binary(i) => run_binary(i, &spec, &args, &calib, rho_s),
+            Instance::Fp2(i) => run_fp2(i, &spec, &args, &calib, rho_s),
         };
         match outcome {
             Ok(mut got) => rows.append(&mut got),
@@ -846,10 +1406,14 @@ pub fn run(args: BenchArgs, json_only: bool) -> Result<Value, String> {
     if !json_only {
         eprintln!("\n{markdown}");
         for f in &failures {
-            eprintln!("  skipped: {}", f["configuration"].as_str().unwrap_or("?"));
+            eprintln!(
+                "  skipped: {} — {}",
+                f["configuration"].as_str().unwrap_or("?"),
+                f["why"].as_str().unwrap_or("no reason given")
+            );
         }
     }
-    Ok(json!({
+    let mut report = json!({
         "schema_version": 1,
         "operation": "bench",
         "status": if all_verified { "complete" } else { "incomplete" },
@@ -877,5 +1441,214 @@ pub fn run(args: BenchArgs, json_only: bool) -> Result<Value, String> {
         "elapsed_seconds": started.elapsed().as_secs_f64(),
         "markdown": markdown,
         "rows": rows,
-    }))
+    });
+    // An F_{p^2} curve is generated, not a roster entry: record its
+    // field, coefficients and generator so the instance can be rebuilt.
+    if let Instance::Fp2(i) = &instance {
+        report["instance_detail"] = i.describe();
+    }
+    Ok(report)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use clap::Parser;
+
+    #[derive(Parser)]
+    struct Wrap {
+        #[command(flatten)]
+        args: BenchArgs,
+    }
+
+    fn args(extra: &[&str]) -> BenchArgs {
+        let mut v = vec!["bench"];
+        v.extend_from_slice(extra);
+        Wrap::parse_from(v).args
+    }
+
+    fn one(a: &BenchArgs) -> std::collections::BTreeMap<String, String> {
+        let mut c = std::collections::BTreeMap::new();
+        if let Some(v) = &a.factor_base {
+            c.insert("factor_base".into(), v.clone());
+        }
+        if let Some(v) = &a.oracle {
+            c.insert("oracle".into(), v.clone());
+        }
+        c.insert("targets".into(), a.targets.clone());
+        c
+    }
+
+    fn check(regime: &str, flags: &[&str]) -> Checked {
+        let a = args(flags);
+        check_config(&one(&a), &a, regime, &listing())
+    }
+
+    #[test]
+    fn a_typo_is_caught_with_the_name_it_meant() {
+        assert_eq!(did_you_mean("mitmm", ["mitm", "subtract"]), Some("mitm"));
+        assert_eq!(
+            did_you_mean("prime-abscisa", ["prime-abscissa"]),
+            Some("prime-abscissa")
+        );
+        assert_eq!(did_you_mean("zzz", ["mitm", "subtract"]), None);
+        let c = check(
+            "prime",
+            &[
+                "--factor-base",
+                "prime-abscisa:sise=40",
+                "--oracle",
+                "mitmm",
+                "--targets",
+                "walkk",
+            ],
+        );
+        let all = c.errors.join("\n");
+        assert!(all.contains("did you mean `prime-abscissa`"), "{all}");
+        assert!(all.contains("did you mean `mitm`"), "{all}");
+        assert!(all.contains("did you mean `walk`"), "{all}");
+        let c = check(
+            "prime",
+            &[
+                "--factor-base",
+                "prime-abscissa:sise=40",
+                "--oracle",
+                "mitm",
+            ],
+        );
+        assert!(
+            c.errors.join("\n").contains("did you mean `size`"),
+            "{:?}",
+            c.errors
+        );
+    }
+
+    #[test]
+    fn a_summand_count_the_oracle_does_not_take_is_refused() {
+        assert_eq!(summand_range(&json!(2)), Some((2, 2)));
+        assert_eq!(summand_range(&json!("2 or 3")), Some((2, 3)));
+        assert_eq!(summand_range(&json!("2..8")), Some((2, 8)));
+        let c = check(
+            "prime",
+            &[
+                "--factor-base",
+                "prime-abscissa:size=40",
+                "--oracle",
+                "mitm:m=9",
+            ],
+        );
+        assert_eq!(
+            c.errors,
+            vec!["oracle `mitm` takes m = 2 or 3, not m = 9".to_string()]
+        );
+        assert!(check(
+            "prime",
+            &[
+                "--factor-base",
+                "prime-abscissa:size=40",
+                "--oracle",
+                "mitm:m=3"
+            ]
+        )
+        .errors
+        .is_empty());
+    }
+
+    #[test]
+    fn a_plugin_from_another_regime_is_named_with_the_ones_that_apply() {
+        let c = check(
+            "prime",
+            &[
+                "--factor-base",
+                "binary-subspace:dimension=6",
+                "--oracle",
+                "mitm",
+            ],
+        );
+        assert!(c.errors.is_empty(), "{:?}", c.errors);
+        assert_eq!(c.inapplicable.len(), 1);
+        assert!(
+            c.inapplicable[0].contains("on prime use prime-abscissa"),
+            "{}",
+            c.inapplicable[0]
+        );
+    }
+
+    #[test]
+    fn an_undeclared_key_nothing_resembles_passes_through_with_a_note() {
+        let c = check(
+            "prime",
+            &[
+                "--factor-base",
+                "prime-abscissa:size=40",
+                "--oracle",
+                "mitm:frob=1",
+            ],
+        );
+        assert!(c.errors.is_empty(), "{:?}", c.errors);
+        assert_eq!(c.warnings.len(), 1);
+    }
+
+    #[test]
+    fn an_algebraic_oracle_without_a_solver_is_refused_before_any_work() {
+        let c = check(
+            "char2",
+            &[
+                "--factor-base",
+                "binary-subspace:dimension=6",
+                "--oracle",
+                "descent-algebraic",
+            ],
+        );
+        assert!(
+            c.errors.join("\n").contains("needs --solver"),
+            "{:?}",
+            c.errors
+        );
+        let c = check(
+            "char2",
+            &[
+                "--factor-base",
+                "binary-subspace:dimension=6",
+                "--oracle",
+                "descent-algebraic",
+                "--solver",
+                "f4f2",
+            ],
+        );
+        assert!(
+            c.errors.join("\n").contains("did you mean `f4-f2`"),
+            "{:?}",
+            c.errors
+        );
+    }
+
+    /// The check must not refuse anything the committed sweeps run.
+    #[test]
+    fn every_committed_sweep_passes_the_check() {
+        let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("docs/ic/sweeps");
+        let mut seen = 0;
+        for entry in std::fs::read_dir(&dir).unwrap() {
+            let path = entry.unwrap().path();
+            if path.extension().is_none_or(|e| e != "json") {
+                continue;
+            }
+            let file: SweepFile =
+                serde_json::from_str(&std::fs::read_to_string(&path).unwrap()).unwrap();
+            let mut configs = file.configurations.clone();
+            configs.extend(expand_matrix(&file.matrix));
+            let a = args(&[]);
+            for cfg in &configs {
+                let c = check_config(cfg, &a, &file.instance.regime, &listing());
+                assert!(
+                    c.errors.is_empty(),
+                    "{}: {cfg:?}: {:?}",
+                    path.display(),
+                    c.errors
+                );
+            }
+            seen += 1;
+        }
+        assert!(seen > 0);
+    }
 }

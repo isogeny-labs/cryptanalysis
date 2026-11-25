@@ -1,0 +1,18 @@
+{
+  "schema": "lead-testing.lead/v1",
+  "id": "LEAD-prime-batched-mitm-20261121",
+  "title": "Prime-field MITM prepared and probed in batches (x-only sum/difference per inversion, Montgomery batch inversion, native pricing)",
+  "hypothesis": "On the registry prime instances, preparing the mitm pair table with one inversion per abscissa pair and Montgomery batch inversion, and at m = 3 computing every R +/- P_i of a chunk of abscissae from one batched inversion, lowers counted end-to-end S against the registry baseline arm (prime-abscissa + mitm) at m = 2 and m = 3, with the same table entries, the same witnesses, the same trials and the same verified logarithms. The preparation and the m = 3 candidate arithmetic are charged as measured nanoseconds at the host's nanoseconds per addition (the convention of the binary mitm-batched oracle); lookups and hit verification stay counted as for mitm.",
+  "prior_art": [
+    "cryptanalysis suite/src/cryptanalysis/ic_framework/batch_mitm.rs (binary mitm-batched: complete native setup accounting, x_only preparation)",
+    "cryptanalysis suite/src/cryptanalysis/bsgs_fast.rs (FastField Montgomery batch_inv on word primes)",
+    "workspace docs/notes/prime-pdp-relation-leads-20261119.md Lead 1D (Montgomery batch inversion, shared-denominator x(P+Q)/x(P-Q), Prime31 verification)",
+    "research-kb: not reachable from this session (no MCP server, no local binary); recorded as a gap, not as absence of prior art"
+  ],
+  "kind": "bench",
+  "regimes": ["prime"],
+  "regimes_excluded_because": "char2 and koblitz: the oracle is prime-field only (Montgomery arithmetic on a word prime); the binary regime already has mitm-batched with the same accounting convention, measured in cryptanalysis PRs #1703-#1727.",
+  "bench": {
+    "prime": {"factor_base": "prime-abscissa", "oracle": "mitm-prime-batched:m={m}"}
+  }
+}

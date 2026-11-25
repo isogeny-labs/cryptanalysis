@@ -59,6 +59,10 @@ enum Cmd {
         /// Max number of trails to render.
         #[arg(long, default_value_t = 5)]
         trail_top_k: usize,
+        /// Emit one JSON object per (technique, primitive) cell (JSON
+        /// Lines) instead of the Markdown report.
+        #[arg(long)]
+        json: bool,
     },
     /// Run just the boomerang distinguisher against a registered cipher.
     Boomerang {
@@ -488,6 +492,7 @@ fn run(op: Cmd) {
             rectangle_pool,
             trail_threshold_neg_log2,
             trail_top_k,
+            json,
         } => {
             let opts = AutoAttackOptions {
                 boomerang_pairs,
@@ -497,7 +502,11 @@ fn run(op: Cmd) {
             };
             match auto_attack_with(&cipher, opts) {
                 Ok(r) => {
-                    println!("{}", r.markdown);
+                    if json {
+                        println!("{}", crate::cryptanalysis::auto_attack::rows_jsonl(&r));
+                    } else {
+                        println!("{}", r.markdown);
+                    }
                     eprintln!(
                         "[auto-attack] {} sections in {} ms",
                         r.sections_run, r.elapsed_ms,
@@ -523,6 +532,14 @@ fn run(op: Cmd) {
                     std::process::exit(1);
                 }
             };
+            if !c.keyed().is_invertible() {
+                eprintln!(
+                    "error: `{}` has no decryption (feed-forward or non-invertible primitive); \
+                     the boomerang distinguisher needs a decryption oracle",
+                    cipher
+                );
+                std::process::exit(1);
+            }
             let entry = c.entry();
             let alpha_bytes = match alpha {
                 Some(h) => from_hex(&h).expect("bad alpha hex"),

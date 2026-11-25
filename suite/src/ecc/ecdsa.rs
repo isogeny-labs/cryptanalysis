@@ -249,6 +249,32 @@ pub fn verify_hash(
     let u1 = (&z * &w) % &curve.n;
     let u2 = (&sig.r * &w) % &curve.n;
 
+    if curve.name == "secp256k1" {
+        let canon = CurveParams::secp256k1();
+        if curve.p == canon.p && curve.a == canon.a && curve.b == canon.b && curve.n == canon.n {
+            use super::secp256k1_point::ProjectivePoint;
+            let g_proj = ProjectivePoint::from_textbook(&curve.generator());
+            let q_proj = ProjectivePoint::from_textbook(&public_key.point);
+            let res = ProjectivePoint::lincomb_glv(&g_proj, &u1, &q_proj, &u2);
+            return match res.to_affine() {
+                Some((x_u, _)) => (x_u.to_biguint() % &curve.n) == sig.r,
+                None => false,
+            };
+        }
+    } else if curve.name == "P-256" {
+        let canon = CurveParams::p256();
+        if curve.p == canon.p && curve.a == canon.a && curve.b == canon.b && curve.n == canon.n {
+            use super::p256_point::P256ProjectivePoint;
+            let g_proj = P256ProjectivePoint::from_textbook(&curve.generator());
+            let q_proj = P256ProjectivePoint::from_textbook(&public_key.point);
+            let res = P256ProjectivePoint::lincomb(&g_proj, &u1, &q_proj, &u2);
+            return match res.to_affine() {
+                Some((x_u, _)) => (x_u.to_biguint() % &curve.n) == sig.r,
+                None => false,
+            };
+        }
+    }
+
     let point = curve
         .generator()
         .scalar_mul(&u1, &a)

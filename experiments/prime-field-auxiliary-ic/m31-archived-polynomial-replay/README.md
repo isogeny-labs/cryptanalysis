@@ -1,0 +1,9 @@
+# Intersection of the archived depth-15 M31 polynomials
+
+All 16 regenerated resultants and the common membership polynomial matched the archive's SHA-256 digests. Each resultant has degree 65,536. Across 524,288 root tests the multipoint zero mask agreed entry by entry with the GCD root predicate, including eight positives in total. The number of positives also matched each archived GCD degree.
+
+On local arm64 with FLINT 3.6.0 the median GCD took 64.65 ms and evaluation took 34.57 ms. The median paired ratio was 1.882, with evaluation faster for 16/16 inputs. In a second accounting, both methods are supplied the dense coefficients; the GCD arm is charged for constructing the map and the evaluation arm is charged for constructing the map with the full ordered roots, building a fresh tree, and evaluating. That ratio was 1.059, with evaluation faster for 15/16. Median setup components were 0.45 ms for the map alone, 21.74 ms for the full ordered roots including the map, and 5.09 ms for the tree. The setup and intersection times are measured intervals added per seed. Input preparation, verification, serialization and tree destruction are outside these totals.
+
+The repository also contains a direct native circuit benchmark on these targets in snapshot/algebraic/end_to_end/gcd_benchmark.json. Its historical median of 1.24 ms for extraction uses liftable coordinates and starts from the target, with separate setup. Different hosts and output contracts prevent a direct speed ratio. This replay establishes a gain over dense polynomial GCD for existing coefficients. It supplies no evidence of a new fastest relation solver.
+
+Run `uv run --isolated --with python-flint==0.9.0 --with sympy --python 3.13 python replay.py` with FLINT 3.6.0 available through pkg-config on little-endian LP64. The runner loads the fixed source and inputs at 7901d6529. The root-predicate proof is in ../m31-polynomial-intersection/RootIntersection.lean.

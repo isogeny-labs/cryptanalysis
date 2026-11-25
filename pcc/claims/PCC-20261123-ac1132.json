@@ -1,0 +1,23 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T02:02:31Z",
+ "id": "PCC-20261123-ac1132",
+ "kind": "theorem",
+ "producer": {
+  "commit": "fb144b5b233ad2d6042881e6ea138c019740cead",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "818a3d2dbee7b7ee16833221aaed1cf8529bf430cfcbc03e481d394c25ac054f",
+   "kind": "lean",
+   "path": "experiments/prime-field-auxiliary-ic/m31-rotation-smoothness/product-support/Product.lean",
+   "sha256": "bad6a7b9418d6bcedf2e122e8b316ec99593ffd27d0adc6fef8920346a1b1f88",
+   "theorem": "M31ProductSupport.product_criterion"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Integer factors give reciprocal M31 rotation keys exactly when their product reduces to a power of two with exponent below 31."
+}

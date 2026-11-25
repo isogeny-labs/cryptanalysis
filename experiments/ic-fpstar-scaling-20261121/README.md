@@ -114,103 +114,17 @@ many small components is ever wanted (fewer relations per large prime), the
 tree-skip and the per-component parallelism are already in place conceptually;
 neither would help the current workload.
 
-## L15 — scaling at fixed log(largest factor of p-1) (2026-11-24)
 
-The corrected table in §"Correction" leaves three genuine IC rows at different
-large-factor sizes, so it cannot separate `log p` from `log(largest factor)`.
-This run holds the large factor fixed: `p = m*q + 1` with `q` a 28-bit prime
-(134,217,757) and `m ~ 2^(bits-28)`, so `q` is the largest prime factor of
-`p-1` at every size. Driver: `run_l15.py`.
 
-| bits | p | m | fb | relations | sieve (s) | linalg (s) | total (s) |
-|---:|---|---:|---:|---:|---:|---:|---:|
-| 40 | 549,755,932,673 | 4,096 | 125 | 1,072 | 0.001 | 0.003 | 0.004 |
-| 44 | 8,801,195,197,519 | 65,574 | 196 | 1,964 | 0.001 | 0.007 | 0.008 |
-| 48 | 140,737,518,764,033 | 1,048,576 | 303 | 2,885 | 0.001 | 0.018 | 0.020 |
-| 52 | 2,251,800,300,224,513 | 16,777,216 | 452 | 4,493 | 0.003 | 0.052 | 0.054 |
 
-All runs: `status: ok`, planted log recovered, 100% of factor-base logs
-verified, and `ic_path: true` (the relation matrix and Lanczos solve ran).
 
-**Local fit: `total ~ p^0.315`** over 40→52 bits at fixed 28-bit large factor.
 
-**Interpretation, with its limit stated:** the exponent here is a local slope
-over a 12-bit span at one fixed factor size, not an asymptotic law. What it
-does show is that with the large factor held fixed the engine is cheap and
-smooth (4 ms → 54 ms) and that the linear algebra is the growing term
-(0.003 s → 0.052 s, ~17x, while the sieve grows ~3x). Compare the earlier
-48-bit safe prime (47-bit large factor) which did not finish in 9 minutes:
-**the large-factor size, not the field size, is the dominant cost variable.**
 
-Next: repeat at q_bits = 32 and 36 to fit the exponent as a function of
-log(largest factor) — that is the number a cost model actually needs.
 
-## L16 — cost as a function of the large factor's size (2026-11-24)
 
-L15 held `q` fixed and varied `p`. This run fixes `p` at 56 bits and varies
-`q_bits = log2(largest prime factor of p-1)`. Driver: `run_l16.py`; raw output
-in `results_l16.json`.
 
-| q_bits | q | fb | relations | sieve (s) | linalg (s) | total (s) | lanczos iters |
-|---:|---:|---:|---:|---:|---:|---:|---:|
-| 20 | 524,309 | 669 | 6,837 | 0.004 | 0.013 | 0.018 | **0** |
-| 24 | 8,388,617 | 669 | 6,658 | 0.004 | 0.024 | 0.028 | **0** |
-| 28 | 134,217,757 | 669 | 6,705 | 0.004 | 0.206 | 0.210 | 1,340 |
-| 32 | 2,147,483,659 | 669 | 6,696 | 0.004 | 0.113 | 0.117 | 669 |
-| 36 | 34,359,738,421 | 669 | 6,656 | 0.004 | 0.120 | 0.124 | 670 |
 
-**The first two rows are not IC runs.** `q <= 2^24 = IC_SMALL_Q`, so the engine
-solves by Pohlig–Hellman and never builds the matrix (`lanczos_iterations = 0`).
-Any fit that includes them is meaningless — the "q^0.19" reported by the driver
-is exactly that mistake, and is withdrawn here.
 
-**Among the three genuine IC rows there is no growth:** 0.21 s at q_bits = 28,
-0.117 s at 32, 0.124 s at 36. The 28-bit row is the *slowest*, with
-`lanczos_iterations = 1340` against a factor base of 669 (two attempts or two
-moduli), which looks like an attempt-count artifact rather than a size effect.
 
-**Together with the 47-bit safe prime (did not finish in 9 minutes), the honest
-statement is that this engine's cost is not a smooth function of `log q` in the
-tested range: it is flat from 28 to 36 bits, then jumps somewhere between 36 and
-47 bits.** A cost model needs that threshold located, not an exponent fitted
-through five single-seed points.
 
-Next: repeat each cell >= 5 times (attempt counts vary), and bracket the
-threshold with q_bits = 40, 44 at fixed p = 56 bits.
 
-## L26 — the "threshold" was a probe artifact; correction (2026-11-24)
-
-L16 concluded that the engine's cost "jumps somewhere between 36 and 47 bits"
-on the strength of a 48-bit safe prime that did not finish in 9 minutes. **That
-conclusion is withdrawn.**
-
-Two measurements replace it.
-
-**1. Fixed p = 56 bits, vary q_bits, 5 repeats per cell (`run_l26.py`):**
-
-| q_bits | q | median wall | min–max | median linalg | Lanczos iters |
-|---:|---:|---:|---|---:|---|
-| 36 | 34,359,738,421 | 0.125 s | 0.122–0.129 | 0.116 | 670 ×5 |
-| 40 | 549,755,813,911 | 0.121 s | 0.119–0.124 | 0.113 | 670 ×5 |
-| 44 | 8,796,093,022,237 | 0.132 s | 0.127–0.135 | 0.124 | 670 ×5 |
-| 46 | 35,184,372,088,891 | 0.119 s | 0.113–0.121 | 0.111 | 668 ×5 |
-
-Flat from 36 to 46 bits, with identical iteration counts. No threshold.
-
-**2. The 48-bit safe prime, re-run directly:** `p = 140,737,488,356,903`
-(48 bits, `q` 47 bits, `p = 2q+1`) solves in **0.02 s** — 2984 relations, a
-1374×304 active matrix, 304 Lanczos iterations, all 303 factor-base logs
-verified.
-
-**What went wrong before:** the earlier probe searched for a safe prime by
-stepping `nextprime` from `2^(bits-1)`, for six sizes up to 56 bits, inside one
-script with a single wall-clock budget. The 56-bit safe-prime *search* is what
-consumed the time; the solver was never slow. The lesson is recorded here
-because it is the kind of error the record exists to catch: a timeout in a
-composite script was attributed to the component under study.
-
-**Corrected statement:** across `q_bits = 28…47` at p = 48…56 bits, the IC
-engine's cost is **flat in `log q`** (0.02–0.13 s) and the sparse solve is not
-the binding term at these sizes. Cost is governed by p (factor-base size and
-relation count), not by the large factor's size. What happens at larger p is
-still unknown.

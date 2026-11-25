@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T02:46:46Z",
+ "id": "PCC-20261123-284382",
+ "kind": "measurement",
+ "producer": {
+  "commit": "2a6bd52976a337c25377585d3750040168a87f39",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-metal-lifts/coverage.csv",
+    "sha256": "eaaabbaffe7ba3a255e609f82502c46890124670fe6b0f205e81383f5f7440f1"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-metal-lifts/emit0.csv",
+    "sha256": "fe540061c3d3726375c971c6b752cc75b2c383c8be4ee3dc75b5acc86ca46f52"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-metal-lifts/emit1.csv",
+    "sha256": "a801520e615a4bc79c9fa167812e96cfbbbf42e135894895db9bd39c0d338b43"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "",
+ "statement": "Four-wide singleton emission covered 2313648 of 3846524 generated children at bound 89. Combined with vector parent compaction, median paired complete warm census wall ratios were 1.098 and 1.066; batch emission alone gave 0.942 and 0.998."
+}

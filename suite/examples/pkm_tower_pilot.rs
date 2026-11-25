@@ -236,7 +236,7 @@ impl Kind {
 
 /// One level of a tower: how `y_{j+1}` (or the final constant) follows
 /// from `y_j`.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug)]
 enum Step {
     /// `y_{j+1} = y_j²` (Kummer).
     Square,
@@ -245,13 +245,22 @@ enum Step {
     /// `y_{j+1} = y_j + τ/(y_j − ξ)`, the x-map of a 2-isogeny with
     /// kernel `(ξ, 0)`.
     Velu { xi: u64, tau: u64 },
+    /// The x-map of an isogeny of odd prime degree `d` (Vélu), from half
+    /// its kernel `S` (one point of each pair `±Q`):
+    /// `y_{j+1} = y_j + Σ_{Q∈S} ( v_Q/(y_j − x_Q) + u_Q/(y_j − x_Q)² )`,
+    /// `v_Q = 6x_Q² + 2a`, `u_Q = 4y_Q²`.  Entries are `(x_Q, v_Q, u_Q)`;
+    /// the level equation has degree `d = 2|S| + 1`.
+    VeluOdd { pts: Vec<(u64, u64, u64)> },
 }
 
 struct Tower {
     kind: Kind,
     t: usize,
-    /// The factor-base abscissa set, `2^t` distinct elements of `F_p`.
+    /// The factor-base abscissa set: `size` distinct elements of `F_p`
+    /// (`2^t` unless the isogeny tower has odd-degree levels).
     v: Vec<u64>,
+    /// `|V|`, the product of the level degrees.
+    size: usize,
     /// `x = scale · y_0` (Kummer: the coset representative `g`).
     scale: u64,
     steps: Vec<Step>,
@@ -262,10 +271,11 @@ struct Tower {
 
 impl Tower {
     fn apply(&self, j: usize, y: u64, p: u64) -> u64 {
-        match self.steps[j] {
+        match &self.steps[j] {
             Step::Square => mulm(y, y, p),
             Step::Dickson => subm(mulm(y, y, p), 2, p),
-            Step::Velu { xi, tau } => addm(y, mulm(tau, invm(subm(y, xi, p), p), p), p),
+            Step::Velu { xi, tau } => addm(y, mulm(*tau, invm(subm(y, *xi, p), p), p), p),
+            Step::VeluOdd { pts } => velu_odd_x(pts, y, p),
         }
     }
 
@@ -290,15 +300,38 @@ impl Tower {
                     Pol::constant(n, self.c, p)
                 };
                 let sq = yj.mul(&yj, p);
-                match self.steps[j] {
+                match &self.steps[j] {
                     Step::Square => next.sub(&sq, p),
                     Step::Dickson => next.sub(&sq.sub(&Pol::constant(n, 2, p), p), p),
                     Step::Velu { xi, tau } => {
+                        let (xi, tau) = (*xi, *tau);
                         let lhs = next.mul(&yj.sub(&Pol::constant(n, xi, p), p), p);
                         let rhs = sq
                             .sub(&yj.scale(xi, p), p)
                             .add(&Pol::constant(n, tau, p), p);
                         lhs.sub(&rhs, p)
+                    }
+                    Step::VeluOdd { pts } => {
+                        // next·L = y·L + Σ_Q (v_Q(y − x_Q) + u_Q)·L/(y − x_Q)²,
+                        // L = Π_Q (y − x_Q)²: degree 2|S| + 1 in y.
+                        let lin = |xq: u64| yj.sub(&Pol::constant(n, xq, p), p);
+                        let sq_of = |xq: u64| lin(xq).mul(&lin(xq), p);
+                        let mut l = Pol::constant(n, 1, p);
+                        for &(xq, _, _) in pts {
+                            l = l.mul(&sq_of(xq), p);
+                        }
+                        let mut rhs = yj.mul(&l, p);
+                        for (i, &(xq, vq, uq)) in pts.iter().enumerate() {
+                            let mut others = Pol::constant(n, 1, p);
+                            for (k, &(xr, _, _)) in pts.iter().enumerate() {
+                                if k != i {
+                                    others = others.mul(&sq_of(xr), p);
+                                }
+                            }
+                            let num = lin(xq).scale(vq, p).add(&Pol::constant(n, uq, p), p);
+                            rhs = rhs.add(&num.mul(&others, p), p);
+                        }
+                        next.mul(&l, p).sub(&rhs, p)
                     }
                 }
             })
@@ -312,7 +345,7 @@ impl Tower {
             .map(|j| {
                 let top = j + 1 == self.t;
                 let next = (!top).then_some((base + j + 1) as u8);
-                match (self.steps[j], top) {
+                match (&self.steps[j], top) {
                     // y_{j+1} = y_j²; on top, y_j² = c
                     (Step::Square, false) => SquareRule {
                         next,
@@ -348,9 +381,9 @@ impl Tower {
                     (Step::Velu { xi, tau }, false) => SquareRule {
                         next,
                         a: 1,
-                        b: subm(0, xi, p),
-                        c: xi,
-                        d: subm(0, tau, p),
+                        b: subm(0, *xi, p),
+                        c: *xi,
+                        d: subm(0, *tau, p),
                     },
                     // c·(y_j − ξ) = y_j² − ξ·y_j + τ, so
                     // y_j² = (c + ξ)·y_j − (c·ξ + τ)
@@ -358,9 +391,13 @@ impl Tower {
                         next,
                         a: 0,
                         b: 0,
-                        c: addm(self.c, xi, p),
-                        d: subm(0, addm(mulm(self.c, xi, p), tau, p), p),
+                        c: addm(self.c, *xi, p),
+                        d: subm(0, addm(mulm(self.c, *xi, p), *tau, p), p),
                     },
+                    (Step::VeluOdd { .. }, _) => panic!(
+                        "the tower engine rewrites only degree-2 levels; odd-degree isogeny \
+                         levels need --engine f4"
+                    ),
                 }
             })
             .collect()
@@ -373,7 +410,13 @@ impl Tower {
         let mut sorted = self.v.clone();
         sorted.sort_unstable();
         sorted.dedup();
-        assert_eq!(sorted.len(), 1 << self.t, "{:?}: V has repeats", self.kind);
+        assert_eq!(sorted.len(), self.size, "{:?}: V has repeats", self.kind);
+        assert_eq!(
+            self.v.len(),
+            self.size,
+            "{:?}: |V| is not the degree product",
+            self.kind
+        );
         let n = self.t;
         let eqs = self.equations(n, 0, p);
         for &x in &self.v {
@@ -413,6 +456,7 @@ fn kummer(p: u64, t: usize, rng: &mut StdRng) -> Tower {
     Tower {
         kind: Kind::Kummer,
         t,
+        size: 1 << t,
         v,
         scale: g,
         steps: vec![Step::Square; t],
@@ -444,6 +488,7 @@ fn dickson(p: u64, t: usize, rng: &mut StdRng) -> Tower {
         return Tower {
             kind: Kind::Dickson,
             t,
+            size: 1 << t,
             v,
             scale: 1,
             steps: vec![Step::Dickson; t],
@@ -573,6 +618,7 @@ fn isogeny(p: u64, t: usize, rng: &mut StdRng) -> Tower {
         return Tower {
             kind: Kind::Isogeny,
             t,
+            size: 1 << t,
             v,
             scale: 1,
             steps,
@@ -582,11 +628,272 @@ fn isogeny(p: u64, t: usize, rng: &mut StdRng) -> Tower {
     }
 }
 
-fn build_tower(kind: Kind, p: u64, t: usize, rng: &mut StdRng) -> Tower {
+/// `X(x) = x + Σ (v_Q/(x − x_Q) + u_Q/(x − x_Q)²)`, Vélu's x-map for
+/// an odd-degree kernel given by half its non-zero points.
+fn velu_odd_x(pts: &[(u64, u64, u64)], x: u64, p: u64) -> u64 {
+    let mut out = x;
+    for &(xq, vq, uq) in pts {
+        let d = invm(subm(x, xq, p), p);
+        out = addm(out, mulm(vq, d, p), p);
+        out = addm(out, mulm(uq, mulm(d, d, p), p), p);
+    }
+    out
+}
+
+/// The degree of each level: `degrees` repeated cyclically (`[2]` is the
+/// original tower).
+fn level_degrees(degrees: &[u64], t: usize) -> Vec<u64> {
+    (0..t).map(|j| degrees[j % degrees.len()]).collect()
+}
+
+/// `|V|` for a tower of `t` levels.
+fn tower_size(kind: Kind, t: usize, degrees: &[u64]) -> u64 {
+    match kind {
+        Kind::Isogeny => level_degrees(degrees, t).iter().product(),
+        _ => 1u64 << t,
+    }
+}
+
+/// `#E(F_p)` by baby-step giant-step in the Hasse interval: every `M`
+/// there with `[M]P = O` is found for random points `P`, and the
+/// candidates are intersected until one is left (`O(p^{1/4})` group
+/// operations a point).  Falls back to the exact `O(p)` count.
+fn point_count_bsgs(e: &PrimeCurve, rng: &mut StdRng) -> u64 {
+    let p = e.p;
+    let mut ops = GroupOps::default();
+    let s = (p as f64).sqrt() as u64 + 1;
+    let lo = (p + 1).saturating_sub(2 * s);
+    let width = 4 * s + 2;
+    let m = (width as f64).sqrt() as u64 + 1;
+    let key = |pt: PrimePoint| (pt.infinity, pt.x, pt.y);
+    let mut cands: Option<Vec<u64>> = None;
+    for _ in 0..24 {
+        let pt = random_point(e, rng);
+        let mut baby = std::collections::HashMap::new();
+        let mut acc = PrimePoint::INFINITY;
+        for j in 0..m {
+            baby.entry(key(acc)).or_insert_with(Vec::new).push(j);
+            acc = e.add(&mut ops, acc, pt);
+        }
+        let giant = e.mul(&mut ops, pt, m);
+        let mut q = e.mul(&mut ops, pt, lo);
+        let mut found = Vec::new();
+        for i in 0..=width / m + 1 {
+            // (lo + i·m + j)·P = O  ⇔  lo·P + i·mP = −jP
+            let neg = if q.infinity {
+                q
+            } else {
+                PrimePoint::affine(q.x, (p - q.y) % p)
+            };
+            if let Some(js) = baby.get(&key(neg)) {
+                for &j in js {
+                    let mm = lo + i * m + j;
+                    if mm >= lo && mm <= lo + width {
+                        found.push(mm);
+                    }
+                }
+            }
+            q = e.add(&mut ops, q, giant);
+        }
+        let next: Vec<u64> = match cands {
+            None => found,
+            Some(c) => c.into_iter().filter(|x| found.contains(x)).collect(),
+        };
+        if next.len() == 1 {
+            return next[0];
+        }
+        cands = Some(next);
+    }
+    e.point_count()
+}
+
+fn is_prime_small(n: u64) -> bool {
+    n >= 2
+        && (2..)
+            .take_while(|d| d * d <= n)
+            .all(|d| !n.is_multiple_of(d))
+}
+
+/// An isogeny tower whose level `j` has prime degree `degrees[j mod k]`
+/// (2, 3, 5, 7, …), x-only: an auxiliary curve `E'` with a point `Q` of
+/// exact order `N = Π d_j`, `V = x(R' + ⟨Q⟩)` with `2R' ∉ ⟨Q⟩`, and level
+/// `j` the Vélu isogeny whose kernel is the image of the order-`d_j` part
+/// of `⟨[N/(d_0⋯d_j)]Q⟩`.  Kernel abscissae on each codomain are the
+/// images of abscissae on `E'` under the levels before, so no
+/// y-coordinate is carried; `y_Q² = x_Q³ + a_j x_Q + b_j` on `E'_j`.
+/// `#E'` comes from [`point_count_bsgs`].
+fn isogeny_general(p: u64, t: usize, degrees: &[u64], rng: &mut StdRng) -> Tower {
+    let degs = level_degrees(degrees, t);
+    for &d in &degs {
+        assert!(is_prime_small(d), "isogeny level degree {d} is not prime");
+    }
+    let big_n: u64 = degs.iter().product();
+    let mut primes: Vec<u64> = degs.clone();
+    primes.sort_unstable();
+    primes.dedup();
+    let mut ops = GroupOps::default();
+    let mut curves_tried = 0u64;
+    loop {
+        curves_tried += 1;
+        let a = rng.gen_range(0..p);
+        let b = rng.gen_range(1..p);
+        if !nonsingular(a, b, p) {
+            continue;
+        }
+        let e = PrimeCurve { p, a, b };
+        let n = point_count_bsgs(&e, rng);
+        if !n.is_multiple_of(big_n) {
+            continue;
+        }
+        let mut q = None;
+        for _ in 0..16 {
+            let cand = e.mul(&mut ops, random_point(&e, rng), n / big_n);
+            let exact = e.mul(&mut ops, cand, big_n).infinity
+                && primes
+                    .iter()
+                    .all(|&l| !e.mul(&mut ops, cand, big_n / l).infinity);
+            if exact {
+                q = Some(cand);
+                break;
+            }
+        }
+        let Some(q) = q else { continue };
+        let multiples: Vec<PrimePoint> = (0..big_n).map(|k| e.mul(&mut ops, q, k)).collect();
+        let r0 = loop {
+            let r = random_point(&e, rng);
+            let r2 = e.double(&mut ops, r);
+            if !multiples.contains(&r2) {
+                break r;
+            }
+        };
+        let v: Vec<u64> = multiples
+            .iter()
+            .map(|&m| e.add(&mut ops, r0, m))
+            .filter(|pt| !pt.infinity)
+            .map(|pt| pt.x)
+            .collect();
+        let mut sorted = v.clone();
+        sorted.sort_unstable();
+        sorted.dedup();
+        if sorted.len() != big_n as usize {
+            continue;
+        }
+        let (mut aj, mut bj) = (a, b);
+        let mut steps: Vec<Step> = Vec::with_capacity(t);
+        let mut done = 1u64;
+        for (j, &d) in degs.iter().enumerate() {
+            done *= d;
+            let base = e.mul(&mut ops, q, big_n / done);
+            // Half the kernel, as abscissae on E'_j: images of k·base on E'.
+            let half: Vec<u64> = (1..=d / 2)
+                .map(|k| {
+                    let pt = e.mul(&mut ops, base, k);
+                    assert!(!pt.infinity, "level {j}: kernel point at infinity on E'");
+                    steps.iter().fold(pt.x, |x, st| match st {
+                        Step::Velu { xi, tau } => {
+                            addm(x, mulm(*tau, invm(subm(x, *xi, p), p), p), p)
+                        }
+                        Step::VeluOdd { pts } => velu_odd_x(pts, x, p),
+                        _ => unreachable!(),
+                    })
+                })
+                .collect();
+            let cj = PrimeCurve { p, a: aj, b: bj };
+            for &xq in &half {
+                let r = cj.rhs(xq);
+                assert!(
+                    r == 0 || cj.legendre(r) == 1,
+                    "level {j}: kernel abscissa {xq} is not on E'_{j}"
+                );
+            }
+            if d == 2 {
+                let xi = half[0];
+                assert_eq!(
+                    cj.rhs(xi),
+                    0,
+                    "level {j}: degree-2 kernel point is not 2-torsion"
+                );
+                let tau = addm(mulm(3, mulm(xi, xi, p), p), aj, p);
+                steps.push(Step::Velu { xi, tau });
+                aj = subm(aj, mulm(5, tau, p), p);
+                bj = subm(bj, mulm(7, mulm(xi, tau, p), p), p);
+            } else {
+                let pts: Vec<(u64, u64, u64)> = half
+                    .iter()
+                    .map(|&xq| {
+                        let vq = addm(mulm(6, mulm(xq, xq, p), p), mulm(2, aj, p), p);
+                        let uq = mulm(4, cj.rhs(xq), p);
+                        (xq, vq, uq)
+                    })
+                    .collect();
+                let tsum = pts.iter().fold(0, |acc, &(_, vq, _)| addm(acc, vq, p));
+                let wsum = pts.iter().fold(0, |acc, &(xq, vq, uq)| {
+                    addm(acc, addm(uq, mulm(xq, vq, p), p), p)
+                });
+                aj = subm(aj, mulm(5, tsum, p), p);
+                bj = subm(bj, mulm(7, wsum, p), p);
+                steps.push(Step::VeluOdd { pts });
+            }
+            assert!(nonsingular(aj, bj, p), "level {j}: singular codomain");
+        }
+        let tower = Tower {
+            kind: Kind::Isogeny,
+            t,
+            size: big_n as usize,
+            v: v.clone(),
+            scale: 1,
+            steps,
+            c: 0,
+            info: Value::Null,
+        };
+        // Every element of V reaches one value; a random point of E' lands
+        // on the last codomain (32 checks: a wrong codomain fails each
+        // with probability about 1/2).
+        let c = *tower.values(v[0], p).last().unwrap();
+        let c = tower.apply(t - 1, c, p);
+        for &x in &v {
+            let y = tower.values(x, p);
+            assert_eq!(
+                tower.apply(t - 1, y[t - 1], p),
+                c,
+                "V does not reach one value"
+            );
+        }
+        let last = PrimeCurve { p, a: aj, b: bj };
+        let mut landed = 0;
+        let mut tried = 0;
+        while tried < 32 {
+            let pt = random_point(&e, rng);
+            let y = tower.values(pt.x, p);
+            if y.iter().any(|&yj| {
+                tower.steps.iter().any(|st| match st {
+                    Step::Velu { xi, .. } => *xi == yj,
+                    Step::VeluOdd { pts } => pts.iter().any(|&(xq, _, _)| xq == yj),
+                    _ => false,
+                })
+            }) {
+                continue;
+            }
+            tried += 1;
+            let x_end = tower.apply(t - 1, y[t - 1], p);
+            let r = last.rhs(x_end);
+            if r == 0 || last.legendre(r) == 1 {
+                landed += 1;
+            }
+        }
+        assert_eq!(landed, 32, "a point of E' maps off the last codomain");
+        let info = json!({"aux_a": a, "aux_b": b, "aux_order": n, "aux_curves_tried": curves_tried,
+                          "degrees": degs, "size": big_n, "v": &v});
+        return Tower { c, info, ..tower };
+    }
+}
+
+fn build_tower(kind: Kind, p: u64, t: usize, degrees: &[u64], rng: &mut StdRng) -> Tower {
     let tower = match kind {
         Kind::Kummer => kummer(p, t, rng),
         Kind::Dickson => dickson(p, t, rng),
-        Kind::Isogeny => isogeny(p, t, rng),
+        Kind::Isogeny if degrees == [2] => isogeny(p, t, rng),
+        Kind::Isogeny => isogeny_general(p, t, degrees, rng),
     };
     tower.check(p);
     tower
@@ -1090,6 +1397,16 @@ struct Args {
     max_nnz: Option<u64>,
     /// `f4_fp_tower` only: print one line per F4 step.
     trace: bool,
+    /// Write every input system, before it is solved, to this directory in
+    /// msolve's input format (`<id>.ms`), with the planted solution, if any,
+    /// in `<id>.sol.json`; each row then carries `export_id` and the file's
+    /// `export_sha256`, so an external solver's run on the same bytes can be
+    /// joined to the `f4_fp` row.
+    export: Option<String>,
+    /// Isogeny kind only: the prime degree of each level, repeated
+    /// cyclically (`--iso-degrees 3`, `--iso-degrees 2,3`).  `[2]`, the
+    /// default, is the original tower and its code path.
+    degrees: Vec<u64>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -1140,6 +1457,8 @@ fn parse_args() -> Args {
         engine: Engine::F4,
         max_nnz: None,
         trace: false,
+        export: None,
+        degrees: vec![2],
     };
     let args: Vec<String> = std::env::args().skip(1).collect();
     let list = |s: &str| -> Vec<usize> {
@@ -1204,6 +1523,14 @@ fn parse_args() -> Args {
             }
             "--max-nnz" => a.max_nnz = Some(v.parse().expect("--max-nnz")),
             "--dump" => a.dump = Some(v.parse().expect("--dump")),
+            "--export" => a.export = Some(v),
+            "--iso-degrees" => {
+                a.degrees = v
+                    .split(',')
+                    .map(|d| d.trim().parse().expect("--iso-degrees"))
+                    .collect();
+                assert!(!a.degrees.is_empty(), "--iso-degrees needs a degree");
+            }
             other => panic!("unknown flag `{other}`"),
         }
         i += 2;
@@ -1249,7 +1576,7 @@ fn run_cell(cell: &Cell, a: &Args, sink: &mut Sink) -> bool {
         ^ ((cell.t as u64) << 16)
         ^ (cell.g as u64);
     let mut rng = StdRng::seed_from_u64(cell_seed);
-    let tower = build_tower(cell.kind, p, cell.t, &mut rng);
+    let tower = build_tower(cell.kind, p, cell.t, &a.degrees, &mut rng);
     let (curve, on) = target_curve(p, &tower, cell.m.max(2), &mut rng);
     let mut targets = Vec::new();
     let planted = if cell.t > a.planted_max_t && cell.control != Control::Ladder {
@@ -1282,6 +1609,20 @@ fn run_cell(cell: &Cell, a: &Args, sink: &mut Sink) -> bool {
             // The naive control has no tower to rewrite by.
             continue;
         }
+        let exported = a.export.as_ref().map(|dir| {
+            let id = format!(
+                "{}-m{}-{}-t{}-g{}-{}{}-p{}",
+                cell.kind.name(),
+                cell.m,
+                cell.control.name(),
+                cell.t,
+                cell.g,
+                if target.planted { "planted" } else { "random" },
+                k,
+                p
+            );
+            export_system(dir, &id, &eqs, n, p, sol.as_deref())
+        });
         let d_in: Vec<u32> = eqs.iter().map(Pol::degree).collect();
         let d_max = d_in.iter().copied().max().unwrap_or(1);
         let max_degree = match (a.cap, cell.control) {
@@ -1330,6 +1671,9 @@ fn run_cell(cell: &Cell, a: &Args, sink: &mut Sink) -> bool {
             "control": cell.control.name(),
             "t": cell.t,
             "N": cell.m * cell.t,
+            "V_size": tower.size,
+            "log2_V": (tower.size as f64).log2(),
+            "iso_degrees": if cell.kind == Kind::Isogeny { json!(level_degrees(&a.degrees, cell.t)) } else { Value::Null },
             "g": cell.g,
             "n_vars": n,
             "n_equations": eqs.len(),
@@ -1360,6 +1704,10 @@ fn run_cell(cell: &Cell, a: &Args, sink: &mut Sink) -> bool {
             "staircase_at_stop": r.staircase_at_stop,
             "planted_ok": r.planted_ok,
         });
+        if let (Some((id, sha)), Some(obj)) = (exported, row.as_object_mut()) {
+            obj.insert("export_id".into(), json!(id));
+            obj.insert("export_sha256".into(), json!(sha));
+        }
         if let (Some(obj), Some(extra)) = (row.as_object_mut(), r.extra.as_object()) {
             for (k, v) in extra {
                 obj.insert(k.clone(), v.clone());
@@ -1395,6 +1743,58 @@ fn run_cell(cell: &Cell, a: &Args, sink: &mut Sink) -> bool {
         sink.push(row);
     }
     any_finished
+}
+
+/// Writes one input system in msolve's format: the variable names on the
+/// first line, the characteristic on the second, then the polynomials
+/// separated by commas. Variables are `x0 .. x{n-1}` in the pilot's own
+/// order. Returns the id and the SHA-256 of the `.ms` bytes.
+fn export_system(
+    dir: &str,
+    id: &str,
+    eqs: &[Pol],
+    n: usize,
+    p: u64,
+    sol: Option<&[u64]>,
+) -> (String, String) {
+    use sha2::{Digest, Sha256};
+    use std::fmt::Write as _;
+    std::fs::create_dir_all(dir).expect("create --export directory");
+    let vars: Vec<String> = (0..n).map(|i| format!("x{i}")).collect();
+    let mut text = format!("{}\n{p}\n", vars.join(","));
+    let polys: Vec<String> = eqs
+        .iter()
+        .filter(|e| !e.terms.is_empty())
+        .map(|e| {
+            let mut f = String::new();
+            for (k, (exp, c)) in e.terms.iter().rev().enumerate() {
+                if k > 0 {
+                    f.push('+');
+                }
+                write!(f, "{c}").unwrap();
+                for (i, &d) in exp.iter().enumerate() {
+                    match d {
+                        0 => {}
+                        1 => write!(f, "*x{i}").unwrap(),
+                        _ => write!(f, "*x{i}^{d}").unwrap(),
+                    }
+                }
+            }
+            f
+        })
+        .collect();
+    text.push_str(&polys.join(",\n"));
+    text.push('\n');
+    let path = format!("{dir}/{id}.ms");
+    std::fs::write(&path, &text).expect("write --export system");
+    let sha = hex::encode(Sha256::digest(text.as_bytes()));
+    let side = json!({
+        "id": id, "p": p, "n_vars": n, "n_equations": polys.len(),
+        "variables": vars, "solution": sol, "ms_sha256": sha,
+    });
+    std::fs::write(format!("{dir}/{id}.sol.json"), format!("{side}\n"))
+        .expect("write --export solution");
+    (id.to_string(), sha)
 }
 
 /// A basis to print with `--dump`, from either engine.
@@ -1511,10 +1911,22 @@ fn main() {
                     Control::Ladder => false,
                 })
                 .collect();
-            // m ≥ 3 needs m distinct base abscissae, so |V| = 2^t ≥ 4.
+            // m ≥ 3 needs m distinct base abscissae, so |V| ≥ 4.
             let t_min = if m >= 3 { a.t_min.max(2) } else { a.t_min };
             for control in controls {
                 for t in t_min..=max_t {
+                    // A coset larger than p/16 leaves too few target-curve
+                    // abscissae outside it to mean anything, and an
+                    // auxiliary curve with that much torsion is rare.
+                    if tower_size(kind, t, &a.degrees) > a.p / 16 {
+                        eprintln!(
+                            "-- {} m={m} {}: |V| = {} > p/16 at t = {t}; stopping",
+                            kind.name(),
+                            control.name(),
+                            tower_size(kind, t, &a.degrees)
+                        );
+                        break;
+                    }
                     let cell = Cell {
                         kind,
                         m,
@@ -1563,5 +1975,103 @@ fn main() {
     eprintln!("{summary}");
     if let Some(f) = sink.file.as_mut() {
         writeln!(f, "{}", json!({ "summary": summary })).expect("write --out");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// The worked example of the auxiliary-curves guide: over F_61,
+    /// E': y² = x³ + x + 14, kernel abscissae 12 then 5, gives
+    /// r₁(x) = x + 12/(x − 12) + 1/(x − 12)², r₂(u) = u + 32/(u − 5) + 13/(u − 5)²,
+    /// and the fiber V = {5, 11, 15, 16, 17, 19, 25, 37, 58} over χ = 60.
+    #[test]
+    fn guide_f61_two_three_isogenies() {
+        let p = 61;
+        let (a, b) = (1u64, 14u64);
+        let e1 = PrimeCurve { p, a, b };
+        let x1 = 12u64;
+        let v1 = addm(mulm(6, mulm(x1, x1, p), p), mulm(2, a, p), p);
+        let u1 = mulm(4, e1.rhs(x1), p);
+        assert_eq!((v1, u1), (12, 1));
+        let a2 = subm(a, mulm(5, v1, p), p);
+        let b2 = subm(b, mulm(7, addm(u1, mulm(x1, v1, p), p), p), p);
+        let e2 = PrimeCurve { p, a: a2, b: b2 };
+        let x2 = 5u64;
+        let v2 = addm(mulm(6, mulm(x2, x2, p), p), mulm(2, a2, p), p);
+        let u2 = mulm(4, e2.rhs(x2), p);
+        assert_eq!((v2, u2), (32, 13));
+        let tower = Tower {
+            kind: Kind::Isogeny,
+            t: 2,
+            size: 9,
+            v: vec![5, 11, 15, 16, 17, 19, 25, 37, 58],
+            scale: 1,
+            steps: vec![
+                Step::VeluOdd {
+                    pts: vec![(x1, v1, u1)],
+                },
+                Step::VeluOdd {
+                    pts: vec![(x2, v2, u2)],
+                },
+            ],
+            c: 60,
+            info: Value::Null,
+        };
+        tower.check(p);
+        assert_eq!(tower.values(5, p), vec![5, 17]);
+        assert_eq!(tower.apply(1, 17, p), 60);
+        // x = 2 is rejected: 2 → 49 → 25.
+        assert_eq!(tower.values(2, p), vec![2, 49]);
+        assert_eq!(tower.apply(1, 49, p), 25);
+        // The membership polynomial Π_{x: chain(x) = 60} (x − ·) has exactly V as roots.
+        let hits: Vec<u64> = (0..p)
+            .filter(|&x| {
+                x != 12 && {
+                    let u = tower.apply(0, x, p);
+                    u != 5 && tower.apply(1, u, p) == 60
+                }
+            })
+            .collect();
+        assert_eq!(hits, tower.v);
+    }
+
+    /// Generated towers of every degree mix check, at a 20-bit prime.
+    #[test]
+    fn bsgs_count_matches_exact() {
+        let mut rng = StdRng::seed_from_u64(3);
+        for (a, b) in [(1u64, 14u64), (2, 3), (5, 7), (0, 1), (100, 7)] {
+            for p in [61u64, 1009, 786_433] {
+                let e = PrimeCurve {
+                    p,
+                    a: a % p,
+                    b: b % p,
+                };
+                if !nonsingular(e.a, e.b, p) {
+                    continue;
+                }
+                assert_eq!(
+                    point_count_bsgs(&e, &mut rng),
+                    e.point_count(),
+                    "p={p} a={a} b={b}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn general_isogeny_towers_build() {
+        let p = 786_433;
+        for degrees in [vec![3u64], vec![5], vec![2, 3], vec![3, 2], vec![7]] {
+            for t in 1..=3 {
+                let mut rng = StdRng::seed_from_u64(7 + t as u64);
+                let tower = build_tower(Kind::Isogeny, p, t, &degrees, &mut rng);
+                assert_eq!(tower.size as u64, tower_size(Kind::Isogeny, t, &degrees));
+                for (j, e) in tower.equations(t, 0, p).iter().enumerate() {
+                    assert_eq!(e.degree() as u64, level_degrees(&degrees, t)[j]);
+                }
+            }
+        }
     }
 }

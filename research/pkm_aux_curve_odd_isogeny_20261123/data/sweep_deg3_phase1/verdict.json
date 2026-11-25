@@ -1,0 +1,703 @@
+{
+  "schema": "lead-testing.verdict/v1",
+  "lead_id": "pkm-iso-deg3",
+  "phase": 1,
+  "verdict": "FAIL",
+  "reasons": [
+    "lead lost cells the reference completed at ['pkm-m2', 'pkm-m3', 'pkm-m4']"
+  ],
+  "carried_m": [],
+  "next": "record as a measured negative at this phase (lead atlas / dead end); do not promote",
+  "gated": "2026-11-23T03:12:04Z",
+  "registry_sha256": "e840213ad5cfcc8c9d676204ee68ff3b9050f34bc91f73940a8327131d38bee2",
+  "cells": [
+    {
+      "id": "pkm-m2",
+      "m": 2,
+      "arms": {
+        "baseline": {
+          "run": {
+            "status": "ok",
+            "exit_code": 0,
+            "wall_seconds": 2441.783,
+            "peak_rss_gib": 2.4594,
+            "killed_by": null,
+            "memory_ceiling_gib": 6.0,
+            "wall_budget_seconds": 3600,
+            "cmd": [
+              "/home/user/ca-build/suite/target/release/examples/pkm_tower_pilot",
+              "--p",
+              "786433",
+              "--m",
+              "2",
+              "--kinds",
+              "kummer,dickson,isogeny",
+              "--t-min",
+              "1",
+              "--max-t",
+              "8",
+              "--max-t-m3",
+              "8",
+              "--max-t-m4",
+              "8",
+              "--budget",
+              "60",
+              "--seed",
+              "1347112276",
+              "--planted",
+              "3",
+              "--random",
+              "3",
+              "--ladder-t",
+              "none",
+              "--controls",
+              "tower,null,naive",
+              "--out",
+              "/home/user/workspace/runs/lead-testing/pkm-iso-deg3/20261123T011151Z-phase1/cells/pkm-m2/baseline.jsonl"
+            ],
+            "concurrent_jobs": 2
+          },
+          "rows": 336,
+          "completed_rows": 315,
+          "planted_violations": 0,
+          "max_t_completed": 8,
+          "max_N_completed": 16,
+          "solving_degree_max": 5
+        },
+        "lead": {
+          "run": {
+            "status": "ok",
+            "exit_code": 0,
+            "wall_seconds": 1242.733,
+            "peak_rss_gib": 4.8969,
+            "killed_by": null,
+            "memory_ceiling_gib": 6.0,
+            "wall_budget_seconds": 3600,
+            "cmd": [
+              "/home/user/ca-build/suite/target/release/examples/pkm_tower_pilot",
+              "--p",
+              "786433",
+              "--m",
+              "2",
+              "--kinds",
+              "kummer,dickson,isogeny",
+              "--t-min",
+              "1",
+              "--max-t",
+              "8",
+              "--max-t-m3",
+              "8",
+              "--max-t-m4",
+              "8",
+              "--budget",
+              "60",
+              "--seed",
+              "1347112276",
+              "--planted",
+              "3",
+              "--random",
+              "3",
+              "--ladder-t",
+              "none",
+              "--controls",
+              "tower",
+              "--iso-degrees",
+              "3",
+              "--out",
+              "/home/user/workspace/runs/lead-testing/pkm-iso-deg3/20261123T011151Z-phase1/cells/pkm-m2/lead.jsonl"
+            ],
+            "concurrent_jobs": 2
+          },
+          "rows": 132,
+          "completed_rows": 116,
+          "planted_violations": 0,
+          "max_t_completed": 8,
+          "max_N_completed": 16,
+          "solving_degree_max": 6
+        }
+      },
+      "metric": "max_cols",
+      "pairs": 116,
+      "speedup_geomean": 0.7278961101812624,
+      "speedup_ci": [
+        0.6422184486393874,
+        0.8151999418467446
+      ],
+      "cells_baseline_completed_lead_did_not": [
+        [
+          "isogeny",
+          5,
+          "planted",
+          0
+        ],
+        [
+          "isogeny",
+          5,
+          "planted",
+          1
+        ],
+        [
+          "isogeny",
+          5,
+          "planted",
+          2
+        ],
+        [
+          "isogeny",
+          6,
+          "planted",
+          0
+        ],
+        [
+          "isogeny",
+          6,
+          "planted",
+          1
+        ],
+        [
+          "isogeny",
+          6,
+          "planted",
+          2
+        ],
+        [
+          "isogeny",
+          6,
+          "random",
+          3
+        ],
+        [
+          "isogeny",
+          6,
+          "random",
+          4
+        ],
+        [
+          "isogeny",
+          6,
+          "random",
+          5
+        ],
+        [
+          "isogeny",
+          7,
+          "planted",
+          0
+        ],
+        [
+          "isogeny",
+          7,
+          "planted",
+          1
+        ],
+        [
+          "isogeny",
+          7,
+          "planted",
+          2
+        ],
+        [
+          "isogeny",
+          7,
+          "random",
+          3
+        ],
+        [
+          "isogeny",
+          7,
+          "random",
+          4
+        ],
+        [
+          "isogeny",
+          7,
+          "random",
+          5
+        ],
+        [
+          "isogeny",
+          8,
+          "random",
+          4
+        ],
+        [
+          "isogeny",
+          8,
+          "random",
+          5
+        ]
+      ],
+      "reach_gain": false,
+      "better": false,
+      "status": "ok",
+      "resource_events": []
+    },
+    {
+      "id": "pkm-m3",
+      "m": 3,
+      "arms": {
+        "baseline": {
+          "run": {
+            "status": "oom_killed",
+            "exit_code": -9,
+            "wall_seconds": 2051.397,
+            "peak_rss_gib": 6.0192,
+            "killed_by": "memory_ceiling",
+            "memory_ceiling_gib": 6.0,
+            "wall_budget_seconds": 3600,
+            "cmd": [
+              "/home/user/ca-build/suite/target/release/examples/pkm_tower_pilot",
+              "--p",
+              "786433",
+              "--m",
+              "3",
+              "--kinds",
+              "kummer,dickson,isogeny",
+              "--t-min",
+              "2",
+              "--max-t",
+              "8",
+              "--max-t-m3",
+              "8",
+              "--max-t-m4",
+              "8",
+              "--budget",
+              "60",
+              "--seed",
+              "1347112276",
+              "--planted",
+              "3",
+              "--random",
+              "3",
+              "--ladder-t",
+              "none",
+              "--controls",
+              "tower,null,naive",
+              "--out",
+              "/home/user/workspace/runs/lead-testing/pkm-iso-deg3/20261123T011151Z-phase1/cells/pkm-m3/baseline.jsonl"
+            ],
+            "concurrent_jobs": 2
+          },
+          "rows": 70,
+          "completed_rows": 45,
+          "planted_violations": 0,
+          "max_t_completed": 4,
+          "max_N_completed": 12,
+          "solving_degree_max": 6
+        },
+        "lead": {
+          "run": {
+            "status": "ok",
+            "exit_code": 0,
+            "wall_seconds": 1829.408,
+            "peak_rss_gib": 4.6979,
+            "killed_by": null,
+            "memory_ceiling_gib": 6.0,
+            "wall_budget_seconds": 3600,
+            "cmd": [
+              "/home/user/ca-build/suite/target/release/examples/pkm_tower_pilot",
+              "--p",
+              "786433",
+              "--m",
+              "3",
+              "--kinds",
+              "kummer,dickson,isogeny",
+              "--t-min",
+              "2",
+              "--max-t",
+              "8",
+              "--max-t-m3",
+              "8",
+              "--max-t-m4",
+              "8",
+              "--budget",
+              "60",
+              "--seed",
+              "1347112276",
+              "--planted",
+              "3",
+              "--random",
+              "3",
+              "--ladder-t",
+              "none",
+              "--controls",
+              "tower",
+              "--iso-degrees",
+              "3",
+              "--out",
+              "/home/user/workspace/runs/lead-testing/pkm-iso-deg3/20261123T011151Z-phase1/cells/pkm-m3/lead.jsonl"
+            ],
+            "concurrent_jobs": 2
+          },
+          "rows": 60,
+          "completed_rows": 36,
+          "planted_violations": 0,
+          "max_t_completed": 4,
+          "max_N_completed": 12,
+          "solving_degree_max": 7
+        }
+      },
+      "metric": "max_cols",
+      "pairs": 36,
+      "speedup_geomean": 0.6841067577850667,
+      "speedup_ci": [
+        0.5057741502492389,
+        0.881132648714784
+      ],
+      "cells_baseline_completed_lead_did_not": [
+        [
+          "isogeny",
+          3,
+          "planted",
+          0
+        ],
+        [
+          "isogeny",
+          3,
+          "planted",
+          1
+        ],
+        [
+          "isogeny",
+          3,
+          "planted",
+          2
+        ],
+        [
+          "isogeny",
+          3,
+          "random",
+          3
+        ],
+        [
+          "isogeny",
+          3,
+          "random",
+          4
+        ],
+        [
+          "isogeny",
+          3,
+          "random",
+          5
+        ],
+        [
+          "isogeny",
+          4,
+          "random",
+          3
+        ],
+        [
+          "isogeny",
+          4,
+          "random",
+          4
+        ],
+        [
+          "isogeny",
+          4,
+          "random",
+          5
+        ]
+      ],
+      "reach_gain": false,
+      "better": false,
+      "status": "ok",
+      "resource_events": [
+        "oom_killed"
+      ]
+    },
+    {
+      "id": "pkm-m4",
+      "m": 4,
+      "arms": {
+        "baseline": {
+          "run": {
+            "status": "ok",
+            "exit_code": 0,
+            "wall_seconds": 1134.039,
+            "peak_rss_gib": 2.5239,
+            "killed_by": null,
+            "memory_ceiling_gib": 6.0,
+            "wall_budget_seconds": 3600,
+            "cmd": [
+              "/home/user/ca-build/suite/target/release/examples/pkm_tower_pilot",
+              "--p",
+              "786433",
+              "--m",
+              "4",
+              "--kinds",
+              "kummer,dickson,isogeny",
+              "--t-min",
+              "2",
+              "--max-t",
+              "8",
+              "--max-t-m3",
+              "8",
+              "--max-t-m4",
+              "8",
+              "--budget",
+              "60",
+              "--seed",
+              "1347112276",
+              "--planted",
+              "3",
+              "--random",
+              "3",
+              "--ladder-t",
+              "none",
+              "--controls",
+              "tower,null,naive",
+              "--out",
+              "/home/user/workspace/runs/lead-testing/pkm-iso-deg3/20261123T011151Z-phase1/cells/pkm-m4/baseline.jsonl"
+            ],
+            "concurrent_jobs": 2
+          },
+          "rows": 36,
+          "completed_rows": 18,
+          "planted_violations": 0,
+          "max_t_completed": 2,
+          "max_N_completed": 8,
+          "solving_degree_max": 6
+        },
+        "lead": {
+          "run": {
+            "status": "ok",
+            "exit_code": 0,
+            "wall_seconds": 1124.419,
+            "peak_rss_gib": 2.2611,
+            "killed_by": null,
+            "memory_ceiling_gib": 6.0,
+            "wall_budget_seconds": 3600,
+            "cmd": [
+              "/home/user/ca-build/suite/target/release/examples/pkm_tower_pilot",
+              "--p",
+              "786433",
+              "--m",
+              "4",
+              "--kinds",
+              "kummer,dickson,isogeny",
+              "--t-min",
+              "2",
+              "--max-t",
+              "8",
+              "--max-t-m3",
+              "8",
+              "--max-t-m4",
+              "8",
+              "--budget",
+              "60",
+              "--seed",
+              "1347112276",
+              "--planted",
+              "3",
+              "--random",
+              "3",
+              "--ladder-t",
+              "none",
+              "--controls",
+              "tower",
+              "--iso-degrees",
+              "3",
+              "--out",
+              "/home/user/workspace/runs/lead-testing/pkm-iso-deg3/20261123T011151Z-phase1/cells/pkm-m4/lead.jsonl"
+            ],
+            "concurrent_jobs": 2
+          },
+          "rows": 30,
+          "completed_rows": 12,
+          "planted_violations": 0,
+          "max_t_completed": 2,
+          "max_N_completed": 8,
+          "solving_degree_max": 6
+        }
+      },
+      "metric": "max_cols",
+      "pairs": 12,
+      "speedup_geomean": 1.0,
+      "speedup_ci": [
+        1.0,
+        1.0
+      ],
+      "cells_baseline_completed_lead_did_not": [
+        [
+          "isogeny",
+          2,
+          "planted",
+          0
+        ],
+        [
+          "isogeny",
+          2,
+          "planted",
+          1
+        ],
+        [
+          "isogeny",
+          2,
+          "planted",
+          2
+        ],
+        [
+          "isogeny",
+          2,
+          "random",
+          3
+        ],
+        [
+          "isogeny",
+          2,
+          "random",
+          4
+        ],
+        [
+          "isogeny",
+          2,
+          "random",
+          5
+        ]
+      ],
+      "reach_gain": false,
+      "better": false,
+      "status": "ok",
+      "resource_events": []
+    },
+    {
+      "id": "pkm-m5",
+      "m": 5,
+      "arms": {
+        "baseline": {
+          "run": {
+            "status": "ok",
+            "exit_code": 0,
+            "wall_seconds": 1091.944,
+            "peak_rss_gib": 3.4036,
+            "killed_by": null,
+            "memory_ceiling_gib": 6.0,
+            "wall_budget_seconds": 3600,
+            "cmd": [
+              "/home/user/ca-build/suite/target/release/examples/pkm_tower_pilot",
+              "--p",
+              "786433",
+              "--m",
+              "5",
+              "--kinds",
+              "kummer,dickson,isogeny",
+              "--t-min",
+              "3",
+              "--max-t",
+              "8",
+              "--max-t-m3",
+              "8",
+              "--max-t-m4",
+              "8",
+              "--budget",
+              "60",
+              "--seed",
+              "1347112276",
+              "--planted",
+              "3",
+              "--random",
+              "3",
+              "--ladder-t",
+              "none",
+              "--controls",
+              "tower,null,naive",
+              "--out",
+              "/home/user/workspace/runs/lead-testing/pkm-iso-deg3/20261123T011151Z-phase1/cells/pkm-m5/baseline.jsonl"
+            ],
+            "concurrent_jobs": 2
+          },
+          "rows": 18,
+          "completed_rows": 0,
+          "planted_violations": 0,
+          "max_t_completed": null,
+          "max_N_completed": null,
+          "solving_degree_max": null
+        },
+        "lead": {
+          "run": {
+            "status": "oom_killed",
+            "exit_code": -9,
+            "wall_seconds": 758.565,
+            "peak_rss_gib": 6.0328,
+            "killed_by": "memory_ceiling",
+            "memory_ceiling_gib": 6.0,
+            "wall_budget_seconds": 3600,
+            "cmd": [
+              "/home/user/ca-build/suite/target/release/examples/pkm_tower_pilot",
+              "--p",
+              "786433",
+              "--m",
+              "5",
+              "--kinds",
+              "kummer,dickson,isogeny",
+              "--t-min",
+              "3",
+              "--max-t",
+              "8",
+              "--max-t-m3",
+              "8",
+              "--max-t-m4",
+              "8",
+              "--budget",
+              "60",
+              "--seed",
+              "1347112276",
+              "--planted",
+              "3",
+              "--random",
+              "3",
+              "--ladder-t",
+              "none",
+              "--controls",
+              "tower",
+              "--iso-degrees",
+              "3",
+              "--out",
+              "/home/user/workspace/runs/lead-testing/pkm-iso-deg3/20261123T011151Z-phase1/cells/pkm-m5/lead.jsonl"
+            ],
+            "concurrent_jobs": 2
+          },
+          "rows": 12,
+          "completed_rows": 0,
+          "planted_violations": 0,
+          "max_t_completed": null,
+          "max_N_completed": null,
+          "solving_degree_max": null
+        }
+      },
+      "metric": "max_cols",
+      "pairs": 0,
+      "speedup_geomean": null,
+      "speedup_ci": null,
+      "cells_baseline_completed_lead_did_not": [],
+      "reach_gain": false,
+      "better": false,
+      "status": "ok",
+      "resource_events": [
+        "oom_killed"
+      ]
+    },
+    {
+      "id": "pkm-m6",
+      "m": 6,
+      "status": "skipped"
+    },
+    {
+      "id": "pkm-m7",
+      "m": 7,
+      "status": "skipped"
+    },
+    {
+      "id": "pkm-m8",
+      "m": 8,
+      "status": "skipped"
+    },
+    {
+      "id": "pkm-m9",
+      "m": 9,
+      "status": "skipped"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+# Full-point balanced-tree proof map
+
+| Result | Declaration or check | Exact scope | Status |
+| --- | --- | --- | --- |
+| Nine sound local links imply the final nested ten-point group sum | `N41FullPointTree.nine_link_sound` in `FullPointTree.lean` | Any point type, binary sum, 19 nodes, and the exact nine-link tree, assuming each link implies its corresponding sum | Checked with pinned Lean 4.34.1; `#print axioms` reports only `propext` |
+| The N41 nonexceptional slope equations imply an elliptic-curve addition at each link | None | Characteristic-two curve `y²+xy=x³+1`, `x_left != x_right`, and the three emitted coordinate equations | Formalization partial: define the concrete field and curve point type in Lean and connect the slope, x, and y equations to its group law. The readable derivation is in `RESULT.md`; the frozen positive assignment and independently replayed nine links check the concrete instance. |
+| Every emitted CNF/native-XOR row implements the declared slope equations | None | Frozen `public.xcnf` and `control.xcnf` with the Karatsuba circuit generator | Formalization partial: a Lean parser/semantics for this generator and the exact emitted row set is missing. The producer checked all 174,583/174,594 CNF and 14,401 XOR rows on the known assignment; `verify.py` checks archived formula bytes and counts independently. |
+| Ordinary SAT model implies a valid ten-pair public relation | Runtime replay in `run.py` and the Lean structural theorem | A returned complete model, distinct source edges, nine nonexceptional group additions, and one of the four raw target preimages | Conditional verification path; the frozen public search reached its cap without a model, so this branch was not exercised. |
+
+Run `lean FullPointTree.lean` in this directory. The checked command exited zero, and `lean_check.txt` preserves its `#print axioms` output. `lean4checker --fresh` was unavailable on this host. This proof map does not replace the open coordinate-to-curve and XCNF-emission bridges with the structural theorem.

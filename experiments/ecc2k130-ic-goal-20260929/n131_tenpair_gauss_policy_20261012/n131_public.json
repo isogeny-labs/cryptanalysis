@@ -1,0 +1,38 @@
+{
+  "archived_formula": {
+    "gzip_sha256": "8c6ac448cc111609ee4ac731cb36d837db42114ce42e7620fa22cf61ecacc7e7",
+    "raw_bytes": 16141734,
+    "raw_sha256": "7832bf557829605e97945df5fa984e57a7df014b214b8b5923d7b83c997d79a0"
+  },
+  "candidate_id": null,
+  "command": [
+    "/opt/homebrew/bin/cryptominisat5",
+    "--threads=1",
+    "--xor=0",
+    "--maxnummatrices=0",
+    "--maxtime=450",
+    "--zero-exit-status",
+    "--verb=1",
+    "--printsol=1",
+    "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_tenpair_gauss_policy_20261012/n131_public.xcnf"
+  ],
+  "label": "n131_public",
+  "model_check": null,
+  "peak_combined_rss_bytes_sampled": 457523200,
+  "phase_ns_exploratory": {
+    "archive_replay": 34101375,
+    "model_check": 2458750,
+    "solver_and_terminal": 470024524250
+  },
+  "resource": {
+    "parent_cap_s": 470,
+    "rss_cap_bytes": 4294967296,
+    "solver_cap_s": 450,
+    "workers": 1
+  },
+  "solver_exit_code": -9,
+  "status": "PARENT_TIME_CAP",
+  "status_lines": [],
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "67a98dd5fed2657336848e2f4942a8bf84b1086d3df300f26bc581041059604a"
+}

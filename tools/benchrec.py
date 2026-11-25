@@ -178,6 +178,39 @@ def store_uri(cfg: dict, digest: str) -> str:
     return f"s3://{cfg['bucket']}/{cfg['store_prefix']}/{digest[:2]}/{digest}"
 
 
+def _is_path(v) -> bool:
+    return isinstance(v, str) and bool(v)
+
+
+def encoding_receipt(root: Path, logical: str) -> dict | None:
+    """The committed lossless-encoding receipt for a logical file, or None.
+
+    Format shared with tools/hydrate_bench_validations.py: a JSON object at
+    <dir>/derived-encodings/<stem>.json naming the logical file, a sibling gzip
+    archive, and the SHA-256 and byte count of both. A malformed receipt is None.
+    """
+    path = Path(logical)
+    receipt_path = root / path.parent / "derived-encodings" / (path.stem + ".json")
+    try:
+        value = json.loads(receipt_path.read_text())
+    except (OSError, ValueError):
+        return None
+    if not isinstance(value, dict):
+        return None
+    archive = value.get("archive_path")
+    if (value.get("original_path") != path.name or not isinstance(archive, str)
+            or Path(archive).name != archive or not archive.endswith(".gz")
+            or not str(value.get("encoding", "")).startswith("gzip")):
+        return None
+    for prefix in ("original", "archive"):
+        if not re.fullmatch(r"[0-9a-f]{64}", str(value.get(prefix + "_sha256", ""))):
+            return None
+        size = value.get(prefix + "_bytes")
+        if type(size) is not int or size < 0:
+            return None
+    return value
+
+
 def utcnow() -> dt.datetime:
     return dt.datetime.now(dt.timezone.utc).replace(microsecond=0)
 
@@ -218,7 +251,7 @@ def load_record(root: Path, ref: str) -> tuple[Path, dict]:
     if not p.is_file():
         raise SystemExit(f"benchrec: no record at {ref}")
     rec = json.loads(p.read_text())
-    if rec.get("schema") != SCHEMA:
+    if not isinstance(rec, dict) or rec.get("schema") != SCHEMA:
         raise SystemExit(f"benchrec: {ref} is not a {SCHEMA} record")
     return p, rec
 
@@ -675,7 +708,7 @@ def metric_errors(m: dict, name: str) -> list[str]:
     errors = []
     if not isinstance(m.get("name"), str) or not re.fullmatch(r"[a-z0-9][a-z0-9_./-]{0,80}", m["name"]):
         errors.append(f"{prefix} name must be a stable lowercase key")
-    if m.get("unit") not in UNITS:
+    if not isinstance(m.get("unit"), str) or m["unit"] not in UNITS:
         errors.append(f"{prefix} has unknown unit {m.get('unit')!r}")
     for key in ("value", "baseline", "reference"):
         if (key == "value" or m.get(key) is not None) and not finite_number(m.get(key)):
@@ -740,6 +773,14 @@ def integrity_exclusions(root: Path, cfg: dict, recs: list[tuple[str, dict]]) ->
     return data["records"]
 
 
+def _is_problem(value: object) -> bool:
+    return isinstance(value, str) and bool(value.strip())
+
+
+def _is_commit(value: object) -> bool:
+    return isinstance(value, str) and re.fullmatch(r"[0-9a-f]{40}", value) is not None
+
+
 def record_errors(root: Path, cfg: dict, rec: dict, name: str, *, require_closed: bool,
                   verify_s3: bool = False, manifests: dict | None = None,
                   allow_archived_raw: bool = True, excluded: bool = False,
@@ -753,11 +794,32 @@ def record_errors(root: Path, cfg: dict, rec: dict, name: str, *, require_closed
             e.append(f"{name}: missing field {k}")
     if e:
         return e
+    # Path fields are joined onto the checkout below; a non-string (a dict, a
+    # list, a number) is a malformed record, reported here instead of raising
+    # TypeError from Path.__truediv__.
+    if not isinstance(rec["reports"], dict):
+        e.append(f"{name}: reports must be an object")
+    else:
+        if rec["reports"].get("pdf") is not None and not _is_path(rec["reports"]["pdf"]):
+            e.append(f"{name}: reports.pdf must be a nonempty path string or null")
+        for k in ("svg", "png"):
+            v = rec["reports"].get(k, [])
+            if not isinstance(v, list) or not all(_is_path(x) for x in v):
+                e.append(f"{name}: reports.{k} must be a list of nonempty path strings")
+    if not isinstance(rec["entries"], list) or not all(_is_path(x) for x in rec["entries"]):
+        e.append(f"{name}: entries must be a list of nonempty path strings")
+    if not isinstance(rec["raw"], list) or not all(isinstance(r, dict) and _is_path(r.get("path"))
+                                                    for r in rec["raw"]):
+        e.append(f"{name}: raw must be a list of objects with a nonempty path string")
+    if e:
+        return e
+    if not _is_problem(rec["problem"]):
+        e.append(f"{name}: problem must be a nonempty string")
     if rec["schema"] != SCHEMA:
         e.append(f"{name}: schema {rec['schema']!r} is not {SCHEMA}")
     if rec["status"] not in STATUSES:
         e.append(f"{name}: status {rec['status']!r}")
-    if not re.fullmatch(r"[0-9a-f]{40}", rec["commit"]):
+    if not _is_commit(rec["commit"]):
         e.append(f"{name}: commit is not a 40-hex sha")
     stem = Path(name).stem
     if rec["id"] != stem:
@@ -785,12 +847,18 @@ def record_errors(root: Path, cfg: dict, rec: dict, name: str, *, require_closed
             e.extend(measurement_errors(rec, name))
     else:
         seen = set()
-        for m in rec["metrics"]:
-            e.extend(metric_errors(m, name))
-            key = str(m.get("name"))
-            if key in seen:
-                e.append(f"{name}: metric {key} listed twice")
-            seen.add(key)
+        if not isinstance(rec["metrics"], list):
+            e.append(f"{name}: metrics must be a list of objects")
+        else:
+            for m in rec["metrics"]:
+                if not isinstance(m, dict):
+                    e.append(f"{name}: metric must be an object")
+                    continue
+                e.extend(metric_errors(m, name))
+                key = str(m.get("name"))
+                if key in seen:
+                    e.append(f"{name}: metric {key} listed twice")
+                seen.add(key)
     for r in rec["raw"]:
         for k in ("path", "sha256", "bytes", "s3_uri"):
             if k not in r:
@@ -831,10 +899,32 @@ def record_errors(root: Path, cfg: dict, rec: dict, name: str, *, require_closed
             return True
         digest = manifests.get(p) if manifests is not None else None
         if not digest:
-            return False
+            return False if what != "validation file" else encoded_ok(p)
         if verify_s3 and not inventory.exists(store_uri(cfg, digest)):
             e.append(f"{name}: {what} {p} is in a .artifacts.json manifest but not at {store_uri(cfg, digest)}")
         return True
+
+    def encoded_ok(p: str) -> bool:
+        """A validation file kept only as a lossless gzip archive: true when its committed
+        derived-encodings receipt pins the archive by SHA-256, and that archive is in the
+        checkout with those bytes or store-backed through a manifest with that digest
+        (tools/hydrate_bench_validations.py restores the logical file from it)."""
+        receipt = encoding_receipt(root, p)
+        if receipt is None:
+            return False
+        archive = (Path(p).parent / receipt["archive_path"]).as_posix()
+        local = root / archive
+        if local.is_file():
+            return (sha256_file(local) == receipt["archive_sha256"]
+                    and local.stat().st_size == receipt["archive_bytes"])
+        digest = manifests.get(archive) if manifests is not None else None
+        if digest != receipt["archive_sha256"]:
+            return False
+        if verify_s3 and not inventory.exists(store_uri(cfg, digest)):
+            e.append(f"{name}: validation file {p} is encoded as {archive}, which is in a "
+                     f".artifacts.json manifest but not at {store_uri(cfg, digest)}")
+        return True
+
     for k in ("pdf",):
         p = rec["reports"].get(k)
         if p and not stored_ok(p, "report"):
@@ -882,7 +972,10 @@ def all_records(root: Path, cfg: dict) -> list[tuple[str, dict]]:
     if d.is_dir():
         for p in sorted(d.glob("*.json")):
             try:
-                out.append((rel(root, p), json.loads(p.read_text())))
+                record = json.loads(p.read_text())
+                if not isinstance(record, dict):
+                    raise ValueError("benchmark record must be an object")
+                out.append((rel(root, p), record))
             except ValueError:
                 out.append((rel(root, p), {"schema": "unreadable"}))
     return out
@@ -957,7 +1050,9 @@ def cmd_check(a, root: Path, cfg: dict) -> int:
                                   verify_s3=a.verify_s3, manifests=manifests,
                                   excluded=name in exclusions,
                                   inventory=inventory)
-        referenced.update(rec.get("entries", []))
+        entries = rec.get("entries", [])
+        if isinstance(entries, list):
+            referenced.update(d for d in entries if _is_path(d))
     if comparison is not None:
         base_ref, changes = comparison
         changed = [path for status, path in changes if status in {"A", "M"}]
@@ -1038,6 +1133,10 @@ def build_progress(root: Path, cfg: dict, *, replacement: tuple[str, dict] | Non
             raise ValueError(f"{name}: not a readable {SCHEMA} record")
         if r.get("status") != "measured" or name in exclusions:
             continue
+        if not _is_problem(r.get("problem")):
+            raise ValueError(f"{name}: problem must be a nonempty string")
+        if not _is_commit(r.get("commit")):
+            raise ValueError(f"{name}: commit is not a 40-hex sha")
         errors = measurement_errors(r, name)
         if errors:
             raise ValueError("; ".join(errors))

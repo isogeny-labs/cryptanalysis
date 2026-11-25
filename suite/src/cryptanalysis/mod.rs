@@ -172,6 +172,7 @@ pub mod ic_corpus;
 pub mod ic_descent_degrees;
 pub mod ic_engine;
 pub mod ic_framework;
+pub mod ic_fp2;
 pub mod ic_oracle_pricing;
 pub mod ic_progress;
 pub mod ic_run;
@@ -252,6 +253,9 @@ pub mod signature_corpus;
 pub mod solinas_correlations;
 pub mod sparse_macaulay;
 pub use crypto_analysis_core::statistical;
+pub mod sym_bridge;
+pub mod sym_ir;
+pub mod sym_techniques;
 pub mod symmetrized_semaev;
 pub mod tls12_kdf;
 pub mod tls13_kdf;
@@ -263,6 +267,7 @@ pub mod weil_charts;
 pub mod wide_groebner;
 pub mod xedni;
 pub mod xedni_lift;
+pub mod xedni_solver;
 
 pub use aut_folded_rho::{
     apply_aut, aut_folded_rho_dlp, canonical_form, AutElt, FoldedRhoOptions, FoldedRhoSolution,

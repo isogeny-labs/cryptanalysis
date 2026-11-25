@@ -1,0 +1,22 @@
+digraph TwoTorsionBoundary {
+  graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.35", ranksep="0.48"];
+  node [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=10,
+        color="#334155", fillcolor="#f8fafc", margin="0.12,0.08"];
+  edge [fontname="DejaVu Sans", fontsize=9, color="#475569"];
+
+  source [label="Public source over F_p\nE: y²=x(x²+ax+b)\nP̄, Q̄ and rational 2-torsion", fillcolor="#e0f2fe"];
+  lift [label="Cheon one-parameter lift\nx₁=t₁², x₂=−t₂²\nE_n: y²=x(x²+A_nx+B_n)", fillcolor="#ecfccb"];
+  factor [label="Exact factorization\nA_n²−4B_n = F₊(n)F₋(n)\nt₁(F₊−F₋)=4y₁", fillcolor="#fef3c7"];
+  rank2 [label="Published prime-value arm\n|B_n|, F₊, F₋ prime\nω(B_n)+ω(discriminant)−1 = 2", fillcolor="#ffedd5"];
+  noforce [label="Rank ≤2 only\nTwo selected points need rank ≤1\nto force dependence", fillcolor="#fee2e2", color="#b91c1c"];
+  successor [label="Discriminating successor\nshared prime support in F₊,F₋\nor a third non-torsion lifted point\nwith all search work charged", fillcolor="#ede9fe", color="#6d28d9"];
+  endpoint [label="Required Xedni endpoint\nexact target-bearing relation\nsource replay + fresh replication", fillcolor="#dcfce7", color="#15803d"];
+
+  source -> lift [label="public construction"];
+  lift -> factor [label="exact replay"];
+  factor -> rank2 [label="three primality proofs"];
+  rank2 -> noforce [label="published examples"];
+  factor -> successor [label="remaining route", color="#6d28d9"];
+  successor -> endpoint [label="only if certified", color="#15803d"];
+  noforce -> endpoint [label="does not establish", style=dashed, color="#b91c1c"];
+}

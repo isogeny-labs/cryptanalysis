@@ -1,0 +1,32 @@
+Traceback (most recent call last):
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/w23_target_xor_projection_gate_20261017/screen.py", line 110, in <module>
+    {'freeze': freeze, 'run': run}[sys.argv[1]]()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/w23_target_xor_projection_gate_20261017/screen.py", line 94, in run
+    n41c = load_module('n41_public_circuit', N41 / 'circuit.py')
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/w23_target_xor_projection_gate_20261017/screen.py", line 43, in load_module
+    spec.loader.exec_module(module)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n41_sixpair_shared_target_20261017/circuit.py", line 9, in <module>
+    w20=importlib.util.module_from_spec(spec);spec.loader.exec_module(w20)
+                                              ~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_selector_elimination_v2_20261013/selector.py", line 9, in <module>
+    spec.loader.exec_module(prior)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_output_inverse_linear_20261012/linear.py", line 17, in <module>
+    spec.loader.exec_module(prior)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "<frozen importlib._bootstrap_external>", line 1026, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_w20_inverse_trace_20261012/run.py", line 18, in <module>
+    import run as old  # noqa: E402
+    ^^^^^^^^^^^^^^^^^
+  File "/Volumes/SSD990/cryptanalysis/experiments/ecc2k130-ic-goal-20260929/n131_fixed_seed_ninepair_cubic_20261011/run.py", line 9, in <module>
+    import psutil
+ModuleNotFoundError: No module named 'psutil'

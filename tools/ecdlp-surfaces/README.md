@@ -5,7 +5,7 @@ classification and subgroup-transfer checks. It supports small odd-prime
 fields and the two pinned Koblitz fixtures over GF(2^83). Requires Rust 1.70 or newer.
 
 Agents can invoke `$ecdlp-surfaces` or read the
-[ecdlp-surfaces skill](../../.agents/skills/ecdlp-surfaces/SKILL.md) for when to
+[ecdlp-surfaces skill](https://github.com/isogeny-labs/workspace/blob/main/.agents/skills/ecdlp-surfaces/SKILL.md) for when to
 use each command, input requirements, reproducible examples, and output limits.
 
 ## Build and run

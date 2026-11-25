@@ -1,0 +1,18 @@
+{
+  "schema": "lead-testing.lead/v1",
+  "id": "pkm-iso-deg5",
+  "title": "PKM auxiliary-curve tower with Degree-5 Vélu levels (--iso-degrees 5)",
+  "hypothesis": "At equal information log2|V| on the m = 2 tower systems, an isogeny tower whose levels have degree 5 needs at most half the F4 work (max_cols and field ops) of the degree-2 isogeny tower, and the factor holds or grows with |V|; at m >= 3 it loses no cell the degree-2 tower completes.",
+  "prior_art": [
+    "crypto:research/pkm_odd_tower_f4_20261114 (EXP-PKM-ODD-001: Kummer odd degrees 3-8x lower F4 work at equal |V|, m = 2; isogeny I3/I23 equal to Kummer within 0.76-1.47x; m <= 3 only, ad hoc cells)",
+    "crypto:research/pkm_ideas_20261115 (dense membership polynomial cheaper than any tower under F4)",
+    "crypto:research/pkm_isogeny_tower_ecbench_20261015, crypto:research/pkm_supersingular_aux_20261015 (degree-2 isogeny tower, auxiliary search charged)",
+    "Petit, Kosters, Messeng, Algebraic approaches for the ECDLP over prime fields, sections 3.4-3.5",
+    "research-kb: MCP server not connected in this session (2026-11-23); searched by GitHub code search over isogeny-labs instead"
+  ],
+  "kind": "pkm",
+  "pkm": {
+    "args": ["--iso-degrees", "5"]
+  },
+  "gate_note": "The frozen PKM gate pairs cells by t. With degree-5 levels |V| = 5^t (isogeny kind only), so a cell at the same t carries more information than the reference; the equal-|V| comparison is read from the same rows by interpolating in log2_V (analysis script in this study), and reported beside the gate verdict, not in place of it."
+}
