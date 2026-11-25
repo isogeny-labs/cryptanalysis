@@ -1,0 +1,44 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T23:24:06Z",
+ "id": "PCC-20261123-be7ea0",
+ "kind": "measurement",
+ "producer": {
+  "commit": "99c9b4c2952af506ac6cb744fa4edcf760d52992",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/fiber-address.csv",
+    "sha256": "58158f1dc92453bdbf13443e2477099b2c4d4545a5623bcf7fa3b1d3ea37cc1b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/fiber-address.rs",
+    "sha256": "cf7abc5c15695a3b2b51185b5bb5a9438e1ac3b08468420ac64b64083384220e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/fiber-masks.csv",
+    "sha256": "d8cb3660d0a267795963723b16dcf1b4b384bb0fb433fa712ef4016f0f3b0cda"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/FiberAddress.lean",
+    "sha256": "eb94622aec78c70628ab1d6df0080432dbd05fac9d346eb5175bd0e80fc74831"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "Across 48 local ARM64 rounds on 32 fixed M31 terminals with precomputed masks, key-addressed generation pruning empty final sibling pairs returned the scalar canonical points, skipping 501 square roots and giving a 1.227 median within-round direct-to-pruned ratio including generation, lifting and per-fiber sorting."
+}

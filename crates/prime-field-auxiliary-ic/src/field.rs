@@ -343,7 +343,14 @@ impl<const B: u32> Curve<B> {
         Some(self.finish_add(left, right, slope))
     }
     fn finish_add(self, left: Point, right: Point, slope: u64) -> Point {
-        let x = F::<B>::sub(F::<B>::sub(F::<B>::sq(slope), left.x), right.x);
+        let x = if B == 31 {
+            let p = F::<B>::P;
+            // Canonical coordinates keep the offset nonnegative and the accumulator below 2^62.
+            let accumulator = slope * slope + (2 * p - left.x - right.x);
+            F::<B>::add(accumulator >> 31, accumulator & p)
+        } else {
+            F::<B>::sub(F::<B>::sub(F::<B>::sq(slope), left.x), right.x)
+        };
         Point {
             x,
             y: F::<B>::sub(F::<B>::mul(slope, F::<B>::sub(left.x, x)), left.y),
@@ -443,7 +450,136 @@ impl<const B: u32> Curve<B> {
         self.batch_add_inner(points, steps, scratch);
         Ok(())
     }
+    /// Add already validated points without repeating curve-membership checks.
+    ///
+    /// Both slices must have equal length. Every finite input must have been
+    /// produced or checked by this curve. This is useful for repeated batch
+    /// walks over a fixed, validated point set.
+    pub fn batch_add_assume_valid(
+        self,
+        points: &mut [Option<Point>],
+        steps: &[Option<Point>],
+        scratch: &mut BatchScratch,
+    ) -> Result<()> {
+        if points.len() != steps.len() {
+            return Err(Error::Invalid("batch length mismatch"));
+        }
+        self.batch_add_inner(points, steps, scratch);
+        Ok(())
+    }
+    /// Add one validated point to adjacent pairs of validated steps.
+    ///
+    /// Pairs with equal x coordinates share one affine denominator inverse.
+    /// Other pairs and exceptional chords use individual additions. The caller
+    /// must have checked every finite input against this curve.
+    pub fn batch_add_paired_x_assume_valid(
+        self,
+        point: Option<Point>,
+        steps: &[Option<Point>],
+        output: &mut [Option<Point>],
+        scratch: &mut BatchScratch,
+    ) -> Result<()> {
+        self.batch_add_paired_x_filtered_assume_valid(point, steps, output, scratch, |_| true)
+    }
+    /// Apply an exact x-coordinate rejection filter before materializing y.
+    ///
+    /// The predicate must return false only when no accepted point with that
+    /// x-coordinate exists. A rejected output is represented by `None`; the
+    /// caller must not interpret that `None` as an actual group identity.
+    /// Finite inputs must already have been checked against this curve.
+    pub fn batch_add_paired_x_filtered_assume_valid<P: FnMut(u64) -> bool>(
+        self,
+        point: Option<Point>,
+        steps: &[Option<Point>],
+        output: &mut [Option<Point>],
+        scratch: &mut BatchScratch,
+        mut may_contain_x: P,
+    ) -> Result<()> {
+        if steps.len() != output.len() || steps.len() % 2 != 0 {
+            return Err(Error::Invalid("paired batch length mismatch"));
+        }
+        let Some(left) = point else {
+            for (result, &step) in output.iter_mut().zip(steps) {
+                *result = step.filter(|p| may_contain_x(p.x));
+            }
+            return Ok(());
+        };
+        let count = steps.len() / 2;
+        scratch.prefix.resize(count, 0);
+        scratch.denominators.resize(count, 0);
+        let mut products = [1u64; 4];
+        for pair in 0..count {
+            let lane = pair % 4;
+            scratch.prefix[pair] = products[lane];
+            let den = match (steps[2 * pair], steps[2 * pair + 1]) {
+                (Some(a), Some(b)) if a.x == b.x && a.x != left.x => F::<B>::sub(a.x, left.x),
+                _ => 0,
+            };
+            scratch.denominators[pair] = den;
+            if den != 0 {
+                products[lane] = F::<B>::mul(products[lane], den);
+            }
+        }
+        let mut previous = [1u64; 4];
+        let mut total = 1;
+        for lane in 0..4 {
+            previous[lane] = total;
+            total = F::<B>::mul(total, products[lane]);
+        }
+        let mut carry = F::<B>::inv(total);
+        for lane in (0..4).rev() {
+            let product = products[lane];
+            products[lane] = F::<B>::mul(carry, previous[lane]);
+            carry = F::<B>::mul(carry, product);
+        }
+        for pair in (0..count).rev() {
+            let den = scratch.denominators[pair];
+            if den == 0 {
+                for offset in 0..2 {
+                    let result = self.add_inner(point, steps[2 * pair + offset]);
+                    output[2 * pair + offset] = result.filter(|p| may_contain_x(p.x));
+                }
+                continue;
+            }
+            let lane = pair % 4;
+            let inv = F::<B>::mul(products[lane], scratch.prefix[pair]);
+            products[lane] = F::<B>::mul(products[lane], den);
+            for offset in 0..2 {
+                let right = steps[2 * pair + offset].expect("generic paired step");
+                let numerator = F::<B>::sub(right.y, left.y);
+                let slope = F::<B>::mul(numerator, inv);
+                let x = if B == 31 {
+                    let p = F::<B>::P;
+                    let accumulator = slope * slope + (2 * p - left.x - right.x);
+                    F::<B>::add(accumulator >> 31, accumulator & p)
+                } else {
+                    F::<B>::sub(F::<B>::sub(F::<B>::sq(slope), left.x), right.x)
+                };
+                output[2 * pair + offset] = if may_contain_x(x) {
+                    Some(Point {
+                        x,
+                        y: F::<B>::sub(F::<B>::mul(slope, F::<B>::sub(left.x, x)), left.y),
+                    })
+                } else {
+                    None
+                };
+            }
+        }
+        Ok(())
+    }
     pub(crate) fn batch_add_inner(
+        self,
+        points: &mut [Option<Point>],
+        steps: &[Option<Point>],
+        scratch: &mut BatchScratch,
+    ) {
+        if cfg!(target_arch = "aarch64") && B == 31 && points.len() >= 32 {
+            self.batch_add_lanes::<4>(points, steps, scratch);
+        } else {
+            self.batch_add_lanes::<1>(points, steps, scratch);
+        }
+    }
+    fn batch_add_lanes<const W: usize>(
         self,
         points: &mut [Option<Point>],
         steps: &[Option<Point>],
@@ -451,30 +587,52 @@ impl<const B: u32> Curve<B> {
     ) {
         scratch.prefix.resize(points.len(), 0);
         scratch.denominators.resize(points.len(), 0);
-        let mut product = 1;
+        let mut products = [1; W];
         for i in 0..points.len() {
-            scratch.prefix[i] = product;
+            scratch.prefix[i] = products[i % W];
             let den = match (points[i], steps[i]) {
                 (Some(a), Some(b)) if a.x != b.x => F::<B>::sub(b.x, a.x),
+                (Some(a), Some(b)) if W > 1 && a == b => F::<B>::add(a.y, a.y),
                 _ => 0,
             };
             scratch.denominators[i] = den;
             if den != 0 {
-                product = F::<B>::mul(product, den);
+                products[i % W] = F::<B>::mul(products[i % W], den);
             }
         }
-        let mut inverse = F::<B>::inv(product);
+        if W == 1 {
+            products[0] = F::<B>::inv(products[0]);
+        } else {
+            // Invert all lane products with one field inversion.
+            let mut previous = [1; W];
+            let mut total = 1;
+            for (j, &product) in products.iter().enumerate() {
+                previous[j] = total;
+                total = F::<B>::mul(total, product);
+            }
+            let mut carry = F::<B>::inv(total);
+            for j in (0..W).rev() {
+                let product = products[j];
+                products[j] = F::<B>::mul(carry, previous[j]);
+                carry = F::<B>::mul(carry, product);
+            }
+        }
         for i in (0..points.len()).rev() {
             let den = scratch.denominators[i];
             if den == 0 {
                 points[i] = self.add_inner(points[i], steps[i]);
                 continue;
             }
-            let inv = F::<B>::mul(inverse, scratch.prefix[i]);
-            inverse = F::<B>::mul(inverse, den);
+            let inv = F::<B>::mul(products[i % W], scratch.prefix[i]);
+            products[i % W] = F::<B>::mul(products[i % W], den);
             let a = points[i].expect("generic batch point");
             let b = steps[i].expect("generic batch step");
-            points[i] = Some(self.finish_add(a, b, F::<B>::mul(F::<B>::sub(b.y, a.y), inv)));
+            let numerator = if W > 1 && a.x == b.x {
+                F::<B>::add(F::<B>::mul(3, F::<B>::sq(a.x)), self.a)
+            } else {
+                F::<B>::sub(b.y, a.y)
+            };
+            points[i] = Some(self.finish_add(a, b, F::<B>::mul(numerator, inv)));
         }
     }
 }
@@ -760,6 +918,28 @@ mod tests {
         field_case::<61>();
     }
     #[test]
+    fn m31_affine_coordinates_match_wide_remainders() {
+        let curve = Curve::<31>::new(2, 14).unwrap();
+        let p = u128::from(curve.modulus());
+        let edges = [0, 1, 2, (p / 2) as u64, (p - 2) as u64, (p - 1) as u64];
+        // finish_add is a polynomial once the slope is supplied. Testing
+        // arbitrary canonical inputs includes rare edge cases of the fold.
+        for slope in edges {
+            for x1 in edges {
+                for x2 in edges {
+                    let left = Point { x: x1, y: x2 };
+                    let right = Point { x: x2, y: x1 };
+                    let got = curve.finish_add(left, right, slope);
+                    let s = u128::from(slope);
+                    let x = (s * s + 2 * p - u128::from(x1) - u128::from(x2)) % p;
+                    let y = (s * (u128::from(x1) + p - x) + p - u128::from(left.y)) % p;
+                    assert_eq!(got.coordinates(), (x as u64, y as u64));
+                }
+            }
+        }
+    }
+
+    #[test]
     fn batched_exceptions_match_individual_additions() {
         let curve = Curve::<7>::new(2, 51).unwrap();
         let g = curve.point(3, 46).unwrap();
@@ -780,6 +960,11 @@ mod tests {
             .zip(&steps)
             .map(|(&a, &b)| curve.add(a, b).unwrap())
             .collect();
+        let mut prevalidated = points.clone();
+        curve
+            .batch_add_assume_valid(&mut prevalidated, &steps, &mut BatchScratch::default())
+            .unwrap();
+        assert_eq!(prevalidated, expected);
         curve
             .batch_add(&mut points, &steps, &mut BatchScratch::default())
             .unwrap();
@@ -788,6 +973,98 @@ mod tests {
             .batch_add(&mut points, &steps[..63], &mut BatchScratch::default())
             .is_err());
     }
+    #[test]
+    fn paired_x_batch_matches_checked_batch_and_exceptions() {
+        fn compare<const B: u32>(curve: Curve<B>, g: Point) {
+            let h = curve.add(Some(g), Some(g)).unwrap().unwrap();
+            let neg_g = curve.negate(g).unwrap();
+            let neg_h = curve.negate(h).unwrap();
+            let mut steps = Vec::with_capacity(1000);
+            for i in 0..500 {
+                let pair = match i % 4 {
+                    0 => [Some(g), Some(neg_g)],
+                    1 => [Some(h), Some(neg_h)],
+                    2 => [None, None],
+                    _ => [Some(g), Some(h)],
+                };
+                steps.extend(pair);
+            }
+            for point in [None, Some(g), Some(neg_g), Some(h)] {
+                let mut expected = vec![point; steps.len()];
+                curve
+                    .batch_add(&mut expected, &steps, &mut BatchScratch::default())
+                    .unwrap();
+                let mut actual = vec![None; steps.len()];
+                curve
+                    .batch_add_paired_x_assume_valid(
+                        point,
+                        &steps,
+                        &mut actual,
+                        &mut BatchScratch::default(),
+                    )
+                    .unwrap();
+                assert_eq!(actual, expected);
+                let mut filtered = vec![None; steps.len()];
+                curve
+                    .batch_add_paired_x_filtered_assume_valid(
+                        point,
+                        &steps,
+                        &mut filtered,
+                        &mut BatchScratch::default(),
+                        |x| x % 5 == 0,
+                    )
+                    .unwrap();
+                let expected_filtered: Vec<_> = expected
+                    .iter()
+                    .copied()
+                    .map(|p| p.filter(|q| q.x() % 5 == 0))
+                    .collect();
+                assert_eq!(filtered, expected_filtered);
+            }
+            assert!(curve
+                .batch_add_paired_x_assume_valid(
+                    Some(g),
+                    &steps[..999],
+                    &mut vec![None; 999],
+                    &mut BatchScratch::default(),
+                )
+                .is_err());
+        }
+        let small = Curve::<7>::new(2, 51).unwrap();
+        compare(small, small.point(3, 46).unwrap());
+        let m31 = Curve::<31>::new(1, 0).unwrap();
+        let g = (1..).find_map(|x| m31.lift_x(x).unwrap()).unwrap();
+        compare(m31, g);
+    }
+    #[test]
+    fn striped_batches_share_tangents_and_handle_partial_lanes() {
+        let curve = Curve::<31>::new(1, 0).unwrap();
+        let torsion = curve.point(0, 0).unwrap();
+        let g = (1..).find_map(|x| curve.lift_x(x).unwrap()).unwrap();
+        let h = curve.add(Some(g), Some(g)).unwrap();
+        let pairs = [
+            (Some(g), h),
+            (Some(g), Some(g)),
+            (Some(g), Some(curve.negate(g).unwrap())),
+            (Some(torsion), Some(torsion)),
+            (None, Some(g)),
+            (Some(g), None),
+            (None, None),
+        ];
+        let mut scratch = BatchScratch::default();
+        for len in [65, 0, 1, 31, 32, 33, 128, 63] {
+            let (mut points, steps): (Vec<_>, Vec<_>) =
+                pairs.iter().copied().cycle().take(len).unzip();
+            let expected: Vec<_> = points
+                .iter()
+                .zip(&steps)
+                .map(|(&a, &b)| curve.add(a, b).unwrap())
+                .collect();
+            curve.batch_add_lanes::<4>(&mut points, &steps, &mut scratch);
+            assert_eq!(points, expected);
+        }
+    }
+
     #[test]
     fn primality_handles_small_values_and_pseudoprimes() {
         for n in [0, 1, 4, 108, 341, 561, 3215031751, 3825123056546413051] {

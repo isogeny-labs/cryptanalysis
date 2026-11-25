@@ -1,0 +1,61 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-24T01:13:09Z",
+ "id": "PCC-20261124-6d5573",
+ "kind": "measurement",
+ "producer": {
+  "commit": "b3a9c8dc39422701a3bb673d137f0a7c8c138acb",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "7786e5b82cbf02cea24c5148892551e358f78661691dc9f5ba405383a5e74b6c",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/PeriodicCover.lean",
+   "theorem": "M31PeriodicCover.first_stable_depth"
+  },
+  {
+   "decl_sha256": "ea5473d41799faae7f862cc0a5c48992e43b3e6d418984e330ffe8c6b9e286a1",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/MixedCover.lean",
+   "theorem": "M31PeriodicCover.minimum_mixed"
+  },
+  {
+   "decl_sha256": "3cbafa971195c95d1c5634fb72612855d4742cabe4b89e5b3ad1b0baa3c4c321",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/MixedCover.lean",
+   "theorem": "M31PeriodicCover.attained_mixed"
+  },
+  {
+   "decl_sha256": "eb0c6f638575628d33eb445855005a3639968c86367c6601ac516cbc913f7de9",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/BoundedCover.lean",
+   "theorem": "M31PeriodicCover.first_mixed_horizon"
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/PeriodicCover.lean",
+    "sha256": "36cc3dcadf882b83b54a8133f46f7f8aad553b08539f92c54f8aa875002175ec"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/MixedCover.lean",
+    "sha256": "b68a5d3a411c279484fdf46908530774e3eed84e374628298590ee781605292c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/BoundedCover.lean",
+    "sha256": "7b3e069efc9651471bb26694265ad19cbdef05de984dac5f4b0b651d72657207"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "For the frozen 17 M31 points, the minimum terminal count over all depths is 11. The earliest common depth attaining 11 is 31. With point-specific depths including zero the earliest maximum depth attaining 11 is 29."
+}

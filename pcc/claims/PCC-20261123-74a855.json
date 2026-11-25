@@ -1,0 +1,70 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T23:36:21Z",
+ "id": "PCC-20261123-74a855",
+ "kind": "theorem",
+ "producer": {
+  "commit": "cb9cc054fdfe9817641aa8099f5a04e4d2edaac7",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "4e6826044d3904549fb06fbf386f9b8dc28004dcec0e6cffa8cd76f407c59add",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/PanelCoverage.lean",
+   "theorem": "M31PanelInitializer.panel_exact"
+  },
+  {
+   "decl_sha256": "61537da129a8c2336055f1761f83bbbb7167f68604d0565a8389b130167adae2",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/PanelInitializer.lean",
+   "theorem": "M31PanelInitializer.inverse_edges"
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/PanelCoverage.lean",
+    "sha256": "f500051d47ec0793e9fd9b6e01b8355530e6e6c3dedeed4e42de0e9dcac319b0"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/PanelInitializer.lean",
+    "sha256": "c87246698344cf9940c287ea539abfddb7c9702664f8c05b517a7d0f1ac587be"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/fiber-masks.csv",
+    "sha256": "d8cb3660d0a267795963723b16dcf1b4b384bb0fb433fa712ef4016f0f3b0cda"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/FiberOrbit.lean",
+    "sha256": "06554f2bd0b319d4b60ce812287c87f65d1d34f0c7f2b70a575a3026ea346da5"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/TorusOrder.lean",
+    "sha256": "88b03095b66b5e50374440febdde59204eab8af90a3ab4258e9367060efae906"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/FiberRecurrence.lean",
+    "sha256": "01cfbe2785e3c3f9196a1e944e93aa0b0b05161145ca0199997bcf6719d7031d"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "For all 32 archived terminals, the recurrence over ZMod 2147483647 from the computed leaf and neighboring trace enumerates exactly the 128 distinct geometric roots of the seven-step doubling polynomial over the terminal. All 224 inverse edges pass kernel computation."
+}

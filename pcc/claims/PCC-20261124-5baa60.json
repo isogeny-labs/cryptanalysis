@@ -1,0 +1,131 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-24T00:32:58Z",
+ "id": "PCC-20261124-5baa60",
+ "kind": "measurement",
+ "producer": {
+  "commit": "41f7e88b45ac9adca5e6a0f4cb7a1b5c6cb68c2d",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "e634a6c70013452af854e9c6ad82a9fd27f9e54e3b1d84af5f836d015fc67cbc",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/MaskEmit.lean",
+   "theorem": "M31MaskEmit.emit_spec"
+  },
+  {
+   "decl_sha256": "3fabcb6d4715927e31c17ca3eb0a979643ae04805758477f4e74793ec6925b65",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/MaskEmit.lean",
+   "theorem": "M31MaskEmit.insert_lanes"
+  },
+  {
+   "decl_sha256": "76746044b236afc57c8f7e425c9d5d5626a84bc6d8f5747dae4a15ed137b9b1d",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/MaskEmit.lean",
+   "theorem": "M31MaskEmit.reverse_lane"
+  },
+  {
+   "decl_sha256": "74b491b7aa0df645a6c0849c654be41be3d36fabeeb31d6c2ce3368843945485",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/MaskEmit.lean",
+   "theorem": "M31MaskEmit.upper_lane"
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/MaskEmit.lean",
+    "sha256": "9601d05bb1541654aa07b0a4d27dc9473d194899acfe832923d8030778283716"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/dual-bench.rs",
+    "sha256": "0e720028b9a56c03e149fa80a5abc718b298ffc0b251829de2c0ebf6b77fef6c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/fiber-half.rs",
+    "sha256": "22a6a1cce3392995f8965107921baec24bc4a16170004105bb2a7844b438997b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/packed-lift.rs",
+    "sha256": "700dbc2cc663836176d1c2e61c33b757302d10c9fb25a2fecfad24bfdb5a933b"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/packed-oracle.rs",
+    "sha256": "dfcfb69c8cec3cf700a83525fd4ec0df2007ce94509b9828aa2639f87fa921a2"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/torus7-build.rs",
+    "sha256": "554960dd93b3b13878b03966f7a537d6b1b2887cf91cfeef166864c78fc1ddef"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/replay-mask.py",
+    "sha256": "c174a1d69b9e783dffeb43fb4f1a8f6f88e54465684e0899102a640bcb779d61"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/mask-single.csv",
+    "sha256": "b8566ca25c522efbe6b792e3c00a5851256aeeb5faa251ffd76ab9cfcaca2ce2"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/mask-stream.csv",
+    "sha256": "8b89029f08a1c8f6634786ac29766a068eed46ba12bc5fbcc5b69c13e78d2d49"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/mask-fourth.csv",
+    "sha256": "a9c4e0fb43fcb75493044b06719f3472f7378d74e1483ca5804fd43db0b67581"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/mask-replay-single.csv",
+    "sha256": "0431faa7f4a80229bb0cf3d26d74d14ead05a3cccbfd3f3fa630e0c69c481b0a"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/mask-replay-stream.csv",
+    "sha256": "f2495d99313bc2fda82bcb42e36adb497dc6ce6ca56ecb6ec49c9cf0a86b7b71"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/mask-replay-fourth.csv",
+    "sha256": "afa9e0afb0a06f8ae0de2ce9881e73c341e3a7a40e96466f1a66c0a72697140a"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "Fourth-panel M31 two-table stream construction on M4 Pro yielded paired median speedups of 1.178 initially and 1.170 on publication replay. The mask method won 47/48 and 48/48 rounds."
+}

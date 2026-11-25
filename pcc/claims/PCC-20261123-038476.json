@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T23:05:30Z",
+ "id": "PCC-20261123-038476",
+ "kind": "measurement",
+ "producer": {
+  "commit": "f60ca70c5511917cb28bfe1dd3a48c6b750abb38",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/neon-lift-confirm.csv",
+    "sha256": "14bc0ff7fe6ca1c910175042b7c0ee1ade6246353b988de1c8df9f8e8c718ca3"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/neon-trace.csv",
+    "sha256": "995d78f09b7ddce8e5620c4073d0aebab5d078e51937fa567ffad03cac6b7bd1"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/neon-lift.rs",
+    "sha256": "49c38ddd4ba38ed528185e891cf66824ddd15f3111ac6c221344b6d31a5efeee"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "On Apple M4 Pro the explicit NEON M31 square-root chain at 32 lanes measured median matched-width portable/NEON table-build time ratio 1.271 across 36 balanced rounds. Positive-control trace-to-scan ratios were 1.230 for one batch and 0.987 for 256."
+}

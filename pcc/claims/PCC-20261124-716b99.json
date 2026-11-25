@@ -1,0 +1,117 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-24T00:45:52Z",
+ "id": "PCC-20261124-716b99",
+ "kind": "measurement",
+ "producer": {
+  "commit": "da65680fbe9a90558e0fbf7c657e8d5630fc03bd",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "9caf49d31f27e7b43e5d76fb0b10035739ce15ca351d9952e29020a952b335d1",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/VectorCubic.lean",
+   "theorem": "M31VectorCubic.mul_exact"
+  },
+  {
+   "decl_sha256": "f4ea6a03be3b0274ebe9a9a5555849905566ffc6a86aa5911d6c7cc31db39d8b",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/VectorCubic.lean",
+   "theorem": "M31VectorCubic.lane_reduce"
+  },
+  {
+   "decl_sha256": "21131d13da9db79cb6d47a52ffd267c4093ccc86461ad544d4dcd8a43c9a53da",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/VectorCubic.lean",
+   "theorem": "M31VectorCubic.horizontal_flags"
+  },
+  {
+   "decl_sha256": "5c84ec83bf2b3afdd2e469e45fd010010604c775b210e3700ee5e10c0697b2a8",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/BufferBound.lean",
+   "theorem": "M31BufferBound.buffer_bound"
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/vector-cubic.rs",
+    "sha256": "9bc605afe2f9e9444850d0b478f88b90c1719b014f1e989502f05b7922c96b4e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/VectorCubic.lean",
+    "sha256": "326e6eab92f7db6ee774e301ea97f29aea7e1bb7cdd81de09119e66632566fb8"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/BufferBound.lean",
+    "sha256": "7c4d32cc885e821ec3cf47ace354f281b2c0fe0fdc373de9f6162cd81f8efa51"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/dual-bench.rs",
+    "sha256": "82d865c87893519e49770c8a8fcefe0e04a378c1b0471de10c9ddf1d1d733ac2"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/neon-lift.rs",
+    "sha256": "01d6256214419742e25a08ea47342da77706c52bb1418531eed70d5767362e47"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/packed-oracle.rs",
+    "sha256": "a7a27a7554ab36d0b77ad976838da705cf0113ecd309fed3e1b0ccfdb175dff9"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/torus7-build.rs",
+    "sha256": "358ac1ab17b2b9968d16cdb8e459952df260dc180c42513ed8f80cd5f95701df"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/replay-owned.py",
+    "sha256": "0828d79e27a68fd70a71e660807c0d73370e9ad08c892b1a2cc0f078aecb51e0"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/owned-previous.csv",
+    "sha256": "a90bc445e5b2bbe59c0e2612a992a2080d5a9641dfee34f43e51525cacc83aa1"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/owned-fresh.csv",
+    "sha256": "21d7b2c3157ab037f2d2e09111df78f1b374cd8a73131d26659d7e974ee36f28"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/owned-interleaved.csv",
+    "sha256": "8820fd85d1aee6e835b8226af7b63028904426938c2ce6afcee45ae4abffb682"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "First-call owned M31 public table construction gave publication direct/fixed median paired ratios 0.993 and 0.990 on two groups. On the fresh group an interleaved comparison measured 1.083 for the prior build and 1.024 for publication."
+}

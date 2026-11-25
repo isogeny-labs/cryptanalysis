@@ -1,0 +1,15 @@
+# Projective kernel abscissae for the M31 auxiliary chain
+
+Each isogeny stage requires the abscissa of a finite point of order two. The prior constructor finds it with repeated affine point doubling. For y²=x³+a x²+b x, represent the starting abscissa by X/Z. One doubling gives ((X²−b Z²)², 4XZ(X²+aXZ+bZ²)). A zero denominator signals infinity. The implementation checks the terminal cubic in homogeneous coordinates to confirm the ordinate is zero, then normalizes the abscissa. Depth 15 uses 105 doublings across its 15 kernel computations. The generator-order checks and concrete homomorphism checks still run.
+
+Projective.lean proves the affine doubling formula from the tangent slope, the homogeneous formula's scaling identity, and the terminal test for nonzero scale. The C implementation uses the established Mersenne fold. The replay checks the output of the compiled routine against affine doubling for 672 cases, including infinity and finite non-kernel endpoints. It also checks every ordered root and the complete chain metadata at depths 8, 9, 10, 12, 15 and 17.
+
+Run `sh replay.sh` on the local arm64 host. Both arms use the sixteen-chain inversion, batched sibling checks, independent smoothness masks, and packed target lifting. The candidate changes the kernel-generator calculation alone. Every complete depth-15 setup returns the same 195 ordered points. Each panel alternates 128 measured pairs after eight warmup pairs. Median paired wall speedups are 1.223× and 1.244× in the two builds. This compares Python affine doubling with native projective doubling, so both the arithmetic and the execution language contribute to the observed difference.
+
+## Native affine controls
+
+Run `sh replay.sh controls` for complete basis preparation with Python affine, native affine with Fermat inversion, native affine with extended Euclidean inversion, and native projective doubling. Each of the 24 four-arm orders appears once in warmup and four times in measurement. Both native affine controls reproduce all six frozen chains and pass the same 672 affine oracle checks. Both builds validate every timed basis against the ordered reference.
+
+Relative to native affine Euclidean inversion, the complete projective setup gave paired median wall gains of 1.017× and 1.023× (61/96 and 55/96 faster pairs). Against Python affine, projective gave 1.237× and 1.236×. Native affine Euclidean inversion alone gave 1.218× and 1.208× against Python affine. Most of the measured complete-setup improvement is already present in the native affine control.
+
+Run `sh replay.sh stages` to isolate the exact 15 kernel requests captured during one depth-15 construction, including one ctypes call per stage. All six execution orders were balanced in 96 blocks, each arm repeating the requests 32 times per timing. Paired median wall gains for projective were 2.164× over native affine Fermat and 1.849× over native affine Euclidean inversion. Median times per 15 requests were 16.50, 13.79 and 7.30 microseconds for Fermat, Euclid and projective respectively.

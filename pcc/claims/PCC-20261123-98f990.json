@@ -1,0 +1,103 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T23:48:55Z",
+ "id": "PCC-20261123-98f990",
+ "kind": "measurement",
+ "producer": {
+  "commit": "6e6a7c8ad15bc4937773695f71af2153aa48a46b",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "45c5c88228f267cd4afcf70cf8a2be4a31e59f2cf141c6dc9128aca200863d15",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/SignedSquare.lean",
+   "theorem": "M31SignedSquare.fold_range"
+  },
+  {
+   "decl_sha256": "648690732844ef7b8ac63972431ee756fe5d2d51aa03502408361c5fa5e7f15d",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/SignedSquare.lean",
+   "theorem": "M31SignedSquare.no_saturation"
+  },
+  {
+   "decl_sha256": "6abf318a581dd9e3ab6d908523f4ed5b0f04121c14c92f223b6906b598debb68",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/SignedSquare.lean",
+   "theorem": "M31SignedSquare.chain_equiv"
+  },
+  {
+   "decl_sha256": "63fe6e8afdf4e5c3109aca0c8c709fc04ac0436ee18081270df6399c91b8e48a",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/SignedSquare.lean",
+   "theorem": "M31SignedSquare.canonical_eq"
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/SignedSquare.lean",
+    "sha256": "a2e0fe4fb6dc804ff98f171776cc54b308e928850bb19c7239986568e5e9971c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/signed-square.rs",
+    "sha256": "64002a1b1c7b5605d8aaec1786949b97999efe1ea764f454349689e84bcf04e2"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/signed-square.csv",
+    "sha256": "102be1264339d0a6cd86fde6b243a20dcc61d2fafda47341e746faaa57fcb3de"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/signed-complement.csv",
+    "sha256": "9e3376e7a1520211893f714f3d3d84bddc74ed6c9a7ecad9879a2e676bea60cb"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/signed-single.csv",
+    "sha256": "e907657fbebbbe5cb491140bd5a68eec0cf19d8a489650f2adbeac13855dcbd8"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/fiber-half.rs",
+    "sha256": "a663681686541f34520d111635e96c252185bcac4bec8f30af69b6fd659480ad"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/paired-cubic.rs",
+    "sha256": "fb5b50314385b5b21c231a4eecc4a56114673ab1b13a1459f184e75861df1204"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/neon-lift.rs",
+    "sha256": "eaeb2641cfbc53edae935dbdd27f12d6a451debdd283eb0d36b877e9ac413e4a"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/torus7-build.rs",
+    "sha256": "940c5acfdbc9b73c122e3588e35a25cf70e4b42fad0b70a1ad1e74da487c36c4"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "On individual M31 terminals with all three builds timed directly, the packed recurrence with signed squaring gave median paired ratios over the inverse tree of 5.867 on the archived group and 5.962 on the holdout. Incremental ratios over the packed canonical kernel were 1.057 and 1.064."
+}

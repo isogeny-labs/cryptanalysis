@@ -1,0 +1,49 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T22:05:49Z",
+ "id": "PCC-20261123-6aa109",
+ "kind": "measurement",
+ "producer": {
+  "commit": "b78eb3cff2fc69ce727aa26f6f6d1dab704bd1b8",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/word-confirm.csv",
+    "sha256": "d1cb3f7e904aca9e2760a1a4f01028f12b4c8467466ac648bbf9e9287a3b3d22"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/word-screen.csv",
+    "sha256": "f0837162e10e97d57e10fefd22a69d4a527136eda81a6e2247a52cb0d2c13e31"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/census.cpp",
+    "sha256": "c34f2318bf55ee9f167fd74517c5d2e7b693eec671882b02b55ed3613a978325"
+   }
+  },
+  {
+   "decl_sha256": "2adb534a7ba1d5cc18dbd026bb1512b525b1ba4c5f5119681704fea5c9d22a2d",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/WordReduction.lean",
+   "theorem": "M31FourCoverage.WordReduction.fold_correct"
+  },
+  {
+   "decl_sha256": "6b3a49348b0958eaaec086f8885e6e428906e7028b9681ca8734262492567301",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/WordReduction.lean",
+   "theorem": "M31FourCoverage.WordReduction.offset_correct"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "In six balanced local launches per variant per mode, folding the abscissa square and both subtractions together had median paired wall speedups of 1.063 for five-prefixes, 1.078 for simple-five and 1.045 for radius-four relative to b78eb3cff."
+}

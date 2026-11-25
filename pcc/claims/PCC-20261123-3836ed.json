@@ -1,0 +1,76 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T23:56:37Z",
+ "id": "PCC-20261123-3836ed",
+ "kind": "measurement",
+ "producer": {
+  "commit": "23f8ef6a43ae4d4cbbc711fd24274955d5f3c9ad",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "b57eafe182ad773e01a5e724217e7798021b30733360c800e885e71c9cab06f0",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/FixedWeights.lean",
+   "theorem": "M31FixedWeights.weighted"
+  },
+  {
+   "decl_sha256": "43dbd1a875e38627ffa2ae13376475ce7bd0ca0ca3efcf80d37e7038bb6eb03d",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/FixedWeights.lean",
+   "theorem": "M31FixedWeights.weighted_terminal"
+  },
+  {
+   "decl_sha256": "78fcb06249f937b94b80926d277a0ffb6f68b4b847ee43c837c509580a1fc63e",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/FixedWeights.lean",
+   "theorem": "M31FixedWeights.fixed_half"
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/FixedWeights.lean",
+    "sha256": "2b06ae180329074c496c20fbc824c4ff7fa47e79945aecba1fecfbcbeb884b21"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/fixed-step.csv",
+    "sha256": "8b5564525369d959e0badb0503bb23d8bc5fca3ffb2ec6e2798e9ba24909fd3d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/fixed-step-phases.csv",
+    "sha256": "6e9f942b6f168c2242ff3b26c795d5c60076089c846ace8922d58aa06da1bdaa"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/fixed-weights.csv",
+    "sha256": "0b7a1d5fc6b188619d66cf725affda0194c6806dbfbe4c94da4291559313edae"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/fiber-half.rs",
+    "sha256": "4269fd592705b87c59bd065eec19a801c1b2cad6d6ef5879d6ed5f4692a48b2f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/table-phases.rs",
+    "sha256": "ff54e28404e05aa91588c25a67075665bcd56ecb2a2b10adc8901119a8992438"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "On Apple M4 Pro, a shared M31 trace coefficient and 64 compile-time weights reduced single-table median times to 1170.3 ns on archived terminals and 1172.7 ns on holdout. Median paired control-to-weight ratios were 1.090 and 1.087, with all 64 terminal medians favoring weights."
+}

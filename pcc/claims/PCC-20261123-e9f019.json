@@ -1,0 +1,49 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T23:32:12Z",
+ "id": "PCC-20261123-e9f019",
+ "kind": "theorem",
+ "producer": {
+  "commit": "1cbb8d58eae28e0ec7e35d1d99cee57783bcd512",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "5d910754c1172ebd05e5d9346152326563fe044ea4cde766baefb438d2a26e5c",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/FiberOrbit.lean",
+   "theorem": "M31FiberRecurrence.generated_exact"
+  },
+  {
+   "decl_sha256": "63ea1cf11427503c0b22721d3e09818328818655383e5ab3ff796b9440b0a6cb",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/FiberOrbit.lean",
+   "theorem": "M31FiberRecurrence.archived_generated_exact"
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/FiberOrbit.lean",
+    "sha256": "06554f2bd0b319d4b60ce812287c87f65d1d34f0c7f2b70a575a3026ea346da5"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/TorusOrder.lean",
+    "sha256": "88b03095b66b5e50374440febdde59204eab8af90a3ab4258e9367060efae906"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/FiberRecurrence.lean",
+    "sha256": "01cfbe2785e3c3f9196a1e944e93aa0b0b05161145ca0199997bcf6719d7031d"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "For nonzero z of order 2^31 and a valid discriminant neighbor, the 128 trace recurrence slots are distinct and exhaust the seventh doubling-polynomial fiber. Over the archived terminal 340921998 the trace fiber condition implies the required order."
+}

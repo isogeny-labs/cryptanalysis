@@ -1,0 +1,12 @@
+p=2^31-1;
+print("first_bits,suffix_count,ordinary_states,complement_classes");
+{
+for(order=0,1,
+  rows=vector(32768);
+  for(j=0,39,
+    for(i=1,#rows,
+      x=if(order==0,(i-1)*65536+j,(i-1)+32768*j);
+      rows[i]=2*rows[i]+(kronecker(x^3+2*x+14,p)>=0));
+    mask=2^(j+1)-1;
+    print(if(order==0,"high","low"),",",j+1,",",#Set(rows),",",#Set(apply(z->min(z,mask-z),rows)))));
+}

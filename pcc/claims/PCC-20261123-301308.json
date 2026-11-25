@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T22:30:15Z",
+ "id": "PCC-20261123-301308",
+ "kind": "measurement",
+ "producer": {
+  "commit": "400f7edb4347322ebadd0797f793caff7cd47e53",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/membership-71.csv",
+    "sha256": "04c7d34e6e57bcaaba17da796a859b20b343ab207505509400673214fdaca533"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/membership-bench.rs",
+    "sha256": "766239e9d6a9b75f90d2de2749c3499ac049cde45a9192acbe545daa5daf2b49"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "For standalone 71-key membership, a 256-slot exact directory with sorted collision fallback measured median paired speedups of 3.046x, 3.263x and 2.367x for zero, one eighth and all hits across 24 seeded tables on arm64."
+}

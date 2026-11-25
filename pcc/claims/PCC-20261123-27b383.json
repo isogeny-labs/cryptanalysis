@@ -1,0 +1,49 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T22:18:27Z",
+ "id": "PCC-20261123-27b383",
+ "kind": "measurement",
+ "producer": {
+  "commit": "57065b59cf88fd5725c24f048e6cdae92f7cf702",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/rust-tangent-confirm.csv",
+    "sha256": "ab0b86d4df353d26eff9c4af04d23a96ac588ea10999e6567e65896d1055d4d8"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/rust-batch-width.rs",
+    "sha256": "7c97e246bff5aade6471a73a1df2377f94472bd88b0b261732f9357c5e03a2be"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "crates/prime-field-auxiliary-ic/src/field.rs",
+    "sha256": "a4df53d1eec21caee008b33c8af4828d49143b3c75161030dceeae73236ec335"
+   }
+  },
+  {
+   "decl_sha256": "e8c7b86b2c3f3c46ad8796b1f1e30698cc4ac3eebd8eadf3d5c14542952bf4da",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/PairInversion.lean",
+   "theorem": "M31FourCoverage.PairInversion.striped_product"
+  },
+  {
+   "decl_sha256": "773dc39ce9e4a2a2011d487685ecf4b6ee0918de3523c688623e32f5d5c88e00",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/PairInversion.lean",
+   "theorem": "M31FourCoverage.PairInversion.tangent_slot"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "crates/prime-field-auxiliary-ic/src/field.rs",
+ "statement": "In twelve paired local M4 Pro comparisons, four product lanes with shared tangents on 64-point Rust M31 batches had median paired speedups of 1.142x for ordinary additions, 1.492x with one exceptional slot per eight and 3.693x for the all-exception mix, relative to 57065b59c."
+}

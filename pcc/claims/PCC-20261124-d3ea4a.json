@@ -1,0 +1,103 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-24T00:26:41Z",
+ "id": "PCC-20261124-d3ea4a",
+ "kind": "measurement",
+ "producer": {
+  "commit": "e1a36fa3824813f09c307228798d9c521d2e3df4",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "decl_sha256": "20906874e5f191df7cf2627e8a880bf8708c04d23c5a5d664f207be7b5658b0a",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/MirrorOrder.lean",
+   "theorem": "M31MirrorOrder.ordered"
+  },
+  {
+   "decl_sha256": "176d6723f534de2472ef578bcd06ba1b3774e83bf520fa3a5aaf03e4193d1cea",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/NetworkBits.lean",
+   "theorem": "M31Network.ordered"
+  },
+  {
+   "decl_sha256": "e57e4a98371dd8de0e09ffe18ddf78667c5b78162828abf66ae79e6a6d3e4f03",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/CompareExchange.lean",
+   "theorem": "M31Comparator.network_perm"
+  },
+  {
+   "decl_sha256": "6e0900277ae19777b77c1f792d6f8bac9e7643e5ecc1e842831cac2b2f4a4302",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/CompareExchange.lean",
+   "theorem": "M31Comparator.threshold_gate"
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/packed-lift.rs",
+    "sha256": "c76478f6b53195a08342bf3b912aa1959e0a861141b5253ca2530e0feb91deb1"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/dual-bench.rs",
+    "sha256": "21f3970dfdf4ade531dfec6f40c683762ca5e692989020470f33c8a5d09adad3"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/fiber-half.rs",
+    "sha256": "622888fbd7ccbdb6f477779b322edbca96c502f20c133508c6bc85e3e2be2115"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/extract-network.py",
+    "sha256": "c169ef0901ba75ee9ab32dc1b81c14b91e5bbb08efc13ea5e2500e23356f1bc5"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/network-screen.csv",
+    "sha256": "f846879dfb1dcbce74146ee01456ea00dcf391505ba638ba2ccc45b524d272e7"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/network-repeat.csv",
+    "sha256": "c051522d40a79458b03f884a873bf29cf26ff2072658dbcee9c103177770ed4c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/MirrorOrder.lean",
+    "sha256": "adeab19d266bb2043fa67cea843a288bcf90bf9615e24527602d3969e5e17eab"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/NetworkBits.lean",
+    "sha256": "352c2ba489833661fe5b301e4b07672fecde656970ade8458e43f036e6729f09"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/CompareExchange.lean",
+    "sha256": "727271736d3429a63acd6019d4352eb20931d73ffed2a2ba40b1aa2a81e64364"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "Sorting sign-pair representatives with a fixed network gave median paired speedups of 1.048, 1.050 and 1.049 over the shared two-table M31 builder on three 32-terminal M4 Pro groups. A repeat gave 1.045, 1.052 and 1.047."
+}

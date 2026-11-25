@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T22:32:20Z",
+ "id": "PCC-20261123-600ba9",
+ "kind": "measurement",
+ "producer": {
+  "commit": "0b740702e4971b794f1c8464dff0fa75a784136c",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/torus7-coordinate-lookup.csv",
+    "sha256": "faf6297a9f6bd88bb3e39bc9cf2b6ef4b5abd52503a374ada6cff85f24dd4de0"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/rust-batch-width.rs",
+    "sha256": "ac9add9d2fdc3f00724658b1051ede67450a732e52ba25440ab2b8af8d2d7749"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/torus7_keys.py",
+    "sha256": "c24c5f04f4242051554a5b6a53b45023c6205110b094803ca5caab8896cc2cb6"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "On the digest-matched M31 Torus7 table, native arm64 four-lane point addition followed by full exact bucket membership scans was 1.261x faster by median paired ratio than addition plus binary search across 24 seeded warm rounds. Measured random panels contained zero hits."
+}

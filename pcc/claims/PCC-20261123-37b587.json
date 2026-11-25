@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T21:38:43Z",
+ "id": "PCC-20261123-37b587",
+ "kind": "measurement",
+ "producer": {
+  "commit": "868662e66215923c2734caa08b51f4ac328d6921",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/inversion-timings.csv",
+    "sha256": "fc905e09f9737c2f8eb036cf84ae5d675cfd7e73bcf72010082f57a28a2dc460"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/census.cpp",
+    "sha256": "9c30bd3bfb899d4835eaeafa346aa5cdb6adf7622fd19e08693b12c3b492b184"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "Six interleaved local M4 Pro measurements per build on the frozen 195-point M31 five-prefix census gave median wall times of 2.631607 s for parent 868662e66 and 1.730589 s for paired four-lane inversion with a Mersenne addition chain."
+}

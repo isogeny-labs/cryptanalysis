@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T22:46:42Z",
+ "id": "PCC-20261123-d6b5be",
+ "kind": "measurement",
+ "producer": {
+  "commit": "43a833a97a798f608bc05b298e4bf4779454ee95",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/torus7-twist.csv",
+    "sha256": "f3fa755e4935d7b64f4ef5031038d31f8b0e9d25af7d95c6e343c8bc3e5caf23"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/torus7-build.rs",
+    "sha256": "6da53151cae19b25800b2d5c3756f5a311a07d7fc41041551d86d723e1f87793"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "Joint base and quadratic-twist coordinate table construction over the M31 Torus7 fiber took median paired 1.410x less time expressed as separate/joint ratio over 32 local rounds. Both methods use eight-lane lifting and share fiber enumeration."
+}

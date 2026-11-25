@@ -1,0 +1,43 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T22:14:21Z",
+ "id": "PCC-20261123-154f09",
+ "kind": "measurement",
+ "producer": {
+  "commit": "663fc4fb56e5a0f6c419f42a7a5c03c1e234a2fc",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/rust-affine-inner.csv",
+    "sha256": "275698a9afe36530f382983897a0cd8c9bccabaf8cecd04fee3b2e80e4a26037"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/rust-affine-checked.csv",
+    "sha256": "cd506c8f8faddd0985a6aedbecf32ac12efc60e94f3aa18b7548c2a8c3a61b12"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "crates/prime-field-auxiliary-ic/src/field.rs",
+    "sha256": "b959a2cc853abf218b2c84fe47300d3493e500360ba1ed2b00a8bd4355cc0fff"
+   }
+  },
+  {
+   "decl_sha256": "cf452f83c78f10a46f2eba3db45c8251de753273f0b68742eec3d1224f4bc02d",
+   "kind": "lean",
+   "project": "experiments/prime-field-auxiliary-ic/m31-four-coverage/WordReduction.lean",
+   "theorem": "M31FourCoverage.WordReduction.rust_abscissa"
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "crates/prime-field-auxiliary-ic/src/field.rs",
+ "statement": "On the local Apple M4 Pro the M31 Rust affine specialization improved ordinary 64-point batches by a median paired 1.058x in the internal batch path and 1.046x in the separately built checked API panel."
+}

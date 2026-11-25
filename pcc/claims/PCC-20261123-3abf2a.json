@@ -1,0 +1,44 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T21:47:46Z",
+ "id": "PCC-20261123-3abf2a",
+ "kind": "measurement",
+ "producer": {
+  "commit": "584008c53793ef61c4bd5ef18cd07b76ab9d9908",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/private-pivots.csv",
+    "sha256": "d4d7f40e3fa48c68e196e9776efdafd72023d40be726f6a19f3bc4fbf77db190"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/private-pivots-seed3.csv",
+    "sha256": "b10d7805a3c1656d2329bc44df5c05de2bed6b97748ac82a12a17f0a8c4c2789"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/PrivatePivots.lean",
+    "sha256": "1753f06d26e85e87bb5bfef952a67610608272559e19ff5e984c3e23532049a2"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/replay_private_pivots.py",
+    "sha256": "efdc4e15fd6df4d96e546be318c9adaf006fda775deb2e71765e815d7bc013e3"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "Private-coordinate deletion counts give rank 20 for the smooth and rank 21 for the selected seed-3 control among signed five-distinct-label M31 zero-sum classes. Each single deletion decreases the full count by one; the cumulative deletions leave one nonzero residual for the smooth basis and zero for seed 3."
+}

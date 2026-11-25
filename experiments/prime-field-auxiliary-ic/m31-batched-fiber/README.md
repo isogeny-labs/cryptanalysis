@@ -1,0 +1,7 @@
+# Batched sibling validation for the public M31 auxiliary fiber
+
+Run `sh replay.sh` on the local arm64 host. The control uses the published sixteen-chain inversion and single-call packed target lift. Both arms copy the root buffer and check all sibling constraints on valid fibers. The candidate checks input canonicality during the first fold, uses Mersenne reduction for products, and combines error words with bitwise OR. It rejects at the end of the first failing row. The scratch state on rejection is disposable. Clang's -O3 vectorization report on M4 Pro gives width four and interleave count four for the inner loop.
+
+Each panel has 128 alternating pairs per scope after eight warmup pairs. Validation starts from the frozen depth-15 fiber and includes the checker's scratch copy and FFI marshalling. Setup regenerates the entire public basis and checks the 195 ordered points against the independent reference. The two builds gave median paired wall gains of 2.000× and 1.998× in validation, and 1.051× and 1.041× in complete setup.
+
+The differential checks include corrupt roots at either end and across the half boundary, noncanonical encodings, invalid map coefficients at every level, duplicate siblings, empty and odd lengths, and a wrong terminal. Timings cover valid inputs. Errors.lean proves that a zero accumulated error word is equivalent to all rows' lane flags being clear, and characterizes the individual word comparisons. The published M31Reduction.lean and packed-fiber proofs cover field reduction and the underlying sibling identities.

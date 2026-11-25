@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-23T22:36:53Z",
+ "id": "PCC-20261123-e90f07",
+ "kind": "measurement",
+ "producer": {
+  "commit": "9990605f4fd3adca962ef0cfd77b7dc9c6dff51b",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/torus7-combined-anchor.csv",
+    "sha256": "fd9720a1371519561ca4ec140179f7e6837a52f86d56d5cdef3e9ab747aa6141"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "experiments/prime-field-auxiliary-ic/m31-four-coverage/rust-batch-width.rs",
+    "sha256": "ef2c7de94ff36f7a8a9ea8c2eef5b40a0e644513ddeab010b23868129afe4197"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "experiments/prime-field-auxiliary-ic/m31-four-coverage",
+ "statement": "Across 24 fresh paired arm64 rounds, the archived Torus7 full coordinate and membership benchmark measured a median 1.975x speedup for signed-pair arithmetic and exact buckets versus the original affine batch with sorted lookup. Both used identical public inputs per round."
+}
