@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-24T17:49:52Z",
+ "id": "PCC-20261124-bd9f3a",
+ "kind": "statement",
+ "producer": {
+  "commit": "0bee50b57d03391c8391ddf6a3f899ea8eefa172",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/p192_tower_horizontal_s5_depth3_confirm.jsonl",
+    "sha256": "34b0de7dbcf65b78903739726e584834d7cd9004d7ee4e6c35ba4f7139d99c2d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/p192_tower_horizontal_s5_depth3_identity.jsonl",
+    "sha256": "5107e6caa87011c56f7a411756b9dc267304bbcb92dee4029c39fb0f3f2c32a7"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "P-192 depth-3 auxiliary-fiber source, degree-5 endpoint, and identity-wire local component screens on one planted and one seeded-negative query",
+ "statement": "The prospectively ordered four-block source versus mapped5 confirmation completed 16 of 16 runs with matching SAT and exact point truth; mapped5 had lower wall time in seven of eight pairs, failing the preregistered all-pairs criterion. In a separate exploratory identity-wire control with equal variable and equation counts, identity was faster than mapped5 on both queries."
+}

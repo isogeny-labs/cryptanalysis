@@ -1,0 +1,30 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-25T02:25:37Z",
+ "id": "PCC-20261125-560b99",
+ "kind": "statement",
+ "producer": {
+  "commit": "d497d6a3b1e6276b570fd9bacd0a1e2f4ede7ecc",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/NATIVE_THREE_SUM_REPORT.md",
+    "sha256": "47a16b8a98813a9de304ece9aec47e16bb757531ac8e6c5d34459ca7768f9a4f"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/native_three_sum_results.json",
+    "sha256": "01a12ce0fa3855eaead90ea4bc822a6d181094186f14083486578aa91fd450a7"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Exact full-group support for the two fixed curves and the frozen native base rule only",
+ "statement": "In the frozen p=1009 horizontal-pair native eight-point low-x base census, source three-sum support is 96 of 1068 nonidentity targets and codomain support is 92 of 1068; the codomain arm has no yield gain under this rule."
+}

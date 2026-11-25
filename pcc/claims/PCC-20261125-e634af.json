@@ -1,0 +1,37 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-25T05:18:16Z",
+ "id": "PCC-20261125-e634af",
+ "kind": "statement",
+ "producer": {
+  "commit": "28fecc2a4500bf309d2d03af2c5e002b0e2f92d9",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/TWO_SEED_ORBIT_REPORT.md",
+    "sha256": "168d2d12b117056aa377be5278a5fc1345e66cf8819c86d06d0319e45fb477d5"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/two_seed_orbit_results.json",
+    "sha256": "5b14674e2cb4a1a1bb06b7c72788aad57497f18ebe6acae00b7f240eb55b6e3c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/two_seed_orbit_scalar_replay.py",
+    "sha256": "e027662c32f75ae3ff291e0eab590cbddb2828be662bdaebaaa247b40ea3397f"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "research/cm_joint_s4_20261123/TWO_SEED_ORBIT_REPORT.md",
+ "statement": "The frozen D=-19 two-seed horizontal-orbit census found 216 informative indexed triple relations covering 46 of 60 target labels, none at preselected d=3; the CM and matched scalar arcs had identical indexed points and relation counts."
+}

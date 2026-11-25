@@ -1,0 +1,30 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-25T21:26:19Z",
+ "id": "PCC-20261125-e28f9c",
+ "kind": "theorem",
+ "producer": {
+  "commit": "6c4d5babeab602967af65c7d861050ccc81d2cf1",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/SIGNED_THREE_SUM_CEILING.md",
+    "sha256": "827c9cc76b3b2b00f8af93be1573c2fcd617b37785dfba1f81a151420913ec1d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/signed_three_sum_ceiling.py",
+    "sha256": "a2c8d1613866a4da217644ccfbf76f988977827e5c4292e2cf67bc86c360ee09"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "research/cm_joint_s4_20261123/SIGNED_THREE_SUM_CEILING.md",
+ "statement": "In an odd-order abelian group, the nonidentity three-sum support of a signed base of 2m distinct nonzero points is at most binom(2m+2,3)-2m(m-1); at m=4 the ceiling is 96, attained by the fixed F_1009 source base, so equal-size signed bases on its degree-5 horizontal pair cannot improve its uniform three-sum yield."
+}

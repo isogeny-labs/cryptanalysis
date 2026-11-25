@@ -1,0 +1,30 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-25T05:43:02Z",
+ "id": "PCC-20261125-2e9c39",
+ "kind": "theorem",
+ "producer": {
+  "commit": "b6a015cee338dba1a634bbd93c4f7bb0f0a4b93a",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/ORBIT_PAIR_DESCRIPTOR_GATE.md",
+    "sha256": "9c9bb682b0725b6798bb4789909f7e233babfc00a6eb9130fb704336b606409c"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/orbit_pair_descriptor_replay.py",
+    "sha256": "7b21ca0f35dec4de2a1cfc4ccd4f33df0c49dfa9e2745ee6e50b85170fdcece9"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "research/cm_joint_s4_20261123/ORBIT_PAIR_DESCRIPTOR_GATE.md",
+ "statement": "For n signed seed categories each with length-L arcs under a common known scalar action, D=n(n+1)/2+(L-1)n^2 exponent-gap descriptors represent all B(B+1)/2 indexed unordered pair sums, where B=nL; this identity alone does not reduce direct point-query scanning below B*D arc-membership tests."
+}
