@@ -345,7 +345,10 @@ batch. `native_scan.py` ran `msolve -v 2 -t 1` on every known-scalar relation
 query and every descent query of the frozen \(7001G\) panel. Nine compressed
 shard archives retain each exact input, raw log/output, hashes, exit code,
 F4 data, and per-call wall/child CPU time. The aggregate is
-[`native_scan/summary.json`](native_scan/summary.json). All 7,160 physical
+[`native_scan/summary.json`](native_scan/summary.json).
+`validate_native_scan.py` independently checks every archive record and
+query identity against the curve group law; its output is
+[`native_scan/validation.json`](native_scan/validation.json). All 7,160 physical
 solver calls exited zero and matched the group-law x-solution counts; the
 route totals below charge repeated queries to each cold strategy.
 `[pcc:unverified]`
