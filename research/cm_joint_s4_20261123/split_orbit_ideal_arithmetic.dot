@@ -1,0 +1,14 @@
+digraph split_orbit_ideal {
+  graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.4", ranksep="0.35", fontname="Helvetica", label="Finite point-orbit ideal arithmetic · 2026-11-25", labelloc=t];
+  node [shape=box, style="rounded,filled", fillcolor="#edf4fc", color="#315c8a", fontname="Helvetica"];
+  edge [color="#315c8a", fontname="Helvetica"];
+  q [label="supplied Q\nknown x(Q)"];
+  ax [label="A_x = F_p[X]/F_G\nCRT: product of F_p factors"];
+  mq [label="selected maximal ideal m_Q\nzero at x(Q), full elsewhere"];
+  idem [label="m_Q² = m_Q\nproper and noninvertible", fillcolor="#fff2e3", color="#a45a14"];
+  needed [label="remaining bridge\ncharacteristic-zero ray ideal or\nnew action-index extractor", fillcolor="#ffecec", color="#ae4b4b"];
+  q -> ax [label="coordinate selector"];
+  ax -> mq [label="point-selected factor"];
+  mq -> idem [label="ideal multiplication"];
+  idem -> needed [label="class-group relations need another object"];
+}
