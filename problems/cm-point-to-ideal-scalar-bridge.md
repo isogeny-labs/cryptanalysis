@@ -15,6 +15,7 @@ The concrete P-192 objective is a cold, same-target comparison with rho. A stage
 ## Evidence and uncertainty
 
 - **Observed:** The [coordinate-to-ray screen](../research/cm_joint_s4_20261123/COORDINATE_IDEAL_RAY_SCREEN.md) gives a computable point-dependent ray residue `-1/(x(P)-1) mod r`. Exact finite-curve counts fail the additive scalar rule; paired coordinate-model controls do not isolate a horizontal-isogeny effect. Claim `PCC-20261125-d7ec76` is unverified. [pcc:unverified]
+- **Observed:** The [signed three-sum ceiling](../research/cm_joint_s4_20261123/SIGNED_THREE_SUM_CEILING.md) caps any eight-point signed base at 96 nonidentity sums; the fixed source already attains it. The [frozen equal-yield mixed-base cost panel](../research/cm_joint_s4_20261123/MIXED_EQUAL_YIELD_COST_REPORT.md) then finds mixed/source CPU S4 solve ratios `0.984–0.993` across three model scales, missing its `0.90` component-gain gate. Claims `PCC-20261125-e28f9c` and `PCC-20261125-a64a1e` are unverified. [pcc:unverified]
 - **Derived:** The [squared-ray gate](../research/cm_joint_s4_20261123/SQUARED_RAY_POINT_BRIDGE.md) identifies an order-`r` principal-unit subgroup, but its scalar-labelled class for `Q` is defined using `d`. The [three-summand support gate](../research/cm_joint_s4_20261123/README.md) bounds the present full-rank factor-base query route under its stated memory and uniform-query assumptions. [pcc:unverified]
 - **Suspected explanation:** Coordinate-derived ray residues can vary with the chosen Weierstrass model without retaining the point-group law. This explains the screened candidate, not every possible coordinate-to-ideal map. [pcc:unverified]
 - **Missing capability:** An explicit point relation or extractor that is both target-dependent and cheaper than its generic analogue after setup, query, linear algebra, and descent costs. [pcc:unverified]
@@ -30,7 +31,7 @@ The first condition establishes a point bridge only. The second could establish 
 
 ## Next discriminating step
 
-- **Action or proof obligation:** Construct a target-dependent three-summand relation with base-log dimension below the bound in the [CM joint S4 report](../research/cm_joint_s4_20261123/README.md), or establish that a proposed CM orbit base merely transports the same search space. [pcc:unverified]
+- **Action or proof obligation:** Specify a target-dependent relation mechanism that changes the effective base-log dimension or uses a different point decomposition than the saturated signed eight-point S4 construction. Give its isogeny-specific operation, a same-size generic control, and a cost prediction before timing. [pcc:unverified]
 - **Inputs and controls:** Use a fixed source curve, target `Q`, same-size factor bases and an isomorphic coordinate-model null; verify each emitted row directly in the elliptic-curve group and compare with a generic transported-base route.
 - **Execution limits and stop condition:** Start with exact small-field enumeration and solver operation counts. Stop a candidate when its relation is independent of `d`, its claimed gain disappears under model controls, or its charged query count already exceeds the matched reference.
 - **Outcomes and next actions:** A valid point row advances to frozen cost measurement. A bounded negative result stays scoped to its candidate. An inconclusive solver run needs a diagnostic, and an infrastructure failure is recorded separately.
@@ -38,4 +39,4 @@ The first condition establishes a point bridge only. The second could establish 
 
 ## Resolution and history
 
-2026-11-25: Opened after the explicit coordinate-to-ray screen. Unresolved. [pcc:unverified]
+2026-11-25: Opened after the explicit coordinate-to-ray screen. The fixed signed-base yield ceiling and equal-yield mixed-base cost panel narrow the unchanged-base route; the point-to-ideal scalar bridge remains unresolved. [pcc:unverified]
