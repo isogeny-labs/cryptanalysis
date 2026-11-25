@@ -17,4 +17,8 @@ These ratios are measured *directly* from paired runs, not products of component
 
 The result is a substantial local same-target constant-factor improvement for these two frozen public fixtures on a shared Apple M4 Pro. It does not establish improved asymptotic complexity, performance on other targets or hosts, or independent performance replay. [pcc:unverified]
 
+The bitmap mechanism has prior art in binary-field index-calculus lookup
+tables; this is a measurement of its particular placement in the M31
+paired-chord collector. See `BLOOM_RESULTS.md` for the original sources checked.
+
 Raw CSV SHA-256: first `20e0e24f64039dc53e0a7078ebf4dc6ce0eb9bf1b0444f05c855777d89137187`, confirmation `262d42961abf706a7a0cf49bd06fdc3e3f431e6825e2e7cea47c30a78605ecce`.

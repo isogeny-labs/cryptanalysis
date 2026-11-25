@@ -17,4 +17,13 @@ CPU arm medians in order control/bitmap were 179.671/143.522 ms and 166.810/125.
 
 This is a reproducible local same-target gain on one shared Apple M4 Pro host. It is not a complexity improvement or a claim about other targets, native x86, GPUs or independent replay. [pcc:unverified]
 
+Prior-art check: Bloom filtering of index-calculus lookup tables was already
+studied in the binary-field N83 root index and proposed for the N53 root table.
+The present measurement concerns the M31 paired-chord ordinate path; it does
+not claim Bloom filtering itself is new. Sources checked: research-kb
+`source:7e900ab87238ad44d277757ec0a68a79`, original
+`crypto:papers/ecdlp-index-calculus-program/sections/koblitz.tex`;
+`source:c2d29471386e7774966e04404c3332e9`, original
+`crypto:research/notes/ecc2k130/ic_next_leads_20261012/N53_BLOOM_GATE.md`.
+
 Raw CSV SHA-256: first `a5f7f0edc2b2b886654f5478bfea0c05738e0e9e38eb73287c2f8fbf5830dc0c`, confirmation `402e923850e4fef124e3d75c929ae48d101a9e57c7234247c701bb842136f8b7`.
