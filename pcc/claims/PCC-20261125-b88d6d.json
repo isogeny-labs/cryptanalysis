@@ -1,0 +1,23 @@
+{
+ "claim_type": "interpretive",
+ "created_at": "2026-11-25T00:29:14Z",
+ "id": "PCC-20261125-b88d6d",
+ "kind": "statement",
+ "producer": {
+  "commit": "e72768f268f099aea1b858e8390b99716ce368a3",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/APS_ORBIT_POINT_WITNESS.md",
+    "sha256": "a2ac61b955fcea062fa16d2093039ba55f8acd73bf7fc142430797a214b30824"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Prior Crypto APS-E3 fixed public curve E/F103, exact transcript SHA256 77471959a576596d72eb2bc883aff1626b20484d00e5580f4cdd08efcf4a5687; no P-192 cost or relation claim",
+ "statement": "The existing APS-E3 fixed public transcript contains an informative signed point relation 76G+64Q=O in a prime-order-97 group, yielding scalar 17; independent affine replay and a separate Sage check validate that retained witness, while complete execution cost remains unverified."
+}

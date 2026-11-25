@@ -1,0 +1,11 @@
+digraph Ceiling {
+  graph [rankdir=LR, bgcolor="white", pad="0.2", nodesep="0.5", ranksep="0.7"];
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=12, fillcolor="#f0f6ff", color="#3e5d83"];
+  edge [fontname="Helvetica", fontsize=10, color="#51667e"];
+  A [label="8 signed points\n4 opposite pairs"];
+  T [label="120 unordered\ntriple multisets"];
+  D [label="For each Q: 4 triples\n{P_i,-P_i,Q} all sum to Q"];
+  C [label="24 forced duplicate inputs"];
+  S [label="At most 96 distinct\nnonidentity sums"];
+  A -> T -> D -> C -> S;
+}

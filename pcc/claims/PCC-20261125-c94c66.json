@@ -1,0 +1,51 @@
+{
+ "claim_type": "data",
+ "created_at": "2026-11-25T04:43:07Z",
+ "id": "PCC-20261125-c94c66",
+ "kind": "statement",
+ "producer": {
+  "commit": "ab119597eb6ded1dc6ffd91d89039f2cbc95d6bd",
+  "model": "",
+  "session": ""
+ },
+ "proofs": [
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/NATIVE_THREE_SUM_COST_REPORT.md",
+    "sha256": "69dc1dc8bb6315ad8001b5d53565aac901f6030c8df843b11a527ed6c4d24d2e"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/native_three_sum_cost_seed_20261125.json",
+    "sha256": "30f14f0ffd9f72e1495e5566f4b657d6a5393f568b095269eee6223d705c2cd5"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/native_three_sum_cost_seed_20261126.json",
+    "sha256": "a915ce831dd7e205d86d29b15680a9ac8d86c196a009e8f7ddd55bd507bf0c1d"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/native_three_sum_cost_seed_20261127.json",
+    "sha256": "0587f67c16bf4afcd9bcbf8d846df944e87bff9f4def40ec44e60af3994bccd1"
+   }
+  },
+  {
+   "kind": "attestation",
+   "subject": {
+    "path": "research/cm_joint_s4_20261123/native_three_sum_cost_seed_20261128.json",
+    "sha256": "ba13ea1454b4ea84b69a8d7865cb22a58748a7df466c0d66c648194bddf266ee"
+   }
+  }
+ ],
+ "schema": "pcc.claim/v1",
+ "scope": "Fixed source/native endpoint eight-point bases, four seeds 20261125-20261128, Sage S4 component only",
+ "statement": "In four frozen 64-target streams on the p=1009 horizontal pair, the native endpoint S4 arm had zero rational-truth mismatches but expected solve work per exact useful relation was 1.0199 to 1.0842 times the source arm, failing the prespecified 10 percent component-gain gate."
+}
