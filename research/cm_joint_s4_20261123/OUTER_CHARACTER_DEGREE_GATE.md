@@ -83,6 +83,46 @@ smooth curves](https://stacks.math.columbia.edu/tag/0C1B) and the
 (Corollary 7.2.1). The degree bound above is the stated deduction from
 these standard results; no novelty claim is made. [pcc:unverified]
 
+## Partial agreement: a 75% gate for small degree
+
+The same argument also constrains a strong but imperfect predictor.
+Retain the hypotheses on `E`, `G`, `f`, and `m`, except replace (1) by a
+count: let `e` of the `r-1` nonidentity points have
+`chi_p(f([d]G)) != chi_r(d)`. If `h=(f o [m])/f` is geometrically a
+square, the divisor argument above makes `f=c v^2` over `F_p`, so its
+sign is constant and `e=(r-1)/2`. Otherwise,
+
+```text
+e >= (p - 1 - (2 + 2(m^2+1)D) sqrt(p)) / 4.                     (6)
+```
+
+To see this, call a point erroneous when its predicted sign differs
+from `chi_r(d)`. For `chi_p(h(P))=+1`, the predictions at `P` and
+`[m]P` agree although the true signs differ. At least one endpoint
+is erroneous. The permutation `P -> [m]P` gives each erroneous point
+one incoming and one outgoing directed edge, hence at most `2e`
+points have `chi_p(h(P))=+1`. The quadratic cover therefore has at
+most `2+4e` rational points. Applying the same Hasse--Weil and branch
+count inequalities as above yields (6). The right side may be
+negative, in which case it gives no restriction. [pcc:unverified]
+
+For P-192 and `m=3`, the nonsquare case becomes
+
+```text
+e >= (p - 1 - (2 + 20D) sqrt(p)) / 4.                           (7)
+```
+
+For a family with fixed `m`, `r ~ p`, and `D=o(sqrt(p))`, the agreement
+fraction is at most `3/4 + o(1)`; the geometrically-square case has
+exactly `1/2` agreement. At the fixed P-192 parameters, (7) gives the
+corresponding explicit bound for any proposed `D`. In particular, one field Legendre symbol
+of a fixed-degree horizontal-map coordinate expression cannot be a
+near-perfect ray-label predictor on P-192 under these regularity
+hypotheses. This **does not** exclude a weak advantage over `1/2`,
+a high-degree compact circuit, combinations of predicates, or a
+partial-label recovery method. No sample correlation or runtime
+result is inferred from this bound. [pcc:unverified]
+
 ## Exact P-192 arithmetic and remaining gate
 
 The following calculation checks `chi_r(3)=-1` and finds the least
