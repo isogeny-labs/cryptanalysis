@@ -152,3 +152,43 @@ jobs:
         env:
           RUSTUP_TOOLCHAIN: 1.78.0
         run: python3 experiments/prime-field-auxiliary-ic/m31-public-reflected-build/replay.py --implementation rust --check-only
+
+  full-m31-hash-replay:
+    name: Full public M31 Rust hash replay
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            crates/prime-field-auxiliary-ic/
+            experiments/prime-field-auxiliary-ic/m31-full-rust-comparison/
+            experiments/prime-field-auxiliary-ic/snapshot/prepare.py
+            experiments/prime-field-auxiliary-ic/snapshot/comparison/field31/auxiliary/public.json
+            experiments/prime-field-auxiliary-ic/snapshot/comparison/field31/plain/public.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install frozen setup dependency
+        run: python3 -m pip install sympy
+      - name: Replay both hashes on frozen public targets
+        run: |
+          python3 experiments/prime-field-auxiliary-ic/m31-full-rust-comparison/hash_replay.py > "$RUNNER_TEMP/m31-hash-replay.csv"
+          python3 - "$RUNNER_TEMP/m31-hash-replay.csv" <<'PY'
+          import csv
+          import sys
+          from collections import defaultdict
+
+          rows = list(csv.DictReader(open(sys.argv[1])))
+          assert len(rows) == 96
+          paired = defaultdict(dict)
+          for row in rows:
+              paired[row['basis'], row['seed'], row['repeat']][row['hash']] = row
+          assert len(paired) == 48
+          for arms in paired.values():
+              assert set(arms) == {'splitmix', 'multiply'}
+              assert arms['splitmix']['scalar'] == arms['multiply']['scalar'] == '123456789'
+              for field in ('basis_sha256', 'trials', 'relations', 'entries'):
+                  assert arms['splitmix'][field] == arms['multiply'][field]
+          PY
