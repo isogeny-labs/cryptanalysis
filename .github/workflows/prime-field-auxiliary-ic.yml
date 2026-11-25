@@ -129,3 +129,26 @@ jobs:
           name: prime-field-ic-extraction-diagnostics
           path: ${{ runner.temp }}/prime-field-ic/algebraic/tests/**/extraction.log
           if-no-files-found: ignore
+
+  public-reflected-rows:
+    name: Public reflected-row Rust fixtures
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            crates/prime-field-auxiliary-ic
+            experiments/prime-field-auxiliary-ic/m31-public-pair-build
+            experiments/prime-field-auxiliary-ic/m31-public-reflected-build
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install minimum supported Rust
+        run: rustup toolchain install 1.78.0 --profile minimal
+      - name: Fetch frozen public reference source
+        run: git fetch --no-tags --depth=1 origin e18e2fc84821086c1609d28446b25f5ebbfa9784
+      - name: Check exact payloads and rejected inputs
+        env:
+          RUSTUP_TOOLCHAIN: 1.78.0
+        run: python3 experiments/prime-field-auxiliary-ic/m31-public-reflected-build/replay.py --implementation rust --check-only
