@@ -370,6 +370,30 @@ group additions are a different unit and are not added to seconds. A
 matched-rho end-to-end comparison and the requested Track 1 L20/L24/L28
 systems remain open. `[pcc:unverified]`
 
+### Same-target native rho reference
+
+The [rho protocol](RHO_PROTOCOL.md) was committed before measurement. The
+repository's C `ca solve --alg rho` binary was built locally in Release mode
+for baseline arm64 with one thread and the default negation walk. Its source
+commit, CMake settings, compiler and binary SHA-256 are in
+[`rho_build.json`](rho_build.json). Sixteen fixed seeds used the exact same
+\(E/\mathbb F_{10007}\), generator \((4634,6322)\), and corrected target
+\((9780,4658)=7001G\). All 16 returned 7001 and passed point
+verification; raw CLI stdout/stderr and per-process measurements are in
+[`rho_run.json`](rho_run.json), with an independent check in
+[`rho_validation.json`](rho_validation.json). `[pcc:unverified]`
+
+The median was 463 counted group operations (range 394–36,619); seed 9 was
+a reproducible 36,619-operation outlier, so the full range is retained.
+Across all 16 runs, process wall totaled 0.111 s and child CPU 0.044 s;
+the median per-run wall was 0.0064 s, which is too short for a precise
+single-run timing ratio. The 82.283 s network native-solver total above is
+already much larger on this fixture even before its omitted work is charged.
+That is a **same-target, same-host observation for these implementations**,
+not a large-field exponent result. The network total excludes isogeny work,
+scalar generation and sparse linear algebra, while rho includes its complete
+search. `[pcc:unverified]`
+
 For secp256k1, \(\psi(x,y)=(\beta x,y)\) and \(\beta^3=1\) do preserve
 \(x^r=1\) exactly when \(3\mid r\). This supplies orbit relations among
 factor-base logarithms. It is an instance of the known GLV endomorphism;
@@ -391,5 +415,6 @@ and [Faugère et al. on orbit reduction](https://citeseerx.ist.psu.edu/document?
 3. For the isogeny network, charge isogeny construction/evaluation and
    scalar-point generation, then execute the sparse linear algebra on the
    same frozen target. The exact hit and rank controls and full native
-   decomposition scan above are retained. Compare the resulting cold total
-   against a same-target, same-host rho run before an end-to-end claim.
+   decomposition scan above are retained. Use the same-target, same-host rho
+   panel above when comparing the resulting cold total, and repeat at larger
+   fixed scales before an end-to-end cost claim.
