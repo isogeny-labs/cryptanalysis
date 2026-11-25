@@ -123,6 +123,90 @@ a high-degree compact circuit, combinations of predicates, or a
 partial-label recovery method. No sample correlation or runtime
 result is inferred from this bound. [pcc:unverified]
 
+## Full-group correlation: a stronger small-degree gate
+
+The preceding 75% bound uses one multiplier. Averaging over several
+multipliers gives a stronger conclusion for a fixed low-degree
+predicate. Put `N=r-1`,
+
+```text
+a(d)=chi_p(f([d]G)),
+S=sum_{d=1}^{r-1} a(d) chi_r(d).
+```
+
+The best agreement fraction after allowing either output sign is
+`(1+|S|/N)/2`. Assume again that `f` is finite and nonzero at every
+nonidentity rational point. For any integer `1 <= H < min(p,r)`,
+
+```text
+|S|/N <= sqrt(1/H + (1-1/H) M_H/N),
+M_H = (4 H^2 D + 4) sqrt(p) + 1.                                (8)
+```
+
+If the odd-valuation support `B` of `div(f)` is empty, the Picard
+argument above gives `f=c v^2` over `F_p`; then `a(d)` is constant and
+`S=0`. Otherwise, for distinct positive `i,j <= H`, the function
+`g_ij=(f o [i]) (f o [j])` is geometrically nonsquare. Indeed, if it
+were square, the odd supports `[i]^{-1}(B)` and `[j]^{-1}(B)` would
+coincide, yet their cardinalities are respectively `i^2 |B|` and
+`j^2 |B|`. Both multiplication maps are etale because `H<p`.
+[pcc:unverified]
+
+The double cover `z^2=g_ij(P)` has at most
+`2(i^2+j^2)D <= 4H^2D` geometric branch points and genus at most
+`1+2H^2D`. Hasse--Weil bounds its point count by
+`p+1 +/- (4H^2D+2)sqrt(p)`. Since `#E(F_p)=r` differs from `p+1`
+by at most `2sqrt(p)`, and the fiber over `O` contributes between zero
+and two points, the off-diagonal sum obeys
+
+```text
+|sum_{d=1}^{r-1} a(id)a(jd)| <= M_H       (i != j).             (9)
+```
+
+For each `i`, changing variables `u=id mod r` gives
+`sum_d chi_r(d)a(id)=chi_r(i)S`. Hence
+
+```text
+H S = sum_d chi_r(d) sum_{i=1}^H chi_r(i)a(id).
+```
+
+Cauchy--Schwarz, `a(id)^2=1`, and (9) give
+
+```text
+H^2 S^2 <= N (H N + H(H-1)M_H),
+```
+
+which is (8). For fixed `D` and `r ~ p`, choosing
+`H` on the order of `(sqrt(p)/D)^(1/3)` makes the correlation
+`O((D/sqrt(p))^(1/6))`; the constant depends on the choice of `H`.
+The derivation uses the standard double-cover and character-sum
+method, not a CM property. No novelty claim is made. [pcc:unverified]
+
+For the exact P-192 parameters, take `D<=10` and `H=2^30`. Using
+`sqrt(p)<2^96` makes an integer-only upper bound on (8):
+
+```sh
+python3 - <<'PY'
+p=6277101735386680763835789423207666416083908700390324961279
+r=6277101735386680763835789423176059013767194773182842284081
+H=1<<30; D=10; N=r-1
+assert H < min(p,r) and p < 1<<192
+M_upper=(4*H*H*D+4)*(1<<96)+1
+# (|S|/N)^2 <= (N+(H-1)*M_upper)/(H*N) < 1/25000^2.
+assert 25000**2*(N+(H-1)*M_upper) < H*N
+print('best exact full-group agreement < 0.50002')
+PY
+```
+
+This excludes a fixed rational function of degree at most ten,
+followed by one field Legendre symbol, from giving even a `0.00002`
+full-group prediction advantage for the scalar's quadratic character
+on P-192. It does **not** bound a high-degree compact circuit, a
+combined or target-adaptive family of functions, a different scalar
+predicate, or correlation restricted to a subset of scalar labels.
+It also gives no evaluation-time bound or isogeny-specific advantage.
+[pcc:unverified]
+
 ## Exact P-192 arithmetic and remaining gate
 
 The following calculation checks `chi_r(3)=-1` and finds the least
