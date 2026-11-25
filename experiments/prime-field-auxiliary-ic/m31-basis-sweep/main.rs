@@ -81,7 +81,7 @@ struct FlatIndex {
 }
 impl FlatIndex {
     fn new(signed_len: usize) -> Self {
-        let sign_capacity = (signed_len * signed_len / 2).next_power_of_two().max(1 << 19);
+        let sign_capacity = (signed_len * signed_len / 2).next_power_of_two();
         Self {
             slots: if PACKED_SIGN {
                 Vec::new()
@@ -241,7 +241,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         || values[0] != (1 << 31) - 1
         || values[1] != N
         || values[2..4] != [2, 14]
-        || ![500, 1013].contains(&basis_size)
+        || ![250, 350, 500, 1013].contains(&basis_size)
     {
         return Err("unexpected frozen fixture identity".into());
     }
