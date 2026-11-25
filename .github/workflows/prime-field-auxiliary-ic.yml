@@ -221,9 +221,9 @@ jobs:
         run: |
           curl -fsSL --connect-timeout 15 --max-time 120 https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -o "$RUNNER_TEMP/elan-init.sh"
           sh "$RUNNER_TEMP/elan-init.sh" -y --no-modify-path --default-toolchain leanprover/lean4:v4.36.0
+          export PATH="$HOME/.elan/bin:$PATH"
           "$HOME/.elan/bin/lean" experiments/prime-field-auxiliary-ic/m31-full-rust-comparison/SignPacked.lean
-          "$HOME/.elan/bin/lean" -o "$RUNNER_TEMP/XFilter.olean" experiments/prime-field-auxiliary-ic/m31-full-rust-comparison/XFilter.lean
-          LEAN_PATH="$RUNNER_TEMP" "$HOME/.elan/bin/lean" experiments/prime-field-auxiliary-ic/m31-full-rust-comparison/Bloom.lean
+          tools/lean/proof-gate.sh experiments/prime-field-auxiliary-ic/m31-full-rust-comparison
       - name: Replay original versus combined full collector
         run: |
           python3 experiments/prime-field-auxiliary-ic/m31-full-rust-comparison/combined_replay.py > "$RUNNER_TEMP/m31-combined-replay.csv"
