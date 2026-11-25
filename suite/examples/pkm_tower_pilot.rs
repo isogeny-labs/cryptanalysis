@@ -47,6 +47,11 @@
 //! # The same system on the tower engine, with its step trace.
 //! cargo run --release --example pkm_tower_pilot -- --engine tower --kinds kummer --m 2 \
 //!     --controls tower --t-min 8 --max-t 8 --planted 0 --random 1 --ladder-t none --trace
+//! # M31's auxiliary curve y² = x³ + x has order p+1; no curve search.
+//! # Export a small system first; a ten-level membership chain can be
+//! # constructed and checked without asking F4 to solve that full system.
+//! cargo run --release --example pkm_tower_pilot -- --p 2147483647 --kinds isogeny \
+//!     --aux-supersingular --m 2 --t-min 2 --max-t 2 --ladder-t none --export systems
 //! ```
 
 use std::collections::BTreeMap;
@@ -274,6 +279,24 @@ struct Tower {
 }
 
 impl Tower {
+    /// Rational membership, with every pole rejected before clearing a
+    /// denominator. This does not use the enumerated coset `v`.
+    fn contains(&self, x: u64, p: u64) -> bool {
+        let mut y = mulm(x % p, invm(self.scale, p), p);
+        for (j, step) in self.steps.iter().enumerate() {
+            let pole = match step {
+                Step::Velu { xi, .. } => y == *xi,
+                Step::VeluOdd { pts } => pts.iter().any(|&(xq, _, _)| y == xq),
+                _ => false,
+            };
+            if pole {
+                return false;
+            }
+            y = self.apply(j, y, p);
+        }
+        y == self.c
+    }
+
     fn apply(&self, j: usize, y: u64, p: u64) -> u64 {
         match &self.steps[j] {
             Step::Square => mulm(y, y, p),
@@ -424,6 +447,10 @@ impl Tower {
         let n = self.t;
         let eqs = self.equations(n, 0, p);
         for &x in &self.v {
+            assert!(
+                self.contains(x, p),
+                "coset element fails rational membership"
+            );
             let y = self.values(x, p);
             for (j, e) in eqs.iter().enumerate() {
                 assert_eq!(
@@ -613,18 +640,42 @@ fn nonsingular(a: u64, b: u64, p: u64) -> bool {
 /// the per-curve precomputation the oracle's base charges; here it is
 /// only reported.
 fn isogeny(p: u64, t: usize, rng: &mut StdRng) -> Tower {
+    isogeny_with_auxiliary(p, t, rng, false)
+}
+
+/// The opt-in auxiliary curve is independent of the target curve. For a
+/// prime p = 3 (mod 4), y² = x³ + x has trace zero and order p+1.
+/// Its rational 2-primary subgroup is cyclic (only (0,0) is 2-torsion).
+/// This avoids exhaustive point counting on every trial curve at M31.
+fn isogeny_with_auxiliary(p: u64, t: usize, rng: &mut StdRng, supersingular: bool) -> Tower {
+    assert!((1..63).contains(&t), "isogeny tower needs 1 <= t < 63");
     let two_t = 1u64 << t;
+    if supersingular {
+        assert_eq!(p % 4, 3, "--aux-supersingular requires p = 3 mod 4");
+        assert!((p + 1).is_multiple_of(two_t), "2^t must divide p+1");
+        assert!(
+            two_t <= (p + 1) / 4,
+            "auxiliary curve needs a non-2-torsion quotient coset"
+        );
+    }
     let mut ops = GroupOps::default();
     let mut curves_tried = 0u64;
     loop {
         curves_tried += 1;
-        let a = rng.gen_range(0..p);
-        let b = rng.gen_range(1..p);
+        let (a, b) = if supersingular {
+            (1, 0)
+        } else {
+            (rng.gen_range(0..p), rng.gen_range(1..p))
+        };
         if !nonsingular(a, b, p) {
             continue;
         }
         let e = PrimeCurve { p, a, b };
-        let n = e.point_count();
+        let n = if supersingular {
+            p + 1
+        } else {
+            e.point_count()
+        };
         if !n.is_multiple_of(two_t) {
             continue;
         }
@@ -690,7 +741,11 @@ fn isogeny(p: u64, t: usize, rng: &mut StdRng) -> Tower {
         }
         // V itself, since it cannot be rebuilt from two numbers: the
         // exhaustive cross-check (`verify.py`) needs it.
-        let info = json!({"aux_a": a, "aux_b": b, "aux_order": n, "aux_curves_tried": curves_tried, "v": &v});
+        let info = json!({"aux_a": a, "aux_b": b, "aux_order": n,
+            "aux_curves_tried": curves_tried, "v": &v,
+            "aux_construction": if supersingular { "supersingular-p-plus-one" } else { "random-search" },
+            "kernel_generator": { "x": q.x, "y": q.y },
+            "coset_representative": { "x": r0.x, "y": r0.y }});
         return Tower {
             kind: Kind::Isogeny,
             t,
@@ -1787,6 +1842,8 @@ struct Args {
     /// cyclically (`--iso-degrees 3`, `--iso-degrees 2,3`).  `[2]`, the
     /// default, is the original tower and its code path.
     degrees: Vec<u64>,
+    /// Opt in to the known-order auxiliary y²=x³+x at p=3 mod 4.
+    aux_supersingular: bool,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -1839,6 +1896,7 @@ fn parse_args() -> Args {
         trace: false,
         export: None,
         degrees: vec![2],
+        aux_supersingular: false,
     };
     let args: Vec<String> = std::env::args().skip(1).collect();
     let list = |s: &str| -> Vec<usize> {
@@ -1851,6 +1909,11 @@ fn parse_args() -> Args {
     while i < args.len() {
         if args[i] == "--trace" {
             a.trace = true;
+            i += 1;
+            continue;
+        }
+        if args[i] == "--aux-supersingular" {
+            a.aux_supersingular = true;
             i += 1;
             continue;
         }
@@ -1917,6 +1980,18 @@ fn parse_args() -> Args {
         }
         i += 2;
     }
+    if a.aux_supersingular {
+        assert_eq!(a.p % 4, 3, "--aux-supersingular requires p = 3 mod 4");
+        assert_eq!(
+            a.degrees,
+            vec![2],
+            "--aux-supersingular supports degree-2 chains"
+        );
+        assert!(
+            a.kinds == [Kind::Isogeny],
+            "--aux-supersingular requires --kinds isogeny"
+        );
+    }
     a
 }
 
@@ -1958,7 +2033,13 @@ fn run_cell(cell: &Cell, a: &Args, sink: &mut Sink) -> bool {
         ^ ((cell.t as u64) << 16)
         ^ (cell.g as u64);
     let mut rng = StdRng::seed_from_u64(cell_seed);
-    let tower = build_tower(cell.kind, p, cell.t, &a.degrees, &mut rng);
+    let tower = if a.aux_supersingular {
+        let tower = isogeny_with_auxiliary(p, cell.t, &mut rng, true);
+        tower.check(p);
+        tower
+    } else {
+        build_tower(cell.kind, p, cell.t, &a.degrees, &mut rng)
+    };
     let (curve, on) = target_curve(p, &tower, cell.m.max(2), &mut rng);
     let mut targets = Vec::new();
     let planted = if cell.t > a.planted_max_t && cell.control != Control::Ladder {
@@ -2364,6 +2445,203 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Independent backward quadratic solve: unlike the forward coset
+    /// generator, this reconstructs all rational preimages of the terminal
+    /// coordinate without any auxiliary-curve group additions.
+    fn quadratic_fiber(tower: &Tower, p: u64) -> Vec<u64> {
+        let field = PrimeCurve { p, a: 1, b: 0 };
+        let half = invm(2, p);
+        let mut fiber = vec![tower.c];
+        for step in tower.steps.iter().rev() {
+            let Step::Velu { xi, tau } = step else {
+                panic!("quadratic_fiber needs a degree-2 isogeny chain");
+            };
+            let mut previous = Vec::new();
+            for z in fiber {
+                // z = x + tau/(x-xi): x²-(z+xi)x+z*xi+tau=0.
+                let sum = addm(z, *xi, p);
+                let product = addm(mulm(z, *xi, p), *tau, p);
+                let discriminant = subm(mulm(sum, sum, p), mulm(4, product, p), p);
+                if let Some(root) = field.sqrt(discriminant) {
+                    for numerator in [addm(sum, root, p), subm(sum, root, p)] {
+                        let x = mulm(numerator, half, p);
+                        if x != *xi {
+                            previous.push(x);
+                        }
+                    }
+                }
+            }
+            previous.sort_unstable();
+            previous.dedup();
+            fiber = previous;
+        }
+        for x in &mut fiber {
+            *x = mulm(*x, tower.scale, p);
+        }
+        fiber.sort_unstable();
+        fiber
+    }
+
+    #[test]
+    fn supersingular_membership_matches_exhaustive_small_fields() {
+        for (p, max_t) in [(31, 3), (127, 5), (1019, 2)] {
+            let aux = PrimeCurve { p, a: 1, b: 0 };
+            assert_eq!(aux.point_count(), p + 1);
+            for t in 1..=max_t {
+                let mut rng = StdRng::seed_from_u64(p + t as u64);
+                let tower = isogeny_with_auxiliary(p, t, &mut rng, true);
+                tower.check(p);
+                let mut expected = tower.v.clone();
+                expected.sort_unstable();
+                assert_eq!(quadratic_fiber(&tower, p), expected);
+                let actual: Vec<_> = (0..p).filter(|&x| tower.contains(x, p)).collect();
+                assert_eq!(actual, expected);
+                // Clearing the first denominator must not admit its pole.
+                let Step::Velu { xi, .. } = tower.steps[0] else {
+                    unreachable!()
+                };
+                assert!(!tower.contains(xi, p));
+            }
+        }
+    }
+
+    #[test]
+    fn m31_ten_level_membership_and_independent_target_relations() {
+        let p = (1u64 << 31) - 1;
+        let t = 10;
+        let mut rng = StdRng::seed_from_u64(31);
+        let tower = isogeny_with_auxiliary(p, t, &mut rng, true);
+        tower.check(p);
+        assert_eq!(tower.size, 1024);
+        assert_eq!(tower.info["aux_order"], json!(p + 1));
+        let mut expected = tower.v.clone();
+        expected.sort_unstable();
+        assert_eq!(quadratic_fiber(&tower, p), expected);
+        assert!(tower.equations(t, 0, p).iter().all(|eq| eq.degree() == 2));
+
+        // Different group orders certify these two curves are not F_p-isogenous.
+        // No transfer from the auxiliary curve to this target is used.
+        let curve = PrimeCurve { p, a: 1, b: 4 };
+        assert_ne!(curve.point_count_fast(), p + 1);
+        let on: Vec<_> = tower
+            .v
+            .iter()
+            .copied()
+            .filter(|&x| curve.legendre(curve.rhs(x)) == 1)
+            .collect();
+        assert!(on.len() >= 9);
+        for m in 2..=9 {
+            let target = loop {
+                if let Some(target) = plant(&curve, &tower, m, &on, &mut rng) {
+                    break target;
+                }
+            };
+            let (eqs, n, solution, _) =
+                system(Control::Tower, &tower, &curve, m, &target, 1, &mut rng);
+            let solution = solution.unwrap();
+            assert_eq!(n, m * t + m - 2);
+            assert!(eqs.iter().all(|eq| eq.eval(&solution, p) == 0));
+            assert!(target.xs.iter().all(|&x| tower.contains(x, p)));
+
+            // Check an actual signed point relation, not merely Semaev=0.
+            let points: Vec<_> = target
+                .xs
+                .iter()
+                .map(|&x| PrimePoint::affine(x, curve.sqrt(curve.rhs(x)).unwrap()))
+                .collect();
+            let rhs = PrimePoint::affine(target.x_r, curve.sqrt(curve.rhs(target.x_r)).unwrap());
+            let mut ops = GroupOps::default();
+            assert!((0..1usize << m).any(|signs| {
+                let total = points
+                    .iter()
+                    .enumerate()
+                    .fold(PrimePoint::INFINITY, |acc, (i, pt)| {
+                        let signed = if signs & (1 << i) == 0 {
+                            *pt
+                        } else {
+                            PrimePoint::affine(pt.x, subm(0, pt.y, p))
+                        };
+                        curve.add(&mut ops, acc, signed)
+                    });
+                total == rhs
+            }));
+        }
+    }
+
+    #[test]
+    fn auxiliary_chain_f4_solutions_match_target_point_relations() {
+        let p = 127;
+        let mut rng = StdRng::seed_from_u64(0x504b4d);
+        let tower = isogeny_with_auxiliary(p, 2, &mut rng, true);
+        tower.check(p);
+        let (curve, on) = target_curve(p, &tower, 2, &mut rng);
+        let target = loop {
+            if let Some(target) = plant(&curve, &tower, 2, &on, &mut rng) {
+                break target;
+            }
+        };
+        let (eqs, n, _, _) = system(Control::Tower, &tower, &curve, 2, &target, 1, &mut rng);
+        let input: Vec<_> = eqs.iter().map(|eq| eq.to_poly(p)).collect();
+        let options = F4Options::new(Ordering::Grevlex, 12).with_budget(Duration::from_secs(10));
+        let solved = f4_fp::solve(&input, n, p, &options);
+        assert!(!solved.timed_out);
+        let f4_fp::Verdict::Solutions(solutions) = solved.verdict else {
+            panic!("planted auxiliary system did not produce solutions");
+        };
+        let mut actual = std::collections::BTreeSet::new();
+        for solution in solutions {
+            assert!(eqs.iter().all(|eq| eq.eval(&solution, p) == 0));
+            assert!(tower.contains(solution[0], p));
+            assert!(tower.contains(solution[tower.t], p));
+            actual.insert((solution[0], solution[tower.t]));
+        }
+        // Expected decompositions come from signed point additions on E,
+        // independently of both Semaev polynomials and the F4 solver.
+        let mut expected = std::collections::BTreeSet::new();
+        let mut ops = GroupOps::default();
+        for &x in &tower.v {
+            for &u in &tower.v {
+                let (Some(y), Some(v)) = (curve.sqrt(curve.rhs(x)), curve.sqrt(curve.rhs(u)))
+                else {
+                    continue;
+                };
+                for sign_y in [y, subm(0, y, p)] {
+                    for sign_v in [v, subm(0, v, p)] {
+                        let sum = curve.add(
+                            &mut ops,
+                            PrimePoint::affine(x, sign_y),
+                            PrimePoint::affine(u, sign_v),
+                        );
+                        if !sum.infinity && sum.x == target.x_r {
+                            expected.insert((x, u));
+                        }
+                    }
+                }
+            }
+        }
+        assert!(!expected.is_empty());
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    #[should_panic(expected = "non-2-torsion quotient coset")]
+    fn supersingular_auxiliary_rejects_order_two_quotient() {
+        let mut rng = StdRng::seed_from_u64(1);
+        isogeny_with_auxiliary(127, 6, &mut rng, true);
+    }
+
+    #[test]
+    #[should_panic(expected = "requires p = 3 mod 4")]
+    fn supersingular_rejects_incompatible_field() {
+        isogeny_with_auxiliary(61, 2, &mut StdRng::seed_from_u64(31), true);
+    }
+
+    #[test]
+    #[should_panic(expected = "2^t must divide p+1")]
+    fn supersingular_rejects_unavailable_torsion() {
+        isogeny_with_auxiliary(1019, 3, &mut StdRng::seed_from_u64(31), true);
+    }
 
     /// The worked example of the auxiliary-curves guide: over F_61,
     /// E': y² = x³ + x + 14, kernel abscissae 12 then 5, gives
