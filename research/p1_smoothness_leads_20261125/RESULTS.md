@@ -46,6 +46,32 @@ chain has three factor-base coordinates and one target coordinate, hence uses
 
 Source: [Petit, Kosters, Messeng, §§3.1–3.3 and conclusion](https://christophe.petit.web.ulb.be/files/16PKC_primeECDLP.pdf).
 
+### Independent matched `msolve` pilot at \(p=15359\)
+
+This **does not replace** the missing L20/L24/L28 inputs. The committed
+`generate_msolve_pilot.py` freezes \(E:y^2=x^3+2x+3\), one target, six
+curve-eligible x-roots per arm, and three shared roots that provide the same
+known positive relation. The Cayley arm takes the six roots of
+\(\operatorname{Re}(X+i)^6-12296\operatorname{Im}(X+i)^6\); the comparison
+arm replaces the other three roots with a seeded selection outside that coset.
+The generated input files, fixture JSON, raw `msolve -v 2` logs, and solver
+outputs are committed beside this report. `[pcc:unverified]`
+
+```sh
+sage -python research/p1_smoothness_leads_20261125/generate_msolve_pilot.py
+/usr/bin/time -p msolve -f research/p1_smoothness_leads_20261125/pilot_cayley.ms -o research/p1_smoothness_leads_20261125/pilot_cayley.out -v 2
+/usr/bin/time -p msolve -f research/p1_smoothness_leads_20261125/pilot_matched.ms -o research/p1_smoothness_leads_20261125/pilot_matched.out -v 2
+```
+
+Both arms gave ideal degree 6. Parsing every F4 round in the raw logs gives
+194 rounds per arm with **identical** ordered tuples of step degree, selected
+pair count, outstanding pair count, matrix rows, and matrix columns. Their
+maximum step degree was 10. Reported overall solver times were 0.05 s
+(Cayley) and 0.08 s (comparison), below a useful timing resolution and from
+one run each. This pilot supports a finite, matched **null structural
+observation**, not an asymptotic rank theorem or a timed speedup.
+`[pcc:unverified]`
+
 ## Track 2: twisted Edwards symmetry
 
 For \(a=3,d=2\) over \(\mathbb F_{10007}\), the attachment's displayed
