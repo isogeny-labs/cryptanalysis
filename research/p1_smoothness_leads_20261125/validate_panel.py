@@ -45,7 +45,7 @@ def main():
         folder = HERE / "panel"
         raw_log = gzip.decompress((folder / f"{stem}.log.gz").read_bytes())
         input_bytes = (folder / f"{stem}.ms").read_bytes()
-        output_bytes = (folder / f"{stem}.out").read_bytes()
+        output_bytes = gzip.decompress((folder / f"{stem}.out.gz").read_bytes())
         assert sha256(raw_log) == record["log_sha256"]
         assert sha256(input_bytes) == record["input_sha256"]
         assert sha256(output_bytes) == record["output_sha256"]

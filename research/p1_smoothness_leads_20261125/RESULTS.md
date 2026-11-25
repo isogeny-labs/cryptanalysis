@@ -20,6 +20,13 @@ f2ae4481f746816e728e76a24d22c5587b7a056db73cfe8aca79eccf4643319a  verify.py
 e95a79a2a8d87f49cd753f089aa063fe932388a051bd36e513f4a3baf6499122  run.json
 ```
 
+The `msolve` parametrizations are stored as `.out.gz` files. The
+[post-run archive amendment](OUTPUT_ARCHIVE_AMENDMENT.md) explains the
+lossless encoding change; `output_archive.json` records each original
+uncompressed SHA-256. Run `sage -python
+research/p1_smoothness_leads_20261125/archive_outputs.py` after generating
+all solver outputs to reproduce the committed archive layout.
+
 ## Track 1: proposed msolve panel
 
 `msolve` 0.11.0 is installed locally. The requested files

@@ -20,7 +20,7 @@ def main():
         assert record["case"] == case and record["target_xy"] == list(xy)
         raw_log = gzip.decompress((OUTPUT / f"{case}.log.gz").read_bytes())
         input_bytes = (OUTPUT / f"{case}.ms").read_bytes()
-        output_bytes = (OUTPUT / f"{case}.out").read_bytes()
+        output_bytes = gzip.decompress((OUTPUT / f"{case}.out.gz").read_bytes())
         assert sha256(raw_log) == record["log_sha256"]
         assert sha256(input_bytes) == record["input_sha256"]
         assert sha256(output_bytes) == record["output_sha256"]
