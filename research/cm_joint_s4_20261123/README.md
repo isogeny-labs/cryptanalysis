@@ -89,6 +89,18 @@ Their relation yield and charged solve cost remain open. [pcc:unverified]
 The scoped prior-art and orbit-algebra record is
 `PCC-20261125-c8e274`, with unverified standing. [pcc:unverified]
 
+The existing [Crypto APS-E3 orbit-base study](https://github.com/isogeny-labs/crypto/blob/5097d0d45c46c72041ddacca012fe694252ded6d/research/aps_extensions_20261026/README.md)
+already rejects an intrinsic automorphism-orbit zero sum with
+`A=B=0` and retains an informative relation across orbit blocks on
+its fixed finite fixture. The Lean result in this PR extends that
+algebraic null to arbitrary finite signed lists from **one**
+known-scalar orbit; it is not a new orbit attack. The existing
+[APS complete-cost problem](https://github.com/isogeny-labs/crypto/blob/5097d0d45c46c72041ddacca012fe694252ded6d/problems/aps-single-relation-complete-cost.md)
+tracks the missing setup, decoding, retries, independent metric
+validation, and matched-rho comparison. A CM-specific successor
+should use that cost contract and show what the horizontal map changes
+relative to its matched known-scalar control. [pcc:unverified]
+
 ## P-192 four-summand horizontal endpoint screen
 
 The follow-up script `p192_tower_horizontal_s5.py` compares three equations for the **same** P-192 source x-base and the same two queries. The base comes from the four-root fiber of a depth-2, 2-isogeny tower on `y^2=x^3+x`. Exactly two of its four x-values lift to P-192, giving four signed source points. This auxiliary tower defines the base; it is distinct from the horizontal degree-5 map used in two of the equation systems. `source` has eight auxiliary tower equations and three source S3 sum constraints; `mapped5` adds four degree-5 rational x-map wires and uses three endpoint S3 constraints; `joint5` retains both source and endpoint S3 constraints. The P-192 Frobenius discriminant is fundamental, so the degree-5 ordinary map is horizontal. [pcc:unverified]
