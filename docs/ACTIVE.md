@@ -69,6 +69,7 @@ prime-field lift pipeline, while continuing to track the binary/Koblitz source
 and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
+- [ ] PKM torus (p+1-side Dickson) tower kind for M31 in pkm_tower_pilot (claude, started 2026-11-25, branch claude/pkm-torus-tower-m31; tracking workspace#130)
 - [ ] CT201–CT203: complete cold ECDLP source adjudication (matched five-arm rho/BSGS/IC, Williams order, distinct-Q per-block prospective gate; automation, started 2026-11-18, branch research/ct201-complete-single-target-gate-20261118, PR #1766; source CI 44/44 normal and -O at 36807d15; native/PCC blocked) [pcc:unverified]
 
 - [x] gaudry_cubic: gain-forest cycle harvester with k = 3 large primes and a threshold stop beside `LargePrimeEliminator`, paired against the six-seed §11.11 protocol; k = 4 follow-on if it passes — k=3 harvester PASS (S 0.31-0.57x, exponent 0.428 -> 0.332, paired 6 seeds x 4 sizes); k=4 r 0.532 -> 0.279 (LA phase only) (Claude Code, completed 2026-11-22; started 2026-11-22, branch claude/gaudry-gain-forest-harvester) [pcc:unverified]
