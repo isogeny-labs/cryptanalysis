@@ -15,6 +15,41 @@ attacks against production keys, wallets, accounts, or third-party systems.
 A task that requires a non-public target stops and asks for written
 authorization before proceeding.
 
+## Research Gate, PCC Ledger & PR Hygiene
+
+### 1. Anti-Gate-Inflation (No Standalone Tautologies)
+
+- **MUST NOT** create standalone `*_GATE.md`, `*_AUDIT.md`, or `*_SCREEN.md` files for:
+  1. Textbook endomorphism, Frobenius, or rationality identities (e.g., $\pi(P)=P$, dual scalar actions, or class-group exact sequences).
+  2. Parameter-only or number-field algebra (embedding degrees, discriminants, ray subfields, ideal norms, or Artin checks on known integers).
+  3. Re-derivations of bounds already covered in the research atlas.
+- **Routing rule:** Parameter-side lemmas belong in untracked scratch notes or at most a 3-line inline remark inside an existing document—never as a new tracked file or dedicated commit.
+
+### 2. Coordinate-Input Gate for `PCC-*` Claims
+
+- **MUST NOT** mint a `PCC-*` ledger ID unless the commit includes an executable evaluator $f(E, G, x(Q), y(Q))$ that:
+  1. Accepts an arbitrary target point $Q = [d]G$ **solely via its curve coordinates**, with zero access to the scalar $d$ or a generating endomorphism $\alpha$.
+  2. Evaluates $f$ across all nonzero scalars $d \in \{1, \dots, r-1\}$ on the finite control curve before recording a positive or negative result.
+  3. Charges all setup and per-query evaluation costs against matched same-target Pollard $\rho$.
+- Known-scalar checks (`[k]G` for chosen $k$) and number-field constructions without a coordinate selector receive **zero** `PCC-*` claims.
+
+### 3. Ready-for-Review PR Freeze & Debt Cap
+
+- Once a PR is open and **non-draft** (ready for review), **MUST NOT** append net-new `PCC-*` claims or new research `.md` files to that branch.
+- Commits to a non-draft PR are restricted to:
+  1. Independent verifier sign-offs transitioning existing `PCC-*` claims from `unverified` to `verified`.
+  2. Fixes for failing CI, prose lint, or `origin/main` parity/lock mismatches.
+  3. Defect fixes within files already introduced by the PR.
+- **Unverified debt & blocker cap:** Never exceed **2 unverified `PCC-*` claims** on any branch (including drafts), and never push new research commits onto a branch while CI parity locks fail or Conductor claim checks are unreachable.
+
+### 4. Clean Halt Over Activity Padding
+
+- If no coordinate-input evaluator clears the control screen—or if Conductor/CI parity blocks edits—emit `STATUS: BLOCKED (<exact reason>)` and stop immediately. Never commit algebraic side-notes to demonstrate progress.
+
+### Enforcement
+
+`tools/prepush_research_gate.py` implements the non-draft freeze, PCC evidence binding, and debt/parity ceiling. Enable it per clone with `git config core.hooksPath .githooks`; CI runs the same script with `--base origin/main`.
+
 ## Sabotage is assumed: proof-carrying claims
 
 Owner rule, 2026-11-04. Every producer, this session included, is assumed to

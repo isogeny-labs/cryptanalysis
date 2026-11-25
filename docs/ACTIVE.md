@@ -1,8 +1,7 @@
 # Active research tasks
 
 ## Active items
-
-- [x] PKM auxiliary-isogeny membership and independent-target relation validation on M31 (Codex, completed 2026-11-24, branch codex/pkm-auxiliary-membership-m31-20261124; workspace PR #112; PR #1966).
+- [x] Publish degree-5 horizontal joint S4 component screen (Codex, started 2026-11-23, branch research/cm-joint-s4-screen-20261123, PR #1967): same-base positive and negative query checks, source/endpoint/wire/joint solve costs, and bounded conclusion in research/cm_joint_s4_20261123/. [pcc:unverified]
 - [ ] Batch ECDLP: lower the IC-vs-batch-rho crossover (Claude Code, started 2026-11-23, branch claude/batch-ecdlp-crossover-20261123, draft PR; workspace item PR #91): freeze prediction first; rebuild the `ca-ic prime` batch IC arm on `mitm-prime-batched` (#1891) / k=3 harvester (#1901) where they apply to F_p curves; re-measure up-front and per-target cost and the crossover K vs executed folded batch rho at 20/24/28 bits with CIs; define and measure best-seeded rho and report distance remaining
 - [x] GT-02 coset filter at the S-optimal factor base (Claude Code, started 2026-11-23, branch claude/gt02-optimal-base-20261123, PR #1952; follows #1892/#1911): re-measure the coset-filtered MITM pair table against the baseline at the S-optimal base (char2 n=17..33 m=2,3; prime at the recalibrated sizes), lead-sweep protocol, paired CIs, distance to matched rho; result: char2 m=2 gain survives at the baseline-optimal dimension (1.11-1.42x, n=17..33), m=3 and prime 1.000; suite/docs/ic/runs/gt02-optimal-base-20261123/. [pcc:unverified]
 - [ ] Gain-forest harvester k=3/k=4 beyond toy sizes (Claude Code, started 2026-11-23, branch claude/harvester-k3-scale-20261123, draft PR; follows #1901): frozen ladder protocol extending gaudry_cubic past p=2083 with >=6 seeds, harvester vs eliminator vs matched rho, exponent fit with CI, S-accounting check; trunk notes docs/notes/harvester-k3-scale-20261123/. [pcc:unverified]
@@ -71,6 +70,7 @@ prime-field lift pipeline, while continuing to track the binary/Koblitz source
 and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
+- [ ] PKM torus (p+1-side Dickson) tower kind for M31 in pkm_tower_pilot (claude, started 2026-11-25, branch claude/pkm-torus-tower-m31; tracking workspace#130)
 - [ ] CT201–CT203: complete cold ECDLP source adjudication (matched five-arm rho/BSGS/IC, Williams order, distinct-Q per-block prospective gate; automation, started 2026-11-18, branch research/ct201-complete-single-target-gate-20261118, PR #1766; source CI 44/44 normal and -O at 36807d15; native/PCC blocked) [pcc:unverified]
 
 - [x] gaudry_cubic: gain-forest cycle harvester with k = 3 large primes and a threshold stop beside `LargePrimeEliminator`, paired against the six-seed §11.11 protocol; k = 4 follow-on if it passes — k=3 harvester PASS (S 0.31-0.57x, exponent 0.428 -> 0.332, paired 6 seeds x 4 sizes); k=4 r 0.532 -> 0.279 (LA phase only) (Claude Code, completed 2026-11-22; started 2026-11-22, branch claude/gaudry-gain-forest-harvester) [pcc:unverified]
