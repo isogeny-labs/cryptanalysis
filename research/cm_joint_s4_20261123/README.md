@@ -112,7 +112,9 @@ orbit of a single seed `[a]G+[b]Q` gives only predetermined zero
 sums: the coefficient of both `G` and `Q` vanishes together.
 Distinct seed coefficient vectors or a different coordinate
 construction are required before an orbit relation can carry `d`.
-Their relation yield and charged solve cost remain open. [pcc:unverified]
+Their CM-specific relation yield and charged solve cost remain open. [pcc:unverified]
+
+The [frozen two-seed orbit census](TWO_SEED_ORBIT_REPORT.md) tests the first exception on `D=-19`: signed three-sums across length-three arcs of `G` and supplied `Q`, generated through the degree-five CM endomorphism. It obtains 216 informative indexed relations across all 60 target labels, covering 46 labels, while the preselected `d=3` target yields none. The `d=4` row gives the explicit verified relation `13G+12Q=O`. The matched scalar `[7]` orbit is identical point by point, so it has exactly the same relation supply; a 78-entry explicit pair table already exceeds the roughly 6.92-addition rho reference on this small group before other costs. The two-seed mechanism carries the unknown scalar, but this fixed implementation has no CM-attributable yield or complete-cost advantage. [pcc:unverified]
 
 The scoped prior-art and orbit-algebra record is
 `PCC-20261125-c8e274`, with unverified standing. [pcc:unverified]
