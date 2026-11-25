@@ -209,6 +209,35 @@ curve has evaluation and solver cost. The draft's exponents are conditional
 on disjoint bases, independent hits, equal solver costs, and uncharged
 network construction. They are not a universal lower bound.
 
+### Exact two-summand network census
+
+The [network protocol](NETWORK_PROTOCOL.md) was committed before execution.
+`network_hits.py` enumerates the exact two-summand hit sets on the same
+prime-order fixture for every rational target in \(E(\mathbb F_{10007})\),
+using the smaller coordinate bound \(x<20\). It normalizes each codomain
+point back to its unique preimage under \(\phi_i\) by
+\([\ell_i^{-1}]\hat\phi_i\). This normalization makes each arm's hit set
+comparable on the same base-curve target. The exact counts are in
+[`network_hits.json`](network_hits.json). `[pcc:unverified]`
+
+| Arms | Factor-base sizes | True base union | Two-summand hit sizes | True hit union | Independent-hit counterfactual |
+|---|---|---:|---|---:|---:|
+| Five isogenous curves | 22, 10, 16, 26, 30 | 104 | 237, 51, 129, 339, 451 | 1,161 / 10,193 | 0.113396 |
+| Base curve plus five | 22, 22, 10, 16, 26, 30 | 126 | 243, 237, 51, 129, 339, 451 | 1,373 / 10,193 | 0.134533 |
+
+At this bound the five bases are pairwise disjoint, whereas their hit sets
+have pairwise intersections of 1 to 15 targets. The network-only union hit
+probability is \(0.113902\), close to the \(0.113396\) independent-hit
+counterfactual for these unequal arms. It is \(2.574\) times the strongest
+single-arm hit probability, while the true factor-base union contains 104
+points versus that arm's 30. This confirms a finite best-of-five hit gain,
+but also the corresponding larger logarithm system. It does not establish
+that the network beats selecting its best arm once precomputation, per-arm
+solver calls, and linear algebra are charged. The earlier \(x<250\) dual-image
+overlap calculation and this normalized-preimage \(x<20\) calculation use
+different bounds and set definitions; neither implies universal disjointness
+or universal overlap. `[pcc:unverified]`
+
 For secp256k1, \(\psi(x,y)=(\beta x,y)\) and \(\beta^3=1\) do preserve
 \(x^r=1\) exactly when \(3\mid r\). This supplies orbit relations among
 factor-base logarithms. It is an instance of the known GLV endomorphism;

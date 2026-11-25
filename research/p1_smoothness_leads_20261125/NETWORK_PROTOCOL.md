@@ -34,3 +34,8 @@ identified reference, and report network-only and base-plus-network unions.
 The counterfactual is diagnostic; exact hit-set intersections determine the
 observed correlation. Do not infer a speedup without relation collection,
 solver, and linear-algebra costs on the same target workload.
+`[pcc:unverified]`
+
+Post-run editorial amendment: the final `[pcc:unverified]` tag was added for
+the repository prose linter after the census. The parameters and output
+definitions above are unchanged from frozen commit `4d1dcaf61`.
