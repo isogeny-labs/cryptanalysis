@@ -1,0 +1,35 @@
+# Batch ECDLP crossover, rebuilt on the faster relation finder (2026-11-23)
+
+Status: measurement note, all numbers [pcc:unverified] (no pcc claim filed: no solve certificate applies; see "Not done"). Branch `claude/batch-ecdlp-crossover-20261123`, cryptanalysis PR #1955 (draft). Frozen predictions: `PROTOCOL_FROZEN.md` (written before the IC-PT data). Scaled-down generic prime curves, 20/24/28 bits, 6 curves each (seeds 1-6, the same curves and targets as the executed batch rho of RES-batch-ic-vs-rho). Counts in the `ca-ic prime` abstract-op unit unless marked.
+
+## Short answer
+- The faster relation finder does not plug into the batch arm. `ca-ic prime` collects with a single-large-prime walk on a fixed 8-orbit base; `mitm-prime-batched` (#1891) is the pair-table oracle of `ic bench`; the k=3 harvester (#1901) is `gaudry_cubic` (F_p^3), not an F_p-curve relation phase. On current main (which contains #1891 and #1901) the `ca-ic prime` whole-process ops are identical to the previous note on 18/18 curves at K=4096, so its crossover has not moved: folded batch rho (tool seeding) K* = 90 / 430 / 3722 (3 of 6 curves cross) at 20 / 24 / 28 bits (medians of per-curve crossings 54-135, 191-572, none/3281-4037; previous note 81 / 411 / 3.3e3-4.0e3).
+- I built the arm that does use #1891: a pair-table batch IC (`IC-PT`, `pt_ic.py`): same table and probe as `mitm`, gain-graph solve over Z_r, targets descended by walks, every log checked [d]G=Q (468 evaluation runs, 0 failures, 0 inconsistent). It is dearer than folded batch rho at every K up to 4096, B in {20, 24, 28}: total ratio IC/rho at K=4096, tool seeding: 1.23 [1.22,1.25] (20 bits), 1.61 [1.57,1.64] (24), 2.27 [2.23,2.32] (28); with the batched-oracle table charge N(N+1) instead of N(2N+1): 1.14, 1.37, 1.79; with the table at ic bench's measured native pricing (mixed unit, favours IC): 1.09 [1.07,1.11], 1.19 [1.13,1.24], 1.36 [1.30,1.44]. No crossover, with or without the speedup.
+- Best-seeded rho (cheap arm: first walk of each target starts at Q_i for free, same rule for IC-PT) is not crossed by any IC arm: IC-LP/rho at K=4096 is 3.98 [3.78,4.23], 1.88 [1.82,1.95], 1.38 [1.37,1.39] at 20/24/28 bits; best IC-PT 1.49, 1.43, 1.46 (priced-table mixed unit; 1.78, 1.85, 2.05 with the batched counted table). Distance remaining: factor 1.4-4.0 (IC-LP) at K=4096; the IC-LP ratio against cheap rho has its minimum near K=16-64 (1.29-1.52) and grows with K because cheap-start rho gets cheaper per target than IC-LP.
+- The task's prediction ("crossover moves down by about the relation-phase speedup") is falsified for the existing arm (speedup is exactly 1.00x there) and for the rebuilt arm (the speedup lowers IC-PT cost by 1.1-1.5x but IC-PT starts 1.1-2.3x above rho at K=4096).
+
+## Why #1891's gain does not carry over
+- Measured (`ca-ic bench`, prime-abscissa, 6 repeats, seed 20261123, same host): table setup in `ic bench` gae: `mitm` 20 100 / 131 328 (N=100, 256: exactly N(2N+1)); `mitm-prime-batched` counted 10 100 / 65 792 (N(N+1), pricing off) and priced 6 217 / 18 490. So the batched oracle is 2.0x lower in counted adds, 3.2x / 7.1x lower priced. Total S: 23.56 -> 10.00 (20 bits), 43.26 -> 9.67 (24 bits). The frozen note said "differs from mitm in wall time alone"; that was wrong (the counted table is half the size). Matched rho S in the same runs: 0.98 / 1.08, so at one target the pair-table IC is 10x / 9x rho; `ca-ic prime` K=1 is 2.3-4.2x (this note's table).
+- IC-PT up-front cost (table + jumps + relation phase, K=1 total) vs IC-LP: 20.5k vs 4.1k (5x), 168k vs 16.4k (10x), 1.17M vs 55k (21x) at 20/24/28 bits (ops, tool table charge). At K=4096 IC-PT/IC-LP = 1.7 / 1.9 / 2.3. So P3 was right on the up-front factor at 20/24 bits (3-10x) and wrong at 28 (21x) and wrong on "within 0.7-1.5x at K=4096".
+- Why it cannot cross: both IC-PT and batch rho cost ~ sqrt(K r) up to constants; IC-PT's relation phase (80k ops at 24 bits) and per-target seeding (2 smul + 1 = 61 ops at 20 bits, which is 2/3 of its K=4096 cost per target at 20 bits) have no counterpart saving.
+
+## Numbers (geometric mean over 6 curves of IC total / executed folded batch rho total, 95% bootstrap CI; full tables incl. crossing K per curve in `RESULTS_TABLES.md`)
+| B | arm | K=1 | K=64 | K=1024 | K=4096 | crossing K, per-curve |
+|--|--|--|--|--|--|--|
+| 20 | IC-LP vs full | 2.30 | 1.02 [0.99,1.07] | 0.78 | 0.73 [0.73,0.73] | 54-135, median 90 |
+| 24 | IC-LP vs full | 3.49 | 1.12 [1.06,1.18] | 0.93 | 0.83 [0.82,0.85] | 191-572, median 430 |
+| 28 | IC-LP vs full | 4.19 | 1.25 [1.21,1.29] | 1.08 | 1.00 [0.99,1.01] | 3281-4037 on 3/6, none on 3 |
+| 20/24/28 | IC-PT (any charge) vs full | 7.4-75 | 1.9-10 | 1.2-3.1 | 1.09-2.27 | none |
+| 20/24/28 | IC-LP vs best-seeded | 2.3-4.2 | 1.3-1.5 | 1.3-2.5 | 1.38-3.98 | none |
+| 20/24/28 | IC-PT vs best-seeded | 8-76 | 2.2-10 | 1.6-3.5 | 1.43-2.71 | none |
+IC-PT used one N and stop fraction per (B, K, seeding) tuned on seeds 101, 102 (K in 1, 16, 256, 4096; log-interpolated between), with the table charged N(2N+1) while tuning; the coarse grid always picked the model's centre value, so N is near but not at a tuned optimum. A cheaper table charge shifts the optimum N up by a few percent; not re-tuned.
+
+## Host, tier, what was and was not run
+Shared 4-vCPU container, 2 worker processes, no isolation tier (counted ops are host independent; Python wall times not reported). `ca-ic` built from branch HEAD (main f9c7b49e + ACTIVE line), binary blake3 cbce33c5... . The executed rho and IC-LP data are reused from `followups/next/batchrho/cells.csv` (copy: `rho_lp_cells.csv`); IC-LP identity with current main checked at K=4096 only (18/18), K<4096 assumed from determinism of the tool.
+
+## Not done
+- No S3 resume checkpoint: no upload token in this sandbox (`scripts/checkpoint.sh` needs `CHECKPOINT_UPLOAD_TOKEN`); state lives in this directory and the PR. No isolab-eks, no conductor, no ecdb call (no credentials/route verified), no research-kb MCP lookup (tool not available in this subagent; the lead was taken from the in-repo atlas notes).
+- No bench.record/v1 records, no pcc claim, no independent replay. The mixed-unit priced row uses the 20/24-bit ic bench pricing ratios extrapolated by a power law to N=72..782; it is a sensitivity, not a measurement.
+- No 32-bit cell, no K beyond 4096 (the tool's maximum), no re-tuning of IC-LP (`--orbits`, `--width`), no j0/j1728 curves; IC-PT does not use Aut folding beyond the sign, so on j0 curves it would lose further.
+- Extrapolation (a plan, not run): IC-PT's priced ratio at 20 bits falls ~5% per 4x in K near 4096 (1.15 -> 1.09), so a crossing against full-seeded folded rho would need K of order 4e4 or more there; nothing was run beyond 4096.
+- IC-LP was not rebuilt (no code change possible from #1891/#1901); a faster large-prime collector or a table-free relation phase is the open route; the lead remains `ca-ic prime --orbits`/`width` tuning plus lowering D (per-target descent) since at large K only D matters: D_IC-LP/D_cheap-rho = 1.4-4.0.

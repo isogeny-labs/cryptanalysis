@@ -54,7 +54,7 @@ jobs:
           cat ct136-artifacts/audit.json
       - name: Preserve all raw evidence even after a failure
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ct136-batched-cold-matched-prospective
           path: ct136-artifacts/

@@ -6,6 +6,15 @@ the shared-code parity list — are stated once in
 `crypto-autoresearcher:docs/lab-contract.md`. That file wins on a shared
 convention; this file wins on anything specific to this repository.
 
+## Authorized target scope
+
+Work in this repository is limited to public benchmark instances, published
+challenge curves, toy or synthetic parameters, and systems the owner operates
+or is explicitly authorized to test. Do not develop or test operational
+attacks against production keys, wallets, accounts, or third-party systems.
+A task that requires a non-public target stops and asks for written
+authorization before proceeding.
+
 ## Sabotage is assumed: proof-carrying claims
 
 Owner rule, 2026-11-04. Every producer, this session included, is assumed to

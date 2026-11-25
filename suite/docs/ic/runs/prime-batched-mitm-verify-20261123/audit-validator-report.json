@@ -1,0 +1,257 @@
+{
+ "schema": "validator-report/audit-recompute/v1",
+ "status": "pass",
+ "what": "second implementation of the accounting audit point estimates (geomean over targets of the replicate-mean log ratio) from raw ca-ic reports; every row verified [d]G=Q",
+ "raw_data": [
+  {
+   "path": "audit-raw.tar.xz",
+   "sha256": "cd1fd50e39da13c6da520e5914dc681649529f1d31c8abfdd94f1d04e8640407"
+  },
+  {
+   "path": "audit/audit-results.json",
+   "sha256": "494c6f846f3a63b84a20ef0861b8380bc44e446fb599e123a3b413d287379d25"
+  }
+ ],
+ "headline": [
+  {
+   "name": "16bit L2 vs B0 wall",
+   "claimed": 1.2742445671024507,
+   "recomputed": 1.2742445671024507,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "16bit L2 vs B0 S",
+   "claimed": 2.170547112610768,
+   "recomputed": 2.170547112610768,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "16bit L2 vs B3 wall",
+   "claimed": 1.0940348666465722,
+   "recomputed": 1.0940348666465722,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "16bit L2 vs B3 S",
+   "claimed": 1.070035194012596,
+   "recomputed": 1.070035194012596,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "16bit L3 vs M3n wall",
+   "claimed": 1.2891886457628747,
+   "recomputed": 1.2891886457628747,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "16bit L3 vs M3n S",
+   "claimed": 1.4996479392320412,
+   "recomputed": 1.4996479392320412,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "16bit L3 vs B0 wall",
+   "claimed": 0.9828754819475614,
+   "recomputed": 0.9828754819475614,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "16bit L3 vs B0 S",
+   "claimed": 1.8715936657792467,
+   "recomputed": 1.8715936657792467,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "18bit L2 vs B0 wall",
+   "claimed": 1.5967249124423724,
+   "recomputed": 1.5967249124423724,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "18bit L2 vs B0 S",
+   "claimed": 2.8656724229896064,
+   "recomputed": 2.8656724229896064,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "18bit L2 vs B3 wall",
+   "claimed": 1.1954307460126785,
+   "recomputed": 1.1954307460126785,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "18bit L2 vs B3 S",
+   "claimed": 1.2779255067731918,
+   "recomputed": 1.2779255067731918,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "18bit L3 vs M3n wall",
+   "claimed": 1.7579998839944275,
+   "recomputed": 1.7579998839944275,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "18bit L3 vs M3n S",
+   "claimed": 2.339267050023888,
+   "recomputed": 2.339267050023888,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "18bit L3 vs B0 wall",
+   "claimed": 1.362876201863597,
+   "recomputed": 1.362876201863597,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "18bit L3 vs B0 S",
+   "claimed": 2.566628766247116,
+   "recomputed": 2.566628766247116,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "20bit L2 vs B0 wall",
+   "claimed": 1.7581293111340974,
+   "recomputed": 1.7581293111340974,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "20bit L2 vs B0 S",
+   "claimed": 3.465661270190977,
+   "recomputed": 3.465661270190977,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "20bit L2 vs B3 wall",
+   "claimed": 1.301299865560679,
+   "recomputed": 1.301299865560679,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "20bit L2 vs B3 S",
+   "claimed": 1.2848586684798606,
+   "recomputed": 1.2848586684798606,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "20bit L3 vs M3n wall",
+   "claimed": 1.6674958536371496,
+   "recomputed": 1.6674958536371496,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "20bit L3 vs M3n S",
+   "claimed": 2.3527673742959765,
+   "recomputed": 2.3527673742959765,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "20bit L3 vs B0 wall",
+   "claimed": 1.1721005172182504,
+   "recomputed": 1.1721005172182504,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "20bit L3 vs B0 S",
+   "claimed": 2.6802128057590657,
+   "recomputed": 2.6802128057590657,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "22bit L2 vs B0 wall",
+   "claimed": 1.8568390907787955,
+   "recomputed": 1.8568390907787955,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "22bit L2 vs B0 S",
+   "claimed": 4.230337207005745,
+   "recomputed": 4.230337207005745,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "22bit L2 vs B3 wall",
+   "claimed": 1.3448956033952475,
+   "recomputed": 1.3448956033952475,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "22bit L2 vs B3 S",
+   "claimed": 1.4195025379038384,
+   "recomputed": 1.4195025379038384,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "22bit L3 vs M3n wall",
+   "claimed": 1.7883725624935412,
+   "recomputed": 1.7883725624935412,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "22bit L3 vs M3n S",
+   "claimed": 2.540743542942169,
+   "recomputed": 2.540743542942169,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "22bit L3 vs B0 wall",
+   "claimed": 1.423954342524405,
+   "recomputed": 1.423954342524405,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "22bit L3 vs B0 S",
+   "claimed": 3.5316603175734023,
+   "recomputed": 3.5316603175734023,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "24bit L2 vs B0 wall",
+   "claimed": 1.9438463298291082,
+   "recomputed": 1.9438463298291082,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "24bit L2 vs B0 S",
+   "claimed": 4.447675741081109,
+   "recomputed": 4.447675741081109,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "24bit L2 vs B3 wall",
+   "claimed": 1.3739304341815588,
+   "recomputed": 1.3739304341815588,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "24bit L2 vs B3 S",
+   "claimed": 1.4118085885769192,
+   "recomputed": 1.4118085885769192,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "24bit L3 vs M3n wall",
+   "claimed": 1.9773202699676815,
+   "recomputed": 1.9773202699676815,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "24bit L3 vs M3n S",
+   "claimed": 2.844881668985493,
+   "recomputed": 2.844881668985493,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "24bit L3 vs B0 wall",
+   "claimed": 1.399497609319541,
+   "recomputed": 1.399497609319541,
+   "rel_tol": 1e-09
+  },
+  {
+   "name": "24bit L3 vs B0 S",
+   "claimed": 3.7177005836263186,
+   "recomputed": 3.7177005836263186,
+   "rel_tol": 1e-09
+  }
+ ]
+}

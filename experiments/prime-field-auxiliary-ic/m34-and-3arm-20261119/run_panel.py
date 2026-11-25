@@ -125,7 +125,7 @@ def hash_to_prime_subgroup_target(
 
 
 def verify_certificate_independently(report: dict) -> int:
-    """Independently verify [scalar]P == Q and every public relation equation in Python."""
+    """Check the public witness, weighted column cancellation and nonidentity row targets."""
     pub = report["public"]
     p, a, b, n = pub["p"], pub["a"], pub["b"], pub["n"]
     P = pub["P"]
@@ -204,13 +204,30 @@ def summarize_yield(report: dict) -> dict:
     }
 
 
-def summarize_solve(report: dict) -> dict:
+def replay_evidence(report: dict, input_path: Path, arm_flags: list[str]) -> dict:
+    public_input = json.loads(input_path.read_text())
+    public = public_input["public"]
+    for key in ("p", "a", "b", "n", "P", "Q"):
+        if key not in public or public[key] != report["public"][key]:
+            raise ValueError(f"missing or inconsistent public input field {key}")
+    return {
+        "input": public_input,
+        "public": report["public"],
+        "factor_base": report["factor_base"],
+        "arm_flags": arm_flags,
+        "configured_search": report["configured_search"],
+        "certificate": report["certificate"],
+    }
+
+
+def summarize_solve(report: dict, input_path: Path, arm_flags: list[str]) -> dict:
     fb = report["factor_base"]
     work = report["work"]
     phases = report["online_exclusive_phases"]["durations"]
     cli = report["cli_accounting"]
     scalar = verify_certificate_independently(report)
     out = {
+        "replay_evidence": replay_evidence(report, input_path, arm_flags),
         "status": report["status"],
         "summands": report["configured_search"]["summands"],
         "encoding": fb["encoding"]["kind"],
@@ -725,7 +742,7 @@ def main() -> int:
         for label, extra in arm_specs:
             rep = run_ca_ic(["--input", str(inp)] + extra + base_solve_flags)
             assert rep["status"] == "solved", f"{tid} {label} did not solve: {rep['status']}"
-            s_info = summarize_solve(rep)
+            s_info = summarize_solve(rep, inp, extra)
             solves_summary["independent_certificate_replays"] += 1
             scalars.add(s_info["scalar"])
             if "rho" in s_info:
@@ -785,7 +802,7 @@ def main() -> int:
     ]:
         rep = run_ca_ic(["--input", str(inp_e2)] + extra + base_solve_flags)
         assert rep["status"] == "solved"
-        s_info = summarize_solve(rep)
+        s_info = summarize_solve(rep, inp_e2, extra)
         solves_summary["independent_certificate_replays"] += 1
         e2_scalars.add(s_info["scalar"])
         if "rho" in s_info:
@@ -845,7 +862,7 @@ def main() -> int:
                 + extra
             )
             assert rep["status"] == "solved", f"m={m_val} {label} failed: {rep['status']}"
-            s_info = summarize_solve(rep)
+            s_info = summarize_solve(rep, inp_t0, extra)
             solves_summary["independent_certificate_replays"] += 1
             assert s_info["scalar"] == expected_t0_scalar, (
                 f"m={m_val} {label} scalar {s_info['scalar']} != {expected_t0_scalar}"
