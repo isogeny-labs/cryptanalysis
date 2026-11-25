@@ -338,6 +338,35 @@ it does not yet price the thousands of relation calls in the cold scan, the
 isogeny maps, or sparse linear algebra. The three named Track 1 `.ms` inputs
 remain separate and unavailable. `[pcc:unverified]`
 
+### Full native decomposition scan on the corrected target
+
+The [full-scan protocol](NATIVE_SCAN_PROTOCOL.md) was committed before the
+batch. `native_scan.py` ran `msolve -v 2 -t 1` on every known-scalar relation
+query and every descent query of the frozen \(7001G\) panel. Nine compressed
+shard archives retain each exact input, raw log/output, hashes, exit code,
+F4 data, and per-call wall/child CPU time. The aggregate is
+[`native_scan/summary.json`](native_scan/summary.json). All 7,160 physical
+solver calls exited zero and matched the group-law x-solution counts; the
+route totals below charge repeated queries to each cold strategy.
+`[pcc:unverified]`
+
+| Corrected route | Precomputation / descent native calls | Solver wall, s | Solver CPU, s | Separate sum-table additions |
+|---|---:|---:|---:|---:|
+| Base curve | 739 / 35 | 8.956 | 5.246 | 253 |
+| Strongest isogenous arm | 803 / 6 | 9.140 | 5.404 | 465 |
+| Five-arm network | 6,350 / 30 | 82.283 | 47.400 | 1,260 |
+
+The five-arm route required about nine times the solver wall time and 8.8
+times the solver CPU time of the strongest single isogenous arm in this
+serial run. Its hit union was larger, but the cold precomputation on five
+separate factor bases dominated. These timings include `msolve` process
+launch and its two-variable F4/FGLM work for each call. They exclude Sage
+input generation, scalar-point generation, isogeny construction and map
+evaluation, sum-table construction, and sparse linear algebra. The table's
+group additions are a different unit and are not added to seconds. A
+matched-rho end-to-end comparison and the requested Track 1 L20/L24/L28
+systems remain open. `[pcc:unverified]`
+
 For secp256k1, \(\psi(x,y)=(\beta x,y)\) and \(\beta^3=1\) do preserve
 \(x^r=1\) exactly when \(3\mid r\). This supplies orbit relations among
 factor-base logarithms. It is an instance of the known GLV endomorphism;
@@ -356,9 +385,8 @@ and [Faugère et al. on orbit reduction](https://citeseerx.ist.psu.edu/document?
    retain the sign action over the *original* rational point set. Without
    that bridge, a timing comparison on a different curve tests a different
    problem.
-3. For the isogeny network, replace the sum-table oracle with matched native
-   decomposition systems, measure per-curve isogeny and F4 costs, and charge
-   sparse linear algebra on the same frozen target. The exact base unions,
-   hit intersections, and one full-rank relation/descent scan above provide
-   controls. Compare cold total work against the single-curve and matched-rho
-   references before drawing an end-to-end conclusion.
+3. For the isogeny network, charge isogeny construction/evaluation and
+   scalar-point generation, then execute the sparse linear algebra on the
+   same frozen target. The exact hit and rank controls and full native
+   decomposition scan above are retained. Compare the resulting cold total
+   against a same-target, same-host rho run before an end-to-end claim.
