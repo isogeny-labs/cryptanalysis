@@ -26,3 +26,20 @@ with 500 representatives in memory and covers table construction. Factor-base
 generation, relation collection and elimination are outside that measurement.
 Cold end-to-end improvement remains unverified. These results establish no
 novelty claim or formal runtime bound. Lean contains no timestamp arithmetic.
+
+## Rust benchmark integration
+
+Run `python3 replay.py --implementation rust` to use the Rust builder. The
+runner exports the existing prime-field-auxiliary-ic crate from the current
+Git HEAD into its temporary Cargo project and compiles offline in release mode.
+The default implementation remains cpp. Rust uses the crate's public checked
+Curve, Point and BatchScratch APIs, including batch addition and negation.
+Both Rust modes use the same contiguous hash index and first-insertion rule.
+
+The Rust replay also checks a 500-representative collision fixture made from
+repeated P and 3P entries against Python affine arithmetic. This exercises
+first-payload retention with duplicate representatives and sign collisions.
+The checked Rust API validates intermediate points, so its instruction costs
+differ from the C++ implementation. Compare flat and reflected within one
+implementation. The Rust source and timings have local replay evidence only,
+with independent PCC standing pending. [pcc:unverified]
