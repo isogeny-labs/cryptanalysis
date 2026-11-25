@@ -1,0 +1,11 @@
+digraph Sign {
+  graph [rankdir=LR, bgcolor="white", pad="0.2", nodesep="0.5", ranksep="0.75"];
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=12, fillcolor="#f0f6ff", color="#3e5d83"];
+  edge [fontname="Helvetica", fontsize=10, color="#51667e"];
+  G [label="G and -G\nsame x-coordinate"];
+  X [label="x-only ray map\nF(G)=F(-G)"];
+  A [label="additive scalar law\nF(-G)=F(G)^(-1)"];
+  Z [label="F(G)^2=1\nodd-order ray subgroup: F(G)=1"];
+  G -> X -> Z;
+  G -> A -> Z;
+}
