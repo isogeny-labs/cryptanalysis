@@ -1,0 +1,21 @@
+PROFILE	actual-inert-genus2-Cantor-cover-pushforward-A	fixed-F7-correctness	unsigned-no-benchmark
+FULL_MODEL	H=[1, 0, 0, 0, 2, 0, 6]	squarefree-Bezout-s=[1, 0, 0, 0, 1]	t=[0, 4, 0, 4, 0, 1]	leading6-minus-all-squares=[6, 5, 2, 4, 4, 2, 5]
+FULL_ORIGINAL_E_POINTS	[None, Some((1, 3)), Some((1, 4)), Some((2, 2)), Some((2, 5)), Some((3, 2)), Some((3, 5)), Some((4, 1)), Some((4, 6)), Some((5, 1)), Some((5, 6))]	T=Some((1, 3))	all11-orbit-distinct=true
+COMPLETE_IDEAL_ENUMERATION	candidates=2401	classes=121	actual-root-types={"double": 14, "identity": 1, "quadratic": 22, "split": 84}	actual-push-pair-bijection=true
+COMPLETE_ACTUAL_GROUP	Cantor-additions=14641	all-independent-push-pairs=true	identity-inverse-exponent11=true	commutative=true	associative-triples=1771561	whole-cayley.csv-written=true
+ALL_CHAIN_AND_BSGS_REPLAY	k-oracle-driver-only=0	P=O	p1pull-id=0	p2pull-id=0	Gamma-id=0	u=[1]	v=[]	push1=O	push2=O	BSGS-result=0	source-replay=true
+ALL_CHAIN_AND_BSGS_REPLAY	k-oracle-driver-only=1	P=1:3	p1pull-id=107	p2pull-id=105	Gamma-id=21	u=[0, 5, 1]	v=[6, 3]	push1=1:3	push2=2:5	BSGS-result=1	source-replay=true
+ALL_CHAIN_AND_BSGS_REPLAY	k-oracle-driver-only=2	P=2:2	p1pull-id=27	p2pull-id=63	Gamma-id=109	u=[6, 2, 1]	v=[1, 4]	push1=2:2	push2=3:2	BSGS-result=2	source-replay=true
+ALL_CHAIN_AND_BSGS_REPLAY	k-oracle-driver-only=3	P=5:1	p1pull-id=1	p2pull-id=79	Gamma-id=17	u=[0, 4, 1]	v=[6]	push1=5:1	push2=4:1	BSGS-result=3	source-replay=true
+ALL_CHAIN_AND_BSGS_REPLAY	k-oracle-driver-only=4	P=3:5	p1pull-id=66	p2pull-id=46	Gamma-id=114	u=[6, 3, 1]	v=[6, 4]	push1=3:5	push2=5:1	BSGS-result=4	source-replay=true
+ALL_CHAIN_AND_BSGS_REPLAY	k-oracle-driver-only=5	P=4:1	p1pull-id=95	p2pull-id=93	Gamma-id=51	u=[2, 3, 1]	v=[1, 5]	push1=4:1	push2=1:3	BSGS-result=5	source-replay=true
+ALL_CHAIN_AND_BSGS_REPLAY	k-oracle-driver-only=6	P=4:6	p1pull-id=96	p2pull-id=94	Gamma-id=54	u=[2, 3, 1]	v=[6, 2]	push1=4:6	push2=1:4	BSGS-result=6	source-replay=true
+ALL_CHAIN_AND_BSGS_REPLAY	k-oracle-driver-only=7	P=3:2	p1pull-id=65	p2pull-id=45	Gamma-id=113	u=[6, 3, 1]	v=[1, 3]	push1=3:2	push2=5:6	BSGS-result=7	source-replay=true
+ALL_CHAIN_AND_BSGS_REPLAY	k-oracle-driver-only=8	P=5:6	p1pull-id=2	p2pull-id=80	Gamma-id=15	u=[0, 4, 1]	v=[1]	push1=5:6	push2=4:6	BSGS-result=8	source-replay=true
+ALL_CHAIN_AND_BSGS_REPLAY	k-oracle-driver-only=9	P=2:5	p1pull-id=28	p2pull-id=64	Gamma-id=112	u=[6, 2, 1]	v=[6, 3]	push1=2:5	push2=3:5	BSGS-result=9	source-replay=true
+ALL_CHAIN_AND_BSGS_REPLAY	k-oracle-driver-only=10	P=1:4	p1pull-id=108	p2pull-id=106	Gamma-id=20	u=[0, 5, 1]	v=[1, 4]	push1=1:4	push2=2:2	BSGS-result=10	source-replay=true
+REAL_MODEL_MUTANT	H0+1=[2, 0, 0, 0, 2, 0, 6]	original-ideal=Div { u: [6, 0, 1], v: [3] }	curve-congruence-rejects	pristine-restored
+REAL_IDEAL_MUTANT	u0+1=Div { u: [0, 0, 1], v: [3] }	on-curve=false	original-push-relation-rejected	pristine-restored
+REAL_SIGN_MUTANT	actual-sum=Div { u: [6, 2, 1], v: [1, 4] }	changed-v=Div { u: [6, 2, 1], v: [6, 3] }	valid-inverse=true	original-addition-relation-rejected	pristine-restored
+REAL_CHAIN_MUTANT	scalar6-to5	bad-actual-ideal=Div { u: [0, 5, 1], v: [1, 4] }	bad-push1=1:4	left-inverse-rejected	pristine-restored
+RESTORED_PRISTINE	actual-Cantor-class-group-and-cover-chain	all121-ideals-14641-sums-1771561-triples-11-inputs-11-BSGS-source-replays	projection-only-is-original-point	full-formal-geometry-and-signed-verdict-open

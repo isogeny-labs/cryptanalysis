@@ -1,0 +1,81 @@
+name: Actual inert genus-two Cantor and chained input certificate
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - research/chained_genus2_arithmetic_20261124/**
+      - .github/workflows/chained-genus2-arithmetic.yml
+permissions:
+  contents: read
+jobs:
+  actual-inert-genus2-cantor-cover-bsgs:
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /.artifacts/config.json
+            /.gitattributes
+            /.github/workflows/chained-genus2-arithmetic.yml
+            /.gitignore
+            /AGENTS.md
+            /pcc/claims/PCC-20261124-1ae1d5.json
+            /pcc/claims/PCC-20261124-674f2c.json
+            /pcc/claims/PCC-20261124-d648db.json
+            /pcc/keyring.json
+            /research/chained_genus2_arithmetic_20261124/BOOTSTRAP_A.json
+            /research/chained_genus2_arithmetic_20261124/CALLER_SYNTAX_A.json
+            /research/chained_genus2_arithmetic_20261124/CHECKPOINT_CLASSIFICATION_A.md
+            /research/chained_genus2_arithmetic_20261124/DIVISOR_PROOF_PLAN_A.md
+            /research/chained_genus2_arithmetic_20261124/FORMAT_PREPARATION_A.json
+            /research/chained_genus2_arithmetic_20261124/HARDWARE_CONTEXT_A.json
+            /research/chained_genus2_arithmetic_20261124/PRECODE_REFINEMENT_A.md
+            /research/chained_genus2_arithmetic_20261124/PRIMARY_SOURCES_A.md
+            /research/chained_genus2_arithmetic_20261124/PROTOCOL_A.md
+            /research/chained_genus2_arithmetic_20261124/RESEARCH_QUEUE_A.md
+            /research/chained_genus2_arithmetic_20261124/RESUME.md
+            /research/chained_genus2_arithmetic_20261124/SOURCE_LOCK_A.json
+            /research/chained_genus2_arithmetic_20261124/UPSTREAM_INPUTS_A.json
+            /research/chained_genus2_arithmetic_20261124/ci_custody_metadata_B.py
+            /research/chained_genus2_arithmetic_20261124/custody_metadata_A.py
+            /research/chained_genus2_arithmetic_20261124/divisor_a.rs
+            /research/chained_genus2_arithmetic_20261124/elliptic_a.rs
+            /research/chained_genus2_arithmetic_20261124/field49_a.rs
+            /research/chained_genus2_arithmetic_20261124/format-edit.stderr
+            /research/chained_genus2_arithmetic_20261124/format-edit.stdout
+            /research/chained_genus2_arithmetic_20261124/inputs/crypto5114/ACTUAL_GENUS2_PRYM_PROOF_D.md
+            /research/chained_genus2_arithmetic_20261124/inputs/crypto5114/FIRST_D_NATIVE_INVENTORY.json
+            /research/chained_genus2_arithmetic_20261124/inputs/crypto5114/GLOBAL_RETRACTION_SHARPENING_E.md
+            /research/chained_genus2_arithmetic_20261124/inputs/crypto5114/field_a.rs
+            /research/chained_genus2_arithmetic_20261124/inputs/crypto5114/first-D-native/principal-genus2-glue.stdout
+            /research/chained_genus2_arithmetic_20261124/inputs/crypto5114/poly_d.rs
+            /research/chained_genus2_arithmetic_20261124/main_a.rs
+            /research/chained_genus2_arithmetic_20261124/maintenance/ct24-ca-genus2-active-complete-readback.json
+            /research/chained_genus2_arithmetic_20261124/maintenance/ct24-ca-genus2-bootstrap-negatives.json
+            /research/chained_genus2_arithmetic_20261124/maintenance/ct24-ca-genus2-planA-complete-readback.json
+            /research/chained_genus2_arithmetic_20261124/maintenance/ct24-resolvents-deliveryE-all183-complete-readback.json
+            /research/chained_genus2_arithmetic_20261124/maintenance/ct24-resolvents-deliveryE-final-artifacts.stderr
+            /research/chained_genus2_arithmetic_20261124/maintenance/ct24-resolvents-deliveryE-final-artifacts.stdout
+            /research/chained_genus2_arithmetic_20261124/preformat-draft-A/divisor_a.rs
+            /research/chained_genus2_arithmetic_20261124/preformat-draft-A/elliptic_a.rs
+            /research/chained_genus2_arithmetic_20261124/preformat-draft-A/field49_a.rs
+            /research/chained_genus2_arithmetic_20261124/preformat-draft-A/main_a.rs
+            /research/chained_genus2_arithmetic_20261124/run_ci_B.sh
+            /research/chained_genus2_arithmetic_20261124/run_first_A.sh
+      - name: Install exact native Rust toolchain with official rustup
+        shell: bash
+        run: rustup toolchain install 1.99.1 --profile minimal --component rustfmt --component clippy
+      - name: Verify frozen input bytes and complete bounded arithmetic regression
+        shell: bash
+        run: bash research/chained_genus2_arithmetic_20261124/run_ci_B.sh "$RUNNER_TEMP/chained-genus2-ci"
+      - name: Retain complete new CI originals and full class and Cayley tables
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: actual-genus2-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/chained-genus2-ci
+          if-no-files-found: warn
+          retention-days: 14

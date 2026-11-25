@@ -98,6 +98,7 @@ reports `candidate_residual`, the point `Q - [candidate_log]P`. If
 `candidate` when no checkpoint or `known_log` already supplies the answer.
 A nonidentity residual gives the difference in `type-ii-onb` coordinates
 and rules out that candidate. Omit `candidate_log` for the subgroup check alone.
+See [What the candidate residual proves](#what-the-candidate-residual-proves).
 
 For bounded Semaev SAT queries, use `--solver sat --pair-budget 0` and select an
 interpreter with `--python /path/to/python`. It needs `python-sat` and
@@ -116,6 +117,28 @@ ECC2K-130's field is prime-degree (`n = 131`); the unified Semaev path
 applies to that family on toys. Full-size `n = 131` remains bounded by
 the free-oracle floor in
 [`RESEARCH_ECC2K130_DECOMPOSITION.md`](https://github.com/aburan28/crypto/blob/main/RESEARCH_ECC2K130_DECOMPOSITION.md).
+
+## What the candidate residual proves
+
+Let $P$ have odd prime order $n$ and let the observed point be $Q=[k_0]P$.
+For a candidate $k$, the residual is $Q-[k]P=[k_0-k]P$. A multiple of $P$
+is the identity $\mathcal{O}$ exactly when its scalar is divisible by $n$,
+so the residual is the identity exactly when $k\equiv k_0\pmod n$.
+
+Another generator in the same subgroup has the form $P'=[a]P$ with $a$
+invertible modulo $n$. The scalar $k'=k_0a^{-1}\pmod n$ gives
+$[k']P'=[k'a]P=[k_0]P=Q$. Both pairs pass the residual check for the same
+observed point. With the scalar unknown, subgroup membership establishes
+that a matching scalar exists for each generator in that subgroup.
+
+```mermaid
+flowchart LR
+    A["Base P<br/>Scalar k₀"] --> Q["Same output Q"]
+    B["Base 2P<br/>Scalar k₀ × 2⁻¹ mod n"] --> Q
+    C["Base P<br/>Scalar (k₀ + 1) mod n"] --> W["Different output Q + P"]
+    Q --> R["Residual Q − Q = identity<br/>Match"]
+    W --> S["Residual Q − (Q + P) = −P<br/>Mismatch"]
+```
 
 ## What is stored
 
