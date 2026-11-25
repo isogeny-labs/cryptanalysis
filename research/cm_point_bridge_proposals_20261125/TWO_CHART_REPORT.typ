@@ -60,6 +60,18 @@ budget into two separate eight-point triple searches; this fixed screen
 does not isolate an isogeny-attributable yield increase.
 \[pcc:unverified\]
 
+The earlier
+#link("../cm_joint_s4_20261123/SIGNED_THREE_SUM_CEILING.md")[signed three-sum ceiling]
+bounds #emph[each] signed eight-point chart by 96 distinct nonidentity
+targets. Therefore any union of two such separately searched charts has
+support at most `96+96=192`, even if their supports are disjoint and
+regardless of which horizontal vertices supply the bases. The observed
+180 is only 12 below that ceiling, while the measured single
+source-native 16-point base has support 510. This closes a
+#strong[yield-only] improvement for the fixed two-chart/eight-point
+allocation; it does not compare native solver cost or different
+allocations. \[pcc:unverified\]
+
 == Work and limit
 <work-and-limit>
 The two eight-point charts contain `2*C(10,3)=240` indexed triple
