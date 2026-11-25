@@ -22,12 +22,12 @@
       "sha256": "c36443b17548a2f9c4f2843635fbaed6abe04788a259585f38605f7447f11349"
     }
   ],
-  "latest_record": "20261120T1913Z-ic-threads-gate",
+  "latest_record": "20261121T2238Z-mitm-coset-filter-ratchet",
   "note": "Every value is quoted from the record it names, in that record's unit. Percentages and ratios under 'derived' are computed here from those values and are not measurements. Series in different units are never compared. 4 digest-pinned historical measured records are excluded from all series and derived comparisons; recorded status counts retain them. See integrity_exclusions in progress.json and PROGRESS.md for reasons.",
   "records": {
-    "censored": 1,
+    "censored": 3,
     "invalid": 38,
-    "measured": 41,
+    "measured": 43,
     "open": 0
   },
   "repo": "cryptanalysis",
@@ -2056,6 +2056,886 @@
       ],
       "problem": "ic:bench-cell-wall-phase3",
       "unit": "wall_s"
+    },
+    {
+      "better": "higher",
+      "first": 1.192559,
+      "latest": 1.192559,
+      "latest_derived": {},
+      "metric": "paired_s_ratio_c2_19",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {},
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.13786,
+            1.270476
+          ],
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 1.192559
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.345857,
+      "latest": 1.345857,
+      "latest_derived": {},
+      "metric": "paired_s_ratio_c2_21",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {},
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.278199,
+            1.408599
+          ],
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 1.345857
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.145927,
+      "latest": 1.145927,
+      "latest_derived": {},
+      "metric": "paired_s_ratio_c2_23",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {},
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.092697,
+            1.213793
+          ],
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 1.145927
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.18652,
+      "latest": 1.18652,
+      "latest_derived": {},
+      "metric": "paired_s_ratio_c2_25",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {},
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.156872,
+            1.236953
+          ],
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 1.18652
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.500284,
+      "latest": 1.500284,
+      "latest_derived": {},
+      "metric": "paired_s_ratio_c2_27",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {},
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.453644,
+            1.549235
+          ],
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 1.500284
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.350309,
+      "latest": 1.350309,
+      "latest_derived": {},
+      "metric": "paired_s_ratio_c2_29",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {},
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.242356,
+            1.503759
+          ],
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 1.350309
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 0.999705,
+      "latest": 0.999705,
+      "latest_derived": {},
+      "metric": "paired_s_ratio_ctl_aa_c2_19",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {},
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.999635,
+            0.999758
+          ],
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 0.999705
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.0,
+      "latest": 1.0,
+      "latest_derived": {},
+      "metric": "paired_s_ratio_ctl_prime16",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {},
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.0,
+            1.0
+          ],
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 1.0
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.95411,
+      "latest": 1.95411,
+      "latest_derived": {},
+      "metric": "paired_s_ratio_k_23",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {},
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.953993,
+            1.954245
+          ],
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 1.95411
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.196761,
+      "latest": 1.196761,
+      "latest_derived": {},
+      "metric": "paired_s_ratio_k_31",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {},
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.192394,
+            1.201025
+          ],
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 1.196761
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "ratio"
+    },
+    {
+      "better": "higher",
+      "first": 1.672414,
+      "latest": 1.672414,
+      "latest_derived": {},
+      "metric": "paired_s_ratio_k_43",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {},
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.574096,
+            1.780391
+          ],
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 1.672414
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "ratio"
+    },
+    {
+      "better": "lower",
+      "first": 23.229171,
+      "latest": 23.229171,
+      "latest_derived": {
+        "value_over_reference": 12.078848
+      },
+      "metric": "s_baseline_c2_19",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {
+            "value_over_reference": 12.078848
+          },
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": 1.923128,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 23.229171
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 27.805141,
+      "latest": 27.805141,
+      "latest_derived": {
+        "value_over_reference": 21.209157
+      },
+      "metric": "s_baseline_c2_21",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {
+            "value_over_reference": 21.209157
+          },
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": 1.310997,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 27.805141
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 19.246942,
+      "latest": 19.246942,
+      "latest_derived": {
+        "value_over_reference": 17.459064
+      },
+      "metric": "s_baseline_c2_23",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {
+            "value_over_reference": 17.459064
+          },
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": 1.102404,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 19.246942
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 26.512475,
+      "latest": 26.512475,
+      "latest_derived": {
+        "value_over_reference": 26.557676
+      },
+      "metric": "s_baseline_c2_25",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {
+            "value_over_reference": 26.557676
+          },
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": 0.998298,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 26.512475
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 40.647466,
+      "latest": 40.647466,
+      "latest_derived": {
+        "value_over_reference": 36.640333
+      },
+      "metric": "s_baseline_c2_27",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {
+            "value_over_reference": 36.640333
+          },
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": 1.109364,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 40.647466
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 53.268287,
+      "latest": 53.268287,
+      "latest_derived": {
+        "value_over_reference": 63.609089
+      },
+      "metric": "s_baseline_c2_29",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {
+            "value_over_reference": 63.609089
+          },
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": 0.837432,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 53.268287
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 23.231537,
+      "latest": 23.231537,
+      "latest_derived": {
+        "value_over_reference": 12.080078
+      },
+      "metric": "s_baseline_ctl_aa_c2_19",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {
+            "value_over_reference": 12.080078
+          },
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": 1.923128,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 23.231537
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 19.636056,
+      "latest": 19.636056,
+      "latest_derived": {
+        "value_over_reference": 11.492335
+      },
+      "metric": "s_baseline_ctl_prime16",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {
+            "value_over_reference": 11.492335
+          },
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": 1.708622,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 19.636056
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 86.733233,
+      "latest": 86.733233,
+      "latest_derived": {
+        "value_over_reference": 98.158377
+      },
+      "metric": "s_baseline_k_23",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {
+            "value_over_reference": 98.158377
+          },
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": 0.883605,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 86.733233
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 35.165057,
+      "latest": 35.165057,
+      "latest_derived": {
+        "value_over_reference": 30.37947
+      },
+      "metric": "s_baseline_k_31",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {
+            "value_over_reference": 30.37947
+          },
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": 1.157527,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 35.165057
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 50.335414,
+      "latest": 50.335414,
+      "latest_derived": {
+        "value_over_reference": 202.738933
+      },
+      "metric": "s_baseline_k_43",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {
+            "value_over_reference": 202.738933
+          },
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": 0.248277,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 50.335414
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 19.987379,
+      "latest": 19.987379,
+      "latest_derived": {
+        "value_over_reference": 10.393161
+      },
+      "metric": "s_lead_c2_19",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {
+            "value_over_reference": 10.393161
+          },
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": 1.923128,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 19.987379
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 21.08215,
+      "latest": 21.08215,
+      "latest_derived": {
+        "value_over_reference": 16.081006
+      },
+      "metric": "s_lead_c2_21",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {
+            "value_over_reference": 16.081006
+          },
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": 1.310997,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 21.08215
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 17.278709,
+      "latest": 17.278709,
+      "latest_derived": {
+        "value_over_reference": 15.673663
+      },
+      "metric": "s_lead_c2_23",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {
+            "value_over_reference": 15.673663
+          },
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": 1.102404,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 17.278709
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 22.57727,
+      "latest": 22.57727,
+      "latest_derived": {
+        "value_over_reference": 22.615762
+      },
+      "metric": "s_lead_c2_25",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {
+            "value_over_reference": 22.615762
+          },
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": 0.998298,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 22.57727
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 27.239574,
+      "latest": 27.239574,
+      "latest_derived": {
+        "value_over_reference": 24.554226
+      },
+      "metric": "s_lead_c2_27",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {
+            "value_over_reference": 24.554226
+          },
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": 1.109364,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 27.239574
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 41.256117,
+      "latest": 41.256117,
+      "latest_derived": {
+        "value_over_reference": 49.265035
+      },
+      "metric": "s_lead_c2_29",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {
+            "value_over_reference": 49.265035
+          },
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": 0.837432,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 41.256117
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 23.237776,
+      "latest": 23.237776,
+      "latest_derived": {
+        "value_over_reference": 12.083323
+      },
+      "metric": "s_lead_ctl_aa_c2_19",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {
+            "value_over_reference": 12.083323
+          },
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": 1.923128,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 23.237776
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 19.636056,
+      "latest": 19.636056,
+      "latest_derived": {
+        "value_over_reference": 11.492335
+      },
+      "metric": "s_lead_ctl_prime16",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {
+            "value_over_reference": 11.492335
+          },
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": 1.708622,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 19.636056
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 44.385024,
+      "latest": 44.385024,
+      "latest_derived": {
+        "value_over_reference": 50.231748
+      },
+      "metric": "s_lead_k_23",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {
+            "value_over_reference": 50.231748
+          },
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": 0.883605,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 44.385024
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 29.388006,
+      "latest": 29.388006,
+      "latest_derived": {
+        "value_over_reference": 25.388614
+      },
+      "metric": "s_lead_k_31",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {
+            "value_over_reference": 25.388614
+          },
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": 1.157527,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 29.388006
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "S"
+    },
+    {
+      "better": "lower",
+      "first": 30.558335,
+      "latest": 30.558335,
+      "latest_derived": {
+        "value_over_reference": 123.081619
+      },
+      "metric": "s_lead_k_43",
+      "points": [
+        {
+          "commit": "23d3424ca303",
+          "date": "2026-11-21",
+          "derived": {
+            "value_over_reference": 123.081619
+          },
+          "n": 8,
+          "record": "20261121T2238Z-mitm-coset-filter-ratchet",
+          "reference": 0.248277,
+          "reference_kind": "matched_rho",
+          "spread": null,
+          "summary": "coset_filter=1 vs plain mitm/mitm-frobenius at m=2: paired counted-S ratios 1.15-1.95 on char2 n=19..29 and Koblitz n=23,31,43; controls 1.000; exploratory, shared VM, no isolation tier",
+          "value": 30.558335
+        }
+      ],
+      "problem": "ic:mitm-coset-filter:char2-koblitz",
+      "unit": "S"
     },
     {
       "better": "higher",
