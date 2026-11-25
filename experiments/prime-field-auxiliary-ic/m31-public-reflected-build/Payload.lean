@@ -84,4 +84,60 @@ theorem grouped_exact_payloads {Table : Type} (basis : Ix → G) (n : Nat)
   dsimp only
   rw [grouped_rows_eq, exact_payloads]
 
+theorem adjacent_row_lengths (m k : Nat) (inside : k < m) :
+    (row (2 * m) (2 * k)).length = 2 * (m - k) ∧
+    (row (2 * m) (2 * k + 1)).length = 2 * (m - k) - 1 := by
+  simp only [row, List.length_map, List.length_drop, List.length_range]
+  omega
+
+-- Reindexed suffix lengths for m signed pairs. The direct traversal submits
+-- both suffixes of lengths 2m and 2m-1. Reflection submits the first suffix
+-- and reconstructs the second. Counts include inputs whose sum is infinity.
+def directInputs : Nat → Nat
+  | 0 => 0
+  | m + 1 => 2 * (m + 1) + (2 * m + 1) + directInputs m
+
+def reflectedInputs : Nat → Nat
+  | 0 => 0
+  | m + 1 => 2 * (m + 1) + reflectedInputs m
+
+def reconstructedInputs : Nat → Nat
+  | 0 => 0
+  | m + 1 => (2 * m + 1) + reconstructedInputs m
+
+theorem direct_input_count (m : Nat) : directInputs m = m * (2 * m + 1) := by
+  induction m with
+  | zero => rfl
+  | succ m ih => simp only [directInputs, ih]; ring
+
+theorem reflected_input_count (m : Nat) : reflectedInputs m = m * (m + 1) := by
+  induction m with
+  | zero => rfl
+  | succ m ih => simp only [reflectedInputs, ih]; ring
+
+theorem reconstructed_input_count (m : Nat) : reconstructedInputs m = m * m := by
+  induction m with
+  | zero => rfl
+  | succ m ih => simp only [reconstructedInputs, ih]; ring
+
+-- Every eliminated batch input still needs a reconstruction and a visit.
+theorem input_accounting (m : Nat) :
+    directInputs m = reflectedInputs m + reconstructedInputs m := by
+  rw [direct_input_count, reflected_input_count, reconstructed_input_count]
+  ring
+
+-- An explicit weighted model gives a strict reduction exactly when a saved
+-- batch-input cost outweighs the corresponding reconstruction cost.
+-- Actual timing additionally includes validation, allocation, hashing and I/O.
+theorem weighted_reduction (m : Nat) (positive : 0 < m)
+    (addition reconstruction : ℝ) (cheaper : reconstruction < addition) :
+    (reflectedInputs m : ℝ) * addition + (reconstructedInputs m : ℝ) * reconstruction <
+    (directInputs m : ℝ) * addition := by
+  rw [input_accounting]
+  push_cast
+  have h : (0 : ℝ) < reconstructedInputs m := by
+    rw [reconstructed_input_count]
+    exact_mod_cast Nat.mul_pos positive positive
+  nlinarith
+
 end ReflectedPair

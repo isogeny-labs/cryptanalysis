@@ -51,3 +51,18 @@ references, off-curve representatives and incomplete point input. Each invalid
 case must return the Rust checked-error exit code, so an abnormal termination
 also fails the test. The C++ implementation supports --check-only for its
 existing reference comparisons.
+
+## Symbolic cost model
+
+The Lean model now counts batch inputs and reconstructed inputs for m signed
+pairs. The direct traversal submits m(2m+1) inputs to batch addition. The
+reflected traversal submits m(m+1) inputs and reconstructs m squared inputs.
+The adjacent-row length lemma connects each suffix to its triangular row.
+The recurrence model sums these suffix lengths, including infinity results.
+
+The weighted-cost theorem assumes a constant per-input addition cost and a
+strictly smaller reconstruction cost. Under those assumptions and m > 0, it
+proves a strict reduction in their combined modeled cost. Each reconstructed
+entry still receives a table visit. Validation, batch inversion setup,
+allocation, hashing, memory traffic and I/O require additional accounting.
+This model provides no empirical speedup or cold pipeline result.
