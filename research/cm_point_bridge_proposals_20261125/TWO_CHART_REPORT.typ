@@ -93,8 +93,20 @@ instance. The earlier
 #link("../cm_joint_s4_20261123/NATIVE_THREE_SUM_COST_REPORT.md")[native S4 cost report]
 and
 #link("../cm_joint_s4_20261123/MIXED_EQUAL_YIELD_COST_REPORT.md")[equal-yield mixed-base report]
-remain the relevant solver-cost baselines; this census adds no full
-same-target comparison. \[pcc:unverified\]
+remain the relevant solver-cost baselines; this census adds no
+#strong[measured] full same-target comparison. \[pcc:unverified\]
+
+For the #strong[same two signed eight-point charts at P-192], with
+subgroup order `r` pinned in the
+#link("../cm_joint_s4_20261123/README.md")[joint S4 report], the support
+ceiling of 192 makes the hit probability of a uniform nonidentity query
+at most `192/(r-1)`. Even one hit needs at least `(r-1)/192 ≈ 2^184.415`
+queries in expectation. The negation-aware rho reference is `≈2^95.826`
+additions, so the query count alone is `≈2^88.589` times larger if each
+natural query costs just one addition equivalent. This is a cold
+lower-bound screen for this fixed allocation and uniform-query
+mechanism, not a measurement or a bound on larger bases, targeted query
+oracles, or all isogeny-assisted index calculus. \[pcc:unverified\]
 
 #strong[Decision:] retain the coordinate-input row construction as a
 checked finite mechanism, but do not advance this fixed two-chart
