@@ -41,6 +41,74 @@ satisfies `P+pi(P)=O`. This is a genuinely smooth noninteger CM
 endomorphism, although formula (1) exists for ordinary curves without
 using its smooth factorization. [pcc:unverified]
 
+## The actual two-edge kernel circuit
+
+The trace `t=-13` gives `pi^2+13*pi+47=0`, so
+
+```text
+1+pi = (6+pi)(8+pi),
+Norm(6+pi)=5,  Norm(8+pi)=7,
+(6+pi) mod (pi-1)=7,  (8+pi) mod (pi-1)=9,
+7*9=2 mod 61.
+```
+
+Sage's degree-5 edge with kernel polynomial
+`K5(X)=X^2+21X+27` becomes the endomorphism with rational-point
+action `[7]` after a codomain isomorphism. Its degree-7 edge with
+`K7(X)=X^3+28X^2+26X+44` similarly acts as `[9]`. Thus the
+candidate kernel sign has a genuine short evaluation circuit:
+evaluate `K7` at `P`, map `P` through the degree-7 edge, then
+evaluate `K5` there. With the chosen isomorphism, the second input is
+`[9]P` on rational points. The arbitrary-isogeny chain rule cited
+above predicts the kernel-function product, with odd powers and
+normalizing constants affecting only a possible global field sign.
+[pcc:unverified]
+
+On **all** 60 nonzero rational points, direct evaluation of
+`K35(x(P))` and the two-edge character
+`chi_47(K5(x([9]P))*K7(x(P)))` gives the same sign. Reversing the
+factor order gives the same sign as well. The individual best-sign
+agreements with `chi_61(d)` are 32/60 for `K5` and 34/60 for `K7`;
+the composed value is 32/60. This verifies compact evaluation of the
+proposed point-dependent function on this finite instance and its
+failure as an exact ray character. It does not establish a compact
+P-192 circuit or a full-log cost advantage. [pcc:unverified]
+
+Reproduce the edge identification and character composition:
+
+```sh
+/Volumes/SSD990/cryptanalysis/sage -python - <<'PY'
+from sage.all import GF, EllipticCurve, PolynomialRing, kronecker
+F=GF(47); E=EllipticCurve(F,[1,38]); G=E(2,1); p=47; r=61
+R=PolynomialRing(F,'X'); X=R.gen()
+phi5=E.isogenies_prime_degree(5)[0]
+phi7=E.isogenies_prime_degree(7)[0]
+K5=R(phi5.kernel_polynomial()); K7=R(phi7.kernel_polynomial())
+assert K5 == X**2+21*X+27 and K7 == X**3+28*X**2+26*X+44
+iso5=next(iso for iso in phi5.codomain().isomorphisms(E)
+          if iso(phi5(G))==7*G)
+iso7=next(iso for iso in phi7.codomain().isomorphisms(E)
+          if iso(phi7(G))==9*G)
+K35=R.prod(X-F(x) for x in range(p)
+           if kronecker((x*x*x+x+38)%p,p)==-1)
+sign=lambda v: 1 if v**((p-1)//2)==1 else -1
+counts={'K5':0,'K7':0,'K35':0,'chain':0,'reverse':0}
+for d in range(1,r):
+    P=d*G; truth=int(kronecker(d,r))
+    P5=iso5(phi5(P)); P7=iso7(phi7(P))
+    assert P5==7*P and P7==9*P
+    values={'K5':K5(P[0]),'K7':K7(P[0]),'K35':K35(P[0]),
+            'chain':K5(P7[0])*K7(P[0]),
+            'reverse':K7(P5[0])*K5(P[0])}
+    assert all(v!=0 for v in values.values())
+    assert sign(values['K35'])==sign(values['chain'])
+    assert sign(values['K35'])==sign(values['reverse'])
+    for name,v in values.items(): counts[name]+=int(sign(v)==truth)
+assert counts=={'K5':28,'K7':26,'K35':32,'chain':32,'reverse':32}
+print(counts)
+PY
+```
+
 ## Exact character census and horizontal control
 
 | Curve and marked generator | `n` | `deg K_E` | Raw agreement with `chi_r(d)` | Best global sign |
