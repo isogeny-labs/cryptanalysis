@@ -25,13 +25,7 @@ DIGESTS = {
 def frozen(name):
     return subprocess.check_output(["git", "show", SOURCE + name], cwd=HERE)
 
-def references(directory, basis):
-    data = json.loads(frozen(f"field31/{basis}/public.json"))
-    p = data["p"]
-    points = data["factor_base_representatives"]
-    if (p, data["a"], data["b"], len(points)) != (2**31-1, 2, 14, 500):
-        raise ValueError("Unexpected public fixture")
-    (directory / basis).write_text("".join(f"{x} {y}\n" for x, y in points))
+def signed_pair_entries(points, p):
     signed = [(x, sign_y) for x, y in points for sign_y in (y, -y % p)]
     entries = {}
     for i, (x, y) in enumerate(signed):
@@ -46,10 +40,46 @@ def references(directory, basis):
             u = (slope*slope-x-xx) % p
             v = (slope*(x-u)-y) % p
             entries.setdefault(2*u + v%2, (i << 16) | j)
+    return entries
+
+
+def decoded_records(compact_blob):
+    for x, value in struct.iter_unpack("<II", compact_blob):
+        yield 2*x, value
+        i, j = sorted(((value >> 16) ^ 1, (value & 65535) ^ 1))
+        yield 2*x + 1, (i << 16) | j
+
+
+def encode(records):
+    return b"".join(struct.pack("<II", key, value) for key, value in records)
+
+
+def collision_control():
+    # Signed basis P, -P, 3P, -3P on the archived curve.
+    entries = signed_pair_entries([(1, 814455902), (159715794, 2076807678)], 2**31-1)
+    compact = encode((k//2, v) for k, v in sorted(entries.items()) if k%2 == 0)
+    decoded = dict(decoded_records(compact))
+    odd_key = 2*1042161180 + 1
+    if (decoded.keys() != entries.keys() or entries[odd_key] != 3
+            or decoded[odd_key] != (1 << 16) + 1
+            or sum(decoded[k] != v for k, v in entries.items()) != 1):
+        raise ValueError("Expected exactly the archived P, 3P collision mismatch")
+
+
+def references(directory, basis):
+    data = json.loads(frozen(f"field31/{basis}/public.json"))
+    p = data["p"]
+    points = data["factor_base_representatives"]
+    if (p, data["a"], data["b"], len(points)) != (2**31-1, 2, 14, 500):
+        raise ValueError("Unexpected public fixture")
+    (directory / basis).write_text("".join(f"{x} {y}\n" for x, y in points))
+    entries = signed_pair_entries(points, p)
     ordered = sorted(entries.items())
     for layout, digest in DIGESTS[basis].items():
         records = ordered if layout == "full" else ((k//2, v) for k,v in ordered if k%2 == 0)
-        blob = b"".join(struct.pack("<II", k, v) for k, v in records)
+        blob = encode(records)
+        if layout == "compact" and encode(decoded_records(blob)) != encode(ordered):
+            raise ValueError(f"Signed payload round-trip mismatch for {basis}")
         if hashlib.sha256(blob).hexdigest() != digest:
             raise ValueError(f"Reference digest mismatch for {basis}/{layout}")
         (directory / f"{basis}-{layout}.bin").write_bytes(blob)
@@ -58,6 +88,7 @@ def replay(directory):
     if sys.byteorder != "little":
         raise ValueError("The native reference reader requires a little-endian host")
     (directory / "common.hpp").write_bytes(frozen("common.hpp"))
+    collision_control()
     for basis in DIGESTS:
         references(directory, basis)
     subprocess.run(["c++", "-std=c++17", "-O3", "-DFIELD_BITS=31", "-I", str(directory),
