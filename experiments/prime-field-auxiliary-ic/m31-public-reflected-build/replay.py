@@ -2,6 +2,8 @@
 import argparse
 import csv
 import shutil
+import resource
+from time import perf_counter_ns
 from pathlib import Path
 import random
 import runpy
@@ -12,7 +14,7 @@ import tempfile
 source = Path(__file__).resolve().parent.parent / "m31-public-pair-build"
 reference = runpy.run_path(str(source / "replay.py"))
 
-def replay(directory, implementation="cpp", check_only=False):
+def replay(directory, implementation="cpp", check_only=False, cold=False):
     if implementation == "rust":
         crate = "crates/prime-field-auxiliary-ic"
         repo = subprocess.check_output(["git", "rev-parse", "--show-toplevel"], cwd=source, text=True).strip()
@@ -71,19 +73,30 @@ def replay(directory, implementation="cpp", check_only=False):
     blocks = [(basis, r) for basis in reference["DIGESTS"] for r in range(24)]
     random.Random(112427).shuffle(blocks)
     writer = csv.writer(sys.stdout, lineterminator="\n")
-    writer.writerow(["basis", "round", "position", "rows", "build_ns"])
+    writer.writerow(["basis", "round", "position", "rows", "build_ns"] +
+                    (["process_wall_ns", "process_cpu_ns"] if cold else []))
     for basis, r in blocks:
         order = ("flat", "reflected") if r % 2 else ("reflected", "flat")
         for pos, label in enumerate(order):
             command = (["./target/release/public-row-benchmark", basis, label]
                        if implementation == "rust" else [f"./{label}", basis, "compact"])
+            before = resource.getrusage(resource.RUSAGE_CHILDREN)
+            started = perf_counter_ns()
             ns = subprocess.check_output(command + [f"{basis}-compact.bin"], cwd=directory)
-            writer.writerow([basis, r, pos, label, int(ns)])
+            elapsed = perf_counter_ns() - started
+            after = resource.getrusage(resource.RUSAGE_CHILDREN)
+            cpu_ns = round(((after.ru_utime - before.ru_utime) +
+                            (after.ru_stime - before.ru_stime)) * 1e9)
+            writer.writerow([basis, r, pos, label, int(ns)] +
+                            ([elapsed, cpu_ns] if cold else []))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--implementation", choices=["cpp", "rust"], default="cpp")
     parser.add_argument("--check-only", action="store_true")
+    parser.add_argument("--cold", action="store_true", help="record whole fresh-process wall and CPU time")
     args = parser.parse_args()
+    if args.cold and args.check_only:
+        parser.error("--cold requires timing collection")
     with tempfile.TemporaryDirectory() as tmp:
-        replay(Path(tmp), args.implementation, args.check_only)
+        replay(Path(tmp), args.implementation, args.check_only, args.cold)

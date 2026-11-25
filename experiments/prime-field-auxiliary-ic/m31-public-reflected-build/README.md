@@ -66,3 +66,7 @@ proves a strict reduction in their combined modeled cost. Each reconstructed
 entry still receives a table visit. Validation, batch inversion setup,
 allocation, hashing, memory traffic and I/O require additional accounting.
 This model provides no empirical speedup or cold pipeline result.
+
+Cold fresh-process wall and CPU measurements are available via `--cold`.
+See [the frozen protocol](COLD_PROTOCOL.md) and [results](COLD_RESULTS.md) for
+the charged work, supplied inputs, host limitations and raw-data interpretation.
