@@ -77,6 +77,18 @@ The minimum of this model is `2*sqrt(3*h*r)` at `B=(12*h*r)^(1/4)`. Against the 
 
 The remaining candidate is therefore narrower than merely reducing relation rank: it needs a compact coordinate-based three-sum oracle on a large, low-rank CM orbit base **without** materializing its pair table. The decisive experiment must compare a genuine CM orbit with a matched known-scalar orbit, measure natural-query relations and all setup, and show that the solver beats the per-query budget above on an identical base. A compact description of the orbit or a low-rank relation matrix alone does not supply that oracle. [pcc:unverified]
 
+The [target-dependent orbit audit](TARGET_DEPENDENT_ORBIT_GATE.md)
+identifies a generic point relation already present in Amadori,
+Pintore, and Sala's prime-field work. It also shows why one CM
+orbit of a single seed `[a]G+[b]Q` gives only predetermined zero
+sums: the coefficient of both `G` and `Q` vanishes together.
+Distinct seed coefficient vectors or a different coordinate
+construction are required before an orbit relation can carry `d`.
+Their relation yield and charged solve cost remain open. [pcc:unverified]
+
+The scoped prior-art and orbit-algebra record is
+`PCC-20261125-c8e274`, with unverified standing. [pcc:unverified]
+
 ## P-192 four-summand horizontal endpoint screen
 
 The follow-up script `p192_tower_horizontal_s5.py` compares three equations for the **same** P-192 source x-base and the same two queries. The base comes from the four-root fiber of a depth-2, 2-isogeny tower on `y^2=x^3+x`. Exactly two of its four x-values lift to P-192, giving four signed source points. This auxiliary tower defines the base; it is distinct from the horizontal degree-5 map used in two of the equation systems. `source` has eight auxiliary tower equations and three source S3 sum constraints; `mapped5` adds four degree-5 rational x-map wires and uses three endpoint S3 constraints; `joint5` retains both source and endpoint S3 constraints. The P-192 Frobenius discriminant is fundamental, so the degree-5 ordinary map is horizontal. [pcc:unverified]
