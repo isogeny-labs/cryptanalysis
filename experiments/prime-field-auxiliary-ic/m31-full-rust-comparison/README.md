@@ -49,3 +49,5 @@ This standalone Rust collector reproduces the archived explicit three-point
 relation method. The library `PreparedSolver` uses a different circuit path
 without this pair table. The Rust walk is deterministic and shared by arms,
 but uses a different random generator from the archived C++ program.
+
+A separate flat-index hash comparison is documented in [HASH_RESULTS.md](HASH_RESULTS.md).

@@ -2,6 +2,7 @@
 import csv
 import hashlib
 import json
+import os
 import random
 import resource
 import subprocess
@@ -61,7 +62,9 @@ def main():
         (tmp / "src").mkdir()
         (tmp / "src/main.rs").write_bytes((HERE / "main.rs").read_bytes())
         (tmp / "Cargo.toml").write_text('[package]\nname="m31-full-comparison"\nversion="0.1.0"\nedition="2021"\n[dependencies]\nprime-field-auxiliary-ic={path="crates/prime-field-auxiliary-ic"}\n')
-        subprocess.run(["cargo", "build", "--release", "--offline"], cwd=tmp, check=True)
+        build_env = os.environ.copy()
+        build_env.pop("M31_FAST_HASH", None)
+        subprocess.run(["cargo", "build", "--release", "--offline"], cwd=tmp, env=build_env, check=True)
         fixtures = {}
         for basis in ("auxiliary", "plain"):
             path = f"comparison/field31/{basis}/public.json"

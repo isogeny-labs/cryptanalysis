@@ -64,12 +64,16 @@ impl FlatIndex {
         }
     }
     fn slot(&self, key: u32) -> usize {
-        let mut h = u64::from(key).wrapping_add(0x9e3779b97f4a7c15);
-        h = (h ^ (h >> 30)).wrapping_mul(0xbf58476d1ce4e5b9);
-        h = (h ^ (h >> 27)).wrapping_mul(0x94d049bb133111eb);
-        h ^= h >> 31;
         let mask = self.slots.len() - 1;
-        let mut i = h as usize & mask;
+        let mut i = if option_env!("M31_FAST_HASH").is_some() {
+            (u64::from(key).wrapping_mul(0x9e3779b97f4a7c15) >> 44) as usize
+        } else {
+            let mut h = u64::from(key).wrapping_add(0x9e3779b97f4a7c15);
+            h = (h ^ (h >> 30)).wrapping_mul(0xbf58476d1ce4e5b9);
+            h = (h ^ (h >> 27)).wrapping_mul(0x94d049bb133111eb);
+            h ^= h >> 31;
+            h as usize & mask
+        };
         while self.slots[i].0 != u32::MAX && self.slots[i].0 != key {
             i = (i + 1) & mask;
         }
