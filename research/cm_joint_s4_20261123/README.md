@@ -33,6 +33,8 @@ distinct question measured by the panel. The group statement is also
 checked in [Lean](formal/TransportGate.lean). The scoped statement is
 `PCC-20261125-9f930e`, with unverified standing. [pcc:unverified]
 
+The [frozen native-base census](NATIVE_THREE_SUM_REPORT.md) selects the same eight-point low-`x` factor-base shape independently on each curve of this `p=1009` horizontal pair. Among all 1068 nonidentity targets, source support is `96` and codomain support is `92`; transporting the source base retains `96`. Same-size random-base controls put the four-point native difference within ordinary finite-instance variation. This fixed coordinate-native rule supplies no endpoint relation-yield gain and does not justify a larger solver panel. Producer claim `PCC-20261125-560b99` is unverified. [pcc:unverified]
+
 This pointwise invariant and the separate coordinate-shape question
 were already stated in the earlier
 [`IDEA-20260906-5b4930`](https://github.com/isogeny-labs/crypto-autoresearcher/blob/main/ledger/proposals/IDEA-20260906-5b4930.yaml)
