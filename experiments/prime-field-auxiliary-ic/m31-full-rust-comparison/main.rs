@@ -2,6 +2,7 @@ use prime_field_auxiliary_ic::{BatchScratch, Curve, Point};
 use std::{env, fs, time::Instant};
 
 const N: u64 = 2_147_505_293;
+const PACKED_SIGN: bool = option_env!("M31_PACKED_SIGN").is_some();
 fn mul(a: u64, b: u64) -> u64 {
     ((a as u128 * b as u128) % N as u128) as u64
 }
@@ -54,19 +55,34 @@ fn build(
 }
 struct FlatIndex {
     slots: Vec<(u32, u32)>,
+    sign_slots: Vec<(u32, u32, u32)>,
     len: usize,
 }
 impl FlatIndex {
     fn new() -> Self {
         Self {
-            slots: vec![(u32::MAX, 0); 1 << 20],
+            slots: if PACKED_SIGN {
+                Vec::new()
+            } else {
+                vec![(u32::MAX, 0); 1 << 20]
+            },
+            sign_slots: if PACKED_SIGN {
+                vec![(u32::MAX, u32::MAX, u32::MAX); 1 << 19]
+            } else {
+                Vec::new()
+            },
             len: 0,
         }
     }
     fn slot(&self, key: u32) -> usize {
-        let mask = self.slots.len() - 1;
+        let mask = if PACKED_SIGN {
+            self.sign_slots.len() - 1
+        } else {
+            self.slots.len() - 1
+        };
         let mut i = if option_env!("M31_FAST_HASH").is_some() {
-            (u64::from(key).wrapping_mul(0x9e3779b97f4a7c15) >> 44) as usize
+            (u64::from(key).wrapping_mul(0x9e3779b97f4a7c15) >> if PACKED_SIGN { 45 } else { 44 })
+                as usize
         } else {
             let mut h = u64::from(key).wrapping_add(0x9e3779b97f4a7c15);
             h = (h ^ (h >> 30)).wrapping_mul(0xbf58476d1ce4e5b9);
@@ -74,26 +90,85 @@ impl FlatIndex {
             h ^= h >> 31;
             h as usize & mask
         };
-        while self.slots[i].0 != u32::MAX && self.slots[i].0 != key {
+        while if PACKED_SIGN {
+            self.sign_slots[i].0 != u32::MAX && self.sign_slots[i].0 != key
+        } else {
+            self.slots[i].0 != u32::MAX && self.slots[i].0 != key
+        } {
             i = (i + 1) & mask;
         }
         i
     }
     fn entry(&mut self, key: u64, payload: u32) {
         let key = u32::try_from(key).expect("finite M31 key fits in u32");
-        let i = self.slot(key);
-        if self.slots[i].0 == u32::MAX {
-            self.slots[i] = (key, payload);
-            self.len += 1;
+        if PACKED_SIGN {
+            let x = key >> 1;
+            let i = self.slot(x);
+            let slot = &mut self.sign_slots[i];
+            if slot.0 == u32::MAX {
+                slot.0 = x;
+            }
+            let value = if key & 1 == 0 {
+                &mut slot.1
+            } else {
+                &mut slot.2
+            };
+            if *value == u32::MAX {
+                *value = payload;
+                self.len += 1;
+            }
+        } else {
+            let i = self.slot(key);
+            if self.slots[i].0 == u32::MAX {
+                self.slots[i] = (key, payload);
+                self.len += 1;
+            }
         }
     }
     fn get(&self, key: u64) -> Option<u32> {
         let key = u32::try_from(key).ok()?;
-        let slot = self.slots[self.slot(key)];
-        (slot.0 == key).then_some(slot.1)
+        if PACKED_SIGN {
+            let x = key >> 1;
+            let slot = self.sign_slots[self.slot(x)];
+            let payload = if key & 1 == 0 { slot.1 } else { slot.2 };
+            (slot.0 == x && payload != u32::MAX).then_some(payload)
+        } else {
+            let slot = self.slots[self.slot(key)];
+            (slot.0 == key).then_some(slot.1)
+        }
     }
     fn len(&self) -> usize {
         self.len
+    }
+    fn dump_sorted(&self, path: &str) -> std::io::Result<()> {
+        let mut pairs = Vec::with_capacity(self.len);
+        if PACKED_SIGN {
+            for &(x, even, odd) in &self.sign_slots {
+                if x != u32::MAX {
+                    if even != u32::MAX {
+                        pairs.push((x << 1, even));
+                    }
+                    if odd != u32::MAX {
+                        pairs.push(((x << 1) | 1, odd));
+                    }
+                }
+            }
+        } else {
+            pairs.extend(
+                self.slots
+                    .iter()
+                    .copied()
+                    .filter(|&(key, _)| key != u32::MAX),
+            );
+        }
+        assert_eq!(pairs.len(), self.len);
+        pairs.sort_unstable_by_key(|&(key, _)| key);
+        let mut bytes = Vec::with_capacity(pairs.len() * 8);
+        for (key, payload) in pairs {
+            bytes.extend_from_slice(&key.to_le_bytes());
+            bytes.extend_from_slice(&payload.to_le_bytes());
+        }
+        fs::write(path, bytes)
     }
 }
 
@@ -131,6 +206,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let setup = started.elapsed();
     let table = build(curve, &signed, args[2] == "reflected")?;
     let table_time = started.elapsed() - setup;
+    if let Ok(path) = env::var("M31_DUMP_INDEX") {
+        table.dump_sorted(&path)?;
+    }
     let mut rng = 20261114 + args[3].parse::<u64>()?;
     let mut steps = Vec::new();
     for _ in 0..32 {
