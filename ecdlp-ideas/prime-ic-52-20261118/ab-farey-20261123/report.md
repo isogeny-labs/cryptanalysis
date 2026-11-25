@@ -14,12 +14,17 @@ Two questions were bundled in the request, and they have different answers:
    two involutions, so it can be produced by a mediant recurrence (no gcd
    test, no hash set, O(1) memory) and **addressed by index in O(polylog B)
    without storing anything**.
-2. **Can a choice of a/b's yield more relations?**  No — in expectation, at
-   fixed `|F|`, this is a theorem (`Check/Farey.lean`, `sum_repCount`), not a
-   tuning question.  The total representation count is `|F|^m` for *every*
-   factor base; shape can only redistribute the count across targets.
+2. **Can a choice of a/b's yield more relations?**  No — and by the end of this
+   note, not in any sense: the mean is fixed by a theorem
+   (`Check/Farey.lean`, `sum_repCount`); the per-relation cost is shape-blind;
+   and the distribution is uniform in the target off the base (§6), so shape
+   cannot even move mass between targets except onto the base itself, where
+   the relations are already known.
+3. **Can a choice of *targets* yield more relations?**  Also no (§6): every
+   cheap statistic is null, and the height statistic only appeared to work
+   because it aliases onto the base.
 
-The rest of this note is the arithmetic and the measurement behind those two
+The rest of this note is the arithmetic and the measurement behind those three
 sentences, plus the one place where the a/b shape does have a real (but
 quantitatively useless) edge: the Jochemsz–May box product, worth 0.28 bits.
 
