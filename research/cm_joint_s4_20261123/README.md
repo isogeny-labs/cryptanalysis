@@ -125,6 +125,17 @@ validation, and matched-rho comparison. A CM-specific successor
 should use that cost contract and show what the horizontal map changes
 relative to its matched known-scalar control. [pcc:unverified]
 
+The [exact APS orbit witness](APS_ORBIT_POINT_WITNESS.md) pins that
+prior result to its retained transcript and separate affine replay.
+On its fixed `r=97` curve, three points from different orbit blocks
+give `76G+64Q=O`, so the nonzero target coefficient recovers the
+public fixture scalar. The transcript hash, point labels, and current
+independent arithmetic check are recorded there. This establishes a
+concrete point-dependent relation at that fixed scale; it does not
+attribute a relation or cost gain to P-192 horizontal isogenies.
+The scoped record is `PCC-20261125-b88d6d`, with unverified standing.
+[pcc:unverified]
+
 The [ramified degree-five orbit gate](HORIZONTAL_FIVE_ORBIT_GATE.md)
 rules out a direct transfer of the APS-E3 same-curve automorphism
 orbit to the degree-five map in either screen here. In both maximal
