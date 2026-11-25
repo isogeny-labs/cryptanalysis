@@ -24,7 +24,7 @@ SHAPES = {0: "interval", 1: "farey", 2: "random"}
 CELLS = []
 
 
-def add_block(p, n, m, Ns, seeds=1):
+def add_block(p, n, m, Ns, seeds=11):   # matches PROTOCOL.json's seed
     for N in Ns:
         for s in (0, 1, 2):
             CELLS.append((p, n, m, N, s, seeds))

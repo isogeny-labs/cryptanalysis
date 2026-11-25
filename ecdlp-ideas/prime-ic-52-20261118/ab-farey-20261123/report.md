@@ -126,10 +126,10 @@ and does not need a table):
 
 | p | m | N | interval | farey | random |
 |---|---|---|---|---|---|
-| 2^20 | 2 | 1448 | .63417 | .63327 | .63158 |
-| 2^20 | 3 | 184 | .62872 | .62682 | .62798 |
-| 2^24 | 2 | 5792 | .63241 | .63245 | .63215 |
-| 2^24 | 3 | 464 | .62866 | .62975 | .62934 |
+| 2^20 | 2 | 1448 | .63417 | .63327 | .63362 |
+| 2^20 | 3 | 184 | .62872 | .62682 | .62720 |
+| 2^24 | 2 | 5792 | .63241 | .63245 | .63239 |
+| 2^24 | 3 | 464 | .62866 | .62975 | .62979 |
 
 and the means, which are the identical-quantity check:
 
@@ -159,10 +159,12 @@ There is no reproducible direction, and the quantity that a matrix consumes —
 the number of relations — is fixed by the identity.  Verdict: **refuted**.
 
 *(Sub-percent effects do exist and are worth naming, but they do not form a
-pattern: the random base is lowest at `m = 2` on both rungs, the interval base
-is lowest at `m = 3, p = 2^24`, and the a/b base is lowest at `m = 3, p = 2^20`.
-"Structure mildly regularises the representation function" is at best a
-0.05–0.2% effect with no stable sign, and it never favours the a/b base.)*
+pattern, and they do not favour the a/b base: the a/b base is last in two of
+the four rungs and first in one, the interval base last in one, the random base
+last in one.  "Structure mildly
+regularises the representation function" is at best a 0.05–0.2% effect with no
+stable sign.  All random-shape cells use splitmix64 seed 11, as recorded in
+`PROTOCOL.json`; the random column is the only seed-dependent one.)*
 
 ---
 
