@@ -154,7 +154,7 @@ jobs:
         run: python3 experiments/prime-field-auxiliary-ic/m31-public-reflected-build/replay.py --implementation rust --check-only
 
   full-m31-hash-replay:
-    name: Full public M31 Rust hash replay
+    name: Full public M31 Rust collector replay
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -192,3 +192,7 @@ jobs:
               for field in ('basis_sha256', 'trials', 'relations', 'entries'):
                   assert arms['splitmix'][field] == arms['multiply'][field]
           PY
+      - name: Replay prevalidated batch collection on frozen public targets
+        run: |
+          python3 experiments/prime-field-auxiliary-ic/m31-full-rust-comparison/validated_replay.py > "$RUNNER_TEMP/m31-validated-replay.csv"
+          python3 experiments/prime-field-auxiliary-ic/m31-full-rust-comparison/validated_analyze.py "$RUNNER_TEMP/m31-validated-replay.csv"

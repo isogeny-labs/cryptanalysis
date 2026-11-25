@@ -21,7 +21,7 @@ generate = helpers["generate"]
 
 
 def main():
-    with tempfile.TemporaryDirectory(prefix="m31-validated-", dir="/Volumes/SSD990-2") as temporary:
+    with tempfile.TemporaryDirectory(prefix="m31-validated-", dir=os.environ.get("M31_REPLAY_TMPDIR")) as temporary:
         directory = Path(temporary)
         archive = subprocess.check_output(["git", "archive", "HEAD", "crates/prime-field-auxiliary-ic"], cwd=ROOT)
         subprocess.run(["tar", "-xf", "-", "-C", str(directory)], input=archive, check=True)

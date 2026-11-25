@@ -14,7 +14,9 @@ membership checks inside every batch call. The candidate omits those repeated
 checks and uses the identical batch-add arithmetic.
 
 Run `python3 experiments/prime-field-auxiliary-ic/m31-full-rust-comparison/validated_replay.py`
-from the repository root, saving stdout as CSV. The runner builds both
+from the repository root, saving stdout as CSV. Set `M31_REPLAY_TMPDIR` to a
+volume with enough free space when the default temporary directory is full.
+The runner builds both
 variants from one source tree and runs 24 balanced-order matched blocks for
 each basis, using seeds 0, 1, 2 eight times each. Each arm is a fresh process.
 Charge basis regeneration, fixture comparison, file writing, collection,
