@@ -1,0 +1,131 @@
+# Public-fixture audit of three p+1 leads
+
+Date: 2026-11-25. Scope: the two pasted attachments supplied in this task,
+the cited published constructions, and exact local Sage calculations. All
+local observations below have **producer-only standing** `[pcc:unverified]`;
+the replay is a check, not an independent signed PCC verdict.
+
+## Reproduce the local calculations
+
+```sh
+sage -python research/p1_smoothness_leads_20261125/verify.py
+```
+
+The command prints the committed [`run.json`](run.json). It uses SageMath
+10.10.rc0, field characteristic 10007, and exact arithmetic. The source and
+output SHA-256 values at this run are:
+
+```text
+f2ae4481f746816e728e76a24d22c5587b7a056db73cfe8aca79eccf4643319a  verify.py
+e95a79a2a8d87f49cd753f089aa063fe932388a051bd36e513f4a3baf6499122  run.json
+```
+
+## Track 1: proposed msolve panel
+
+`msolve` 0.11.0 is installed locally. The requested files
+`m4_L20_w5.ms`, `m4_L24_w6.ms`, and `m4_L28_w7.ms` are absent from this
+checkout's tracked files, and an exact-name search of the adjacent
+cryptanalysis worktrees/artifact directory found none. The attachment supplies
+neither their defining systems nor the curve, target, and factor-base seeds.
+Consequently the requested maximum Macaulay step degree and matrix time on
+those *same systems* have not been reproduced. `[pcc:unverified]`
+
+The nearest published prime-field cost equation is
+
+\[
+C=P(p,m)+\frac{m!p}{d^{m-1}}T(E,m,L)+d^\omega,
+\]
+
+with factor-base size \(d\), \(m\) summands, and relation-system solver cost
+\(T\). This is a partial heuristic model: the paper does not establish the
+asymptotic behavior of \(T\). For the first attachment's \(p=15359,d=6\), the
+expected attempts to obtain \(d\) relations are 2559.83 for \(m=3\), or
+1706.56 for \(m=4\), before multiplying by \(T\). Its displayed two-\(f_3\)
+chain has three factor-base coordinates and one target coordinate, hence uses
+\(m=3\) in this model. These are derived counts, not timed costs.
+
+Source: [Petit, Kosters, Messeng, §§3.1–3.3 and conclusion](https://christophe.petit.web.ulb.be/files/16PKC_primeECDLP.pdf).
+
+## Track 2: twisted Edwards symmetry
+
+For \(a=3,d=2\) over \(\mathbb F_{10007}\), the attachment's displayed
+\(S_3^{\rm TE}\) vanishes on the checked relation with y-coordinates
+\((4,8,5929)\). As written, it has **nine** monomials, not eight. Its resultant
+\(S_4^{\rm TE}\) has 57 monomials in Sage's expanded representation. We checked
+two even-sign substitutions symbolically; a single-sign substitution changes
+the polynomial. These are exact assertions in `verify.py`, not an \(F_4\)
+timing result. `[pcc:unverified]`
+
+The twisted Edwards y-coordinate summation polynomial, the even signed
+permutation group \(D_n\), and invariant-coordinate Gröbner reduction already
+appear in [Faugère, Gaudry, Huot, Renault, *Using Symmetries in the Index
+Calculus for Elliptic Curves Discrete Logarithm*, §§2.3 and 4.1](https://citeseerx.ist.psu.edu/document?doi=f9e44d0863407d01137386b10ef130caef6e4c74&repid=rep1&type=pdf).
+Their cost result concerns point decomposition over extension fields and
+depends on a regularity hypothesis. A polynomial's group order \(2^{m-1}\)
+does not itself imply an eightfold wall-time reduction for an arbitrary
+`msolve` input. One must construct the invariant-coordinate system, preserve
+the factor-base equations, and measure full solver work on matched inputs.
+
+An odd-order group \(E(\mathbb F_p)\) has no rational point of order two.
+Every twisted Edwards model over \(\mathbb F_p\) has \((0,-1)\), a rational
+point of order two. Thus a prime-order curve has no such model over
+\(\mathbb F_p\). Passing to \(\mathbb F_{p^2}\) can make the model available,
+but translation by its new two-torsion point generally does not preserve the
+embedded \(E(\mathbb F_p)\) factor base. This is the missing prime-field
+bridge; the attachment's proposed comparison does not establish it.
+
+## Track 3: isogeny network
+
+The attachment's \(E_0:y^2=x^3-3x+12\) over \(\mathbb F_{10007}\) has order
+\(10074=2\cdot3\cdot23\cdot73\), so it does not exercise its claimed
+prime-order setting. As a corrected public fixture, `verify.py` uses
+\(E:y^2=x^3-3x+7\), order \(10193\) prime. Sage finds five rational prime-degree
+isogenies for degrees at most 19: \(7,11,11,19,19\). The dual identity
+\(\hat\phi_i\phi_i(R)=[\ell_i]R\) holds on the checked target. `[pcc:unverified]`
+
+For each codomain's coordinate-bound set \(x<250\), the dual pullback sizes
+are 262, 258, 256, 276, 262. Their sum is 1314; their actual union has
+1246 points. All ten pairwise intersections are nonempty (sizes
+6, 2, 2, 4, 10, 16, 10, 12, 6, 6). Hence “the pulled-back bases are disjoint”
+is false even on this prime-order fixture. `[pcc:unverified]`
+
+There is a stronger exact accounting rule. If \(n=\#E(\mathbb F_p)\) is prime
+and \(\gcd(n,\ell_i)=1\), then \(\phi_i\) is a bijection between the two
+groups of rational points. Set \(\mathcal F_i=\phi_i(\mathcal F_0)\) to share
+factor-base logarithms exactly. By injectivity,
+
+\[
+\phi_i(R)=\sum_j\phi_i(P_j)\quad\Longleftrightarrow\quad
+R=\sum_j P_j.
+\]
+
+Thus that *exactly shared* construction gives the same decomposable target
+set on every curve; it supplies no best-of-\(K\) relation-probability gain.
+Coordinate-defined \(\mathcal F_i\) may give different chances, but their
+pulled-back union determines the actual unknown count, and each attempted
+curve has evaluation and solver cost. The draft's exponents are conditional
+on disjoint bases, independent hits, equal solver costs, and uncharged
+network construction. They are not a universal lower bound.
+
+For secp256k1, \(\psi(x,y)=(\beta x,y)\) and \(\beta^3=1\) do preserve
+\(x^r=1\) exactly when \(3\mid r\). This supplies orbit relations among
+factor-base logarithms. It is an instance of the known GLV endomorphism;
+an end-to-end index-calculus benefit still needs matched relation and linear
+algebra costs. See [libsecp256k1's source explanation of \(\beta\) and
+\(\lambda\)](https://github.com/bitcoin/bitcoin/blob/master/src/secp256k1/src/scalar_impl.h)
+and [Faugère et al. on orbit reduction](https://citeseerx.ist.psu.edu/document?doi=f9e44d0863407d01137386b10ef130caef6e4c74&repid=rep1&type=pdf).
+
+## Next admissible experiments
+
+1. Obtain the three exact `.ms` inputs or their generator plus frozen seeds;
+   record source hashes, curve/target identity, `msolve -v 2` output, wall and
+   CPU times, and the same-input reference before comparing regularity.
+2. If pursuing Edwards symmetry on a prime-order target, exhibit an
+   invariant-coordinate system whose factor-base and descent equations
+   retain the sign action over the *original* rational point set. Without
+   that bridge, a timing comparison on a different curve tests a different
+   problem.
+3. For an isogeny network, measure actual pulled-back union size and overlap,
+   hit correlation, per-curve solver/evaluation cost, relation rank, and
+   charged linear algebra on one frozen target panel. Compare cold total work
+   against the single-curve and matched-rho references.
