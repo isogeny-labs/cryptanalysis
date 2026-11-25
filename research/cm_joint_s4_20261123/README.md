@@ -23,6 +23,16 @@ map. The four-query timing panel below deliberately balances two
 positives and two negatives; its positive share is not a yield
 estimate. [pcc:unverified]
 
+The [general transport gate](TRANSPORTED_RELATION_GATE.md) now proves
+that any injective additive map preserves every indexed zero-sum and
+target-sum witness of an unchanged labelled base. It therefore
+preserves point-level relation yield, coefficient informativeness, and
+rank under the prime-to-order horizontal map. The endpoint can still
+change the cost of solving the coordinate equations; that is the
+distinct question measured by the panel. The group statement is also
+checked in [Lean](formal/TransportGate.lean). The scoped statement is
+`PCC-20261125-9f930e`, with unverified standing. [pcc:unverified]
+
 The fixed-instance count is recorded as `PCC-20261124-89e12e` with
 unverified standing. [pcc:unverified]
 
