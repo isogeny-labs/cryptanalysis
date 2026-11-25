@@ -293,7 +293,9 @@ and [Faugère et al. on orbit reduction](https://citeseerx.ist.psu.edu/document?
    retain the sign action over the *original* rational point set. Without
    that bridge, a timing comparison on a different curve tests a different
    problem.
-3. For an isogeny network, measure actual pulled-back union size and overlap,
-   hit correlation, per-curve solver/evaluation cost, relation rank, and
-   charged linear algebra on one frozen target panel. Compare cold total work
-   against the single-curve and matched-rho references.
+3. For the isogeny network, replace the sum-table oracle with matched native
+   decomposition systems, measure per-curve isogeny and F4 costs, and charge
+   sparse linear algebra on the same frozen target. The exact base unions,
+   hit intersections, and one full-rank relation/descent scan above provide
+   controls. Compare cold total work against the single-curve and matched-rho
+   references before drawing an end-to-end conclusion.
