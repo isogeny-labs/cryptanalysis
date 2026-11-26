@@ -1,0 +1,10 @@
+digraph result {
+  graph [rankdir=LR, bgcolor="white", fontname="Helvetica"];
+  node [shape=box, style="rounded", fontname="Helvetica", color="#243746"];
+  Q [label="Q supplied by coordinates\n1068 nonidentity inputs"];
+  src [label="Source native 8\n96 rows"];
+  dst [label="Horizontal native 8\n92 dual-checked rows"];
+  union [label="Two-chart union\n180 targets; ceiling 192"];
+  controls [label="Controls: source 16 = 510\nrandom split 8+8 median = 180"];
+  Q -> src; Q -> dst; src -> union; dst -> union; union -> controls;
+}
