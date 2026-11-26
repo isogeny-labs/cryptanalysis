@@ -2,6 +2,7 @@
 """Measure the arrangement state count of paired section evaluations."""
 
 from collections import Counter
+from itertools import combinations
 import json
 from math import comb
 from pathlib import Path
@@ -63,6 +64,36 @@ def analyze(rows, prime):
     mobius = abs(characteristic[0])
     uniform_mobius = comb(elements - 1, rank - 1)
     uniform_bases = comb(elements, rank)
+    slots = elements // 2
+
+    def slot_connectivity(selected):
+        selected = set(selected)
+        left = [
+            row
+            for slot in selected
+            for row in rows[2 * slot:2 * slot + 2]
+        ]
+        right = [
+            row
+            for slot in range(slots)
+            if slot not in selected
+            for row in rows[2 * slot:2 * slot + 2]
+        ]
+        return rank_mod(left, prime) + rank_mod(right, prime) - rank
+
+    prefix_connectivity = [
+        slot_connectivity(range(size)) for size in range(1, slots)
+    ]
+    balanced_size = slots // 2
+    balanced_connectivity = Counter(
+        slot_connectivity(selected)
+        for selected in combinations(range(slots), balanced_size)
+    )
+    middle_connectivity = [
+        slot_connectivity(selected)
+        for size in range((slots + 2) // 3, 2 * slots // 3 + 1)
+        for selected in combinations(range(slots), size)
+    ]
     return {
         "elements": elements,
         "rank": rank,
@@ -72,6 +103,13 @@ def analyze(rows, prime):
         "top_orlik_solomon_dimension": mobius,
         "uniform_top_dimension": uniform_mobius,
         "top_dimension_defect": uniform_mobius - mobius,
+        "natural_prefix_slot_connectivity": prefix_connectivity,
+        "balanced_slot_connectivity_histogram": {
+            str(value): count
+            for value, count in sorted(balanced_connectivity.items())
+        },
+        "minimum_middle_third_slot_connectivity": min(middle_connectivity),
+        "maximum_middle_third_slot_connectivity": max(middle_connectivity),
         "characteristic_polynomial_coefficients": {
             str(exponent): coefficient
             for exponent, coefficient in sorted(characteristic.items())
