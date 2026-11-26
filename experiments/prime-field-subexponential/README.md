@@ -279,3 +279,13 @@ python3 "$fixture_dir/theta_solution_geometry.py" |
   diff -u "$fixture_dir/theta_solution_geometry.json" -
 python3 -m py_compile "$fixture_dir/theta_solution_geometry.py"
 ```
+
+
+Projection structure alone is insufficient: modular Subset Sum embeds in singular-principal-submatrix search even when $P$ is a symmetric idempotent of exactly half ambient rank and $K=DP$ is diagonally self-adjoint. The rank-one block gives $\det((I+K)_{S,S})=1-T^{-1}\sum_{i\in S}w_i$; identity padding attains half rank without introducing zeros. Three exhaustive controls verify every determinant. A positive solver must use the actual interpolation kernel beyond these abstract properties. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/scaled_projection_subset_sum.py" |
+  diff -u "$fixture_dir/scaled_projection_subset_sum.json" -
+python3 -m py_compile "$fixture_dir/scaled_projection_subset_sum.py"
+```
