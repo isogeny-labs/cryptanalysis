@@ -48,9 +48,41 @@ are bases and the top dimension is 98.20% of the uniform value. For fixed
 genus the uniform value grows as \(4^m/\sqrt m\) up to a genus-dependent
 polynomial factor.
 
-Thus the ordinary hyperplane-arrangement/creative-telescoping state space
-does not give a subexponential coefficient engine for these controls. It is
-already larger than the \(2^m\) branch space one wanted to avoid.
+## Pair-aware connectivity is also maximal at balanced cuts
+
+A deletion/contraction or matroid dynamic program can preserve the two rows
+of each slot rather than treating all \(2m\) hyperplanes independently. Its
+standard width parameter is the matroid connectivity
+
+\[
+ \lambda(A)=r(A)+r(E\setminus A)-r(E)
+\]
+
+across a partition of the slot pairs. Exhausting every balanced slot
+partition gives:
+
+| Slots | Natural-prefix connectivities | Balanced-cut histogram | Minimum over middle-third cuts |
+| ---: | --- | --- | ---: |
+| 3 | 2, 2 | rank 2: 3 | 2 |
+| 4 | 2, 3, 2 | rank 3: 6 | 3 |
+| 5 | 2, 4, 4, 2 | rank 4: 10 | 4 |
+| 6 | 2, 4, 5, 4, 2 | rank 5: 20 | 4 |
+| 7 | 2, 4, 6, 6, 4, 2 | rank 6: 35 | 6 |
+| 8 | 2, 4, 6, 7, 6, 4, 2 | rank 7: 70 | 6 |
+| 9 | 2, 4, 6, 8, 8, 6, 4, 2 | rank 8: 126 | 6 |
+
+Every balanced cut in every panel attains the full arrangement rank. At
+nine slots, all 126 four-pair cuts have connectivity eight. Moreover every
+cut with both sides containing at least one third of the slots has
+connectivity at least six. Thus the usual pair-preserving matroid width is
+already linear in the slot count on these controls; merely changing the
+decomposition order does not create a small-state recurrence.
+
+Thus neither the ordinary hyperplane-arrangement/creative-telescoping state
+space nor a standard connectivity-based paired matroid decomposition gives
+a subexponential coefficient engine for these controls. The former is
+already larger than the \(2^m\) branch space one wanted to avoid, and the
+latter has linear width.
 
 This is a finite state-space diagnostic, not an arithmetic-circuit lower
 bound. It leaves recurrences that preserve the slot pairing in a way not
