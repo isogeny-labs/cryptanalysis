@@ -527,3 +527,16 @@ python3 "$fixture_dir/higher_genus_norm_hilbert.py" |
   diff -u "$fixture_dir/higher_genus_norm_hilbert.json" -
 python3 -m py_compile "$fixture_dir/higher_genus_norm_hilbert.py"
 ```
+
+The [higher-genus tensor note](higher_genus_norm_tensor_limit.md) measures the
+basis-invariant canonical quotient map on two valid curves per genus. At
+section dimension nine the minimum balanced rank ranges from 38 in genus
+three to 33 in genus seven, while median ranks range from 50 to 45. Extra
+fixed-genus equations improve finite constants but do not create a
+constant-bond linear tensor train with a global output.
+
+```sh
+python3 "$fixture_dir/higher_genus_norm_tensor.py" |
+  diff -u "$fixture_dir/higher_genus_norm_tensor.json" -
+python3 -m py_compile "$fixture_dir/higher_genus_norm_tensor.py"
+```
