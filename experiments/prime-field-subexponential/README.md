@@ -299,3 +299,12 @@ python3 "$fixture_dir/interpolation_projection_displacement.py" |
   diff -u "$fixture_dir/interpolation_projection_displacement.json" -
 python3 -m py_compile "$fixture_dir/interpolation_projection_displacement.py"
 ```
+
+
+A free residual theta hit does not improve the end-to-end exponent. With factor-base size $p^\beta$ and theta-hit cost $p^\sigma$, collection costs $p^{\sigma+g-1-(g-2)\beta}$ and sparse linear algebra costs $p^{2\beta}$. Random probing ($\sigma=1$) optimizes to exponent 2; even a hypothetical polylogarithmic theta-hit oracle ($\sigma=0$) optimizes only to $2-2/g$, the current baseline. A breakthrough must force the prescribed residual slots or bypass factor-base linear algebra. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/theta_relation_exponent_ledger.py" |
+  diff -u "$fixture_dir/theta_relation_exponent_ledger.json" -
+```
