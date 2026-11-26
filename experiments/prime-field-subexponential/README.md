@@ -496,3 +496,17 @@ python3 "$fixture_dir/norm_hilbert_joint_operator_ledger.py" |
   diff -u "$fixture_dir/norm_hilbert_joint_operator_ledger.json" -
 python3 -m py_compile "$fixture_dir/norm_hilbert_joint_operator_ledger.py"
 ```
+
+The [normal-form tensor note](norm_hilbert_normal_form_tensor_limit.md) tests
+the most direct circuit implementation left by the joint-operator boundary.
+At each peak graded layer it computes every balanced operator-Schmidt rank of
+the row-echelon monomial normal form. The dimension-ten ranks range from 243
+to 652 with median 583, so no variable ordering gives this fixed map a small
+middle tensor bond. This is exact finite evidence about the standard
+complement, not a lower bound for every quotient section or nonlinear circuit.
+
+```sh
+python3 "$fixture_dir/norm_hilbert_normal_form_tensor.py" |
+  diff -u "$fixture_dir/norm_hilbert_normal_form_tensor.json" -
+python3 -m py_compile "$fixture_dir/norm_hilbert_normal_form_tensor.py"
+```
