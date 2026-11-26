@@ -384,3 +384,28 @@ python3 "$fixture_dir/imaginary_unit_rank.py" |
   diff -u "$fixture_dir/imaginary_unit_rank.json" -
 python3 -m py_compile "$fixture_dir/imaginary_unit_rank.py"
 ```
+
+## Homogeneous norm Hilbert-function boundary
+
+The [homogeneous Hilbert note](homogeneous_norm_hilbert_limit.md) follows the
+remaining graded route after the affine Macaulay boundary blow-up. Exact
+leading-ideal ranks for split norm panels in dimensions 1 through 8 agree with
+the semi-regular Hilbert function or differ by one class. The corresponding
+semi-regular model has exponentially large quotient length. This is finite
+evidence, not an asymptotic theorem, a complexity lower bound, or an exponent
+improvement. [pcc:unverified]
+
+This import also freezes the previously omitted producer fixture and its
+shared signed-Hankel helper, so the dependent controls replay from a clean
+checkout.
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/binary_split_norm_control.py" |
+  diff -u "$fixture_dir/binary_split_norm_control.json" -
+python3 "$fixture_dir/homogeneous_norm_hilbert.py" |
+  diff -u "$fixture_dir/homogeneous_norm_hilbert.json" -
+python3 -m py_compile \
+  "$fixture_dir/homogeneous_norm_hilbert.py" \
+  "$fixture_dir/signed_hankel_minrank.py"
+```
