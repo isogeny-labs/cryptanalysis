@@ -209,4 +209,9 @@ fixture_dir=experiments/prime-field-subexponential
 python3 "$fixture_dir/paired_arrangement_mobius.py" |
   diff -u "$fixture_dir/paired_arrangement_mobius.json" -
 python3 -m py_compile "$fixture_dir/paired_arrangement_mobius.py"
+The [dimension ledger](elliptic_locus_dimension.md) bounds this cover locus inside hyperelliptic moduli. Its codimension is at least 1, 2, 2, 4, 4, and 6 in genera 2–7, respectively, so the reduction does not obstruct a carefully quantified density-one theorem. Such a theorem must state its curve distribution and bound the exceptional set. [pcc:unverified]
+
+```sh
+python3 "$fixture_dir/elliptic_locus_dimension.py" |
+  diff -u "$fixture_dir/elliptic_locus_dimension.json" -
 ```

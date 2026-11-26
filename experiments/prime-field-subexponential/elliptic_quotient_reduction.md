@@ -185,9 +185,11 @@ point to infinity. In genus two, the universal construction remains an
 even-degree model; an imaginary model for every input elliptic curve is not
 claimed.
 
-The exact control constructs the models for genera two through seven over
-\(\mathbb F_{101}\), checks squarefreeness and the branch count, and verifies
-the displayed map on every affine nonpole rational point.
+The exact control constructs all genera two through seven for six elliptic
+models over \(\mathbb F_{101}\), including cases with \(A=0\) and \(B=0\).
+It checks squarefreeness and the branch count and verifies the displayed map
+on every affine nonpole rational point. The zero-coefficient model forces
+the bounded shift search to move past its first candidate.
 [Higher-genus implementation](elliptic_hyperelliptic_cover_control.py) ·
 [Frozen result](elliptic_hyperelliptic_cover_control.json)
 
@@ -207,3 +209,9 @@ elliptic-DLP breakthrough through the construction above and must not be
 inferred from generic-family evidence. For \(g\ge3\), the same warning
 applies even when the theorem is stated only for odd-degree hyperelliptic
 models.
+
+The obstruction is nevertheless thin in hyperelliptic moduli. The cover
+locus used here has codimension at least \(1,2,2,4,4,6\) in genera two
+through seven, respectively. Thus a density-one result can exclude it, but
+only with a stated curve distribution and a proved exceptional-set bound.
+[Dimension ledger](elliptic_locus_dimension.md)
