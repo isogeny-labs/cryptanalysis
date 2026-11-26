@@ -452,3 +452,17 @@ python3 "$fixture_dir/norm_hilbert_lefschetz.py" |
   diff -u "$fixture_dir/norm_hilbert_lefschetz.json" -
 python3 -m py_compile "$fixture_dir/norm_hilbert_lefschetz.py"
 ```
+
+The [resolution-width note](norm_hilbert_resolution_limit.md) converts each
+exact Hilbert numerator into a cancellation-resistant lower bound on the
+number of free summands in any explicit graded resolution. At dimension 10,
+one shift needs at least 7,492 summands and the total needs at least 25,028.
+The semi-regular model trends toward a scale near $4^r$. The exact controls
+rule out a small explicit resolution for the measured quotients, not a
+succinct patterned complex or an implicit elimination algorithm.
+
+```sh
+python3 "$fixture_dir/norm_hilbert_resolution_ledger.py" |
+  diff -u "$fixture_dir/norm_hilbert_resolution_ledger.json" -
+python3 -m py_compile "$fixture_dir/norm_hilbert_resolution_ledger.py"
+```
