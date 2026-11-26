@@ -2,6 +2,7 @@
 """Compare split-prime orientation instances with matched subset-sum controls."""
 
 from collections import Counter, defaultdict
+from fractions import Fraction
 from itertools import combinations
 import json
 from pathlib import Path
@@ -165,14 +166,80 @@ def summarize_controls(records, actual):
     return summary
 
 
-def doubled_point_pool(curve, coordinates, group_order):
+def split_point_coordinates(curve, coordinates):
     pool = []
     for x in range(curve.p):
         roots = curve.roots(x)
         if len(roots) == 2:
             point = curve.point_divisor(x, roots[0])
-            pool.append((-2 * coordinates[point]) % group_order)
+            pool.append(coordinates[point])
     return pool
+
+
+def pair_layer_census(point_pool, group_order):
+    undoubled = defaultdict(list)
+    doubled = defaultdict(list)
+    for pair in combinations(range(len(point_pool)), 2):
+        value = sum(point_pool[index] for index in pair) % group_order
+        undoubled[value].append(pair)
+        doubled[-2 * value % group_order].append(pair)
+
+    doubled_collisions = [pairs for pairs in doubled.values() if len(pairs) > 1]
+    torsion_coordinate = group_order // 2
+    torsion_explains_all = True
+    collisions_are_disjoint = True
+    for pairs in doubled_collisions:
+        if len(pairs) != 2:
+            torsion_explains_all = False
+            continue
+        left, right = pairs
+        difference = (
+            sum(point_pool[index] for index in left)
+            - sum(point_pool[index] for index in right)
+        ) % group_order
+        torsion_explains_all &= difference == torsion_coordinate
+        collisions_are_disjoint &= set(left).isdisjoint(right)
+
+    sample_expectations = {}
+    pool_size = len(point_pool)
+    collision_pairs = sum(
+        len(pairs) * (len(pairs) - 1) // 2 for pairs in doubled.values()
+    )
+    for sample_size in range(3, 10):
+        if sample_size < 4 or not collisions_are_disjoint:
+            expectation = Fraction(0)
+        else:
+            numerator = 1
+            denominator = 1
+            for offset in range(4):
+                numerator *= sample_size - offset
+                denominator *= pool_size - offset
+            expectation = collision_pairs * Fraction(numerator, denominator)
+        sample_expectations[str(sample_size)] = (
+            f"{expectation.numerator}/{expectation.denominator}"
+        )
+
+    return {
+        "point_count": len(point_pool),
+        "pair_subsets": sum(len(pairs) for pairs in undoubled.values()),
+        "undoubled_distinct_pair_sums": len(undoubled),
+        "undoubled_collision_pairs": sum(
+            len(pairs) * (len(pairs) - 1) // 2 for pairs in undoubled.values()
+        ),
+        "doubled_distinct_pair_sums": len(doubled),
+        "doubled_collision_pairs": collision_pairs,
+        "doubled_maximum_bucket_size": max(map(len, doubled.values())),
+        "nonzero_two_torsion_coordinate": torsion_coordinate,
+        "every_doubled_collision_is_translation_by_two_torsion": (
+            torsion_explains_all
+        ),
+        "every_doubled_collision_uses_four_distinct_points": (
+            collisions_are_disjoint
+        ),
+        "expected_retained_pair_collisions_in_uniform_slot_sample": (
+            sample_expectations
+        ),
+    }
 
 
 def analyze_panel(curve, coordinates, group_order, doubled_pool, panel, panel_index):
@@ -241,7 +308,8 @@ def main():
     classes = enumerate_classes(curve)
     generator, coordinates = cyclic_coordinates(curve, classes)
     group_order = len(classes)
-    doubled_pool = doubled_point_pool(curve, coordinates, group_order)
+    point_pool = split_point_coordinates(curve, coordinates)
+    doubled_pool = [(-2 * value) % group_order for value in point_pool]
     result = {
         "prime": PRIME,
         "genus": GENUS,
@@ -250,6 +318,9 @@ def main():
         "cyclic_generator": [list(part) for part in generator],
         "orientation_increment_subgroup_order": group_order // 2,
         "rational_split_abscissae": len(doubled_pool),
+        "full_split_point_pool_pair_census": pair_layer_census(
+            point_pool, group_order
+        ),
         "control_trials_per_ensemble": CONTROL_TRIALS,
         "panels": [
             analyze_panel(
