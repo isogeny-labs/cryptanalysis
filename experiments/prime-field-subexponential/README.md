@@ -88,3 +88,13 @@ python3 "$fixture_dir/folded_split_blocks.py" |
 python3 "$fixture_dir/cartesian_folded_linear.py" |
   diff -u "$fixture_dir/cartesian_folded_linear.json" -
 ```
+
+## Composed split-root controls
+
+The [composed-root note](composed_root_limit.md) tests complete multiplicative cosets, giving root polynomials $P(X^2)$, $XP(X^2)$, $P(X^4)$, and $XP(X^4)$. All 70 composed panels have the same certificate degrees as 70 matched random controls. Sparse right-hand sides alone do not create an early rank surplus. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/composed_abscissa_search.py" |
+  diff -u "$fixture_dir/composed_abscissa_search.json" -
+```
