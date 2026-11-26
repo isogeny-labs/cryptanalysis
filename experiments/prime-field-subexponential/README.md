@@ -140,3 +140,14 @@ fixture_dir=experiments/prime-field-subexponential
 python3 "$fixture_dir/conjugate_hankel_quotient.py" |
   diff -u "$fixture_dir/conjugate_hankel_quotient.json" -
 ```
+
+## Polynomial Cornacchia limit
+
+The [Cornacchia note](polynomial_cornacchia_limit.md) rewrites signed-fiber norm inversion as rational reconstruction from a chosen CRT square root of \(f\bmod U_0\). The reconstruction is efficient after the signs are known, but the critical degree budget gives \(m\) homogeneous equations in \(m+1\) coefficients for every allocation. Across all 1,016 sign assignments in the seven exact genus-two panels, every reconstruction kernel has projective dimension one; only the final target congruence isolates the planted regular candidate. This is a scope control, not a subexponential norm solver. [pcc:unverified]
+
+~~~sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/polynomial_cornacchia_control.py" |
+  diff -u "$fixture_dir/polynomial_cornacchia_control.json" -
+python3 -m py_compile "$fixture_dir/polynomial_cornacchia_control.py"
+~~~
