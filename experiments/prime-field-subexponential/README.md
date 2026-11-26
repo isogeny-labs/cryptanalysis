@@ -227,3 +227,15 @@ python3 "$fixture_dir/paired_span_state_control.py" |
   diff -u "$fixture_dir/paired_span_state_control.json" -
 python3 -m py_compile "$fixture_dir/paired_span_state_control.py"
 ```
+
+
+## Self-adjoint interpolation-projection principal minors
+
+The [interpolation-projection note](interpolation_projection_principal_minors.md) gives a sharper curve-specific form at saturation. Relative to an invertible base signing, branch flips satisfy $M_S=(I+\operatorname{diag}(1_S)K)E$, where $K=\operatorname{diag}(c)P$, $P^2=P$, and $\operatorname{rank}P=\lfloor h/2\rfloor$. Explicit Lagrange-residue weights make both $P$ and $K$ diagonally self-adjoint. All 508 square assignments verify $\det M_S=\det(E)\det((I+K)_{S,S})$. This is a new structured search target, not yet a subexponential algorithm. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/interpolation_projection_control.py" |
+  diff -u "$fixture_dir/interpolation_projection_control.json" -
+python3 -m py_compile "$fixture_dir/interpolation_projection_control.py"
+```
