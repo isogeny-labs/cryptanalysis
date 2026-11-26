@@ -64,3 +64,13 @@ python3 -m py_compile \
   "$fixture_dir/structured_abscissa_search.py" \
   "$fixture_dir/certificate_zero_regression.py"
 ```
+
+## Growing-genus cover transfer
+
+The [cover-lift note](cover_lift_limit.md) records why pulling a fixed-genus DLP into a growing-genus cover does not compose with the existing all-small-place algorithm to give $p^{o(1)}$ work. The transfer is injective away from the cover degree, but degree-one base setup costs $p^{1-o(1)}$; partial lifts pay the Prym dimension, and complete fibers collapse to the source relation problem. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/cover_lift_tradeoff.py" |
+  diff -u "$fixture_dir/cover_lift_tradeoff.json" -
+```
