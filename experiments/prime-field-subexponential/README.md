@@ -44,3 +44,23 @@ python3 "$fixture_dir/semiregular_krawtchouk_ledger.py" |
 python3 "$fixture_dir/semiregular_branch_degree_ledger.py" |
   diff -u "$fixture_dir/semiregular_branch_degree_ledger.json" -
 ```
+
+## Structured split-abscissa control
+
+The [structured-abscissa note](structured_abscissa_limit.md) compares every split-fiber arithmetic-progression set on the genus-two control curve over $\mathbb F_{101}$ with matched random panels. All 112 systems certify at degree four. This is finite negative evidence, not an asymptotic lower bound or a subexponential algorithm. [pcc:unverified]
+
+The run also fixes a sparse-row bug for zero planted parameters and includes a one-variable regression.
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/certificate_zero_regression.py"
+python3 "$fixture_dir/structured_abscissa_search.py" |
+  diff -u "$fixture_dir/structured_abscissa_search.json" -
+python3 -m py_compile \
+  "$fixture_dir/binary_graeffe_macaulay.py" \
+  "$fixture_dir/binary_split_norm_control.py" \
+  "$fixture_dir/toy_jacobian.py" \
+  "$fixture_dir/multisection_span_control.py" \
+  "$fixture_dir/structured_abscissa_search.py" \
+  "$fixture_dir/certificate_zero_regression.py"
+```
