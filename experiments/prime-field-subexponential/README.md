@@ -199,6 +199,16 @@ python3 "$fixture_dir/elliptic_hyperelliptic_cover_control.py" |
 python3 -m py_compile "$fixture_dir/elliptic_hyperelliptic_cover_control.py"
 ```
 
+
+## Paired evaluation-arrangement state count
+
+The [paired-arrangement note](paired_arrangement_cohomology_limit.md) enumerates the complete evaluation-row matroid in all seven binary genus-two panels. At nine slots, 43,401 of 43,758 maximal subsets are bases, and the top Orlik--Solomon dimension is 19,098 versus the uniform maximum 19,448. Every balanced slot cut also has full matroid connectivity. Thus both the standard hyperplane-arrangement recurrence and pair-preserving matroid DP retain exponential state width rather than $p^{o(1)}$. This is a finite state-space diagnostic, not an arithmetic-circuit lower bound. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/paired_arrangement_mobius.py" |
+  diff -u "$fixture_dir/paired_arrangement_mobius.json" -
+python3 -m py_compile "$fixture_dir/paired_arrangement_mobius.py"
 The [dimension ledger](elliptic_locus_dimension.md) bounds this cover locus inside hyperelliptic moduli. Its codimension is at least 1, 2, 2, 4, 4, and 6 in genera 2–7, respectively, so the reduction does not obstruct a carefully quantified density-one theorem. Such a theorem must state its curve distribution and bound the exceptional set. [pcc:unverified]
 
 ```sh
