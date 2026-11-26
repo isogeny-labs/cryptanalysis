@@ -140,12 +140,22 @@ def multilinear_profile(values, variables, prime):
                 ) % prime
     support = [mask for mask, value in enumerate(coefficients) if value]
     histogram = Counter(mask.bit_count() for mask in support)
+    cut_ranks = []
+    for prefix_variables in range(1, variables):
+        suffix_size = 1 << (variables - prefix_variables)
+        flattening = [
+            values[start:start + suffix_size]
+            for start in range(0, len(values), suffix_size)
+        ]
+        cut_ranks.append(rank_mod(flattening, prime))
     return {
         "support": len(support),
         "degree": max(histogram, default=-1),
         "degree_histogram": {
             str(degree): count for degree, count in sorted(histogram.items())
         },
+        "truth_table_cut_ranks": cut_ranks,
+        "maximum_truth_table_cut_rank": max(cut_ranks, default=1),
     }
 
 
