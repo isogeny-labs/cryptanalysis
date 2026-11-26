@@ -186,3 +186,15 @@ python3 "$fixture_dir/structured_displacement_rank.py" |
   diff -u "$fixture_dir/structured_displacement_rank.json" -
 python3 -m py_compile "$fixture_dir/structured_displacement_rank.py"
 ```
+
+
+## Elliptic-DLP reduction to every fixed hyperelliptic genus
+
+The [elliptic-quotient note](elliptic_quotient_reduction.md) gives an explicit degree-$d$ map from a genus-$g$ hyperelliptic curve to any supplied elliptic curve, with $d=\lceil(g+1)/2\rceil$. A bounded shift search produces exactly $2g+2$ branch points, and norm after pullback is multiplication by $d$. Consequently, a universal $p^{o(1)}$ algorithm for fixed-genus hyperelliptic Jacobians would imply a classical subexponential elliptic-curve DLP algorithm. For $g\ge3$, the constructed curve has a rational branch point, so the implication already applies to universal odd-degree hyperelliptic algorithms. This is a scope reduction, not a DLP algorithm. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/elliptic_hyperelliptic_cover_control.py" |
+  diff -u "$fixture_dir/elliptic_hyperelliptic_cover_control.json" -
+python3 -m py_compile "$fixture_dir/elliptic_hyperelliptic_cover_control.py"
+```
