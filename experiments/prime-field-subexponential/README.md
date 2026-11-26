@@ -202,7 +202,7 @@ python3 -m py_compile "$fixture_dir/elliptic_hyperelliptic_cover_control.py"
 
 ## Paired evaluation-arrangement state count
 
-The [paired-arrangement note](paired_arrangement_cohomology_limit.md) enumerates the complete evaluation-row matroid in all seven binary genus-two panels. At nine slots, 43,401 of 43,758 maximal subsets are bases, and the top Orlik--Solomon dimension is 19,098 versus the uniform maximum 19,448. Thus the standard hyperplane-arrangement recurrence state remains essentially generic, growing like $4^m/\sqrt m$ rather than $p^{o(1)}$. This is a finite state-space diagnostic, not an arithmetic-circuit lower bound. [pcc:unverified]
+The [paired-arrangement note](paired_arrangement_cohomology_limit.md) enumerates the complete evaluation-row matroid in all seven binary genus-two panels. At nine slots, 43,401 of 43,758 maximal subsets are bases, and the top Orlik--Solomon dimension is 19,098 versus the uniform maximum 19,448. Every balanced slot cut also has full matroid connectivity. Thus both the standard hyperplane-arrangement recurrence and pair-preserving matroid DP retain exponential state width rather than $p^{o(1)}$. This is a finite state-space diagnostic, not an arithmetic-circuit lower bound. [pcc:unverified]
 
 ```sh
 fixture_dir=experiments/prime-field-subexponential
