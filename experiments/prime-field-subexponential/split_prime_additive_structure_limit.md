@@ -39,6 +39,18 @@ check is empirical there; the theorem applies directly after the stated
 odd-order hypothesis, while projection to a proper subgroup additionally
 requires excluding collisions in the killed cofactor.
 
+The complete 48-point split pool makes that caveat explicit.  Its 1,128
+undoubled two-point sums are all distinct.  Doubling leaves 1,066 values and
+62 collision pairs; every bucket has size at most two, every collision uses
+four distinct points, and the two undoubled sums differ by the unique rational
+two-torsion class.  These are precisely cofactor collisions, not a growing
+quotient filtration.  A uniformly sampled nine-slot set retains only
+\(62(9)_4/(48)_4=217/5405<0.041\) such pair collisions in expectation.
+Thus the finite cofactor effect is too sparse even to appear typically in the
+largest planted panel.  Asymptotically, extending this conclusion to a chosen
+prime-order component requires a bound on low-support relations landing in
+its killed cofactor; it is automatic only when the full group has odd order.
+
 Across the panels, the constructed instances lie inside the ranges of both
 matched ensembles for global and balanced subset-sum collisions.  Their first
 signed relations, when present, likewise have ordinary matched-control
