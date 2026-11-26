@@ -502,8 +502,10 @@ the most direct circuit implementation left by the joint-operator boundary.
 At each peak graded layer it computes every balanced operator-Schmidt rank of
 the row-echelon monomial normal form. The dimension-ten ranks range from 243
 to 652 with median 583, so no variable ordering gives this fixed map a small
-middle tensor bond. This is exact finite evidence about the standard
-complement, not a lower bound for every quotient section or nonlinear circuit.
+middle tensor bond. The complement-independent canonical quotient map still
+has ranks 64 to 126 with median 105. This rules out a constant-bond linear
+tensor train with a global quotient output on these controls, not a nonlinear
+or distributed-output circuit.
 
 ```sh
 python3 "$fixture_dir/norm_hilbert_normal_form_tensor.py" |

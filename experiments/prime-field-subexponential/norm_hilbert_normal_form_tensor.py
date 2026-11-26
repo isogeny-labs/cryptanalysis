@@ -73,6 +73,27 @@ def flattening_rank(variable_count, left_variables, standard, coordinates):
     return sparse_rank(rows.values(), PRIME)
 
 
+def quotient_flattening_rank(variable_count, left_variables, coordinates):
+    """Schmidt rank of the canonical quotient map with output on the left."""
+    left = tuple(sorted(left_variables))
+    left_set = set(left)
+    right = tuple(
+        index for index in range(variable_count) if index not in left_set
+    )
+    rows = {}
+    for source, vector in coordinates.items():
+        source_left = tuple(source[index] for index in left)
+        source_right = tuple(source[index] for index in right)
+        for target_index, coefficient in enumerate(vector):
+            if not coefficient:
+                continue
+            row = rows.setdefault((target_index, source_left), {})
+            row[source_right] = (
+                row.get(source_right, 0) + coefficient
+            ) % PRIME
+    return sparse_rank(rows.values(), PRIME)
+
+
 def analyze(dimension, reference):
     positive = tuple(value for value in reference if value)
     peak_degree = max(
@@ -96,6 +117,11 @@ def analyze(dimension, reference):
     for subset in combinations(range(dimension), cut_size):
         records.append({
             "left_variables": subset,
+            "intrinsic_quotient_map_rank": quotient_flattening_rank(
+                dimension,
+                subset,
+                coordinates,
+            ),
             "operator_schmidt_rank": flattening_rank(
                 dimension,
                 subset,
@@ -107,6 +133,12 @@ def analyze(dimension, reference):
     histogram = Counter(ranks)
     ordered = sorted(ranks)
     minimum = ordered[0]
+    quotient_ranks = [
+        record["intrinsic_quotient_map_rank"] for record in records
+    ]
+    quotient_histogram = Counter(quotient_ranks)
+    ordered_quotient = sorted(quotient_ranks)
+    quotient_minimum = ordered_quotient[0]
     return {
         "variables": dimension,
         "peak_degree": peak_degree,
@@ -125,6 +157,20 @@ def analyze(dimension, reference):
         "rank_histogram": [
             {"rank": rank, "count": count}
             for rank, count in sorted(histogram.items())
+        ],
+        "minimum_intrinsic_quotient_map_rank": quotient_minimum,
+        "median_intrinsic_quotient_map_rank": ordered_quotient[
+            len(ordered_quotient) // 2
+        ],
+        "maximum_intrinsic_quotient_map_rank": ordered_quotient[-1],
+        "minimum_intrinsic_rank_cuts": [
+            record["left_variables"]
+            for record in records
+            if record["intrinsic_quotient_map_rank"] == quotient_minimum
+        ],
+        "intrinsic_quotient_rank_histogram": [
+            {"rank": rank, "count": count}
+            for rank, count in sorted(quotient_histogram.items())
         ],
     }
 
@@ -151,8 +197,8 @@ def main():
         "deterministic_coefficients": DETERMINISTIC_COEFFICIENTS,
         "algorithm_claimed": False,
         "scope": (
-            "Exact operator-Schmidt ranks of the standard monomial "
-            "normal-form map at the peak graded layer."
+            "Exact balanced tensor ranks of the canonical quotient and "
+            "standard monomial normal-form maps at the peak graded layer."
         ),
         "all_balanced_variable_subsets_tested": True,
         "panels": panels,
