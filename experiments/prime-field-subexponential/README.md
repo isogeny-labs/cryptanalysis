@@ -25,3 +25,16 @@ The two frozen outputs are retrospective producer fixtures from the research wor
 ## Proof status
 
 The written proofs and their hypotheses are in the research note. A Lean formalization remains open. It would need the abelian-surface classification and pairing results for the genus-two family, the character estimates and Riemann–Roch evaluation for the coverage result, and the small-place generation and exact subgroup relation arguments for the growing-genus bound. The mathematical claims and finite fixtures have unverified PCC standing. [pcc:unverified]
+
+
+## Fixed-genus oversampling controls
+
+The [oversampling regularity note](oversampling_regular_limit.md) tests whether deliberately creating multiple transverse branch-product solutions lowers Macaulay stabilization degree. The large-field controls plant up to ten solutions over $\mathbb F_{101}$, exhaust every branch assignment, and record the cumulative quotient through degree six. They do not establish an asymptotic solving-degree bound or a subexponential algorithm. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/high_density_branch_regular.py" |
+  diff -u "$fixture_dir/high_density_branch_regular.json" -
+python3 "$fixture_dir/multiplanted_branch_regular.py" |
+  diff -u "$fixture_dir/multiplanted_branch_regular.json" -
+```
