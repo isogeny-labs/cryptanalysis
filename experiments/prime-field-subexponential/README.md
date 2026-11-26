@@ -308,3 +308,13 @@ fixture_dir=experiments/prime-field-subexponential
 python3 "$fixture_dir/theta_relation_exponent_ledger.py" |
   diff -u "$fixture_dir/theta_relation_exponent_ledger.json" -
 ```
+
+
+With the residual fixed, norm inversion is exactly orientation selection among split prime ideals. A flip changes the Jacobian contribution by $-2P_i$, so every orientation has the same image in $J/2J$; on an odd prime-order component the equation is ordinary subset sum after scaling by $-1/2$. All 1,016 full-panel orientations verify the identity and each panel has one target orientation. Cornacchia/Riemann--Roch reconstructs after orientation but does not choose it. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/split_prime_orientation_control.py" |
+  diff -u "$fixture_dir/split_prime_orientation_control.json" -
+python3 -m py_compile "$fixture_dir/split_prime_orientation_control.py"
+```
