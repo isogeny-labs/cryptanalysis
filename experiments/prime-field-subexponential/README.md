@@ -140,3 +140,15 @@ fixture_dir=experiments/prime-field-subexponential
 python3 "$fixture_dir/conjugate_hankel_quotient.py" |
   diff -u "$fixture_dir/conjugate_hankel_quotient.json" -
 ```
+
+
+## Structured residual tensor-width census
+
+The [structured tensor-width note](structured_tensor_width_limit.md) exhausts every distinct split-fiber arithmetic or geometric progression of lengths seven through nine on the genus-two control curve over $\mathbb F_{101}$, together with matched random panels. Across 41 structured and 41 random panels, progression structure does not lower the minimum balanced flattening rank. This is finite negative evidence, not an asymptotic lower bound or a subexponential algorithm. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/structured_tensor_width_search.py" |
+  diff -u "$fixture_dir/structured_tensor_width_search.json" -
+python3 -m py_compile "$fixture_dir/structured_tensor_width_search.py"
+```
