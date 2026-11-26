@@ -164,3 +164,15 @@ python3 "$fixture_dir/structured_tensor_width_search.py" |
   diff -u "$fixture_dir/structured_tensor_width_search.json" -
 python3 -m py_compile "$fixture_dir/structured_tensor_width_search.py"
 ```
+
+
+## Structured residual displacement-rank census
+
+The [displacement-rank note](structured_displacement_rank_limit.md) tests four standard Stein/Sylvester operators, cyclic and nilpotent shifts, and every binary/Gray/bit-reversed row-column order pair on the 41 structured residual panels and 41 matched random controls. Seven- and nine-slot tables have full row displacement rank; eight-slot minima are 14 or 15 out of 16 in both arms. Standard one-dimensional displacement generators do not compress these finite tables. This is finite negative evidence, not an asymptotic lower bound or a subexponential algorithm. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/structured_displacement_rank.py" |
+  diff -u "$fixture_dir/structured_displacement_rank.json" -
+python3 -m py_compile "$fixture_dir/structured_displacement_rank.py"
+```
