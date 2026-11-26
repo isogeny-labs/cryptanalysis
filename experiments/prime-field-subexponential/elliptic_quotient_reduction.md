@@ -209,3 +209,9 @@ elliptic-DLP breakthrough through the construction above and must not be
 inferred from generic-family evidence. For \(g\ge3\), the same warning
 applies even when the theorem is stated only for odd-degree hyperelliptic
 models.
+
+The obstruction is nevertheless thin in hyperelliptic moduli. The cover
+locus used here has codimension at least \(1,2,2,4,4,6\) in genera two
+through seven, respectively. Thus a density-one result can exclude it, but
+only with a stated curve distribution and a proved exceptional-set bound.
+[Dimension ledger](elliptic_locus_dimension.md)
