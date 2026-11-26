@@ -318,3 +318,14 @@ python3 "$fixture_dir/split_prime_orientation_control.py" |
   diff -u "$fixture_dir/split_prime_orientation_control.json" -
 python3 -m py_compile "$fixture_dir/split_prime_orientation_control.py"
 ```
+
+## Split-prime additive-structure control
+
+The [additive-structure note](split_prime_additive_structure_limit.md) compares the exact fixed-residual orientation instances with uniform elements of (2J) and with doubled classes of distinct random curve points. It exhausts every subset and measures collision counts, balanced-layer buckets, and minimum signed-relation support. Every constructed panel lies inside both matched ranges. The collision-free nine-slot panel is matched by 30 of 256 doubled-point controls, so it is not evidence of an exploitable invariant. This is finite negative evidence, not an average-case hardness result. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/split_prime_additive_structure.py" |
+  diff -u "$fixture_dir/split_prime_additive_structure.json" -
+python3 -m py_compile "$fixture_dir/split_prime_additive_structure.py"
+```
