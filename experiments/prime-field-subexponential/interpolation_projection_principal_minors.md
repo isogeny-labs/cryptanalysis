@@ -96,17 +96,17 @@ principal-minor assignment.
 
 ## Exact controls and remaining target
 
-The seven genus-two panels use square sections of sizes two through eight.
-They verify:
+The seven original genus-two panels and three extended planted divisors use
+square sections of sizes two through eleven. They verify:
 
 - the idempotence and expected rank of \(P\);
 - both explicit diagonal self-adjointness identities;
 - \(K=\operatorname{diag}(c)P\); and
 - the direct determinant, determinant-lemma, and principal-minor values for
-  all 508 branch assignments.
+  all 4,092 branch assignments.
 
-The square subproblems contain 1, 1, 1, 1, 1, 3, and 3 deficient assignments,
-respectively.
+The square subproblems contain 1, 1, 1, 1, 1, 3, 3, 7, 14, and 22 deficient
+assignments, respectively.
 
 This is a genuine curve-specific compression beyond arbitrary paired
 transversals, but it is not yet a search algorithm. A positive continuation
