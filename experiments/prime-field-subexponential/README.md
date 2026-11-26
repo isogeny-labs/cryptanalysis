@@ -512,3 +512,18 @@ python3 "$fixture_dir/norm_hilbert_normal_form_tensor.py" |
   diff -u "$fixture_dir/norm_hilbert_normal_form_tensor.json" -
 python3 -m py_compile "$fixture_dir/norm_hilbert_normal_form_tensor.py"
 ```
+
+The [higher-genus norm note](higher_genus_norm_hilbert_limit.md) extends the
+homogeneous controls to 120 valid-curve profile computations over prime
+fields in genera three through seven. Every aggregated panel is stable across
+samples and lies coefficientwise above the matching semi-regular model;
+structured terminal layers enlarge rather than collapse. For every fixed
+genus 2--7, the model's normalized quotient-length logarithm still trends to
+one bit per section variable, so the explicit quotient remains polynomial in
+$p$ at occupancy.
+
+```sh
+python3 "$fixture_dir/higher_genus_norm_hilbert.py" |
+  diff -u "$fixture_dir/higher_genus_norm_hilbert.json" -
+python3 -m py_compile "$fixture_dir/higher_genus_norm_hilbert.py"
+```
