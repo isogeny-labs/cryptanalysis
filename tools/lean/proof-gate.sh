@@ -74,7 +74,7 @@ run_target() {
     toolchain=$(cat "$(dirname "$root/$t")/lean-toolchain" 2>/dev/null || true)
     if ! (cd "$(dirname "$root/$t")" && lean -o "$dir/$mod.olean" "$root/$t") > "$log/build.log" 2>&1; then
       status=FAIL_build
-    elif ! LEAN_PATH="$dir:${LEAN_PATH:-}" lean --run "$audit" --trusted "${LEAN_GATE_TRUSTED:-$root/tools/lean/trusted-native.txt}" "$mod" > "$log/audit.log" 2>&1; then
+    elif ! (cd "$(dirname "$root/$t")" && LEAN_PATH="$dir:${LEAN_PATH:-}" lean --run "$audit" --trusted "${LEAN_GATE_TRUSTED:-$root/tools/lean/trusted-native.txt}" "$mod") > "$log/audit.log" 2>&1; then
       status=FAIL_audit
     fi
     [ -n "$toolchain" ] && echo "toolchain pin: $toolchain" >> "$log/build.log"

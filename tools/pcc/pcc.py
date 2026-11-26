@@ -436,7 +436,9 @@ def read_secret(path: Path) -> bytes:
 def is_probable_prime(n: int, rounds: int = 40) -> bool:
     if n < 2:
         return False
-    small = (2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37)
+    # Sorenson--Webster's psi_13 is the smallest strong pseudoprime to
+    # these first thirteen prime bases, so the bound below is exclusive.
+    small = (2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41)
     for s in small:
         if n % s == 0:
             return n == s
