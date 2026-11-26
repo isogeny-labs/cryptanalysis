@@ -81,7 +81,9 @@ def homogeneous_hilbert_function(forms, variable_count, prime):
     """Compute exact-degree quotient dimensions until the first zero."""
     hilbert = [1, variable_count]
     ranks = [0, 0]
+    propagated = [None, None]
     degree = 2
+    predicted_quotient = None
     while True:
         pivots = {}
         for form in forms:
@@ -95,13 +97,117 @@ def homogeneous_hilbert_function(forms, variable_count, prime):
                 add_echelon_row(pivots, row, prime)
         columns = comb(variable_count + degree - 1, degree)
         quotient = columns - len(pivots)
+        if predicted_quotient is not None:
+            assert quotient == predicted_quotient
+            predicted_quotient = None
         ranks.append(len(pivots))
         hilbert.append(quotient)
+        propagated.append(None)
         if quotient == 0:
-            return hilbert, ranks
+            return hilbert, ranks, propagated
+        if variable_count * quotient <= 144:
+            next_quotient, presentation_size, relation_rank = (
+                propagated_next_dimension(
+                    pivots, variable_count, degree, prime
+                )
+            )
+            if next_quotient == 0:
+                hilbert.append(0)
+                ranks.append(comb(variable_count + degree, degree + 1))
+                propagated.append({
+                    "source_degree": degree,
+                    "presentation_generators": presentation_size,
+                    "relation_rank": relation_rank,
+                })
+                return hilbert, ranks, propagated
+            predicted_quotient = next_quotient
         degree += 1
         if degree > 2 * variable_count + 2:
             raise AssertionError("homogeneous quotient did not vanish")
+
+
+def rank_mod(rows, columns, prime):
+    """Rank a short dense relation presentation over the prime field."""
+    rows = [[value % prime for value in row] for row in rows]
+    rank = 0
+    for column in range(columns):
+        pivot = next(
+            (index for index in range(rank, len(rows)) if rows[index][column]),
+            None,
+        )
+        if pivot is None:
+            continue
+        rows[rank], rows[pivot] = rows[pivot], rows[rank]
+        inverse = pow(rows[rank][column], -1, prime)
+        rows[rank] = [value * inverse % prime for value in rows[rank]]
+        for index in range(rank + 1, len(rows)):
+            if not rows[index][column]:
+                continue
+            scale = rows[index][column]
+            rows[index] = [
+                (left - scale * right) % prime
+                for left, right in zip(
+                    rows[index], rows[rank], strict=True
+                )
+            ]
+        rank += 1
+        if rank == columns:
+            break
+    return rank
+
+
+def propagated_next_dimension(pivots, variable_count, degree, prime):
+    """Present A_(d+1) from multiplication of the known quotient A_d."""
+    monomials = exact_monomials(variable_count, degree)
+    standard = [monomial for monomial in monomials if monomial not in pivots]
+    quotient_dimension = len(standard)
+    coordinates = {}
+    standard_index = {
+        monomial: index for index, monomial in enumerate(standard)
+    }
+    for monomial in sorted(monomials):
+        if monomial in standard_index:
+            vector = [0] * quotient_dimension
+            vector[standard_index[monomial]] = 1
+            coordinates[monomial] = vector
+            continue
+        vector = [0] * quotient_dimension
+        for lower, coefficient in pivots[monomial].items():
+            if lower == monomial:
+                continue
+            for index, value in enumerate(coordinates[lower]):
+                vector[index] -= coefficient * value
+        coordinates[monomial] = [value % prime for value in vector]
+
+    presentation_size = variable_count * quotient_dimension
+    relations = []
+    for monomial in exact_monomials(variable_count, degree + 1):
+        representatives = []
+        for variable, exponent in enumerate(monomial):
+            if not exponent:
+                continue
+            predecessor = list(monomial)
+            predecessor[variable] -= 1
+            vector = [0] * presentation_size
+            offset = variable * quotient_dimension
+            vector[offset:offset + quotient_dimension] = coordinates[
+                tuple(predecessor)
+            ]
+            representatives.append(vector)
+        base = representatives[0]
+        for representative in representatives[1:]:
+            relation = [
+                (left - right) % prime
+                for left, right in zip(base, representative, strict=True)
+            ]
+            if any(relation):
+                relations.append(relation)
+    relation_rank = rank_mod(relations, presentation_size, prime)
+    return (
+        presentation_size - relation_rank,
+        presentation_size,
+        relation_rank,
+    )
 
 
 def semiregular_coefficient(variable_count, degree):
@@ -128,7 +234,9 @@ def semiregular_hilbert_function(variable_count):
 def analyze_panel(curve, panel, source):
     dimension = panel["projective_section_dimension"]
     forms = leading_norm_forms(curve, panel)
-    hilbert, ranks = homogeneous_hilbert_function(forms, dimension, curve.p)
+    hilbert, ranks, propagated = homogeneous_hilbert_function(
+        forms, dimension, curve.p
+    )
     semiregular = semiregular_hilbert_function(dimension)
     comparison_length = max(len(hilbert), len(semiregular))
     padded_actual = hilbert + [0] * (comparison_length - len(hilbert))
@@ -147,6 +255,9 @@ def analyze_panel(curve, panel, source):
         "nonzero_quadratic_leading_forms": len(forms),
         "homogeneous_hilbert_function_through_zero": hilbert,
         "homogeneous_macaulay_ranks": ranks,
+        "propagated_vanishing_certificate": next(
+            (item for item in propagated if item is not None), None
+        ),
         "semi_regular_hilbert_function_through_zero": semiregular,
         "coefficientwise_difference": differences,
         "maximum_absolute_difference": max(map(abs, differences)),
@@ -175,17 +286,19 @@ def main():
         analyze_panel(curve, panel, fixture.name)
         for panel in source["panels"]
     ]
-    extended, _, attempts = extended_panel(curve, 8, Random(SEED))
-    record = analyze_panel(curve, extended, "extended planted divisor")
-    record["construction_attempts"] = attempts
-    panels.append(record)
+    rng = Random(SEED)
+    for dimension in (8, 9):
+        extended, _, attempts = extended_panel(curve, dimension, rng)
+        record = analyze_panel(curve, extended, "extended planted divisor")
+        record["construction_attempts"] = attempts
+        panels.append(record)
     result = {
         "prime": PRIME,
         "genus": 2,
         "extended_panel_seed": SEED,
         "scope": (
             "Exact homogeneous leading-ideal ranks for one planted split "
-            "norm panel in each dimension 1 through 8."
+            "norm panel in each dimension 1 through 9."
         ),
         "algorithm_claimed": False,
         "panels": panels,

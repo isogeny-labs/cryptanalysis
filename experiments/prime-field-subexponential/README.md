@@ -389,7 +389,7 @@ python3 -m py_compile "$fixture_dir/imaginary_unit_rank.py"
 
 The [homogeneous Hilbert note](homogeneous_norm_hilbert_limit.md) follows the
 remaining graded route after the affine Macaulay boundary blow-up. Exact
-leading-ideal ranks for split norm panels in dimensions 1 through 8 agree with
+leading-ideal ranks for split norm panels in dimensions 1 through 9 agree with
 the semi-regular Hilbert function or differ by one class. The corresponding
 semi-regular model has exponentially large quotient length. This is finite
 evidence, not an asymptotic theorem, a complexity lower bound, or an exponent
