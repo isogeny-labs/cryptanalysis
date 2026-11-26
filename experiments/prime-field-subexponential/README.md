@@ -239,3 +239,13 @@ python3 "$fixture_dir/interpolation_projection_control.py" |
   diff -u "$fixture_dir/interpolation_projection_control.json" -
 python3 -m py_compile "$fixture_dir/interpolation_projection_control.py"
 ```
+
+
+The singular-minor condition has an exact theta-divisor interpretation. A deficient square signing reconstructs a norm cofactor of degree at most $g-1$ and a residual effective divisor completing the partial sum to the Jacobian target. All 4,092 assignments were checked: at $h=11$, 22 theta hits occur versus the mixed-model prediction $2048/101=20.28\ldots$, but only one hit uses the supplied remaining slot. Random theta probing therefore costs $\widetilde O(p)$ and is not a subexponential DLP algorithm. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/principal_minor_jacobian_equivalence.py" |
+  diff -u "$fixture_dir/principal_minor_jacobian_equivalence.json" -
+python3 -m py_compile "$fixture_dir/principal_minor_jacobian_equivalence.py"
+```
