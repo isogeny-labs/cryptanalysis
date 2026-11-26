@@ -11,6 +11,7 @@ from toy_jacobian import GenusTwo
 
 
 PRIME = 101
+GENUS = 2
 CONTROL_TRIALS = 256
 
 
@@ -66,6 +67,14 @@ def all_subset_sums(values, modulus):
     for value in values:
         sums += [(old + value) % modulus for old in sums]
     return sums
+
+
+def weight_layer_is_injective(values, modulus, weight):
+    sums = {
+        sum(values[index] for index in chosen) % modulus
+        for chosen in combinations(range(len(values)), weight)
+    }
+    return len(sums) == sum(1 for _ in combinations(range(len(values)), weight))
 
 
 def collision_metrics(values, modulus):
@@ -168,6 +177,7 @@ def doubled_point_pool(curve, coordinates, group_order):
 
 def analyze_panel(curve, coordinates, group_order, doubled_pool, panel, panel_index):
     values = []
+    point_values = []
     planted_mask = 0
     for index, (x, selected) in enumerate(
         zip(panel["split_abscissae"], panel["selected_signed_points"], strict=True)
@@ -175,7 +185,9 @@ def analyze_panel(curve, coordinates, group_order, doubled_pool, panel, panel_in
         roots = curve.roots(x)
         assert len(roots) == 2
         plus = curve.point_divisor(x, roots[0])
-        values.append((-2 * coordinates[plus]) % group_order)
+        point_value = coordinates[plus]
+        point_values.append(point_value)
+        values.append((-2 * point_value) % group_order)
         assert selected[0] == x
         if selected[1] == roots[1]:
             planted_mask |= 1 << index
@@ -203,6 +215,14 @@ def analyze_panel(curve, coordinates, group_order, doubled_pool, panel, panel_in
         "projective_section_dimension": panel["projective_section_dimension"],
         "split_prime_factors": len(values),
         "increment_coordinates_modulo_group_order": values,
+        "undoubled_layers_through_genus_are_injective": all(
+            weight_layer_is_injective(point_values, group_order, weight)
+            for weight in range(1, min(GENUS, len(values)) + 1)
+        ),
+        "doubled_layers_through_genus_are_injective": all(
+            weight_layer_is_injective(values, group_order, weight)
+            for weight in range(1, min(GENUS, len(values)) + 1)
+        ),
         "planted_orientation_mask": planted_mask,
         "planted_target_has_one_orientation": True,
         "actual": actual,
@@ -224,7 +244,7 @@ def main():
     doubled_pool = doubled_point_pool(curve, coordinates, group_order)
     result = {
         "prime": PRIME,
-        "genus": 2,
+        "genus": GENUS,
         "jacobian_order": group_order,
         "jacobian_is_cyclic": True,
         "cyclic_generator": [list(part) for part in generator],
