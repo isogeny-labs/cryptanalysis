@@ -87,9 +87,23 @@ multilinear supports are essentially maximal:
 | 9 | 4 | 255 | 253, 252 |
 
 Thus explicit Boolean expansion recreates almost every available monomial,
-and enumeration still costs \(2^m=p^{g+o(1)}\).  A positive continuation
-must evaluate or solve the \(g\) residual equations as compressed
-determinant circuits, without expanding their cofactors.
+and enumeration still costs \(2^m=p^{g+o(1)}\).
+
+The truth-table tensor flattenings also reach the ordinary central-cut
+width.  The two residuals have identical cut-rank profiles in each panel:
+
+| slots | prefix/suffix cut ranks |
+| ---: | --- |
+| 7 | \(2,4,8,8,4,2\) |
+| 8 | \(2,4,8,10,8,4,2\) |
+| 9 | \(2,4,8,16,16,8,4,2\) |
+
+In particular the odd panels attain full rank at the central cuts.  A direct
+tensor-train or ordered branching-program contraction therefore has width
+\(2^{m/2}\) on these controls, matching meet-in-the-middle rather than
+\(p^{o(1)}\).  A positive continuation must solve the \(g\) residual
+determinant circuits using structure beyond monomial sparsity or the natural
+slot ordering.
 
 [Exact control](conjugate_hankel_quotient.py)
 
