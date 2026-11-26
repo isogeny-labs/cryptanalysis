@@ -481,3 +481,18 @@ python3 "$fixture_dir/norm_hilbert_module_width.py" |
   diff -u "$fixture_dir/norm_hilbert_module_width.json" -
 python3 -m py_compile "$fixture_dir/norm_hilbert_module_width.py"
 ```
+
+The [joint-operator note](norm_hilbert_joint_operator_limit.md) closes the
+explicit side of that tradeoff. For any (k) commuting linear multiplication
+operators, the coefficients of ((1-t)^kH_A(t)) lower-bound the Betti width of
+every graded free presentation over their polynomial ring. The dimension-ten
+total bound is 12,834 for nine operators and 25,028 for ten. In the
+semi-regular model, moving (r-O(\sqrt r)) directions into the operator algebra
+restores an explicit scale trending toward (4^r). A circuit or oracle for all
+differentials at once remains open.
+
+```sh
+python3 "$fixture_dir/norm_hilbert_joint_operator_ledger.py" |
+  diff -u "$fixture_dir/norm_hilbert_joint_operator_ledger.json" -
+python3 -m py_compile "$fixture_dir/norm_hilbert_joint_operator_ledger.py"
+```
