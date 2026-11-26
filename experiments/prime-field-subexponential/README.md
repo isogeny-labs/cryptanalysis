@@ -259,3 +259,13 @@ python3 "$fixture_dir/principal_minor_spectrum_control.py" |
   diff -u "$fixture_dir/principal_minor_spectrum_control.json" -
 python3 -m py_compile "$fixture_dir/principal_minor_spectrum_control.py"
 ```
+
+
+The compressed rank-one branch updates generate the full matrix algebra rather than a commutative or bounded-block algebra. In every panel, the natural first $q=\lfloor h/2\rfloor$ updates and every balanced subset generate $M_q(\mathbf F_{101})$. At $h=11$, 378 of 462 five-update subsets have a direct outer-product basis certificate, and exact closure proves all 462 full. Simultaneous diagonalization and fixed small-block recurrences therefore do not explain a speedup in these controls. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/principal_minor_update_algebra.py" |
+  diff -u "$fixture_dir/principal_minor_update_algebra.json" -
+python3 -m py_compile "$fixture_dir/principal_minor_update_algebra.py"
+```
