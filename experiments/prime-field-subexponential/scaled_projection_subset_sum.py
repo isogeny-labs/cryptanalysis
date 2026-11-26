@@ -27,7 +27,7 @@ def block_diagonal(left, right):
     ]
 
 
-def analyze(weights, target, prime):
+def build_instance(weights, target, prime):
     items = len(weights)
     assert items >= 2 and sum(weights) < prime and target < prime
     inverse_items = pow(items, -1, prime)
@@ -50,6 +50,14 @@ def analyze(weights, target, prime):
         [scale * value % prime for value in row]
         for scale, row in zip(scales, projection, strict=True)
     ]
+    return projection, scaled_projection, coefficients, padding
+
+
+def analyze(weights, target, prime):
+    items = len(weights)
+    projection, scaled_projection, coefficients, padding = build_instance(
+        weights, target, prime
+    )
     ambient = len(projection)
     expected_rank = ambient // 2
     assert matrix_multiply(projection, projection, prime) == projection
