@@ -289,3 +289,13 @@ python3 "$fixture_dir/scaled_projection_subset_sum.py" |
   diff -u "$fixture_dir/scaled_projection_subset_sum.json" -
 python3 -m py_compile "$fixture_dir/scaled_projection_subset_sum.py"
 ```
+
+
+The interpolation flip matrix is Cauchy-like: every curve panel through $h=11$ satisfies $\operatorname{rank}(XK-KX)=2$, and every principal submatrix has displacement rank at most two. This accelerates evaluation of a specified determinant but not the search: the half-rank Subset Sum gadgets have the same rank-two displacement under distinct diagonal nodes. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/interpolation_projection_displacement.py" |
+  diff -u "$fixture_dir/interpolation_projection_displacement.json" -
+python3 -m py_compile "$fixture_dir/interpolation_projection_displacement.py"
+```
