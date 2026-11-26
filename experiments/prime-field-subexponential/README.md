@@ -362,3 +362,14 @@ python3 "$fixture_dir/macaulay_displacement_boundary.py" |
   diff -u "$fixture_dir/macaulay_displacement_boundary.json" -
 python3 -m py_compile "$fixture_dir/macaulay_displacement_boundary.py"
 ```
+
+## Ramified Hensel branching limit
+
+The [ramified-lifting note](ramified_hensel_limit.md) tests the constant branch-root signature from (R^2-fB^2=-uU_0). Although (Rmod f) has at most (2^{2g+1}) geometric choices, every (Bmod f^{k-1}) determines a unique compatible lift (Rmod f^k) in the generic coprime case. Reaching the bounded global degree therefore leaves (p^{deg B+1}) candidates per first signature. All seven panels verify coprimality and the executable branching ledger. A global continued-fraction or Hilbert–90 method remains open; naive local lifting does not improve the exponent. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/ramified_hensel_branching.py" |
+  diff -u "$fixture_dir/ramified_hensel_branching.json" -
+python3 -m py_compile "$fixture_dir/ramified_hensel_branching.py"
+```
