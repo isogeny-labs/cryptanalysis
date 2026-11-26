@@ -120,3 +120,13 @@ python3 "$fixture_dir/paired_hyperplane_control.py" |
 python3 "$fixture_dir/paired_subset_sum_control.py" |
   diff -u "$fixture_dir/paired_subset_sum_control.json" -
 ```
+
+## Scalar RS two-list limit
+
+The [scalar two-list note](rs_two_list_subset_sum.md) proves that exact Reed--Solomon list recovery from two values per coordinate is modular Subset Sum at redundancy one. Two exhaustive panels over $\mathbb F_{101}$ verify that the subset equation, dual syndrome, and augmented-Vandermonde rank test agree on all 128 choices. This does not establish hardness for the coupled hyperelliptic product code; it shows that RS structure and list size two alone are not enough. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/rs_two_list_subset_sum.py" |
+  diff -u "$fixture_dir/rs_two_list_subset_sum.json" -
+```
