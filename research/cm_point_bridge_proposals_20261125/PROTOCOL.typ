@@ -22,6 +22,16 @@ maximal-order CM curve and a same-size ordinary control. Distinguish a
 relation identity, component gain, and full single-target gain.
 \[pcc:unverified\]
 
+The `p=47`, `r=61` control has embedding degree `ord_61(47)=3`\; the
+existing maximal-order `p=1009`, `r=1069` pair has `ord_1069(1009)=534`
+(both by exact modular order). A character rule seen only on the first
+control is therefore vulnerable to a small-extension pairing explanation
+under the
+#link("https://doi.org/10.1109/18.259647")[Menezes--Okamoto--Vanstone reduction].
+Require all-scalar replay on the second pair and an
+embedding-degree-aware generic control before attributing an extractor
+to CM ray data. \[pcc:unverified\]
+
 For every arm, retain raw outputs, failures, source revision, seeds, and
 the same query stream. Charge setup, isogeny construction, evaluator,
 relation collection, orientation, storage, linear algebra, descent, and
@@ -51,6 +61,14 @@ ideals that evaluates this #strong[marked] resolvent, or a useful
 quotient, without expanding all cosets. A norm identity for an unmarked
 kernel product is insufficient. This is a hypothesis, not an algorithm.
 \[pcc:unverified\]
+
+The index set `{[h]T:h in H}` is a multiplicative scalar orbit, whereas
+an isogeny norm multiplies values over additive translates by its
+kernel. Since `E[r]` has prime order on the rational line, a nonempty
+orbit excluding `O` cannot itself be an additive kernel. Therefore a
+standard kernel norm does not directly compress `U_H`\; the proposed
+recurrence must explain an additional mechanism that converts between
+these index sets. \[pcc:unverified\]
 
 #strong[First experiment:] specify `u`, `H`, the normalization at `G`,
 and the recurrence #emph[symbolically] before examining scalar labels.
