@@ -16,6 +16,7 @@ from toy_jacobian import GenusTwo
 
 PRIME = 101
 ASYMPTOTIC_DIMENSIONS = (8, 16, 32, 64, 128)
+PROPAGATION_SIZE_LIMIT = 384
 
 
 def exact_monomials(variable_count, degree):
@@ -105,7 +106,7 @@ def homogeneous_hilbert_function(forms, variable_count, prime):
         propagated.append(None)
         if quotient == 0:
             return hilbert, ranks, propagated
-        if variable_count * quotient <= 144:
+        if variable_count * quotient <= PROPAGATION_SIZE_LIMIT:
             next_quotient, presentation_size, relation_rank = (
                 propagated_next_dimension(
                     pivots, variable_count, degree, prime
@@ -287,7 +288,7 @@ def main():
         for panel in source["panels"]
     ]
     rng = Random(SEED)
-    for dimension in (8, 9):
+    for dimension in (8, 9, 10):
         extended, _, attempts = extended_panel(curve, dimension, rng)
         record = analyze_panel(curve, extended, "extended planted divisor")
         record["construction_attempts"] = attempts
@@ -298,7 +299,7 @@ def main():
         "extended_panel_seed": SEED,
         "scope": (
             "Exact homogeneous leading-ideal ranks for one planted split "
-            "norm panel in each dimension 1 through 9."
+            "norm panel in each dimension 1 through 10."
         ),
         "algorithm_claimed": False,
         "panels": panels,

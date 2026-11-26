@@ -390,10 +390,12 @@ python3 -m py_compile "$fixture_dir/imaginary_unit_rank.py"
 The [homogeneous Hilbert note](homogeneous_norm_hilbert_limit.md) follows the
 remaining graded route after the affine Macaulay boundary blow-up. Exact
 leading-ideal ranks for split norm panels in dimensions 1 through 9 agree with
-the semi-regular Hilbert function or differ by one class. The corresponding
-semi-regular model has exponentially large quotient length. This is finite
-evidence, not an asymptotic theorem, a complexity lower bound, or an exponent
-improvement. [pcc:unverified]
+the semi-regular Hilbert function or differ by one class. Dimension 10 has a
+10-class terminal excess, continuing the observed even-dimensional terminal
+sequence 2, 4, 8, 16, 32. It enlarges the quotient and does not lower its peak.
+The corresponding semi-regular model has exponentially large quotient length.
+This is finite evidence, not an asymptotic theorem, a complexity lower bound,
+or an exponent improvement. [pcc:unverified]
 
 This import also freezes the previously omitted producer fixture and its
 shared signed-Hankel helper, so the dependent controls replay from a clean
