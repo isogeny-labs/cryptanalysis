@@ -5,12 +5,15 @@ from collections import Counter
 from itertools import combinations, product
 import json
 from pathlib import Path
+from random import Random
 
 from paired_arrangement_mobius import candidate_rows
+from signed_hankel_minrank import rank_mod
 from toy_jacobian import GenusTwo
 
 
 PRIME = 101
+SEED = 71_552_909
 
 
 def canonical_row_space(matrix, prime):
@@ -130,6 +133,41 @@ def analyze(rows, slots, ambient_rank, prime):
     }
 
 
+def extended_panel(curve, dimension, rng):
+    slots = dimension + 2
+    split = [
+        (x, curve.roots(x))
+        for x in range(curve.p)
+        if len(curve.roots(x)) == 2
+    ]
+    for attempt in range(1_000):
+        chosen = rng.sample(split, slots)
+        selected = [(x, roots[rng.randrange(2)]) for x, roots in chosen]
+        total = curve.identity
+        for x, y in selected:
+            total = curve.add(total, curve.point_divisor(x, y))
+        u, v = curve.neg(total)
+        if len(u) != 3:
+            continue
+        if any(curve.poly.evaluate(u, x) == 0 for x, _ in selected):
+            continue
+        panel = {
+            "projective_section_dimension": dimension,
+            "split_abscissae": [x for x, _ in selected],
+            "target_u": u,
+            "target_v": v,
+        }
+        rows = candidate_rows(curve, panel)
+        selected_rows = []
+        for slot, (_, y) in enumerate(selected):
+            roots = chosen[slot][1]
+            selected_rows.append(rows[2 * slot + roots.index(y)])
+        if rank_mod(selected_rows, curve.p) != dimension:
+            continue
+        return rows, attempt + 1
+    raise AssertionError("failed to build extended panel")
+
+
 def main():
     source = json.loads(
         Path(__file__).with_name("binary_split_norm_control.json").read_text()
@@ -142,15 +180,32 @@ def main():
         record = {
             "tail_slots": panel["tail_slots"],
             "ambient_rank": ambient_rank,
+            "panel_source": "binary_split_norm_control.json",
         }
         record.update(analyze(
             rows, panel["tail_slots"], ambient_rank, curve.p
         ))
         panels.append(record)
+    rng = Random(SEED)
+    for dimension in range(8, 11):
+        rows, attempts = extended_panel(curve, dimension, rng)
+        slots = dimension + 2
+        record = {
+            "tail_slots": slots,
+            "ambient_rank": dimension + 1,
+            "panel_source": "extended planted divisor",
+            "construction_attempts": attempts,
+        }
+        record.update(analyze(rows, slots, dimension + 1, curve.p))
+        panels.append(record)
     result = {
         "prime": PRIME,
         "genus": 2,
-        "source": "binary_split_norm_control.json",
+        "seed": SEED,
+        "sources": [
+            "binary_split_norm_control.json",
+            "extended planted divisors from toy_jacobian.py",
+        ],
         "panels": panels,
     }
     print(json.dumps(result, indent=2, sort_keys=True))
