@@ -351,3 +351,14 @@ python3 "$fixture_dir/norm_hessian_displacement.py" |
   diff -u "$fixture_dir/norm_hessian_displacement.json" -
 python3 -m py_compile "$fixture_dir/norm_hessian_displacement.py"
 ```
+
+## Affine Macaulay displacement boundary
+
+The [Macaulay-boundary note](macaulay_displacement_boundary_limit.md) tests whether rank-four homogeneous Hessians directly yield a compressed affine Macaulay solve. They do not: truncating multipliers at degree (D) leaves a top-layer single-shift displacement rank of at least (inom{r+D-3}{r-1}) whenever one dehomogenized equation has nonzero constant. The seven panels attain ranks 1, 2, 3, 10, 15, 56, and 84 exactly. At (D=Theta(r)) this is exponential. A positive continuation must retain a homogeneous graded recurrence or quotient the boundary implicitly; the standard truncated Toeplitz/Hankel construction does not improve the exponent. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/macaulay_displacement_boundary.py" |
+  diff -u "$fixture_dir/macaulay_displacement_boundary.json" -
+python3 -m py_compile "$fixture_dir/macaulay_displacement_boundary.py"
+```
