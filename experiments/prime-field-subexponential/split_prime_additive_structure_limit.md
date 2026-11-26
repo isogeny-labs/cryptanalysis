@@ -51,6 +51,38 @@ largest planted panel.  Asymptotically, extending this conclusion to a chosen
 prime-order component requires a bound on low-support relations landing in
 its killed cofactor; it is automatic only when the full group has odd order.
 
+That extension has a simple fixed-weight bound.  Let \(S\) contain \(n\)
+distinct nonconjugate points, let \(k\le g\), and let
+\(\phi:J\to H\) have kernel \(K\).  The Abel map is injective on the
+\(k\)-subsets of \(S\).  For a fixed subset \(D\) and fixed nonzero
+\(\kappa\in K\), there is therefore at most one subset \(E\) with
+
+\[
+ [E-k\infty]=[D-k\infty]+\kappa.
+\]
+
+Consequently the number of unordered collisions after applying \(\phi\) is
+at most
+
+\[
+ \frac{|K|-1}{2}\binom nk.
+\]
+
+Two distinct \(k\)-subsets have a union of at least \(k+1\) points.  A
+uniform random \(m\)-point subpool therefore retains at most
+
+\[
+ \frac{|K|-1}{2}\binom nk\frac{(m)_{k+1}}{(n)_{k+1}}
+ =O_g\!\left(\frac{|K|m^{k+1}}n\right)
+\]
+
+collisions in expectation.  With \(n\asymp p\), fixed \(g\),
+\(m=O_g(\log p)\), and \(|K|=p^{o(1)}\), this tends to zero.  Thus a small
+cofactor does not restore exact early-layer birthday merging after projection
+to the cryptographic component.  The statement is deliberately limited to
+fixed weights \(k\le g\); it does not control the middle layers where the
+orientation problem becomes density-one subset sum.
+
 Across the panels, the constructed instances lie inside the ranges of both
 matched ensembles for global and balanced subset-sum collisions.  Their first
 signed relations, when present, likewise have ordinary matched-control
