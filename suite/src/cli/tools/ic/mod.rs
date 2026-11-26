@@ -174,13 +174,27 @@ pub fn binary_hash() -> Option<String> {
     BINARY_HASH.get_or_init(compute_binary_hash).clone()
 }
 
-/// The working tree's commit when this process started.
+/// The commit of the source checkout this binary was built in, read when
+/// the process starts.
+///
+/// It is read from that checkout (the crate's directory at compile time),
+/// not from the process's working directory: a binary run from another
+/// repository, such as the workspace's lead-testing runner, used to report
+/// *that* repository's commit.  It is `None` when the checkout is gone (a
+/// copied binary).  A checkout moved to another commit after the build is
+/// not detected; [`binary_hash`] identifies the executable exactly.
 pub fn git_commit() -> Option<String> {
     GIT_COMMIT.get_or_init(compute_git_commit).clone()
 }
 
 fn compute_git_commit() -> Option<String> {
+    commit_of(std::path::Path::new(env!("CARGO_MANIFEST_DIR")))
+}
+
+fn commit_of(dir: &std::path::Path) -> Option<String> {
     let out = std::process::Command::new("git")
+        .arg("-C")
+        .arg(dir)
         .args(["rev-parse", "HEAD"])
         .output()
         .ok()?;
@@ -796,5 +810,33 @@ where
         ExitCode::from(2)
     } else {
         ExitCode::FAILURE
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// The reported commit is the source checkout's, whatever the working
+    /// directory: it is read with `git -C` from the crate's directory, and a
+    /// directory that is not a checkout gives `None`, not some other commit.
+    #[test]
+    fn git_commit_is_read_from_the_source_checkout() {
+        let here = commit_of(std::path::Path::new(env!("CARGO_MANIFEST_DIR")));
+        assert_eq!(git_commit(), here);
+        if let Some(c) = &here {
+            assert_eq!(c.len(), 40, "{c}");
+        }
+        let not_a_repo =
+            std::env::temp_dir().join(format!("ca-ic-not-a-repo-{}", std::process::id()));
+        std::fs::create_dir_all(&not_a_repo).unwrap();
+        let outside = commit_of(&not_a_repo);
+        std::fs::remove_dir_all(&not_a_repo).ok();
+        // temp_dir() is not inside a checkout on any host this suite runs on;
+        // if it ever is, the assertion names it.
+        assert!(
+            outside.is_none() || outside != here,
+            "{not_a_repo:?} reported {outside:?}"
+        );
     }
 }

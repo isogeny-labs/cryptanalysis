@@ -45,7 +45,15 @@ use crate::cryptanalysis::ic_boundary::{
 use crate::cryptanalysis::koblitz_fast::FastPoint;
 use crate::cryptanalysis::koblitz_index_calculus::{
     build_frobenius_factor_base_from_divisor, build_subgroup_orbit_factor_base_with_cost,
+    subspace_basis_for_factors,
 };
+
+/// The bytes `span_f2` allocates for a subspace of this dimension: one
+/// field element per abscissa (saturating; the dimension is at most n).
+fn divisor_span_bytes(dim: usize) -> u128 {
+    let elems = if dim >= 127 { u128::MAX } else { 1u128 << dim };
+    elems.saturating_mul(std::mem::size_of::<crate::binary_ecc::F2mElement>() as u128)
+}
 use crate::cryptanalysis::pq_descent_symbolic::{descend, max_n_prime, SymbolicDescent};
 
 // ── Factor bases ───────────────────────────────────────────────────
@@ -180,6 +188,13 @@ impl<'a> FactorBaseBuilder<BinaryGroup<'a>> for KoblitzOrbitBase<'_> {
             ),
             ("seed", "with `points`: the sampling seed, default 1"),
             (
+                "max_subspace_gib",
+                "with `divisor`: the most memory, in GiB, the invariant subspace may take before it \
+                 is built (default 4). Building it materialises 2^dimension abscissae, so a \
+                 divisor of dimension 29 asks for 44 GiB; past the limit the base is refused with \
+                 the size it needs",
+            ),
+            (
                 "no_fold",
                 "1 to give every abscissa its own column: the control that shows what the fold buys",
             ),
@@ -246,6 +261,27 @@ impl<'a> FactorBaseBuilder<BinaryGroup<'a>> for KoblitzOrbitBase<'_> {
         let idx = idx?;
         if idx.is_empty() {
             return Err("parameter `divisor` selected no factors".into());
+        }
+        // Building the base spans every abscissa of the invariant subspace
+        // (`span_f2`), 2^dimension of them, before one point is lifted: at
+        // n = 43 the divisor `0;1;2` has dimension 1 + 14 + 14 = 29 and asks
+        // the allocator for 44 GiB, which aborts the process.  Refuse it with
+        // the size it needs, as the Frobenius pair table refuses its plan.
+        let max_gib = params.u64_or("max_subspace_gib", DEFAULT_MAX_TABLE_BYTES >> 30)?;
+        if let Some((basis, _)) = subspace_basis_for_factors(kc, &idx) {
+            let need = divisor_span_bytes(basis.len());
+            if need > u128::from(max_gib) << 30 {
+                return Err(format!(
+                    "divisor {idx:?} spans an invariant subspace of dimension {}: building it \
+                     materialises 2^{} abscissae, at least {:.1} GiB before any point is lifted; \
+                     the limit is {max_gib} GiB (max_subspace_gib). Choose a smaller divisor, \
+                     sample orbits with points=N instead, or raise max_subspace_gib on a host \
+                     that holds it",
+                    basis.len(),
+                    basis.len(),
+                    need as f64 / f64::from(1u32 << 30),
+                ));
+            }
         }
         let frob = build_frobenius_factor_base_from_divisor(kc, &idx)
             .ok_or_else(|| format!("no invariant subspace for divisor {idx:?} on this curve"))?;
@@ -1270,6 +1306,63 @@ mod coset_filter_tests {
         assert!(FrobeniusPairTable::build_filtered(&inst, &fb, None).is_some());
         assert!(FrobeniusPairTable::try_build_filtered(&inst, &fb, None, plan.bytes()).is_ok());
         assert!(plan.bytes() < DEFAULT_MAX_TABLE_BYTES);
+    }
+
+    /// **A divisor base too large to span is refused with its size, before
+    /// anything is allocated.** At n = 43 the divisor `0;1;2` spans dimension
+    /// 29 (2^29 abscissae, 44 GiB), which used to abort the process in
+    /// `span_f2`; the registry's `1` (dimension 14) still builds.  A limit of
+    /// 0 GiB refuses any span, and the default builds the same small base.
+    #[test]
+    fn oversized_divisor_subspace_is_refused_not_allocated() {
+        use crate::cryptanalysis::ic_boundary::koblitz_instance;
+        let big = koblitz_instance(0, 43)
+            .or_else(|| koblitz_instance(1, 43))
+            .expect("a Koblitz curve over GF(2^43)");
+        let g = BinaryGroup(&big.fast);
+        let ctx = ctx_for(&big, &g);
+        let params = |kv: &[(&str, &str)]| {
+            Params(
+                kv.iter()
+                    .map(|(k, v)| (k.to_string(), v.to_string()))
+                    .collect(),
+            )
+        };
+        let base = KoblitzOrbitBase { instance: &big };
+        let err = match base.build(
+            &ctx,
+            &params(&[("divisor", "0;1;2")]),
+            &mut GroupOps::default(),
+        ) {
+            Ok(_) => panic!("a 2^29-abscissa subspace must be refused, not built"),
+            Err(e) => e,
+        };
+        assert!(
+            err.contains("dimension 29") && err.contains("max_subspace_gib"),
+            "{err}"
+        );
+        assert!(divisor_span_bytes(29) > (4u128 << 30));
+        assert!(base
+            .build(&ctx, &params(&[("divisor", "1")]), &mut GroupOps::default())
+            .is_ok());
+
+        let small = koblitz_instance(0, 13).expect("K_0 / GF(2^13), cofactor 4");
+        let g = BinaryGroup(&small.fast);
+        let ctx = ctx_for(&small, &g);
+        let base = KoblitzOrbitBase { instance: &small };
+        let refused = base.build(
+            &ctx,
+            &params(&[("divisor", "1"), ("max_subspace_gib", "0")]),
+            &mut GroupOps::default(),
+        );
+        assert!(
+            matches!(&refused, Err(e) if e.contains("the limit is 0 GiB")),
+            "{:?}",
+            refused.err()
+        );
+        assert!(base
+            .build(&ctx, &params(&[("divisor", "1")]), &mut GroupOps::default())
+            .is_ok());
     }
 
     /// **`koblitz-orbit:points=` samples subgroup orbits**: reproducible from

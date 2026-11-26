@@ -166,6 +166,9 @@ fn listing() -> Value {
                     {"name": "koblitz-orbit", "regimes": ["koblitz"],
                      "parameters": [
                         {"name": "divisor", "means": "comma-separated factor indices selecting the Frobenius-invariant subspace"},
+                        {"name": "max_subspace_gib", "means": "with divisor: most GiB the invariant subspace may take before it is built (default 4); it materialises 2^dimension abscissae"},
+                        {"name": "points", "means": "instead of a divisor: sample Frobenius orbits of subgroup points until the base holds at least this many signed points"},
+                        {"name": "seed", "means": "with points: the sampling seed (default 1)"},
                         {"name": "no_fold", "means": "1 for one column per abscissa: the control that shows what the fold buys"}]},
                 ],
             },
@@ -222,7 +225,8 @@ fn listing() -> Value {
                      "needs": "fp2-subfield: Gaudry/Diem n = 2, the Weil restriction of S3(x1, x2, x_R) over F_p in (x1 + x2, x1 x2), roots by gcd(g, X^p - X) and Cantor-Zassenhaus; F_p multiplications, inversions and square roots counted and priced at this host's measured F_p units"},
                     {"name": "mitm-frobenius", "summands": "2 or 3", "regimes": ["koblitz"],
                      "parameters": [{"name": "m", "means": "summands, 2 or 3"},
-                                    {"name": "coset_filter", "means": "1 to build only the representative-point pairs whose coset classes in E/<G> cancel (m = 2, cofactor > 1)"}]},
+                                    {"name": "coset_filter", "means": "1 to build only the representative-point pairs whose coset classes in E/<G> cancel (m = 2, cofactor > 1)"},
+                                    {"name": "max_table_gib", "means": "most GiB the Frobenius pair table may be planned to take before its build is refused (default 4)"}]},
                     {"name": "mitm-batched", "summands": "2", "regimes": ["char2", "koblitz"],
                      "parameters": [{"name":"vector_prepare","means":"0 scalar default,1 vector,2 vector with packed squaring <=32 bits; guarded AVX2/PCLMUL, exact fallback"},{"name":"scalar_prepare","means":"0 or1, default0; original preparation, fixed-m2 queries"},{"name":"adaptive_prepare","means":"0 or1, default0; scalar at <=64 abscissae, cached above"},{"name":"prefix_inverse_cache","means":"0 or1, default0; bounded inverse reuse, generic fallback"},{"name":"x_only","means":"0 or1, default0; abscissa-only preparation"},{"name":"batch_size","means":"1..=65536, default1024; ordered batch preparation"},{"name":"suppress_indexed_counter","means":"0 default or1; setup-state experiment omitting only the indexed-pair metadata entry"}]},
                     {"name": "affine-s3", "summands": "2", "regimes": ["char2", "koblitz"],
@@ -794,9 +798,17 @@ struct SweepInstance {
 }
 
 /// Every combination of the matrix, in a stable order.
+///
+/// A matrix with no choices contributes no configurations.  The product of
+/// nothing is one empty map, and returning it would append a configuration
+/// with no stages to an explicit `configurations` list, which then fails as
+/// "a configuration needs a `factor_base`".
 fn expand_matrix(
     matrix: &std::collections::BTreeMap<String, Vec<String>>,
 ) -> Vec<std::collections::BTreeMap<String, String>> {
+    if matrix.values().all(Vec::is_empty) {
+        return Vec::new();
+    }
     let mut out = vec![std::collections::BTreeMap::new()];
     for (key, choices) in matrix {
         if choices.is_empty() {
@@ -1631,6 +1643,43 @@ mod tests {
             "{:?}",
             c.errors
         );
+    }
+
+    /// A sweep file that lists only `configurations` runs exactly those: an
+    /// absent or empty matrix adds nothing (it used to add one empty
+    /// configuration, refused as having no factor base).
+    #[test]
+    fn a_sweep_of_configurations_only_runs_exactly_them() {
+        let raw = r#"{"instance": {"regime": "prime", "degree": 14},
+                      "configurations": [{"factor_base": "prime-abscissa", "oracle": "mitm"},
+                                         {"factor_base": "prime-abscissa", "oracle": "rep-join:m=3"}]}"#;
+        let file: SweepFile = serde_json::from_str(raw).unwrap();
+        assert!(expand_matrix(&file.matrix).is_empty());
+        let empty_lists: std::collections::BTreeMap<String, Vec<String>> =
+            [("oracle".to_string(), Vec::new())].into_iter().collect();
+        assert!(expand_matrix(&empty_lists).is_empty());
+        let mut configs = file.configurations.clone();
+        configs.extend(expand_matrix(&file.matrix));
+        assert_eq!(configs.len(), 2);
+        let a = args(&[]);
+        for cfg in &configs {
+            let c = check_config(cfg, &a, "prime", &listing());
+            assert!(c.errors.is_empty(), "{cfg:?}: {:?}", c.errors);
+        }
+        // A matrix still expands to its product.
+        let m: std::collections::BTreeMap<String, Vec<String>> = [
+            (
+                "factor_base".to_string(),
+                vec!["prime-abscissa".to_string()],
+            ),
+            (
+                "oracle".to_string(),
+                vec!["mitm".to_string(), "subtract".to_string()],
+            ),
+        ]
+        .into_iter()
+        .collect();
+        assert_eq!(expand_matrix(&m).len(), 2);
     }
 
     /// The check must not refuse anything the committed sweeps run.
