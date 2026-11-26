@@ -101,9 +101,21 @@ width.  The two residuals have identical cut-rank profiles in each panel:
 In particular the odd panels attain full rank at the central cuts.  A direct
 tensor-train or ordered branching-program contraction therefore has width
 \(2^{m/2}\) on these controls, matching meet-in-the-middle rather than
-\(p^{o(1)}\).  A positive continuation must solve the \(g\) residual
-determinant circuits using structure beyond monomial sparsity or the natural
-slot ordering.
+\(p^{o(1)}\).
+
+This conclusion is insensitive to reordering the slots.  Exhausting every
+balanced bipartition gives:
+
+| slots | balanced cuts | residual-one ranks | residual-two ranks |
+| ---: | ---: | --- | --- |
+| 7 | 35 | \(8\) on all 35 | \(8\) on 34, \(7\) on one |
+| 8 | 70 | \(10\) on all 70 | \(10\) on all 70 |
+| 9 | 126 | \(16\) on all 126 | \(16\) on all 126 |
+
+Thus the nine-slot full central width holds for every possible variable
+ordering, not only the displayed natural order.  A positive continuation
+must solve the \(g\) residual determinant circuits using structure beyond
+monomial sparsity, tensor flattenings, or slot reordering.
 
 [Exact control](conjugate_hankel_quotient.py)
 
