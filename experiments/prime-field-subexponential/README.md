@@ -27,6 +27,18 @@ The two frozen outputs are retrospective producer fixtures from the research wor
 The written proofs and their hypotheses are in the research note. A Lean formalization remains open. It would need the abelian-surface classification and pairing results for the genus-two family, the character estimates and Riemann–Roch evaluation for the coverage result, and the small-place generation and exact subgroup relation arguments for the growing-genus bound. The mathematical claims and finite fixtures have unverified PCC standing. [pcc:unverified]
 
 
+## Fixed-genus strategy ledger
+
+The [genus 2--7 strategy ledger](best_strategy_genus_2_7.md) separates three end-to-end exponents: Pollard rho, balanced smoothness-only index calculus, and the proved double-large-prime method. Under a bounded-degree plane model and a cyclic degree-zero class group (or known class-group structure), the last has expected time \(\widetilde O(p^{2-2/g})\). It improves the accounted exponent in genera 3--7 and ties rho in genus 2, but remains exponential in \(\log p\); it is not the requested fixed-genus subexponential breakthrough. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/strategy_exponents.py" |
+  diff -u "$fixture_dir/strategy_exponents.json" -
+python3 -m py_compile "$fixture_dir/strategy_exponents.py"
+```
+
+
 ## Fixed-genus oversampling controls
 
 The [oversampling regularity note](oversampling_regular_limit.md) tests whether deliberately creating multiple transverse branch-product solutions lowers Macaulay stabilization degree. The large-field controls plant up to ten solutions over $\mathbb F_{101}$, exhaust every branch assignment, and record the cumulative quotient through degree six. They do not establish an asymptotic solving-degree bound or a subexponential algorithm. [pcc:unverified]
@@ -133,7 +145,7 @@ python3 "$fixture_dir/rs_two_list_subset_sum.py" |
 
 ## Conjugate-center Hankel quotient
 
-The [conjugate-center note](conjugate_hankel_quotient.md) splits each branch slope as $-v/u\pm y/u$. The sign-independent Hankel term satisfies the order-$g$ recurrence defined by $u$, so it has rank at most $g$. In the growing genus-two panels, quotienting that center leaves a maximal-rank $(q-1)\times q$ signed matrix for every signing and reduces the final test to two residual equations. Their multilinear supports are nevertheless almost maximal: 63/62 of 63, 91/92 of 92, and 253/252 of 255 available monomials. This is a compressed determinant formulation, not an exponent improvement. [pcc:unverified]
+The [conjugate-center note](conjugate_hankel_quotient.md) splits each branch slope as $-v/u\pm y/u$. The sign-independent Hankel term satisfies the order-$g$ recurrence defined by $u$, so it has rank at most $g$. In the growing genus-two panels, quotienting that center leaves a maximal-rank $(q-1)\times q$ signed matrix for every signing and reduces the final test to two residual equations. Their multilinear supports are nevertheless almost maximal: 63/62 of 63, 91/92 of 92, and 253/252 of 255 available monomials. The residual truth-table cut ranks reach 8 at seven slots and 16 at nine slots, attaining the full central-cut width and matching the meet-in-the-middle state scale. Exhausting all balanced bipartitions shows that both nine-slot residuals have rank 16 on all 126 cuts; the width is therefore unchanged by variable reordering. This is a compressed determinant formulation, not an exponent improvement. [pcc:unverified]
 
 ```sh
 fixture_dir=experiments/prime-field-subexponential
@@ -151,3 +163,14 @@ python3 "$fixture_dir/polynomial_cornacchia_control.py" |
   diff -u "$fixture_dir/polynomial_cornacchia_control.json" -
 python3 -m py_compile "$fixture_dir/polynomial_cornacchia_control.py"
 ~~~
+
+## Structured residual tensor-width census
+
+The [structured tensor-width note](structured_tensor_width_limit.md) exhausts every distinct split-fiber arithmetic or geometric progression of lengths seven through nine on the genus-two control curve over $\mathbb F_{101}$, together with matched random panels. Across 41 structured and 41 random panels, progression structure does not lower the minimum balanced flattening rank. This is finite negative evidence, not an asymptotic lower bound or a subexponential algorithm. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/structured_tensor_width_search.py" |
+  diff -u "$fixture_dir/structured_tensor_width_search.json" -
+python3 -m py_compile "$fixture_dir/structured_tensor_width_search.py"
+```
