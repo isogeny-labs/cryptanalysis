@@ -2,7 +2,7 @@
 """Test the fixed-rank center in the conjugate signed-Hankel system."""
 
 from collections import Counter
-from itertools import product
+from itertools import combinations, product
 import json
 from pathlib import Path
 
@@ -148,6 +148,30 @@ def multilinear_profile(values, variables, prime):
             for start in range(0, len(values), suffix_size)
         ]
         cut_ranks.append(rank_mod(flattening, prime))
+    balanced_rank_histogram = Counter()
+    balanced_size = variables // 2
+    for selected in combinations(range(variables), balanced_size):
+        selected = set(selected)
+        row_positions = sorted(selected)
+        column_positions = [
+            position for position in range(variables)
+            if position not in selected
+        ]
+        flattening = [
+            [0] * (1 << len(column_positions))
+            for _ in range(1 << len(row_positions))
+        ]
+        for index, value in enumerate(values):
+            row = sum(
+                ((index >> position) & 1) << cursor
+                for cursor, position in enumerate(row_positions)
+            )
+            column = sum(
+                ((index >> position) & 1) << cursor
+                for cursor, position in enumerate(column_positions)
+            )
+            flattening[row][column] = value
+        balanced_rank_histogram[rank_mod(flattening, prime)] += 1
     return {
         "support": len(support),
         "degree": max(histogram, default=-1),
@@ -156,6 +180,16 @@ def multilinear_profile(values, variables, prime):
         },
         "truth_table_cut_ranks": cut_ranks,
         "maximum_truth_table_cut_rank": max(cut_ranks, default=1),
+        "balanced_cut_rank_histogram": {
+            str(rank): count
+            for rank, count in sorted(balanced_rank_histogram.items())
+        },
+        "minimum_balanced_cut_rank": min(
+            balanced_rank_histogram, default=1
+        ),
+        "maximum_balanced_cut_rank": max(
+            balanced_rank_histogram, default=1
+        ),
     }
 
 
