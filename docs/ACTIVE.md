@@ -48,6 +48,7 @@
 
 ## Blocked / questions
 
+- Lead-testing papercuts (PR #1996, claude/kind-pascal-7ree1e): code finished and checked locally; merge blocked by failures already on main 607d3046 (the nine `ci` C build jobs at their Build step, and `lab-parity`: `tools/pcc/pcc.py` sha256 vs the crypto-owned lock). Needs those fixed on main, or the owner's call. Evidence: PR #1996 comment of 2026-11-26.
 - Full native CT244/CT300 pricing and 695/701 record replay still require approved authenticated original six-object artifact custody; previous STS invalid-token and S3 403 are unresolved. This source-only correction does not authorize paid compute, artifact substitution, modified provenance or protected merge.
 
 ## Priority
