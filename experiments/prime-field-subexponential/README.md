@@ -269,3 +269,13 @@ python3 "$fixture_dir/principal_minor_update_algebra.py" |
   diff -u "$fixture_dir/principal_minor_update_algebra.json" -
 python3 -m py_compile "$fixture_dir/principal_minor_update_algebra.py"
 ```
+
+
+The theta-hit signings show no affine-code, Hamming-cluster, or exceptional-Fourier structure in the largest control. The 22 hits at $h=11$ affinely span $\mathbf F_2^{11}$, have no one-bit edges, and have maximum Walsh magnitude 16, equal to the median of 64 matched random subsets; their pair-XOR multiplicity is also inside the random range. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/theta_solution_geometry.py" |
+  diff -u "$fixture_dir/theta_solution_geometry.json" -
+python3 -m py_compile "$fixture_dir/theta_solution_geometry.py"
+```
