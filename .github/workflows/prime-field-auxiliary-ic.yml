@@ -167,6 +167,9 @@ jobs:
             experiments/prime-field-auxiliary-ic/snapshot/prepare.py
             experiments/prime-field-auxiliary-ic/snapshot/comparison/field31/auxiliary/public.json
             experiments/prime-field-auxiliary-ic/snapshot/comparison/field31/plain/public.json
+            tools/lean/proof-gate.sh
+            tools/lean/AuditAxioms.lean
+            tools/lean/trusted-native.txt
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
