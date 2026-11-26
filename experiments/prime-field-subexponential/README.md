@@ -249,3 +249,13 @@ python3 "$fixture_dir/principal_minor_jacobian_equivalence.py" |
   diff -u "$fixture_dir/principal_minor_jacobian_equivalence.json" -
 python3 -m py_compile "$fixture_dir/principal_minor_jacobian_equivalence.py"
 ```
+
+
+The principal-minor pullback has Boolean degree $\lfloor h/2\rfloor$ but is not sparse or low-width in the measured panels. At $h=11$, 1,013 of 1,024 degree-allowed coefficients and 792 Walsh coefficients are nonzero, while 461 of 462 balanced cuts have maximum flattening rank 32. This rules out ordinary sparse interpolation and bounded-width tensor contraction as explanations for a speedup in these controls. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/principal_minor_spectrum_control.py" |
+  diff -u "$fixture_dir/principal_minor_spectrum_control.json" -
+python3 -m py_compile "$fixture_dir/principal_minor_spectrum_control.py"
+```
