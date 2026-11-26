@@ -21,6 +21,24 @@ an exhaustive small-field setup step and is not part of a proposed algorithm.
 Both comparison ensembles are restricted to the order-4879 subgroup \(2J\),
 so the common parity quotient is not mistaken for useful structure.
 
+There is one exact curve-specific anti-collision fact.  If the full Jacobian
+has odd order and \(P_1,\ldots,P_m\) are distinct affine points with distinct
+abscissae, then for every \(k\le g\) the sums
+
+\[
+ \sum_{i\in S}[P_i-\infty],\qquad |S|=k,
+\]
+
+are all distinct.  Each sum is already a reduced degree-\(k\) Mumford divisor,
+whose representative is unique.  Multiplication by two is injective at odd
+order, so the same holds for the orientation increments \(-2P_i\).  Thus the
+curve geometry suppresses, rather than creates, exact collisions in the first
+\(g\) weight layers.  The control verifies both the undoubled and doubled
+statements in every panel.  Its toy Jacobian has even order, so the doubled
+check is empirical there; the theorem applies directly after the stated
+odd-order hypothesis, while projection to a proper subgroup additionally
+requires excluding collisions in the killed cofactor.
+
 Across the panels, the constructed instances lie inside the ranges of both
 matched ensembles for global and balanced subset-sum collisions.  Their first
 signed relations, when present, likewise have ordinary matched-control
