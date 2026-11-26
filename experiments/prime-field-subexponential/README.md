@@ -438,3 +438,17 @@ python3 "$fixture_dir/norm_hilbert_socle.py" |
   diff -u "$fixture_dir/norm_hilbert_socle.json" -
 python3 -m py_compile "$fixture_dir/norm_hilbert_socle.py"
 ```
+
+The [Lefschetz note](norm_hilbert_lefschetz_limit.md) tests every power of 16
+seeded random linear forms in each deterministic quotient through dimension 9.
+All 112 are weak Lefschetz and 111 are strong; one dimension-three form lies on
+the strong-Lefschetz discriminant. This gives a generic maximal-rank
+one-directional chain decomposition, but its chain count is the peak Hilbert
+coefficient and remains exponential in the model. The result is finite
+structure, not a simultaneous compression or an exponent improvement.
+
+```sh
+python3 "$fixture_dir/norm_hilbert_lefschetz.py" |
+  diff -u "$fixture_dir/norm_hilbert_lefschetz.json" -
+python3 -m py_compile "$fixture_dir/norm_hilbert_lefschetz.py"
+```
