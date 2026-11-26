@@ -8,8 +8,7 @@ from sympy import Poly, symbols
 
 
 PRIME = 101
-A = 2
-B = 3
+ELLIPTIC_MODELS = ((2, 3), (0, 1), (1, 0), (5, 7), (13, 29), (47, 11))
 T = symbols("t")
 
 
@@ -29,8 +28,8 @@ def roots(square):
     return [value for value in range(PRIME) if value * value % PRIME == square]
 
 
-def elliptic_rhs(x):
-    return (x**3 + A * x + B) % PRIME
+def elliptic_rhs(x, a_coefficient, b_coefficient):
+    return (x**3 + a_coefficient * x + b_coefficient) % PRIME
 
 
 def parameters(genus):
@@ -63,7 +62,7 @@ def denominator(degree, odd_poles):
     return d_polynomial, s_polynomial, k_polynomial
 
 
-def construct(genus):
+def construct(genus, a_coefficient, b_coefficient):
     degree, odd_poles = parameters(genus)
     d_polynomial, s_polynomial, k_polynomial = denominator(
         degree, odd_poles
@@ -75,8 +74,10 @@ def construct(genus):
             n_polynomial = poly(1 + shift * d_polynomial.as_expr())
         g_polynomial = poly(
             n_polynomial.as_expr() ** 3
-            + A * n_polynomial.as_expr() * d_polynomial.as_expr() ** 2
-            + B * d_polynomial.as_expr() ** 3
+            + a_coefficient
+            * n_polynomial.as_expr()
+            * d_polynomial.as_expr() ** 2
+            + b_coefficient * d_polynomial.as_expr() ** 3
         )
         if g_polynomial.degree() != 3 * degree:
             continue
@@ -115,11 +116,14 @@ def construct(genus):
             y_value = (
                 z_value * s_value * pow(d_value, -2, PRIME)
             ) % PRIME
-            assert y_value * y_value % PRIME == elliptic_rhs(x_value)
+            assert y_value * y_value % PRIME == elliptic_rhs(
+                x_value, a_coefficient, b_coefficient
+            )
             mapped_fibers[(x_value, y_value)] += 1
 
     elliptic_affine_points = sum(
-        len(roots(elliptic_rhs(x_value))) for x_value in range(PRIME)
+        len(roots(elliptic_rhs(x_value, a_coefficient, b_coefficient)))
+        for x_value in range(PRIME)
     )
     histogram = Counter(mapped_fibers.values())
     return {
@@ -147,12 +151,26 @@ def construct(genus):
 
 
 def main():
-    discriminant = (-16 * (4 * A**3 + 27 * B**2)) % PRIME
-    assert discriminant
+    models = []
+    for a_coefficient, b_coefficient in ELLIPTIC_MODELS:
+        discriminant = (
+            -16 * (4 * a_coefficient**3 + 27 * b_coefficient**2)
+        ) % PRIME
+        assert discriminant
+        models.append({
+            "elliptic_curve": {
+                "A": a_coefficient,
+                "B": b_coefficient,
+                "discriminant": discriminant,
+            },
+            "covers": [
+                construct(genus, a_coefficient, b_coefficient)
+                for genus in range(2, 8)
+            ],
+        })
     result = {
         "prime": PRIME,
-        "elliptic_curve": {"A": A, "B": B, "discriminant": discriminant},
-        "covers": [construct(genus) for genus in range(2, 8)],
+        "models": models,
     }
     print(json.dumps(result, indent=2, sort_keys=True))
 
