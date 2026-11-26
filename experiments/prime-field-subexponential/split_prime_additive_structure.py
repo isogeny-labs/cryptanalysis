@@ -201,9 +201,14 @@ def pair_layer_census(point_pool, group_order):
         collisions_are_disjoint &= set(left).isdisjoint(right)
 
     sample_expectations = {}
+    cofactor_bound_expectations = {}
     pool_size = len(point_pool)
     collision_pairs = sum(
         len(pairs) * (len(pairs) - 1) // 2 for pairs in doubled.values()
+    )
+    kernel_size = 2
+    theoretical_collision_bound = (
+        (kernel_size - 1) * len(point_pool) * (len(point_pool) - 1) // 4
     )
     for sample_size in range(3, 10):
         if sample_size < 4 or not collisions_are_disjoint:
@@ -218,6 +223,15 @@ def pair_layer_census(point_pool, group_order):
         sample_expectations[str(sample_size)] = (
             f"{expectation.numerator}/{expectation.denominator}"
         )
+        bound_probability = Fraction(1)
+        for offset in range(3):
+            bound_probability *= Fraction(
+                sample_size - offset, pool_size - offset
+            )
+        bound_expectation = theoretical_collision_bound * bound_probability
+        cofactor_bound_expectations[str(sample_size)] = (
+            f"{bound_expectation.numerator}/{bound_expectation.denominator}"
+        )
 
     return {
         "point_count": len(point_pool),
@@ -229,6 +243,10 @@ def pair_layer_census(point_pool, group_order):
         "doubled_distinct_pair_sums": len(doubled),
         "doubled_collision_pairs": collision_pairs,
         "doubled_maximum_bucket_size": max(map(len, doubled.values())),
+        "doubling_kernel_size": kernel_size,
+        "theoretical_cofactor_collision_pair_bound": (
+            theoretical_collision_bound
+        ),
         "nonzero_two_torsion_coordinate": torsion_coordinate,
         "every_doubled_collision_is_translation_by_two_torsion": (
             torsion_explains_all
@@ -238,6 +256,9 @@ def pair_layer_census(point_pool, group_order):
         ),
         "expected_retained_pair_collisions_in_uniform_slot_sample": (
             sample_expectations
+        ),
+        "cofactor_bound_on_expected_retained_pair_collisions": (
+            cofactor_bound_expectations
         ),
     }
 
