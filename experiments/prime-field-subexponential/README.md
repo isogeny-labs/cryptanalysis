@@ -329,3 +329,14 @@ python3 "$fixture_dir/split_prime_additive_structure.py" |
   diff -u "$fixture_dir/split_prime_additive_structure.json" -
 python3 -m py_compile "$fixture_dir/split_prime_additive_structure.py"
 ```
+
+## Split norm Hessian algebra
+
+The [Hessian-algebra note](norm_hessian_algebra_limit.md) tests whether the convolutional quadratic norm equations admit a common eigenbasis or bounded invariant blocks. In every exact split panel with section dimension (r=2,ldots,7), their Hessians generate the full algebra (M_r(mathbf F_{101})); almost every pair is noncommuting. This rules out simultaneous diagonalization and common-block spectral inversion in the measured panels, but not a nonlinear convolutional solver or an asymptotic exponent improvement. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/norm_hessian_algebra.py" |
+  diff -u "$fixture_dir/norm_hessian_algebra.json" -
+python3 -m py_compile "$fixture_dir/norm_hessian_algebra.py"
+```
