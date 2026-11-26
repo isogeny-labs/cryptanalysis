@@ -4,10 +4,12 @@
 from itertools import product
 import json
 from pathlib import Path
+from random import Random
 
 from binary_split_norm_control import product_from_roots
 from multisection_span_control import section_basis
 from paired_arrangement_mobius import candidate_rows
+from paired_span_state_control import SEED, extended_panel
 from signed_hankel_minrank import rank_mod
 from toy_jacobian import GenusTwo
 
@@ -213,9 +215,16 @@ def main():
     result = {
         "prime": PRIME,
         "genus": 2,
-        "source": "binary_split_norm_control.json",
+        "sources": [
+            "binary_split_norm_control.json",
+            "extended planted divisors from paired_span_state_control.py",
+        ],
         "panels": [analyze(curve, panel) for panel in source["panels"]],
     }
+    rng = Random(SEED)
+    for dimension in range(8, 11):
+        panel, _, _ = extended_panel(curve, dimension, rng)
+        result["panels"].append(analyze(curve, panel))
     print(json.dumps(result, indent=2, sort_keys=True))
 
 
