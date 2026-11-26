@@ -74,3 +74,15 @@ fixture_dir=experiments/prime-field-subexponential
 python3 "$fixture_dir/cover_lift_tradeoff.py" |
   diff -u "$fixture_dir/cover_lift_tradeoff.json" -
 ```
+
+## Folded split-fiber list recovery
+
+The [folded list-recovery note](folded_list_recovery_limit.md) rewrites norm inversion as recovery in $RS_b\times RS_c$ from coordinate lists that are unions of two lines. Folding $\Theta(\sqrt{\log p})$ coordinates gives subexponential explicit input and expected output, but ordinary folded-RS recovery sees lists of size $2^f$ and requires the impossible condition $f=\Omega(2^f\log^2p)$. This is a conditional target, not an algorithm. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/folded_list_recovery_ledger.py" |
+  diff -u "$fixture_dir/folded_list_recovery_ledger.json" -
+python3 "$fixture_dir/folded_split_blocks.py" |
+  diff -u "$fixture_dir/folded_split_blocks.json" -
+```
