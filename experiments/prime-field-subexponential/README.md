@@ -31,10 +31,16 @@ The written proofs and their hypotheses are in the research note. A Lean formali
 
 The [oversampling regularity note](oversampling_regular_limit.md) tests whether deliberately creating multiple transverse branch-product solutions lowers Macaulay stabilization degree. The large-field controls plant up to ten solutions over $\mathbb F_{101}$, exhaust every branch assignment, and record the cumulative quotient through degree six. They do not establish an asymptotic solving-degree bound or a subexponential algorithm. [pcc:unverified]
 
+The [semi-regular branch analysis](semiregular_branch_barrier.md) compares those degrees with the Hilbert/Krawtchouk prediction and records genus 2–7 ledgers for branch degrees two through four. It identifies the low-degree-syzygy requirement for a successful direct algebraic attack; it is a model calculation, not a lower bound. [pcc:unverified]
+
 ```sh
 fixture_dir=experiments/prime-field-subexponential
 python3 "$fixture_dir/high_density_branch_regular.py" |
   diff -u "$fixture_dir/high_density_branch_regular.json" -
 python3 "$fixture_dir/multiplanted_branch_regular.py" |
   diff -u "$fixture_dir/multiplanted_branch_regular.json" -
+python3 "$fixture_dir/semiregular_krawtchouk_ledger.py" |
+  diff -u "$fixture_dir/semiregular_krawtchouk_ledger.json" -
+python3 "$fixture_dir/semiregular_branch_degree_ledger.py" |
+  diff -u "$fixture_dir/semiregular_branch_degree_ledger.json" -
 ```
