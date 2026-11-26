@@ -340,3 +340,14 @@ python3 "$fixture_dir/norm_hessian_algebra.py" |
   diff -u "$fixture_dir/norm_hessian_algebra.json" -
 python3 -m py_compile "$fixture_dir/norm_hessian_algebra.py"
 ```
+
+## Rank-four norm Hessian displacement
+
+The [Hessian-displacement note](norm_hessian_displacement_limit.md) records a surviving positive structure. In homogeneous (B,C) coefficient coordinates, every Hessian of (wB^2-2vBC-uC^2) satisfies (operatorname{rank}(ZQ-QZ^{mathsf T})le4) for the two-block nilpotent coefficient shift. This follows from the block-Hankel form and is independent of section dimension. Exact planted panels verify ranks 0, 2, or 4 through dimension 20. The open target is a subexponential-size displacement representation and solver for the degree-(Theta(r)) Macaulay operator; the input rank bound alone is not an exponent improvement. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/norm_hessian_displacement.py" |
+  diff -u "$fixture_dir/norm_hessian_displacement.json" -
+python3 -m py_compile "$fixture_dir/norm_hessian_displacement.py"
+```
