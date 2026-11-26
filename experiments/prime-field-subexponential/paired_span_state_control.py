@@ -164,7 +164,7 @@ def extended_panel(curve, dimension, rng):
             selected_rows.append(rows[2 * slot + roots.index(y)])
         if rank_mod(selected_rows, curve.p) != dimension:
             continue
-        return rows, attempt + 1
+        return panel, rows, attempt + 1
     raise AssertionError("failed to build extended panel")
 
 
@@ -188,7 +188,7 @@ def main():
         panels.append(record)
     rng = Random(SEED)
     for dimension in range(8, 11):
-        rows, attempts = extended_panel(curve, dimension, rng)
+        _, rows, attempts = extended_panel(curve, dimension, rng)
         slots = dimension + 2
         record = {
             "tail_slots": slots,
