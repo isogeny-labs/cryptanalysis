@@ -1,0 +1,14 @@
+digraph derivative_character {
+  graph [rankdir=TB, bgcolor="white", pad="0.25", nodesep="0.4", ranksep="0.35", fontname="Helvetica", label="Horizontal derivative point-character screen · 2026-11-25", labelloc=t];
+  node [shape=box, style="rounded,filled", fillcolor="#edf4fc", color="#315c8a", fontname="Helvetica"];
+  edge [color="#315c8a", fontname="Helvetica"];
+  Q [label="supplied Q=[d]G\ncoordinates x(Q), y(Q)"];
+  phi [label="known horizontal isogeny phi\nshort rational x-map f_phi"];
+  pred [label="chi_p(f_phi'(x(Q)))\n= chi_p(y(phi(Q))/y(Q))"];
+  label [label="candidate ray quotient\nchi_r(d)", fillcolor="#fff2e3", color="#a45a14"];
+  fail [label="exact identity fails\n5 screened edges", fillcolor="#ffecec", color="#ae4b4b"];
+  Q -> phi [label="point evaluation"];
+  phi -> pred [label="differentiate / y ratio"];
+  pred -> label [label="proposed equality", style=dashed];
+  label -> fail [label="finite census"];
+}
