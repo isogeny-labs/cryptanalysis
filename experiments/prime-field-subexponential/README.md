@@ -553,3 +553,17 @@ python3 "$fixture_dir/known_log_fiber_sourcing.py" |
   diff -u "$fixture_dir/known_log_fiber_sourcing.json" -
 python3 -m py_compile "$fixture_dir/known_log_fiber_sourcing.py"
 ```
+
+The [divisor-atom tradeoff note](known_log_divisor_atom_tradeoff_limit.md)
+checks the remaining known-log relaxation. Degree-$q$ atoms cost
+$p^{g-q+o(1)}$ to source, while their binary norm section has
+$qg\log_2p+O_g(1)$ variables and semi-regular quotient scale
+$p^{qg+o(1)}$. Degree $g$ removes the setup cost but turns the signs of
+$[2^i]G$ into the original signed-binary DLP. Standard enumeration,
+meet-in-the-middle, and Macaulay methods retain positive exponents.
+
+```sh
+python3 "$fixture_dir/known_log_divisor_atom_tradeoff.py" |
+  diff -u "$fixture_dir/known_log_divisor_atom_tradeoff.json" -
+python3 -m py_compile "$fixture_dir/known_log_divisor_atom_tradeoff.py"
+```
