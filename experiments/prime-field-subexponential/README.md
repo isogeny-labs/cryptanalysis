@@ -101,10 +101,22 @@ python3 "$fixture_dir/composed_abscissa_search.py" |
 
 ## Projective two-line decoder target
 
-The [projective subspace-list note](projective_subspace_list_limit.md) shows why treating each two-line symbol as one subspace erases the constraint, while ordinary affine list recovery incurs a mandatory factor of (p-1) from scalar copies. All seven exact split panels have a one-dimensional homogeneous kernel: 101 affine vectors, 100 nonzero representatives, and one projective orbit. A positive decoder must preserve the union and quotient scalar orbits. This is a scope result, not a new decoder or subexponential algorithm. [pcc:unverified]
+The [projective subspace-list note](projective_subspace_list_limit.md) shows why treating each two-line symbol as one subspace erases the constraint, while ordinary affine list recovery incurs a mandatory factor of $p-1$ from scalar copies. All seven exact split panels have a one-dimensional homogeneous kernel: 101 affine vectors, 100 nonzero representatives, and one projective orbit. A positive decoder must preserve the union and quotient scalar orbits. This is a scope result, not a new decoder or subexponential algorithm. [pcc:unverified]
 
 ```sh
 fixture_dir=experiments/prime-field-subexponential
 python3 "$fixture_dir/projective_scaling_control.py" |
   diff -u "$fixture_dir/projective_scaling_control.json" -
+```
+
+## Paired hyperplane-transversal scope
+
+The [paired-transversal note](paired_hyperplane_transversal.md) identifies the projective inverse with a non-spanning transversal of $m=d+g-1$ Vandermonde/RS row pairs. Every exact genus-two panel has one deficient signing and one projective kernel. Fixed excess alone cannot supply a generic decoder: a determinant reduction embeds Subset Sum in arbitrary prime-field row pairs with $m=d+1$. The reduction uses projectively repeated forcing pairs and does not establish hardness for the structured curve rows. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/paired_hyperplane_control.py" |
+  diff -u "$fixture_dir/paired_hyperplane_control.json" -
+python3 "$fixture_dir/paired_subset_sum_control.py" |
+  diff -u "$fixture_dir/paired_subset_sum_control.json" -
 ```
