@@ -424,3 +424,17 @@ python3 "$fixture_dir/norm_hilbert_universality.py" |
   diff -u "$fixture_dir/norm_hilbert_universality.json" -
 python3 -m py_compile "$fixture_dir/norm_hilbert_universality.py"
 ```
+
+The [socle note](norm_hilbert_socle_limit.md) computes the common annihilator
+of all variables in the deterministic norm quotient through dimension 9. The
+even controls are level of types 4, 8, and 16. The odd controls from dimension
+5 onward have lower socles of dimensions 3, 14, and 46 in addition to a
+one-dimensional terminal component, so they are not Gorenstein. This is an
+exact finite structural control, not an asymptotic resolution or an exponent
+improvement.
+
+```sh
+python3 "$fixture_dir/norm_hilbert_socle.py" |
+  diff -u "$fixture_dir/norm_hilbert_socle.json" -
+python3 -m py_compile "$fixture_dir/norm_hilbert_socle.py"
+```
