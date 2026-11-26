@@ -130,3 +130,13 @@ fixture_dir=experiments/prime-field-subexponential
 python3 "$fixture_dir/rs_two_list_subset_sum.py" |
   diff -u "$fixture_dir/rs_two_list_subset_sum.json" -
 ```
+
+## Conjugate-center Hankel quotient
+
+The [conjugate-center note](conjugate_hankel_quotient.md) splits each branch slope as $-v/u\pm y/u$. The sign-independent Hankel term satisfies the order-$g$ recurrence defined by $u$, so it has rank at most $g$. In the growing genus-two panels, quotienting that center leaves a maximal-rank $(q-1)\times q$ signed matrix for every signing and reduces the final test to two residual equations. Their multilinear supports are nevertheless almost maximal: 63/62 of 63, 91/92 of 92, and 253/252 of 255 available monomials. This is a compressed determinant formulation, not an exponent improvement. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/conjugate_hankel_quotient.py" |
+  diff -u "$fixture_dir/conjugate_hankel_quotient.json" -
+```
