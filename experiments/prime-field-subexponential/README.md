@@ -215,3 +215,15 @@ The [dimension ledger](elliptic_locus_dimension.md) bounds this cover locus insi
 python3 "$fixture_dir/elliptic_locus_dimension.py" |
   diff -u "$fixture_dir/elliptic_locus_dimension.json" -
 ```
+
+
+## Paired transversal span-state census
+
+The [span-state note](paired_span_state_limit.md) tests whether partial branch assignments merge when keyed by their canonical evaluation-row span. Every balanced partial transversal is injective in all seven genus-two panels. In the nine-slot panel, every seven-slot subset still has 120–127 distinct spans among 128 assignments. Full-rank branches collapse only at saturation, after the exponential frontier has been enumerated. This is a finite diagnostic, not a lower bound on every paired-transversal algorithm. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/paired_span_state_control.py" |
+  diff -u "$fixture_dir/paired_span_state_control.json" -
+python3 -m py_compile "$fixture_dir/paired_span_state_control.py"
+```
