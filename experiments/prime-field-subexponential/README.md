@@ -85,4 +85,6 @@ python3 "$fixture_dir/folded_list_recovery_ledger.py" |
   diff -u "$fixture_dir/folded_list_recovery_ledger.json" -
 python3 "$fixture_dir/folded_split_blocks.py" |
   diff -u "$fixture_dir/folded_split_blocks.json" -
+python3 "$fixture_dir/cartesian_folded_linear.py" |
+  diff -u "$fixture_dir/cartesian_folded_linear.json" -
 ```

@@ -131,6 +131,34 @@ It is that ordinary list recovery treats the \(2^f\) Cartesian tuples as
 unrelated symbols and therefore asks the folding order to dominate its own
 exponential.
 
+There is also a direct degeneration in the usual linear-algebraic folded-RS
+interpolant.  Write it as
+
+\[
+ Q(X,Y_0,\ldots,Y_{f-1})=Q_0(X)+\sum_{j=0}^{f-1}Q_{j+1}(X)Y_j.
+\]
+
+At one block start \(a\), require \(Q\) to vanish on the full Cartesian
+product \(Y_j\in\{t_{j,+},t_{j,-}\}\).  Subtracting two tuples that differ
+only in coordinate \(j\) gives
+
+\[
+ Q_{j+1}(a)(t_{j,+}-t_{j,-})=0.
+\]
+
+The fibers are split and unramified, so the difference is nonzero.  Hence
+every \(Q_{j+1}(a)=0\), and then \(Q_0(a)=0\).  Across \(N\) block starts,
+every coefficient polynomial is divisible by the degree-\(N\) block locator.
+If its degree is below \(N\), the only interpolant is zero; at degree at least
+\(N\), the locator multiple vanishes independently of the message and gives
+no root-finding equation.  The exact \(\mathbb F_{101}\) control matches the
+resulting rank formula at every tested degree.
+
+Nonlinear interpolation can avoid this immediate collapse only by including
+products that encode the two choices, such as
+\((Y_j-t_{j,+})(Y_j-t_{j,-})\).  Doing so restores the local quadratic norm
+constraints measured by the Macaulay and multiplicity ledgers.
+
 ## Exact remaining opportunity
 
 A positive result would need a decoder for the product code
@@ -152,9 +180,12 @@ but does not by itself solve it.
 [Executable ledger](folded_list_recovery_ledger.py) ·
 [Frozen ledger](folded_list_recovery_ledger.json) ·
 [Split-block control](folded_split_blocks.py) ·
-[Frozen split blocks](folded_split_blocks.json)
+[Frozen split blocks](folded_split_blocks.json) ·
+[Cartesian-linear control](cartesian_folded_linear.py) ·
+[Frozen Cartesian ranks](cartesian_folded_linear.json)
 
 ```sh
 python3 folded_list_recovery_ledger.py | cmp - folded_list_recovery_ledger.json
 python3 folded_split_blocks.py | cmp - folded_split_blocks.json
+python3 cartesian_folded_linear.py | cmp - cartesian_folded_linear.json
 ```
