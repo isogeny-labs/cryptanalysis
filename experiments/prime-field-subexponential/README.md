@@ -540,3 +540,16 @@ python3 "$fixture_dir/higher_genus_norm_tensor.py" |
   diff -u "$fixture_dir/higher_genus_norm_tensor.json" -
 python3 -m py_compile "$fixture_dir/higher_genus_norm_tensor.py"
 ```
+
+The [known-log fiber note](known_log_fiber_sourcing_limit.md) rules out a
+tempting deterministic shortcut: fibers from $P_i=2^iG$. For genus at least
+two, curve points whose doubles are curve points form the proper intersection
+$C\cap[2]^{-1}C$, of fixed-genus size $O_g(1)$. The exact genus-two control
+has only two such classes among 98 Abel classes and no three-class doubling
+chain. Random known-scalar sourcing instead costs $p^{g-1+o(1)}$.
+
+```sh
+python3 "$fixture_dir/known_log_fiber_sourcing.py" |
+  diff -u "$fixture_dir/known_log_fiber_sourcing.json" -
+python3 -m py_compile "$fixture_dir/known_log_fiber_sourcing.py"
+```
