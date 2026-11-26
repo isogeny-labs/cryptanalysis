@@ -376,7 +376,7 @@ python3 -m py_compile "$fixture_dir/ramified_hensel_branching.py"
 
 ## No Pell-unit infrastructure in odd degree
 
-The [imaginary-unit note](imaginary_unit_rank_limit.md) records that (y^2=f(x)) with (deg f=2g+1) has one point at infinity, so its affine coordinate ring has unit rank zero and units (mathbf F_p^	imes). Norm-one affine units are only (pm1). Consequently the split norm solutions do not form an orbit under a positive-rank Pell unit group. Nonconstant Hilbert–90 parameters require poles whose divisor choices reintroduce the split-prime orientation equation. This scopes out continued-fraction infrastructure for the current imaginary model, not even-degree real models or arbitrary ideal algorithms. [pcc:unverified]
+The [imaginary-unit note](imaginary_unit_rank_limit.md) records that (y^2=f(x)) with (deg f=2g+1) has one point at infinity, so its affine coordinate ring has unit rank zero and units (mathbf F_p^	imes). Norm-one affine units are only (pm1). Consequently the split norm solutions do not form an orbit under a positive-rank Pell unit group. Nonconstant Hilbert–90 parameters require poles whose divisor choices reintroduce the split-prime orientation equation. The note also compares real even-degree models: their rank-one unit orbit changes generators of one principal ideal but cannot change its split-prime orientations, so regulator distance is not an orientation selector. This does not rule out unrelated real-model ideal algorithms. [pcc:unverified]
 
 ```sh
 fixture_dir=experiments/prime-field-subexponential
