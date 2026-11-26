@@ -411,3 +411,16 @@ python3 -m py_compile \
   "$fixture_dir/homogeneous_norm_hilbert.py" \
   "$fixture_dir/signed_hankel_minrank.py"
 ```
+
+The [norm-tail universality note](norm_hilbert_universality_limit.md) replaces
+the curve and target coefficients by independent triples. Four random triples
+in every dimension 3 through 8 over each of three primes, plus one sparse
+deterministic triple, reproduce the curve-derived profile exactly. This makes
+the observed parity tail a stable finite feature of the norm convolution, but
+it still enlarges the quotient and gives no exponent improvement.
+
+```sh
+python3 "$fixture_dir/norm_hilbert_universality.py" |
+  diff -u "$fixture_dir/norm_hilbert_universality.json" -
+python3 -m py_compile "$fixture_dir/norm_hilbert_universality.py"
+```
