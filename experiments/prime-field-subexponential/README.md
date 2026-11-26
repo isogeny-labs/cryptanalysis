@@ -133,10 +133,22 @@ python3 "$fixture_dir/rs_two_list_subset_sum.py" |
 
 ## Conjugate-center Hankel quotient
 
-The [conjugate-center note](conjugate_hankel_quotient.md) splits each branch slope as $-v/u\pm y/u$. The sign-independent Hankel term satisfies the order-$g$ recurrence defined by $u$, so it has rank at most $g$. In the growing genus-two panels, quotienting that center leaves a maximal-rank $(q-1)\times q$ signed matrix for every signing and reduces the final test to two residual equations. Their multilinear supports are nevertheless almost maximal: 63/62 of 63, 91/92 of 92, and 253/252 of 255 available monomials. This is a compressed determinant formulation, not an exponent improvement. [pcc:unverified]
+The [conjugate-center note](conjugate_hankel_quotient.md) splits each branch slope as $-v/u\pm y/u$. The sign-independent Hankel term satisfies the order-$g$ recurrence defined by $u$, so it has rank at most $g$. In the growing genus-two panels, quotienting that center leaves a maximal-rank $(q-1)\times q$ signed matrix for every signing and reduces the final test to two residual equations. Their multilinear supports are nevertheless almost maximal: 63/62 of 63, 91/92 of 92, and 253/252 of 255 available monomials. The residual truth-table cut ranks reach 8 at seven slots and 16 at nine slots, attaining the full central-cut width and matching the meet-in-the-middle state scale. Exhausting all balanced bipartitions shows that both nine-slot residuals have rank 16 on all 126 cuts; the width is therefore unchanged by variable reordering. This is a compressed determinant formulation, not an exponent improvement. [pcc:unverified]
 
 ```sh
 fixture_dir=experiments/prime-field-subexponential
 python3 "$fixture_dir/conjugate_hankel_quotient.py" |
   diff -u "$fixture_dir/conjugate_hankel_quotient.json" -
+```
+
+
+## Structured residual tensor-width census
+
+The [structured tensor-width note](structured_tensor_width_limit.md) exhausts every distinct split-fiber arithmetic or geometric progression of lengths seven through nine on the genus-two control curve over $\mathbb F_{101}$, together with matched random panels. Across 41 structured and 41 random panels, progression structure does not lower the minimum balanced flattening rank. This is finite negative evidence, not an asymptotic lower bound or a subexponential algorithm. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/structured_tensor_width_search.py" |
+  diff -u "$fixture_dir/structured_tensor_width_search.json" -
+python3 -m py_compile "$fixture_dir/structured_tensor_width_search.py"
 ```
