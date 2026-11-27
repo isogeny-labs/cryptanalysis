@@ -1,6 +1,6 @@
 {
   "branch": "codex/m31-e2e-20261127",
-  "closed_utc": null,
+  "closed_utc": "2026-11-27T18:21:45+00:00",
   "commands": [
     {
       "argv": [
@@ -15,6 +15,20 @@
       "exit": 0,
       "started_utc": "2026-11-27T18:09:56+00:00",
       "wall_s": 59.152
+    },
+    {
+      "argv": [
+        "python3",
+        "suite/docs/ic/runs/fp-m31-pair-roots-20261127/run_e2e.py",
+        "/workspace/cryptanalysis-baseline/suite/target/release/ca-ic",
+        "/workspace/isogeny-workspace/repos/cryptanalysis/suite/target/release/ca-ic",
+        "suite/docs/ic/runs/fp-m31-pair-roots-20261127/q0.json",
+        "suite/docs/ic/runs/fp-m31-pair-roots-20261127/raw/e2e-retry.json"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-27T18:19:04+00:00",
+      "wall_s": 59.9
     }
   ],
   "commit": "03d3daf01ff51120fd36333f570610854f5ef712",
@@ -32,19 +46,47 @@
     "platform": "Linux-6.18.57-x86_64-with-glibc2.41"
   },
   "id": "20261127T1809Z-m31-pair-root-e2e-local",
-  "metrics": [],
+  "metrics": [
+    {
+      "baseline": 56.45341666,
+      "better": "lower",
+      "n": 1,
+      "name": "m31_q0_complete_recovery_wall",
+      "note": "producer-local; identical scalar, relations, queries and matrix rank; independent Python group replay",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "wall_s",
+      "value": 3.240330797
+    }
+  ],
   "problem": "ic:m31-pair-root-e2e",
-  "raw": [],
+  "raw": [
+    {
+      "bytes": 72955,
+      "path": "suite/docs/ic/runs/fp-m31-pair-roots-20261127/raw/e2e.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/0b/0b6644e574d658066f0f1671e8c762fe877630f955a89c29295dc1b20854f499",
+      "sha256": "0b6644e574d658066f0f1671e8c762fe877630f955a89c29295dc1b20854f499",
+      "uploaded": false
+    },
+    {
+      "bytes": 157658,
+      "path": "suite/docs/ic/runs/fp-m31-pair-roots-20261127/raw/e2e-retry.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/51/51dd12ea956e23ab40a243b5d3265ae8672faaf2afa444b97921342fc388e8bd",
+      "sha256": "51dd12ea956e23ab40a243b5d3265ae8672faaf2afa444b97921342fc388e8bd",
+      "uploaded": false
+    }
+  ],
   "repo": "cryptanalysis",
   "reports": {
-    "pdf": null,
+    "pdf": "suite/docs/ic/runs/fp-m31-pair-roots-20261127/RESULTS.pdf",
     "png": [],
     "svg": []
   },
   "schema": "bench.record/v1",
   "session": null,
   "slug": "m31-pair-root-e2e-local",
-  "status": "open",
-  "summary": "",
-  "validation": null
+  "status": "measured",
+  "summary": "Producer-local complete M31 recovery: identical independently replayed scalar and work, with candidate 3.2403 s versus baseline 56.4534 s wall (17.4221x); not independently admitted.",
+  "validation": "suite/docs/ic/runs/fp-m31-pair-roots-20261127/VALIDATION.json"
 }

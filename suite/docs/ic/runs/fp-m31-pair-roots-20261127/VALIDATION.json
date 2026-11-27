@@ -17,7 +17,23 @@
   ],
   "raw": {
     "panel_sha256": "1844af5f9a6451ba06a6075d8d1be9a4b3cd5b8cc5cb543ec434fe81687dd8d8",
-    "aa_sha256": "2e26a7a5f093fcd0c2a7eb63a9dad483f4938e8dff3507002341e1f94412ed91"
+    "aa_sha256": "2e26a7a5f093fcd0c2a7eb63a9dad483f4938e8dff3507002341e1f94412ed91",
+    "e2e_initial_sha256": "0b6644e574d658066f0f1671e8c762fe877630f955a89c29295dc1b20854f499",
+    "e2e_retry_sha256": "51dd12ea956e23ab40a243b5d3265ae8672faaf2afa444b97921342fc388e8bd"
   },
-  "qualification": "producer-local stage measurement; no isolation tier, matched rho, full recovered logarithm, independent signature or PCC promotion"
+  "end_to_end": {
+    "status": "solved",
+    "scalar": 345912577,
+    "independent_python_scalar_replay": true,
+    "candidate_wall_seconds": 3.240330797,
+    "baseline_wall_seconds": 56.453416660,
+    "wall_ratio": 17.42211527053545,
+    "candidate_cpu_seconds": 3.192421,
+    "baseline_cpu_seconds": 56.193816,
+    "relations": 69,
+    "queries": 6823,
+    "matrix_rank": 68,
+    "proof_nodes": 647
+  },
+  "qualification": "producer-local stage and complete-recovery measurement; no isolation tier, matched optimized rho, independent signature or PCC promotion"
 }

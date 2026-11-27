@@ -26,13 +26,36 @@ returned row is replayed in the target group. Existing exhaustive p=127,
 p=8191 and full certificate tests pass on Rust 1.78 and stable in hosted CI.
 [pcc:unverified]
 
+## Complete recovery follow-up
+
+The prospectively frozen Q0 complete-recovery follow-up also solved end to
+end. Both arms recovered scalar `345912577`; an independent Python group-law
+replay confirmed `[345912577]P = Q0`. Both collected 69 relations in 6,823
+queries, reached matrix rank 68, and retained 647 proof nodes. Candidate cold
+process wall time was 3.240330797 s versus 56.453416660 s for the baseline, a
+17.4221x producer-local reduction. Candidate/baseline process CPU time was
+3.192421/56.193816 s (17.6023x). The candidate exited 0 after the solved-status
+exit-contract fix; the frozen baseline emitted the same valid solved report
+but retained its historical exit 1. [pcc:unverified]
+
+The first wrapper run is retained at `raw/e2e.json` (SHA-256
+`0b6644e574d658066f0f1671e8c762fe877630f955a89c29295dc1b20854f499`):
+both solvers completed, but the wrapper incorrectly declined to parse reports
+from nonzero exits. The corrected prospective retry is `raw/e2e-retry.json`
+(SHA-256
+`51dd12ea956e23ab40a243b5d3265ae8672faaf2afa444b97921342fc388e8bd`),
+with solved statuses and independent replay true for both arms. The retry did
+not overwrite or discard the failed-wrapper evidence. [pcc:unverified]
+
 Scope limits: the m=3 cells produced zero relations on these fixed prefixes,
 so they measure failed root queries rather than useful relation throughput.
 The m=4 cells produced 27 and 26 identical relations, but this panel stops at
-decomposition and replay; it does not include full relation collection,
-linear algebra, recovered public logarithm, matched rho, or signed independent
-verification. The result is a measured stage acceleration, not yet a qualified
-end-to-end IC improvement. [pcc:unverified]
+decomposition and replay. The Q0 follow-up does include full relation
+collection, linear algebra, recovered public logarithm, and independent local
+group replay, but not a matched optimized rho, admitted isolation tier,
+independent signature, or PCC promotion. The result is therefore a measured
+producer-local end-to-end IC acceleration, not a qualified universal or
+asymptotic advantage. [pcc:unverified]
 
 Raw evidence is committed at `raw/panel.json` (SHA-256
 `1844af5f9a6451ba06a6075d8d1be9a4b3cd5b8cc5cb543ec434fe81687dd8d8`)
