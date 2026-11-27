@@ -54,7 +54,7 @@
 
 ## Blocked / questions
 
-- M31 e2e local deliverable is complete; PR #2005 remains draft because the inherited PCC ledger fails at entry3583/seq3535 and artifact uploads are absent. No pcc/ history edits or publication bypass; original source and all evidence are in the local delivery archive.
+- M31 software and source publication are complete (PR #2005; functional source6837f39). Review/merge still depends on the inherited PCC ledger entry3583/seq3535 error and historical S3 inputs. Local and offline evidence are retained; no ledger rewrite, false upload flag or check disablement.
 
 - Full native CT244/CT300 pricing and 695/701 record replay still require approved authenticated original six-object artifact custody; previous STS invalid-token and S3 403 are unresolved. This source-only correction does not authorize paid compute, artifact substitution, modified provenance or protected merge.
 
