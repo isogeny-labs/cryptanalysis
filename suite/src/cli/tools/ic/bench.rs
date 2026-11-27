@@ -827,6 +827,36 @@ fn expand_matrix(
     out
 }
 
+/// The configurations a sweep file asks for: its explicit list, then the
+/// product of its matrix, in that order.
+///
+/// A matrix axis with no choices is refused rather than skipped.  Skipping it
+/// would run every configuration with that stage at its command-line default,
+/// so an axis meant to be empty would silently become a default-valued trial;
+/// an axis that should take the default is left out of the matrix instead.
+fn sweep_configurations(
+    file: &SweepFile,
+) -> Result<Vec<std::collections::BTreeMap<String, String>>, String> {
+    let empty: Vec<&str> = file
+        .matrix
+        .iter()
+        .filter(|(_, choices)| choices.is_empty())
+        .map(|(axis, _)| axis.as_str())
+        .collect();
+    if !empty.is_empty() {
+        return Err(format!(
+            "matrix axis {empty:?} lists no choices: leave an axis out of the matrix to run its \
+             default, or list at least one choice"
+        ));
+    }
+    let mut configs = file.configurations.clone();
+    configs.extend(expand_matrix(&file.matrix));
+    if configs.is_empty() {
+        return Err("the sweep file lists no configurations and no matrix".into());
+    }
+    Ok(configs)
+}
+
 fn spec_from(
     cfg: &std::collections::BTreeMap<String, String>,
     defaults: &BenchArgs,
@@ -1203,11 +1233,8 @@ pub fn run(args: BenchArgs, json_only: bool) -> Result<Value, String> {
             if let Some(v) = file.instance.max_cofactor {
                 a.max_cofactor = v;
             }
-            let mut configs = file.configurations.clone();
-            configs.extend(expand_matrix(&file.matrix));
-            if configs.is_empty() {
-                return Err("the sweep file lists no configurations and no matrix".into());
-            }
+            let configs = sweep_configurations(&file)
+                .map_err(|e| format!("sweep file {}: {e}", path.display()))?;
             (
                 (file.instance.regime.clone(), file.instance.degree),
                 configs,
@@ -1459,6 +1486,9 @@ pub fn run(args: BenchArgs, json_only: bool) -> Result<Value, String> {
         "rho_reference_candidates": references.candidates,
         "configurations_run": rows.len(),
         "configurations_skipped": failures,
+        // The exact panel, after the sweep file's list and matrix are expanded:
+        // what was asked for, beside what ran and what was skipped.
+        "configurations_planned": &configs,
         "all_verified": all_verified,
         "elapsed_seconds": started.elapsed().as_secs_f64(),
         "markdown": markdown,
@@ -1682,6 +1712,35 @@ mod tests {
         assert_eq!(expand_matrix(&m).len(), 2);
     }
 
+    /// An empty matrix axis is refused before any work instead of being
+    /// skipped (which ran that stage at its default); a configurations-only
+    /// file and a full matrix expand as written.
+    #[test]
+    fn an_empty_matrix_axis_is_refused_not_defaulted() {
+        let parse = |raw: &str| -> SweepFile { serde_json::from_str(raw).unwrap() };
+        let mixed = parse(
+            r#"{"instance": {"regime": "prime", "degree": 14},
+                "matrix": {"factor_base": ["prime-abscissa"], "oracle": ["mitm"], "solver": []}}"#,
+        );
+        let err = sweep_configurations(&mixed).unwrap_err();
+        assert!(
+            err.contains("[\"solver\"]") && err.contains("lists no choices"),
+            "{err}"
+        );
+        let only = parse(
+            r#"{"instance": {"regime": "prime", "degree": 14},
+                "configurations": [{"factor_base": "prime-abscissa", "oracle": "mitm"}]}"#,
+        );
+        assert_eq!(sweep_configurations(&only).unwrap().len(), 1);
+        let full = parse(
+            r#"{"instance": {"regime": "prime", "degree": 14},
+                "matrix": {"factor_base": ["prime-abscissa"], "oracle": ["mitm", "subtract"]}}"#,
+        );
+        assert_eq!(sweep_configurations(&full).unwrap().len(), 2);
+        let none = parse(r#"{"instance": {"regime": "prime", "degree": 14}}"#);
+        assert!(sweep_configurations(&none).is_err());
+    }
+
     /// The check must not refuse anything the committed sweeps run.
     #[test]
     fn every_committed_sweep_passes_the_check() {
@@ -1694,8 +1753,8 @@ mod tests {
             }
             let file: SweepFile =
                 serde_json::from_str(&std::fs::read_to_string(&path).unwrap()).unwrap();
-            let mut configs = file.configurations.clone();
-            configs.extend(expand_matrix(&file.matrix));
+            let configs =
+                sweep_configurations(&file).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
             let a = args(&[]);
             for cfg in &configs {
                 let c = check_config(cfg, &a, &file.instance.regime, &listing());

@@ -167,40 +167,111 @@ fn execute(cli: &Cli) -> Result<Value, String> {
 /// Reading both before any work makes the pair describe the binary that
 /// produced the numbers.
 static BINARY_HASH: OnceLock<Option<String>> = OnceLock::new();
-static GIT_COMMIT: OnceLock<Option<String>> = OnceLock::new();
+static GIT_COMMIT: OnceLock<Option<SourceCheckout>> = OnceLock::new();
+
+/// What a report says about where its value of [`git_commit`] comes from: an
+/// observation of the build's checkout at run time, not proof of the source
+/// that was compiled.
+pub const GIT_COMMIT_BASIS: &str =
+    "observational: HEAD of the build checkout, read when the process started; \
+     binary_blake3 identifies the executable";
 
 /// Hash of the executable that is producing this report.
 pub fn binary_hash() -> Option<String> {
     BINARY_HASH.get_or_init(compute_binary_hash).clone()
 }
 
-/// The commit of the source checkout this binary was built in, read when
-/// the process starts.
+/// The build checkout as the process found it when it started.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct SourceCheckout {
+    pub commit: String,
+    /// Whether tracked files differ from `commit` (`None` when that could not
+    /// be read).
+    pub dirty: Option<bool>,
+}
+
+/// The HEAD of the source checkout this binary was built in, read when the
+/// process starts; `None` when that checkout cannot be identified.
 ///
 /// It is read from that checkout (the crate's directory at compile time),
 /// not from the process's working directory: a binary run from another
 /// repository, such as the workspace's lead-testing runner, used to report
-/// *that* repository's commit.  It is `None` when the checkout is gone (a
-/// copied binary).  A checkout moved to another commit after the build is
-/// not detected; [`binary_hash`] identifies the executable exactly.
+/// *that* repository's commit.  The caller's `GIT_*` variables are not
+/// inherited and the repository found must be this one (see
+/// [`read_checkout`]).  It is an observation ([`GIT_COMMIT_BASIS`]): a
+/// checkout moved to another commit after the build is not detected, and
+/// only [`binary_hash`] identifies the executable exactly.
 pub fn git_commit() -> Option<String> {
-    GIT_COMMIT.get_or_init(compute_git_commit).clone()
+    source_checkout().map(|s| s.commit)
 }
 
-fn compute_git_commit() -> Option<String> {
-    commit_of(std::path::Path::new(env!("CARGO_MANIFEST_DIR")))
+/// Whether the build checkout had uncommitted changes to tracked files.
+pub fn git_dirty() -> Option<bool> {
+    source_checkout().and_then(|s| s.dirty)
 }
 
-fn commit_of(dir: &std::path::Path) -> Option<String> {
-    let out = std::process::Command::new("git")
-        .arg("-C")
-        .arg(dir)
-        .args(["rev-parse", "HEAD"])
-        .output()
-        .ok()?;
-    out.status
-        .success()
-        .then(|| String::from_utf8_lossy(&out.stdout).trim().to_string())
+fn source_checkout() -> Option<SourceCheckout> {
+    GIT_COMMIT
+        .get_or_init(|| {
+            let manifest = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
+            // The suite crate sits directly under the repository root.
+            let root = manifest.parent()?;
+            let env: Vec<(std::ffi::OsString, std::ffi::OsString)> = std::env::vars_os().collect();
+            read_checkout(manifest, root, &env)
+        })
+        .clone()
+}
+
+/// Read the checkout at `dir`, which must be the repository whose top level is
+/// `root`, with the process environment `env`.
+///
+/// Every `GIT_*` variable of `env` is dropped: `GIT_DIR` and `GIT_WORK_TREE`
+/// choose a repository whatever `-C` says, so a caller's values would name the
+/// caller's commit.  Discovery stops at `root`'s parent, and the top level git
+/// finds must be `root` itself, so a directory that now sits inside an
+/// unrelated checkout (a copied binary whose build path exists elsewhere)
+/// reports nothing rather than that checkout's HEAD.  Anything unexpected is
+/// `None`.
+fn read_checkout(
+    dir: &std::path::Path,
+    root: &std::path::Path,
+    env: &[(std::ffi::OsString, std::ffi::OsString)],
+) -> Option<SourceCheckout> {
+    let root = std::fs::canonicalize(root).ok()?;
+    let dir = std::fs::canonicalize(dir).ok()?;
+    let ceiling = root.parent().map(|p| p.as_os_str().to_owned());
+    let git = |args: &[&str]| -> Option<String> {
+        let mut c = std::process::Command::new("git");
+        c.env_clear();
+        for (k, v) in env {
+            if !k.to_string_lossy().starts_with("GIT_") {
+                c.env(k, v);
+            }
+        }
+        if let Some(ceiling) = &ceiling {
+            c.env("GIT_CEILING_DIRECTORIES", ceiling);
+        }
+        let out = c
+            .arg("-C")
+            .arg(&dir)
+            .args(args)
+            .current_dir(&dir)
+            .output()
+            .ok()?;
+        out.status
+            .success()
+            .then(|| String::from_utf8_lossy(&out.stdout).trim().to_string())
+    };
+    let top = std::fs::canonicalize(git(&["rev-parse", "--show-toplevel"])?).ok()?;
+    if top != root {
+        return None;
+    }
+    let commit = git(&["rev-parse", "--verify", "HEAD"])?;
+    if !matches!(commit.len(), 40 | 64) || !commit.bytes().all(|b| b.is_ascii_hexdigit()) {
+        return None;
+    }
+    let dirty = git(&["status", "--porcelain", "--untracked-files=no"]).map(|s| !s.is_empty());
+    Some(SourceCheckout { commit, dirty })
 }
 
 fn compute_binary_hash() -> Option<String> {
@@ -767,7 +838,8 @@ where
     // Generated parameter documents remain directly importable under their strict schema.
     if report.get("operation").is_some() {
         report["software"] = json!({"version":env!("CARGO_PKG_VERSION"),"os":std::env::consts::OS,
-            "arch":std::env::consts::ARCH,"binary_blake3":binary_hash(),"git_commit":git_commit()});
+            "arch":std::env::consts::ARCH,"binary_blake3":binary_hash(),"git_commit":git_commit(),
+            "git_dirty":git_dirty(),"git_commit_basis":GIT_COMMIT_BASIS});
     }
     let success = matches!(
         report["status"].as_str(),
@@ -817,26 +889,126 @@ where
 mod tests {
     use super::*;
 
-    /// The reported commit is the source checkout's, whatever the working
-    /// directory: it is read with `git -C` from the crate's directory, and a
-    /// directory that is not a checkout gives `None`, not some other commit.
+    use std::ffi::OsString;
+    use std::path::{Path, PathBuf};
+
+    /// A throwaway repository with one commit whose content names `path`, so two
+    /// fixtures made in the same second still have different commits (author set
+    /// on the command only, so the process environment is never changed).
+    fn repo(path: &Path) -> String {
+        std::fs::create_dir_all(path).unwrap();
+        let git = |args: &[&str]| {
+            let out = std::process::Command::new("git")
+                .arg("-C")
+                .arg(path)
+                .args(args)
+                .env("GIT_AUTHOR_NAME", "t")
+                .env("GIT_AUTHOR_EMAIL", "t@t")
+                .env("GIT_COMMITTER_NAME", "t")
+                .env("GIT_COMMITTER_EMAIL", "t@t")
+                .output()
+                .unwrap();
+            assert!(out.status.success(), "git {args:?}: {out:?}");
+            String::from_utf8_lossy(&out.stdout).trim().to_string()
+        };
+        git(&["init", "-q"]);
+        std::fs::write(path.join("f.txt"), format!("{}\n", path.display())).unwrap();
+        git(&["add", "f.txt"]);
+        git(&["commit", "-q", "-m", "c"]);
+        git(&["rev-parse", "HEAD"])
+    }
+
+    fn scratch(name: &str) -> PathBuf {
+        let d = std::env::temp_dir().join(format!("ca-ic-{name}-{}", std::process::id()));
+        std::fs::remove_dir_all(&d).ok();
+        d
+    }
+
+    fn process_env() -> Vec<(OsString, OsString)> {
+        std::env::vars_os().collect()
+    }
+
+    /// The real build checkout is read, and [`git_commit`] is that reading.
     #[test]
     fn git_commit_is_read_from_the_source_checkout() {
-        let here = commit_of(std::path::Path::new(env!("CARGO_MANIFEST_DIR")));
-        assert_eq!(git_commit(), here);
+        let manifest = Path::new(env!("CARGO_MANIFEST_DIR"));
+        let here = read_checkout(manifest, manifest.parent().unwrap(), &process_env());
+        assert_eq!(git_commit(), here.as_ref().map(|s| s.commit.clone()));
         if let Some(c) = &here {
-            assert_eq!(c.len(), 40, "{c}");
+            assert!(matches!(c.commit.len(), 40 | 64), "{c:?}");
         }
-        let not_a_repo =
-            std::env::temp_dir().join(format!("ca-ic-not-a-repo-{}", std::process::id()));
-        std::fs::create_dir_all(&not_a_repo).unwrap();
-        let outside = commit_of(&not_a_repo);
-        std::fs::remove_dir_all(&not_a_repo).ok();
-        // temp_dir() is not inside a checkout on any host this suite runs on;
-        // if it ever is, the assertion names it.
-        assert!(
-            outside.is_none() || outside != here,
-            "{not_a_repo:?} reported {outside:?}"
+    }
+
+    /// The caller's working directory and `GIT_DIR` / `GIT_WORK_TREE` do not
+    /// choose the repository: with them pointing at another repository, the
+    /// source checkout's commit is still the one read.
+    #[test]
+    fn inherited_git_variables_do_not_choose_the_repository() {
+        let d = scratch("git-env");
+        let (source, caller) = (d.join("source"), d.join("caller"));
+        let want = repo(&source);
+        let other = repo(&caller);
+        assert_ne!(want, other);
+        let mut env = process_env();
+        env.push(("GIT_DIR".into(), caller.join(".git").into()));
+        env.push(("GIT_WORK_TREE".into(), caller.clone().into()));
+        let got = read_checkout(&source, &source, &env);
+        std::fs::remove_dir_all(&d).ok();
+        assert_eq!(got.map(|s| s.commit), Some(want));
+    }
+
+    /// A build path that now sits inside an unrelated checkout (a copied
+    /// binary) reports nothing, not that checkout's HEAD.
+    #[test]
+    fn an_unrelated_ancestor_checkout_is_not_reported() {
+        let d = scratch("ancestor");
+        let outer = d.join("outer");
+        repo(&outer);
+        let proj = outer.join("proj");
+        std::fs::create_dir_all(proj.join("suite")).unwrap();
+        let got = read_checkout(&proj.join("suite"), &proj, &process_env());
+        std::fs::remove_dir_all(&d).ok();
+        assert_eq!(got, None);
+    }
+
+    /// A missing checkout, or a directory that is no checkout at all, gives
+    /// `None` rather than some other commit.
+    #[test]
+    fn a_missing_or_absent_checkout_reports_nothing() {
+        let d = scratch("missing");
+        assert_eq!(
+            read_checkout(&d.join("gone"), &d.join("gone"), &process_env()),
+            None
+        );
+        std::fs::create_dir_all(&d).unwrap();
+        let got = read_checkout(&d, &d, &process_env());
+        std::fs::remove_dir_all(&d).ok();
+        assert_eq!(got, None);
+    }
+
+    /// Uncommitted changes to tracked files are reported, so a HEAD is never
+    /// presented as describing a tree it does not.
+    #[test]
+    fn a_dirty_checkout_says_so() {
+        let d = scratch("dirty");
+        let want = repo(&d);
+        let clean = read_checkout(&d, &d, &process_env());
+        std::fs::write(d.join("f.txt"), "changed\n").unwrap();
+        let dirty = read_checkout(&d, &d, &process_env());
+        std::fs::remove_dir_all(&d).ok();
+        assert_eq!(
+            clean,
+            Some(SourceCheckout {
+                commit: want.clone(),
+                dirty: Some(false)
+            })
+        );
+        assert_eq!(
+            dirty,
+            Some(SourceCheckout {
+                commit: want,
+                dirty: Some(true)
+            })
         );
     }
 }
