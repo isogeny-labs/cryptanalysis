@@ -66,3 +66,11 @@ First selection/analysis a52ce2f; follow-up protocol c94c0b7, runner0f5ec2d, sel
 AMD EPYC9V74, x86-64 Linux container, five allowed CPUs, one exposed CPU pinned, portable scalar CPU path, no GPU. Physical RAM type/speed, physical-host exclusivity and provider allocation receipt are unknown. hardware.json records observable topology/cgroups after evaluation; process CPU-time and NUMA placement were not captured. User authorized local execution/storage; no S3 upload is asserted. Artifact admission remains open. [pcc:unverified]
 
 Full source-linked narrative, exact commands, limitations and requirement/evidence table: REPORT.md. Raw evidence: manifest.json, summary.json, replay.json and m2/ counterparts. Local delivery: /workspace/isogeny-m31-e2e.zip. Source PR cryptanalysis#2005, stacked on#2002; workspace#192. No new PCC claims, general scaling result or rho victory is asserted. Canonical scoreboard/curve-route graphs remain unchanged because the exploratory records lack admission; study graphs and unqualified progress metrics carry this result. [pcc:unverified]
+
+
+Publication check: the inherited PCC ledger fails at entry3583 (seq3535);
+HEAD has exactly the parent ledger bytes and pcc/ is unchanged. Missing
+artifact uploads also fail the global publication gate. No push/merge or
+ready transition is attempted past those gates. Original source commits
+and outputs are delivered locally; the PRs remain tracking drafts.
+[pcc:unverified]

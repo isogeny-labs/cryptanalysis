@@ -102,3 +102,10 @@ local storage, absent isolation admission/S3 upload/signed independent verdict.
 They do not resolve this timing qualification problem or move the verified
 baseline. Study figures and exploratory metrics retain the engineering
 outcome; the original blockers and historical records remain. [pcc:unverified]
+
+Final M31 publication check also finds the inherited PCC ledger sequence
+error at entry3583 (seq3535); this branch leaves pcc/ unchanged from its
+parent. Global artifact admission and the broken ledger block source
+publication/ready status, so original commits and all artifacts are in the
+local delivery bundle and the tracking PR remains draft. The error is not
+repaired by changing or rewriting historical ledger entries. [pcc:unverified]

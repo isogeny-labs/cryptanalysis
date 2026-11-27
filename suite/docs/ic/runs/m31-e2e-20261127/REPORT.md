@@ -89,3 +89,14 @@ The user authorized local CPU execution and local storage. Raw outputs, evaluato
 | Independent/general performance claim | Unverified; no signed verdict or admitted timing tier, no claim of beating rho or scaling to large curves. |
 
 Canonical scoreboard, progress timeline, curve routes and catalogue were checked; exploratory results do not satisfy their admission rules, so those graphs remain unchanged. Only these study figures and the unqualified benchmark progress/metrics series change. The next measured optimization would be a separate gain-graph m2 elimination comparison or packed table representation; neither is included in the present timings. [pcc:unverified]
+
+
+Final publication check: `pcc ledger verify --base origin/main` fails at
+entry3583 (seq3535). This branch makes no change to pcc/; the HEAD ledger
+has exactly the parent b4e8b ledger bytes. The global artifact gate also
+retains missing/unuploaded historical and local raw objects. No push,
+ready-for-review transition, merge or ledger repair is attempted past
+these gates. The completed implementation, measurements and original
+commits are delivered locally; PRs remain tracking drafts. These concrete
+publication failures do not invalidate or independently verify the local
+mathematical outputs. [pcc:unverified]
