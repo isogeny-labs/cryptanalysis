@@ -248,6 +248,166 @@ impl SymbolicDescent {
     }
 }
 
+/// Product edge lifted in every cubic link of a left-chained `S_3`
+/// presentation.  For a link `S_3(x_a, x_b, x_c)`, the auxiliary is
+/// constrained to the selected product and the remaining equation is
+/// quadratic after Weil descent.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ChainEdgeLift {
+    Ab,
+    Ac,
+    Bc,
+}
+
+impl ChainEdgeLift {
+    pub fn parse(name: &str) -> Result<Self, String> {
+        match name {
+            "edge-ab" => Ok(Self::Ab),
+            "edge-ac" => Ok(Self::Ac),
+            "edge-bc" => Ok(Self::Bc),
+            other => Err(format!(
+                "unknown chained S3 presentation `{other}`; use edge-ab, edge-ac or edge-bc"
+            )),
+        }
+    }
+
+    pub fn name(self) -> &'static str {
+        match self {
+            Self::Ab => "edge-ab",
+            Self::Ac => "edge-ac",
+            Self::Bc => "edge-bc",
+        }
+    }
+}
+
+/// A left chain of `S_3` links with one product lift on every link whose
+/// three abscissae are unknown.  The final target-anchored link stays in its
+/// already-quadratic direct form.
+#[derive(Clone, Debug)]
+pub struct ChainEdgeDescent {
+    pub n_prime: u32,
+    pub summands: u32,
+    pub n_vars: usize,
+    pub equations: Vec<F2BoolPoly>,
+    pub v_basis: Vec<u64>,
+    pub field_monomials: usize,
+    pub edge: ChainEdgeLift,
+}
+
+impl ChainEdgeDescent {
+    /// The factor-base abscissae named by a solution.  Intermediate and
+    /// product-lift variables follow the leaf variables and are intentionally
+    /// omitted here.
+    pub fn lift(&self, v: u64) -> Vec<u64> {
+        let np = self.n_prime as usize;
+        (0..self.summands as usize)
+            .map(|i| {
+                (0..np)
+                    .filter(|&k| (v >> (i * np + k)) & 1 == 1)
+                    .fold(0u64, |acc, k| acc ^ self.v_basis[k])
+            })
+            .collect()
+    }
+}
+
+/// Build the support-aware chained presentation used by the ECC2K-130
+/// mixed-edge lead.  Variables are ordered as all factor-base leaves, all
+/// full-field intermediates, then all full-field lifted products.
+pub fn descend_chain_edge(
+    gf: &Gf2,
+    curve_b: u64,
+    x_r: u64,
+    v_basis: &[u64],
+    summands: u32,
+    edge: ChainEdgeLift,
+) -> Result<ChainEdgeDescent, String> {
+    if !(2..=9).contains(&summands) {
+        return Err(format!(
+            "the chained S3 descent takes 2..=9 summands, not {summands}"
+        ));
+    }
+    let np = v_basis.len() as u32;
+    let cubic_links = summands - 2;
+    let n_vars = summands * np + 2 * cubic_links * gf.n;
+    if np == 0 || n_vars > MAX_VARS {
+        return Err(format!(
+            "the {} chained descent needs {summands}·{np} + 2·{cubic_links}·{} = {n_vars} boolean variables; the monomial mask holds {MAX_VARS}",
+            edge.name(),
+            gf.n
+        ));
+    }
+
+    let leaves: Vec<FieldBoolPoly> = (0..summands)
+        .map(|i| FieldBoolPoly::linear(i * np, v_basis))
+        .collect();
+    let full_basis: Vec<u64> = (0..gf.n).map(|j| 1u64 << j).collect();
+    let intermediate_offset = summands * np;
+    let lift_offset = intermediate_offset + cubic_links * gf.n;
+    let mut parts = Vec::with_capacity((2 * cubic_links + 1) as usize);
+    let mut current = leaves[0].clone();
+
+    for k in 1..summands {
+        let link = k - 1;
+        let last = k == summands - 1;
+        let next = if last {
+            FieldBoolPoly::constant(x_r)
+        } else {
+            FieldBoolPoly::linear(intermediate_offset + link * gf.n, &full_basis)
+        };
+        let leaf = &leaves[k as usize];
+        if last {
+            parts.push(s3_poly(gf, curve_b, &current, leaf, &next));
+        } else {
+            let lifted = FieldBoolPoly::linear(lift_offset + link * gf.n, &full_basis);
+            let (product, square_one, square_two, remaining) = match edge {
+                ChainEdgeLift::Ab => (
+                    current.mul(leaf, gf),
+                    current.mul(&next, gf).sqr(gf),
+                    leaf.mul(&next, gf).sqr(gf),
+                    &next,
+                ),
+                ChainEdgeLift::Ac => (
+                    current.mul(&next, gf),
+                    current.mul(leaf, gf).sqr(gf),
+                    leaf.mul(&next, gf).sqr(gf),
+                    leaf,
+                ),
+                ChainEdgeLift::Bc => (
+                    leaf.mul(&next, gf),
+                    current.mul(leaf, gf).sqr(gf),
+                    current.mul(&next, gf).sqr(gf),
+                    &current,
+                ),
+            };
+            parts.push(lifted.add(&product));
+            parts.push(
+                lifted
+                    .sqr(gf)
+                    .add(&square_one)
+                    .add(&square_two)
+                    .add(&lifted.mul(remaining, gf))
+                    .add(&FieldBoolPoly::constant(curve_b)),
+            );
+        }
+        current = next;
+    }
+
+    let field_monomials = parts.iter().map(FieldBoolPoly::len).sum();
+    let mut equations = Vec::with_capacity(parts.len() * gf.n as usize);
+    for part in &parts {
+        equations.extend(part.split(gf.n, n_vars as usize));
+    }
+    Ok(ChainEdgeDescent {
+        n_prime: np,
+        summands,
+        n_vars: n_vars as usize,
+        equations,
+        v_basis: v_basis.to_vec(),
+        field_monomials,
+        edge,
+    })
+}
+
 /// Descend `S_{m+1}(x_1, …, x_m, x_R) = 0` with every `x_i` in the span
 /// of `v_basis`, for `summands ∈ {2, 3}`.  Fails only on a dimension
 /// the monomial mask cannot hold.
@@ -549,6 +709,91 @@ mod tests {
                                 "n={n} np={np} nl={nl} part={part} bit={j}"
                             );
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn chained_edge_lifts_are_exact_quadratic_presentations() {
+        let mut rng = StdRng::seed_from_u64(0xED6E_2026_1127);
+        for (n, np, summands) in [(11u32, 3u32, 3u32), (13, 3, 4)] {
+            let irr =
+                crate::cryptanalysis::koblitz_index_calculus::find_irreducible_sparse(n).unwrap();
+            let gf = Gf2::new(&irr);
+            let basis: Vec<u64> = (0..np).map(|j| 1u64 << j).collect();
+            let leaf_mask = (1u64 << np) - 1;
+            let cubic_links = summands - 2;
+            for edge in [ChainEdgeLift::Ab, ChainEdgeLift::Ac, ChainEdgeLift::Bc] {
+                for _ in 0..80 {
+                    let leaves: Vec<u64> = (0..summands)
+                        .map(|_| rng.gen::<u64>() & leaf_mask)
+                        .collect();
+                    let intermediates: Vec<u64> = (0..cubic_links)
+                        .map(|_| rng.gen::<u64>() & gf.mask)
+                        .collect();
+                    let x_r = rng.gen::<u64>() & gf.mask;
+                    let curve_b = rng.gen::<u64>() & gf.mask;
+                    let sys =
+                        descend_chain_edge(&gf, curve_b, x_r, &basis, summands, edge).unwrap();
+                    assert!(sys
+                        .equations
+                        .iter()
+                        .all(|p| p.terms.iter().all(|t| t.degree() <= 2)));
+
+                    let intermediate_offset = summands * np;
+                    let lift_offset = intermediate_offset + cubic_links * n;
+                    let mut assignment = 0u64;
+                    for (i, &x) in leaves.iter().enumerate() {
+                        assignment |= x << (i as u32 * np);
+                    }
+                    let mut words = Vec::new();
+                    for link in 0..cubic_links {
+                        let a = if link == 0 {
+                            leaves[0]
+                        } else {
+                            intermediates[link as usize - 1]
+                        };
+                        let b = leaves[link as usize + 1];
+                        let c = intermediates[link as usize];
+                        let w = match edge {
+                            ChainEdgeLift::Ab => gf.mul(a, b),
+                            ChainEdgeLift::Ac => gf.mul(a, c),
+                            ChainEdgeLift::Bc => gf.mul(b, c),
+                        };
+                        assignment |= c << (intermediate_offset + link * n);
+                        assignment |= w << (lift_offset + link * n);
+                        words.push(semaev_s3_word(&gf, curve_b, a, b, c));
+                    }
+                    let final_a = intermediates.last().copied().unwrap_or(leaves[0]);
+                    words.push(semaev_s3_word(
+                        &gf,
+                        curve_b,
+                        final_a,
+                        *leaves.last().unwrap(),
+                        x_r,
+                    ));
+
+                    assert_eq!(sys.lift(assignment), leaves);
+                    for link in 0..cubic_links as usize {
+                        let constraint = link * 2 * n as usize;
+                        for j in 0..n as usize {
+                            assert_eq!(sys.equations[constraint + j].eval(assignment), 0);
+                            assert_eq!(
+                                sys.equations[constraint + n as usize + j].eval(assignment),
+                                ((words[link] >> j) & 1) as u32,
+                                "n={n} m={summands} edge={} link={link} bit={j}",
+                                edge.name()
+                            );
+                        }
+                    }
+                    let final_start = 2 * cubic_links as usize * n as usize;
+                    for j in 0..n as usize {
+                        assert_eq!(
+                            sys.equations[final_start + j].eval(assignment),
+                            ((words.last().unwrap() >> j) & 1) as u32
+                        );
                     }
                 }
             }

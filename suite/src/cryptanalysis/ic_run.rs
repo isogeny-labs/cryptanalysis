@@ -55,7 +55,7 @@ pub struct RunConfig {
     pub factor_base: Option<String>,
     /// Decomposition oracle; empty picks the default.
     pub oracle: Option<String>,
-    /// Polynomial solver, for the `descent-algebraic` oracle.
+    /// Polynomial solver, for an algebraic descent oracle.
     pub solver: Option<String>,
     /// Relation matrix (`incremental-gauss` or `structured-gauss`).
     pub linalg: String,
@@ -400,20 +400,24 @@ fn run_binary_analogue(
         let mut frob =
             crate::cryptanalysis::ic_framework::plugins::FrobeniusMitmOracle::new(m, inst);
         let mut algebraic = match spec.oracle.as_str() {
-            "descent-algebraic" => {
+            "descent-algebraic" | "descent-edge-chain" => {
                 let raw = spec.solver.as_deref().ok_or(
-                    "descent-algebraic needs --solver (try buchberger-f2, sat-cdcl, fes-f2, crossbred-f2 or exhaustive)",
+                    "an algebraic descent oracle needs --solver (try f4-f2, buchberger-f2, sat-cdcl, fes-f2, crossbred-f2 or exhaustive)",
                 )?;
                 let (sname, sparams) = parse_plugin(raw)?;
                 let budget = (spec.solver_budget_seconds > 0)
                     .then(|| std::time::Duration::from_secs(spec.solver_budget_seconds));
-                Some(DescentAlgebraicOracle::new(
-                    m,
-                    inst,
-                    solver_by_name(&sname)?,
-                    sparams,
-                    budget,
-                ))
+                Some(if spec.oracle == "descent-edge-chain" {
+                    DescentAlgebraicOracle::new_edge_chain(
+                        m,
+                        inst,
+                        solver_by_name(&sname)?,
+                        sparams,
+                        budget,
+                    )
+                } else {
+                    DescentAlgebraicOracle::new(m, inst, solver_by_name(&sname)?, sparams, budget)
+                })
             }
             _ => None,
         };
@@ -423,6 +427,7 @@ fn run_binary_analogue(
             "mitm" => &mut mitm,
             "mitm-frobenius" => &mut frob,
             "descent-algebraic" => algebraic.as_mut().expect("built above"),
+            "descent-edge-chain" => algebraic.as_mut().expect("built above"),
             other => return Err(format!("oracle `{other}` is not available here")),
         };
         progress.stage_begin("Index calculus", None, &spec.label());

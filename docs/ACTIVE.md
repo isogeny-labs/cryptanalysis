@@ -71,7 +71,7 @@ prime-field lift pipeline, while continuing to track the binary/Koblitz source
 and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
-- [ ] Integrate the ECC2K-130 mixed-edge lifted S3 presentation (`w = x_a x_c`) into the index-calculus degree/closure framework, with matched standard-edge controls and a prospectively frozen lead-sweep plan (Codex, started 2026-11-27, branch codex/ecc2k130-mixed-edge-presentation-20261127) [pcc:unverified]
+- [x] Integrate the ECC2K-130 mixed-edge lifted S3 presentation (`w = x_a x_c`) into the index-calculus degree/closure framework, with matched standard-edge controls and a prospectively frozen lead-sweep plan (Codex, completed 2026-11-27, branch codex/ecc2k130-mixed-edge-presentation-20261127, PR #2000; measurement remains checkpoint-gated) [pcc:unverified]
 - [ ] PKM torus (p+1-side Dickson) tower kind for M31 in pkm_tower_pilot (claude, started 2026-11-25, branch claude/pkm-torus-tower-m31; tracking workspace#130)
 - [ ] CT201–CT203: complete cold ECDLP source adjudication (matched five-arm rho/BSGS/IC, Williams order, distinct-Q per-block prospective gate; automation, started 2026-11-18, branch research/ct201-complete-single-target-gate-20261118, PR #1766; source CI 44/44 normal and -O at 36807d15; native/PCC blocked) [pcc:unverified]
 
