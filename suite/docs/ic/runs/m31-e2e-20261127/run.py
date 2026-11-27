@@ -39,7 +39,7 @@ def native(m,name,command,**meta):
     print(json.dumps({'id':name,'process':row['status'],'native':report.get('status') if report else None,'cold_ms':report.get('cold_to_report_ns',0)/1e6 if report else None,'queries':report.get('work',{}).get('queries') if report else None}),flush=True)
     return row
 def ic(m,name,q,stream,config,**meta):
-    command=[BIN,'--qx',q[0],'--qy',q[1],'--columns',config['columns'],'--summands',config['summands'],'--base',config['base'],'--method',config.get('method','indexed'),'--seed',stream['sampler'],'--base-seed',stream['base'],'--max-ms',5000,'--max-queries',2000000,'--lanes',64,'--chunk',64]
+    command=[BIN,'--qx',q[0],'--qy',q[1],'--columns',config['columns'],'--summands',config['summands'],'--base',config['base'],'--method',config.get('method','indexed'),'--seed',stream['sampler'],'--base-seed',stream['base'],'--max-ms',5000,'--max-queries',config.get('max_queries',2000000),'--lanes',64,'--chunk',64]
     if meta.get('stage')=='profile':command+=['--profile']
     return native(m,name,command,configuration=config,**meta)
 def score(rows):

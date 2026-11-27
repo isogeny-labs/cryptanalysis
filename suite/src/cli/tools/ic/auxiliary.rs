@@ -203,6 +203,13 @@ fn multi_row_json(row: &aux::MultiRelation) -> Value {
     json!({"a":row.a,"b":row.b,"terms":terms})
 }
 fn multi_certificate_json(certificate: &aux::MultiCertificate) -> Value {
+    if certificate.summands == 2 {
+        let rows:Vec<Value>=certificate.relations.iter().map(|row|{
+            let t=row.decomposition.summands();
+            json!({"a":row.a,"b":row.b,"i":t[0].index,"j":t[1].index,"si":if t[0].negative{-1}else{1},"sj":if t[1].negative{-1}else{1}})
+        }).collect();
+        return json!({"summands":2,"order":certificate.order,"P":certificate.generator.coordinates(),"Q":certificate.target.coordinates(),"scalar":certificate.scalar,"relations":rows,"weights":certificate.weights});
+    }
     json!({"summands":certificate.summands,"order":certificate.order,"P":certificate.generator.coordinates(),"Q":certificate.target.coordinates(),
         "scalar":certificate.scalar,"relations":certificate.relations.iter().map(multi_row_json).collect::<Vec<_>>(),"weights":certificate.weights})
 }
@@ -1442,6 +1449,31 @@ mod tests {
                 >= r["pair_index"]["preparation_ns"].as_u64().unwrap()
         );
         assert!(!r["pair_index"]["online_counts"].is_null());
+        args.summands = 2;
+        let pair = execute::<7>(&args, &input, "fixture".into(), Instant::now()).unwrap();
+        assert_eq!(pair["status"], "solved");
+        assert_eq!(pair["certificate"]["scalar"], 37);
+        assert!(pair["certificate"]["relations"][0]["i"].is_u64());
+        let path = std::env::temp_dir().join(format!(
+            "m31-indexed-pair-replay-{}.jsonl",
+            std::process::id()
+        ));
+        let rows = pair["certificate"]["relations"].as_array().unwrap();
+        std::fs::write(
+            &path,
+            rows.iter()
+                .map(|row| row.to_string() + "\n")
+                .collect::<String>(),
+        )
+        .unwrap();
+        let mut replay = args.clone();
+        replay.pair_index = false;
+        replay.profile_phases = false;
+        replay.replay_relations = Some(path.clone());
+        let check = execute::<7>(&replay, &input, "fixture".into(), Instant::now()).unwrap();
+        std::fs::remove_file(path).unwrap();
+        assert_eq!(check["status"], "replayed");
+        assert_eq!(check["certificate"]["scalar"], 37);
         args.pair_index_max_pairs = Some(1);
         assert!(execute::<7>(&args, &input, "fixture".into(), Instant::now()).is_err());
         assert!(TestCli::try_parse_from([
