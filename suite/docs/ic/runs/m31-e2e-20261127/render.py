@@ -33,10 +33,4 @@ fig.tight_layout();save(fig,'pipeline')
 # Compact committed evidence retains native clock/counter outputs and original hash bindings.
 small={'schema':'m31-e2e-delivery/v1','standing':'pcc:unverified','original_panel':{k:v for k,v in a.items() if k not in ('profile','rows')},'followup_panel':{k:v for k,v in b.items() if k!='profile'},'source_refs':{'worker_execution':'bfa695d0c5963a2bbdb6a59766683188a40df8f4','original_selection':'a52ce2f71a2348eaedb887244f6437e7df8fffd4','followup_protocol':'c94c0b7','followup_runner':'0f5ec2dd351b8e3c2e839f56b930d6268e94319e','followup_selection_analysis':'67f5e90'},'artifact':'/workspace/isogeny-m31-e2e.zip','binary_sha256':json.loads((P/'manifest.json').read_text())['binary_sha256'],'bindings':{str(f.relative_to(P)):hashlib.sha256(f.read_bytes()).hexdigest() for f in [P/'manifest.json',P/'summary.json',P/'replay.json',P/'m2/manifest.json',P/'m2/summary.json',P/'m2/replay.json']}}
 (P/'RESULTS.json').write_text(json.dumps(small,indent=2)+'\n')
-# Record observable host details without asserting physical-host isolation or RAM technology.
-def command(cmd):return subprocess.run(cmd,capture_output=True,text=True).stdout
-host={'schema':'m31-e2e-host/v1','recorded_after_evaluation':True,'host':platform.platform(),'lscpu':command(['lscpu','-J']),'affinity':sorted(os.sched_getaffinity(0)),'numa_policy':'single pinned exposed CPU; default first-touch allocation; no enforced node binding or placement capture','physical_ram_technology':'unknown','isolation':'shared container; no admitted tier or exclusivity','compiler':command(['bash','-lc','source "$HOME/.cargo/env"; rustc +1.88.0 -Vv']),'cgroup':{}}
-for path in ('/sys/fs/cgroup/cpu.max','/sys/fs/cgroup/cpu.stat','/sys/fs/cgroup/memory.max','/sys/fs/cgroup/memory.events','/sys/fs/cgroup/cpuset.cpus.effective','/sys/fs/cgroup/cpuset.mems.effective'):
- try:host['cgroup'][path]=Path(path).read_text()
- except OSError:host['cgroup'][path]=None
-(P/'hardware.json').write_text(json.dumps(host,indent=2)+'\n')
+# hardware.json is an immutable observation, captured separately after the run.
