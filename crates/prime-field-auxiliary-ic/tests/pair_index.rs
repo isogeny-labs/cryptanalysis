@@ -113,7 +113,7 @@ fn indexed_end_to_end_recovers_every_nonzero_finite_control_target() {
     let base = FactorBase::without_maps(c, &roots).unwrap();
     let index = PairIndex::new(&base, 1000, 8).unwrap();
     let prepared = PreparedSolver::new(&base, 109, g).unwrap();
-    for m in [3, 4] {
+    for m in [2, 3, 4] {
         for scalar in 1..109 {
             let target = c.mul(Some(g), scalar).unwrap().unwrap();
             let cfg = Config {
