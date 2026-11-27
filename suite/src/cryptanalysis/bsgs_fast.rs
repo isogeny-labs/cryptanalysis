@@ -863,16 +863,7 @@ impl BsgsFastPlan {
     ) -> Self {
         let workers = workers.max(1);
         let chains_per_worker = chains_per_worker.max(1);
-        let isqrt = |v: u64| {
-            let mut s = (v as f64).sqrt() as u64;
-            while s > 0 && s.saturating_mul(s) > v {
-                s -= 1;
-            }
-            while (s + 1).saturating_mul(s + 1) <= v {
-                s += 1;
-            }
-            s
-        };
+        let isqrt = isqrt_u64;
         let ceil_div = |a: u64, b: u64| a.div_ceil(b);
         let m = if neg_map {
             ceil_div(isqrt(width), 2).max(1)
@@ -1271,16 +1262,13 @@ pub fn reference_scalar_mul(c: &CurveParams, k: u64) -> Point {
     g.scalar_mul(&BigUint::from(k), &params_a_fe(c))
 }
 
-/// `√v`, rounded down.
+/// `√v`, rounded down, exact for every `u64`.
+///
+/// The previous f64-seeded loop compared `(s + 1).saturating_mul(s + 1) <= v`,
+/// which saturates to `u64::MAX` for `s >= 2^32 − 1` and so never stopped for
+/// `v` near `u64::MAX`.
 fn isqrt_u64(v: u64) -> u64 {
-    let mut s = (v as f64).sqrt() as u64;
-    while s > 0 && s.saturating_mul(s) > v {
-        s -= 1;
-    }
-    while (s + 1).saturating_mul(s + 1) <= v {
-        s += 1;
-    }
-    s
+    v.isqrt()
 }
 
 /// `S = operations / √width`, the unit the repository's ECDLP threads
@@ -1298,6 +1286,22 @@ pub fn cost_ratio(stats: &BsgsFastStats, width: u64, targets: u64) -> f64 {
 mod tests {
     use super::*;
     use crate::cryptanalysis::ecdlp_variants::{bsgs as slow, EcGroup};
+
+    /// `isqrt_u64` terminates and is exact at the top of the u64 range
+    /// (the old loop spun forever there), and the plan built on it too.
+    #[test]
+    fn isqrt_u64_exact_near_u64_max() {
+        let r = (1u64 << 32) - 1;
+        assert_eq!(isqrt_u64(u64::MAX), r);
+        assert_eq!(isqrt_u64(r * r), r); // 2^64 − 2^33 + 1
+        assert_eq!(isqrt_u64(r * r - 1), r - 1);
+        assert_eq!(isqrt_u64((1u64 << 62) + 1), 1u64 << 31);
+        assert_eq!(isqrt_u64((1u64 << 52) + 7), 1u64 << 26);
+        let plan = BsgsFastPlan::new(u64::MAX, 0, true, 1, 1);
+        assert_eq!(plan.m, 1u64 << 31);
+        let plain = BsgsFastPlan::new(u64::MAX, 0, false, 1, 1);
+        assert_eq!(plain.m, 0xFFFF_FFF0u64.min(isqrt_u64(1u64 << 63)));
+    }
 
     /// A deterministic xorshift, so a failure is reproducible.
     struct Rng(u64);

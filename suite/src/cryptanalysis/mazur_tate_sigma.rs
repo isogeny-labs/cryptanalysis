@@ -263,7 +263,7 @@ pub fn formal_d_times_z(curve: &ZpCurve, z: &ZpInt, d: u64, series_len: usize) -
     };
     // u = d · log_F(z)
     let u = logf.evaluate(z);
-    let d_zp = ZpInt::new(BigInt::from(d as i64), p, prec);
+    let d_zp = ZpInt::new(BigInt::from(d), p, prec);
     let target = d_zp.mul(&u);
     // Newton: start at z_0 = d · z (leading-order).
     let mut z_cur = d_zp.mul(z);
@@ -354,16 +354,18 @@ pub fn frobenius_unit_root(p: &BigInt, a_p: i64, precision: u32) -> Option<ZpInt
 
 /// Run the Phase-3 quadratic-identity verification at `(curve, z_P, d
 /// ∈ 2..=d_max)`.  Returns a vector of rows + a consistency flag.
+///
+/// Errors when `p` is not a prime in `[3, 2^64)`: the series have
+/// `p − 1` terms. (The old code silently substituted `p = 11`.)
 pub fn run_mazur_tate_phase3(
     curve: &ZpCurve,
     z_p: &ZpInt,
     d_max: u64,
-) -> (Vec<MazurTatePhase3Row>, bool, Option<BigInt>) {
-    let p_u: u64 = curve.p.clone().try_into().unwrap_or(11);
-    let series_n = (p_u - 1).max(10) as usize;
+) -> Result<(Vec<MazurTatePhase3Row>, bool, Option<BigInt>), String> {
+    let series_n = sigma_series_len(&curve.p)?.max(10);
     let log_sigma_minus_log_z = match log_sigma_minus_log_z(curve, series_n) {
         Some(s) => s,
-        None => return (Vec::new(), false, None),
+        None => return Ok((Vec::new(), false, None)),
     };
     let log_sigma_p = log_sigma_minus_log_z.evaluate(z_p);
     let mut rows = Vec::new();
@@ -373,12 +375,12 @@ pub fn run_mazur_tate_phase3(
         let z_d = formal_d_times_z(curve, z_p, d, series_n);
         let log_sigma_d = log_sigma_minus_log_z.evaluate(&z_d);
         // diff = log_sigma_d − d · log_sigma_p
-        let d_zp = ZpInt::new(BigInt::from(d as i64), &curve.p, curve.precision);
+        let d_zp = ZpInt::new(BigInt::from(d), &curve.p, curve.precision);
         let d_log_p = d_zp.mul(&log_sigma_p);
         let diff = log_sigma_d.sub(&d_log_p);
-        // d(d−1)/2
+        // d(d−1)/2, in BigInt (`(d·(d−1)) as i64` overflowed for d > 2^31.5)
         let d_d_minus_1 = ZpInt::new(
-            BigInt::from((d * (d - 1)) as i64),
+            BigInt::from(d) * (BigInt::from(d) - 1),
             &curve.p,
             curve.precision,
         );
@@ -413,7 +415,19 @@ pub fn run_mazur_tate_phase3(
     } else {
         None
     };
-    (rows, consistent, common_h)
+    Ok((rows, consistent, common_h))
+}
+
+/// The `p − 1` series length of the σ and formal-log series, refusing a
+/// `p` outside `[3, 2^64)` explicitly.
+fn sigma_series_len(p: &BigInt) -> Result<usize, String> {
+    u64::try_from(p)
+        .ok()
+        .filter(|&v| v >= 3)
+        .and_then(|v| usize::try_from(v - 1).ok())
+        .ok_or_else(|| {
+            format!("Mazur-Tate sigma: p = {p} must be a prime in [3, 2^64) (the series have p - 1 terms)")
+        })
 }
 
 /// `σ_p(z)` as a `z`-power-series for short-Weierstrass `E: y² = x³
@@ -536,20 +550,32 @@ pub fn log_sigma_minus_log_z(curve: &ZpCurve, n: usize) -> Option<PSeries> {
 ///
 /// For toy curves at low precision, this might or might not have
 /// the d-recovery signal.  The experiment: tabulate empirically.
+///
+/// `Err` when `p` is not a prime in `[3, 2^64)` (the old code silently
+/// substituted `p = 11`); `Ok(None)` when the series or an inverse does
+/// not exist at this precision.
 pub fn run_mazur_tate_recovery_test(
     curve: &ZpCurve,
     z_p: &ZpInt,
     d: u64,
-) -> Option<MazurTateResult> {
+) -> Result<Option<MazurTateResult>, String> {
     // Series length must stay below p (so we don't try to invert
     // p in any antiderivative).  For p = 11, use n = 10.
-    let p_u: u64 = curve.p.clone().try_into().unwrap_or(11);
-    let series_n = (p_u - 1) as usize;
+    let series_n = sigma_series_len(&curve.p)?;
+    Ok(mazur_tate_recovery_inner(curve, z_p, d, series_n))
+}
+
+fn mazur_tate_recovery_inner(
+    curve: &ZpCurve,
+    z_p: &ZpInt,
+    d: u64,
+    series_n: usize,
+) -> Option<MazurTateResult> {
     let log_sigma_minus_log_z = log_sigma_minus_log_z(curve, series_n)?;
 
     // For Q = d·P in formal group: z_Q = d · z_P (additive at leading
     // order for short Weierstrass).
-    let z_q = ZpInt::new(BigInt::from(d as i64), &curve.p, curve.precision).mul(z_p);
+    let z_q = ZpInt::new(BigInt::from(d), &curve.p, curve.precision).mul(z_p);
 
     // log σ(P) = log z_P + log_sigma_minus_log_z(z_P)
     // log σ(Q) = log z_Q + log_sigma_minus_log_z(z_Q)
@@ -570,7 +596,7 @@ pub fn run_mazur_tate_recovery_test(
     let val_p = log_sigma_minus_log_z.evaluate(z_p);
     let val_q = log_sigma_minus_log_z.evaluate(&z_q);
 
-    let d_zp = ZpInt::new(BigInt::from(d as i64), &curve.p, curve.precision);
+    let d_zp = ZpInt::new(BigInt::from(d), &curve.p, curve.precision);
     let predicted_via_d = d_zp.mul(&val_p);
     let actual = val_q;
     let diff = actual.sub(&predicted_via_d);
@@ -579,7 +605,7 @@ pub fn run_mazur_tate_recovery_test(
     // (some constant times d(d-1)/2).
     // The relationship: diff / [d(d-1)/2] should be independent of d.
     let d_d_minus_1 = ZpInt::new(
-        BigInt::from((d * (d - 1)) as i64),
+        BigInt::from(d) * (BigInt::from(d) - 1),
         &curve.p,
         curve.precision,
     );
@@ -617,6 +643,36 @@ pub struct MazurTateResult {
 mod tests {
     use super::*;
     use num_traits::One;
+
+    /// p outside [3, 2^64) is an error, not a silent p = 11.
+    #[test]
+    fn mazur_tate_refuses_p_above_2p64() {
+        let p = (BigInt::one() << 64u32) + 13;
+        let curve = ZpCurve::new(BigInt::from(1), BigInt::from(1), &p, 2);
+        let z_p = ZpInt::new(p.clone(), &p, 2);
+        let err = run_mazur_tate_phase3(&curve, &z_p, 3).unwrap_err();
+        assert!(err.contains("2^64"), "{err}");
+        assert!(run_mazur_tate_recovery_test(&curve, &z_p, 3).is_err());
+    }
+
+    /// A scalar d above 2^32 enters as an exact BigInt: d and
+    /// d' = d + 11^6·2^30 (≈ 2^50.8) agree modulo p^prec, so every field
+    /// but `d` must match. The old `(d·(d−1)) as i64` wrapped for d'.
+    #[test]
+    fn mazur_tate_large_scalar_is_exact() {
+        let p = BigInt::from(11);
+        let prec = 6u32;
+        let curve = ZpCurve::new(BigInt::from(1), BigInt::from(1), &p, prec);
+        let z_p = ZpInt::new(BigInt::from(11), &p, prec);
+        let d = 5u64;
+        let d_big = d + 1_771_561u64 * (1u64 << 30);
+        let a = run_mazur_tate_recovery_test(&curve, &z_p, d).unwrap();
+        let b = run_mazur_tate_recovery_test(&curve, &z_p, d_big).unwrap();
+        let (a, b) = (a.expect("toy result"), b.expect("toy result"));
+        assert_eq!(a.z_q, b.z_q);
+        assert_eq!(a.diff, b.diff);
+        assert_eq!(a.estimated_h, b.estimated_h);
+    }
 
     /// `σ_p(z)` has expected leading coefficients.
     #[test]
@@ -663,7 +719,7 @@ mod tests {
 
         let mut estimated_hs: Vec<BigInt> = Vec::new();
         for d in 2u64..=8 {
-            if let Some(r) = run_mazur_tate_recovery_test(&curve, &z_p, d) {
+            if let Some(r) = run_mazur_tate_recovery_test(&curve, &z_p, d).expect("p = 11") {
                 let h_str = r
                     .estimated_h
                     .as_ref()
@@ -773,7 +829,7 @@ mod tests {
         let curve = ZpCurve::new(BigInt::from(1), BigInt::from(1), &p, prec);
         let z_p = ZpInt::new(BigInt::from(11), &p, prec);
 
-        let (rows, consistent, h_common) = run_mazur_tate_phase3(&curve, &z_p, 8);
+        let (rows, consistent, h_common) = run_mazur_tate_phase3(&curve, &z_p, 8).unwrap();
         println!();
         println!("=== Mazur-Tate σ Phase 3: corrected [d]_F via reversion ===");
         println!();

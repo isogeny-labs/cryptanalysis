@@ -101,7 +101,7 @@ use crate::cryptanalysis::cga_hnc::{
 use crate::utils::mod_inverse;
 use num_bigint::{BigInt, RandBigInt, ToBigInt};
 use num_integer::Integer;
-use num_traits::{One, Signed, Zero};
+use num_traits::{One, Signed, ToPrimitive, Zero};
 use rand::rngs::StdRng;
 use rand::SeedableRng;
 
@@ -597,24 +597,32 @@ pub fn aut_folded_rho_dlp(
     Err("aut-folded rho exhausted max_restarts on sterile collisions")
 }
 
+/// `x` as the nearest `f64` (`num_traits::ToPrimitive::to_f64`).
+///
+/// The old hand-rolled version returned `2^bits` for every `x` of 53 bits
+/// or more, ignoring the mantissa: up to 2× wrong.
 fn bigint_to_f64(x: &BigInt) -> f64 {
-    let bits = x.bits() as i32;
-    if bits < 53 {
-        let bytes = x.to_signed_bytes_be();
-        let mut v: u64 = 0;
-        for b in bytes.iter() {
-            v = (v << 8) | (*b as u64);
-        }
-        v as f64
-    } else {
-        2f64.powi(bits)
-    }
+    x.to_f64().unwrap_or(f64::NAN)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use rand::Rng;
+
+    /// Correctly rounded at and above 2^53 (the old helper gave 2^bits).
+    #[test]
+    fn bigint_to_f64_uses_the_mantissa_above_2p53() {
+        let three = BigInt::from(3) << 60u32; // 62 bits; old result 2^62
+        assert_eq!(bigint_to_f64(&three), 3.0 * 2f64.powi(60));
+        let big = (BigInt::from(5) << 200u32) + 1;
+        assert_eq!(bigint_to_f64(&big), 5.0 * 2f64.powi(200));
+        assert_eq!(bigint_to_f64(&BigInt::from(1_000_003)), 1_000_003.0);
+        assert_eq!(
+            bigint_to_f64(&(BigInt::from(1u64 << 53) + 1)),
+            2f64.powi(53)
+        );
+    }
 
     /// Search for a j=0 curve over `F_p` whose order is **prime
     /// and ≡ 1 (mod 3)** — exactly the curves where the full

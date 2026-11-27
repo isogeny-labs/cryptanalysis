@@ -306,11 +306,11 @@ fn one(p: &BigUint) -> FieldElement {
 /// crate — the toy curve uses `p = 271` — so brute force is more than
 /// fast enough.
 ///
-/// For cryptographically-sized `p` the right approach is
-/// `gcd(poly(X), X^p − X)` (Cantor-Zassenhaus rational-factor
-/// extraction) followed by equal-degree splitting; we do not
-/// implement that here, but the function still returns the empty
-/// vector rather than panicking so the caller can detect the gap.
+/// Above `2²⁰` it uses Cantor–Zassenhaus: `g = gcd(poly(X), X^p − X)`
+/// collects the distinct linear factors and `gcd(g, (X + a)^{(p−1)/2} − 1)`
+/// splits them ([`find_roots_fp_cz`]). (Until now that branch returned
+/// no roots at all, indistinguishable from a polynomial without roots.)
+/// `p` must be prime. Roots are distinct and sorted ascending.
 pub fn find_roots_fp(coeffs: &[FieldElement], p: &BigUint) -> Vec<FieldElement> {
     let mut roots = Vec::new();
     if coeffs.is_empty() || coeffs.iter().all(|c| c.is_zero()) {
@@ -328,9 +328,12 @@ pub fn find_roots_fp(coeffs: &[FieldElement], p: &BigUint) -> Vec<FieldElement> 
 
     let p_bits = p.bits();
     if p_bits > 20 {
-        // Out of brute-force range and no CZ wired here — caller
-        // gets empty.  See doc comment.
-        return roots;
+        // Out of brute-force range: Cantor–Zassenhaus.
+        let c: Vec<BigUint> = coeffs[..=deg].iter().map(|c| c.value.clone()).collect();
+        return find_roots_fp_cz(&c, p)
+            .into_iter()
+            .map(|r| FieldElement::new(r, p.clone()))
+            .collect();
     }
     let p_u64 = p.to_u64_digits().first().copied().unwrap_or(0);
     let coeffs_slice = &coeffs[..=deg];
@@ -346,6 +349,78 @@ pub fn find_roots_fp(coeffs: &[FieldElement], p: &BigUint) -> Vec<FieldElement> 
         }
     }
     roots
+}
+
+/// Distinct roots in `F_p` (odd prime `p`) of `Σ coeffs[i]·X^i`, by
+/// Cantor–Zassenhaus, sorted ascending. `O(d² log p)` field operations for
+/// degree `d`, any size of `p`.
+pub fn find_roots_fp_cz(coeffs: &[BigUint], p: &BigUint) -> Vec<BigUint> {
+    use crate::prime_hyperelliptic::fp_poly::FpPoly;
+    let f = FpPoly::from_coeffs(coeffs.to_vec(), p.clone());
+    if f.degree().is_none_or(|d| d == 0) || p < &BigUint::from(3u32) {
+        return Vec::new();
+    }
+    let f = f.monic();
+    let x = FpPoly::x(p.clone());
+    let g = f.gcd(&poly_powmod(&x, p, &f).sub(&x));
+    let mut out = Vec::new();
+    split_linear_factors(&g, p, &mut out);
+    out.sort();
+    out.dedup();
+    out
+}
+
+/// `base^e mod m` in `F_p[X]`.
+fn poly_powmod(
+    base: &crate::prime_hyperelliptic::fp_poly::FpPoly,
+    e: &BigUint,
+    m: &crate::prime_hyperelliptic::fp_poly::FpPoly,
+) -> crate::prime_hyperelliptic::fp_poly::FpPoly {
+    use crate::prime_hyperelliptic::fp_poly::FpPoly;
+    let mut acc = FpPoly::one(m.p.clone()).rem(m);
+    let b = base.rem(m);
+    for i in (0..e.bits()).rev() {
+        acc = acc.mul(&acc).rem(m);
+        if e.bit(i) {
+            acc = acc.mul(&b).rem(m);
+        }
+    }
+    acc
+}
+
+/// Push the roots of `g`, a product of distinct monic linear factors.
+fn split_linear_factors(
+    g: &crate::prime_hyperelliptic::fp_poly::FpPoly,
+    p: &BigUint,
+    out: &mut Vec<BigUint>,
+) {
+    use crate::prime_hyperelliptic::fp_poly::{fp_inv, FpPoly};
+    let deg = match g.degree() {
+        None | Some(0) => return,
+        Some(d) => d,
+    };
+    if deg == 1 {
+        // c1·X + c0 = 0  ⇒  X = −c0 / c1.
+        if let Some(inv) = fp_inv(&g.coeff(1), p) {
+            out.push((p - (g.coeff(0) * inv) % p) % p);
+        }
+        return;
+    }
+    let half = (p - 1u32) >> 1u32;
+    let one = FpPoly::one(p.clone());
+    // Each a splits a pair of roots with probability about 1/2.
+    for a in 1u64..=4096 {
+        let xa = FpPoly::from_coeffs(vec![BigUint::from(a), BigUint::one()], p.clone());
+        let h = g.gcd(&poly_powmod(&xa, &half, g).sub(&one));
+        if h.degree().is_some_and(|d| d > 0 && d < deg) {
+            let (q, _) = g.divrem(&h);
+            split_linear_factors(&h, p, out);
+            split_linear_factors(&q.monic(), p, out);
+            return;
+        }
+    }
+    // Not reached for a prime p (each try splits with probability ~1/2);
+    // a composite modulus can leave g unsplit, and its roots are dropped.
 }
 
 // ── Tonelli–Shanks square root mod p ────────────────────────────────────
@@ -1299,6 +1374,55 @@ mod tests {
             value.is_zero(),
             "S₄ should vanish on collinear-sum x-coords"
         );
+    }
+
+    /// Above 2^20 the root finder works (Cantor–Zassenhaus) instead of
+    /// silently returning no roots: p = 2^61 − 1, roots near the top, a
+    /// repeated root and an irreducible quadratic factor.
+    #[test]
+    fn find_roots_fp_above_2p20() {
+        let p = (BigUint::one() << 61u32) - BigUint::one();
+        let fe = |v: BigUint| FieldElement::new(v, p.clone());
+        let r = [
+            &p - BigUint::from(5u32),
+            BigUint::from(1_234_567_891_011u64),
+            BigUint::from(42u32),
+        ];
+        // (X − r0)^2 (X − r1)(X − r2)(X² + 1)? 2^61−1 ≡ 3 mod 4, so X² + 1
+        // has no root.
+        let lin = |c: &BigUint| vec![fe(&p - c), FieldElement::one(p.clone())];
+        let mulp = |a: &[FieldElement], b: &[FieldElement]| {
+            let mut out = vec![fe(BigUint::zero()); a.len() + b.len() - 1];
+            for (i, x) in a.iter().enumerate() {
+                for (j, y) in b.iter().enumerate() {
+                    out[i + j] = out[i + j].add(&x.mul(y));
+                }
+            }
+            out
+        };
+        let mut f = lin(&r[0]);
+        for c in [&r[0], &r[1], &r[2]] {
+            f = mulp(&f, &lin(c));
+        }
+        f = mulp(
+            &f,
+            &[
+                FieldElement::one(p.clone()),
+                fe(BigUint::zero()),
+                FieldElement::one(p.clone()),
+            ],
+        );
+        let roots: Vec<BigUint> = find_roots_fp(&f, &p).into_iter().map(|x| x.value).collect();
+        let mut want = r.to_vec();
+        want.sort();
+        assert_eq!(roots, want);
+        // An irreducible quadratic alone has no roots.
+        let q = vec![
+            FieldElement::one(p.clone()),
+            fe(BigUint::zero()),
+            FieldElement::one(p.clone()),
+        ];
+        assert!(find_roots_fp(&q, &p).is_empty());
     }
 
     /// **Root finder sanity**: build a polynomial with known roots

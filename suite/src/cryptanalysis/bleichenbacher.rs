@@ -63,7 +63,7 @@
 
 use crate::utils::mod_inverse;
 use num_bigint::BigUint;
-use num_traits::Zero;
+use num_traits::{ToPrimitive, Zero};
 
 /// One ECDSA signature in HNP-derived form.
 #[derive(Clone, Debug)]
@@ -125,6 +125,19 @@ pub fn bias_magnitude(samples: &[BleichenbacherSample], d: &BigUint, n: &BigUint
     (re * re + im * im).sqrt()
 }
 
+/// Largest group order the direct `O(n · m)` scan accepts (`2^24`).
+pub const BLEICHENBACHER_DIRECT_MAX_N: u64 = 1 << 24;
+
+/// Whether [`bleichenbacher_direct`] will scan this `n` (`1 <= n <= 2^24`).
+pub fn bleichenbacher_direct_supports(n: &BigUint) -> bool {
+    matches!(n.to_u64(), Some(v) if v != 0 && v <= BLEICHENBACHER_DIRECT_MAX_N)
+}
+
+/// Largest half-width of the post-FFT refinement window (each candidate
+/// costs one `O(m)` evaluation of `|Z(d)|`). Without a cap the window
+/// `n / N` is astronomically large for cryptographic `n`.
+const FFT_REFINE_MAX_HALF_WINDOW: u64 = 1 << 16;
+
 /// **Direct (toy-scale) Bleichenbacher attack**: scan all `d ∈ [0, n)`
 /// and return the one with the highest `|Z(d)|`.
 ///
@@ -137,6 +150,12 @@ pub fn bias_magnitude(samples: &[BleichenbacherSample], d: &BigUint, n: &BigUint
 /// `None` if the peak SNR (peak-magnitude / noise-floor) is below
 /// the threshold.  Default heuristic: 3.0 (peak should be ≥ 3× the
 /// noise floor to be a reliable signal).
+///
+/// **Design cap:** also returns `None` (no scan at all) when
+/// `n > BLEICHENBACHER_DIRECT_MAX_N` (`2^24`) — the scan is `O(n · m)`.
+/// Callers must gate on that bound (see
+/// [`bleichenbacher_direct_supports`]) to tell "beyond the toy-scale
+/// cap" apart from "no bias detected".
 pub fn bleichenbacher_direct(
     samples: &[BleichenbacherSample],
     n: &BigUint,
@@ -146,10 +165,14 @@ pub fn bleichenbacher_direct(
     if m < 2 {
         return None;
     }
-    let n_u64 = n.to_u64_digits().first().copied().unwrap_or(0);
-    if n_u64 == 0 || n_u64 > (1u64 << 24) {
-        return None; // beyond toy scale
+    // Use the full value of `n`, not its low 64-bit limb: n = 2^64 + 5 must
+    // be refused, not scanned as if it were 5.
+    if !bleichenbacher_direct_supports(n) {
+        return None; // beyond toy scale (design cap, see doc)
     }
+    let n_u64 = n
+        .to_u64()
+        .expect("checked by bleichenbacher_direct_supports");
     let noise_floor = (m as f64).sqrt();
 
     let mut best_d = 0u64;
@@ -352,38 +375,28 @@ pub fn bleichenbacher_fft(
     // (Our discretization `h_i' = round(h_i · N / n)` makes
     // `F[ℓ] ≈ Z(ℓ)` for `ℓ ∈ [0, N)`.)  At cryptographic scale
     // where `N ≪ n`, the relationship is `d ≈ ℓ* · n / N`.
-    let n_int = n.iter_u64_digits().next().unwrap_or(0);
-    let d_candidate = if n_size as u64 >= n_int {
-        // Toy scale: ℓ* directly = d (mod n).
-        best_idx as u64 % n_int.max(1)
-    } else {
-        // Cryptographic scale: ℓ* · n / N.
-        ((best_idx as f64) * n_f / n_size as f64).round() as u64
-    };
-    // Search a window around the candidate.  FFT discretization at
-    // sub-bit bias spreads the peak over several bins; a wider
-    // refinement window catches the true `d` reliably.  Window
-    // width is `O(n / N)` plus some slack.
-    let window = if n_size as u64 >= n_int {
-        4i64
-    } else {
-        ((n_int / n_size as u64) as i64).max(4) + 4
-    };
-    let mut best_d = BigUint::from(d_candidate);
+    //
+    // All of this is exact BigUint arithmetic on the full `n` (the old code
+    // compared against the low 64-bit limb of `n` and rounded `ℓ*·n/N` in f64
+    // into a u64, both wrong once n > 2^64).
+    let (d_candidate, window) = fft_peak_to_d_candidate(best_idx, n_size, n);
+    let mut best_d = d_candidate.clone();
     let mut best_d_mag = bias_magnitude(samples, &best_d, n);
-    for delta in (-window)..=window {
-        if delta == 0 {
-            continue;
-        }
-        let cand_i = (d_candidate as i64 + delta).rem_euclid(n_int.max(1) as i64);
-        let cand = BigUint::from(cand_i as u64);
-        if &cand >= n {
-            continue;
-        }
-        let mag = bias_magnitude(samples, &cand, n);
-        if mag > best_d_mag {
-            best_d_mag = mag;
-            best_d = cand;
+    for delta in 1..=window {
+        let up = (&d_candidate + BigUint::from(delta)) % n;
+        // (d − delta) mod n, without going negative.
+        let delta_mod = BigUint::from(delta) % n;
+        let down = if d_candidate >= delta_mod {
+            &d_candidate - &delta_mod
+        } else {
+            n - (&delta_mod - &d_candidate)
+        };
+        for cand in [up, down] {
+            let mag = bias_magnitude(samples, &cand, n);
+            if mag > best_d_mag {
+                best_d_mag = mag;
+                best_d = cand;
+            }
         }
     }
     Some(BleichenbacherPeak {
@@ -394,20 +407,36 @@ pub fn bleichenbacher_fft(
     })
 }
 
-/// Convert `BigUint` to `f64`, lossy for cryptographic-size values.
-fn biguint_to_f64(x: &BigUint) -> f64 {
-    let bits = x.bits() as i32;
-    if bits < 53 {
-        x.iter_u64_digits().next().unwrap_or(0) as f64
+/// Map the FFT peak bin `ℓ*` (FFT size `N`) to a candidate `d` and the
+/// half-width of the refinement window, in exact integer arithmetic.
+///
+/// - `N >= n`: `d = ℓ* mod n`, window 4.
+/// - `N < n`: `d = round(ℓ* · n / N) mod n`, window `n / N + 4`, capped at
+///   [`FFT_REFINE_MAX_HALF_WINDOW`].
+fn fft_peak_to_d_candidate(best_idx: usize, n_size: usize, n: &BigUint) -> (BigUint, u64) {
+    let n_size_big = BigUint::from(n_size);
+    if n_size_big >= *n {
+        (BigUint::from(best_idx) % n, 4)
     } else {
-        // Use leading 53 bits as mantissa.
-        let bytes = x.to_bytes_be();
-        let mut acc = 0.0_f64;
-        for b in bytes.iter().take(8) {
-            acc = acc * 256.0 + *b as f64;
-        }
-        acc * 2f64.powi((bits - 53).max(0))
+        let numer = BigUint::from(best_idx) * n + (&n_size_big >> 1u32);
+        let d = (numer / &n_size_big) % n;
+        let ratio = (n / &n_size_big)
+            .to_u64()
+            .unwrap_or(u64::MAX)
+            .max(4)
+            .saturating_add(4)
+            .min(FFT_REFINE_MAX_HALF_WINDOW);
+        (d, ratio)
     }
+}
+
+/// Convert `BigUint` to `f64` (correctly rounded; `inf` above `f64::MAX`).
+///
+/// The previous hand-rolled version read the top 8 bytes (64 bits) but
+/// scaled by `2^(bits − 53)`, so every value of 53 bits or more came out
+/// wrong by a factor up to `2^11`.
+fn biguint_to_f64(x: &BigUint) -> f64 {
+    x.to_f64().unwrap_or(f64::INFINITY)
 }
 
 #[cfg(test)]
@@ -417,6 +446,69 @@ mod tests {
     use num_bigint::RandBigInt;
     use rand::rngs::StdRng;
     use rand::{RngCore, SeedableRng};
+
+    /// `biguint_to_f64` must be correctly rounded at and above 2^53. The old
+    /// version returned `top64 · 2^(bits − 53)`, i.e. 2^11 times too large.
+    #[test]
+    fn biguint_to_f64_correct_from_2p53_to_2p256() {
+        use num_traits::One;
+        for k in [53u32, 54, 60, 63, 64, 65, 100, 128, 200, 255, 256] {
+            let pow = BigUint::one() << k;
+            assert_eq!(biguint_to_f64(&pow), 2f64.powi(k as i32), "2^{k}");
+            let three = BigUint::from(3u32) << (k - 2);
+            assert_eq!(biguint_to_f64(&three), 3.0 * 2f64.powi(k as i32 - 2));
+            let near = &pow - BigUint::one();
+            // 2^k − 1 rounds to 2^k in f64 for k >= 54.
+            if k >= 54 {
+                assert_eq!(biguint_to_f64(&near), 2f64.powi(k as i32));
+            }
+            assert_eq!(biguint_to_f64(&near), near.to_f64().unwrap());
+        }
+        // Below 2^53 still exact.
+        assert_eq!(biguint_to_f64(&BigUint::from(1_000_003u64)), 1_000_003.0);
+    }
+
+    /// For n > 2^64 the d-candidate recovery must use the full n, not its
+    /// low limb. n = 2^70 + 3 has low limb 3, which made the old code take
+    /// the toy branch (`N >= 3`) and return `ℓ* mod 3`.
+    #[test]
+    fn fft_peak_recovery_uses_full_n_above_2p64() {
+        use num_traits::One;
+        let n = (BigUint::one() << 70u32) + BigUint::from(3u32);
+        let n_size = 1usize << 20;
+        let (d, window) = fft_peak_to_d_candidate(1 << 19, n_size, &n);
+        // ℓ*·n/N = n/2 = 2^69 + 1.5, rounded half up = 2^69 + 2.
+        assert_eq!(d, (BigUint::one() << 69u32) + BigUint::from(2u32));
+        assert_eq!(window, FFT_REFINE_MAX_HALF_WINDOW);
+        // Toy branch unchanged: N >= n gives ℓ* mod n and window 4.
+        let (d_toy, w_toy) = fft_peak_to_d_candidate(700, 1024, &BigUint::from(509u32));
+        assert_eq!(d_toy, BigUint::from(700u32 % 509));
+        assert_eq!(w_toy, 4);
+        // Mid-size: n = 2^30 + 7, N = 2^20: window = n/N + 4 = 1028.
+        let n30 = BigUint::from((1u64 << 30) + 7);
+        let (_, w30) = fft_peak_to_d_candidate(5, 1 << 20, &n30);
+        assert_eq!(w30, 1028);
+    }
+
+    /// The direct scan refuses n = 2^64 + 5 (old code scanned the low limb 5).
+    #[test]
+    fn direct_refuses_n_above_cap_including_above_2p64() {
+        use num_traits::One;
+        let n = (BigUint::one() << 64u32) + BigUint::from(5u32);
+        assert!(!bleichenbacher_direct_supports(&n));
+        let samples = vec![
+            BleichenbacherSample {
+                t: BigUint::from(1u32),
+                h: BigUint::from(2u32),
+            };
+            4
+        ];
+        assert!(bleichenbacher_direct(&samples, &n, 0.0).is_none());
+        assert!(bleichenbacher_direct_supports(&BigUint::from(1u64 << 24)));
+        assert!(!bleichenbacher_direct_supports(&BigUint::from(
+            (1u64 << 24) + 1
+        )));
+    }
 
     fn biased_nonce<R: RngCore>(rng: &mut R, k_bits: u32) -> BigUint {
         loop {

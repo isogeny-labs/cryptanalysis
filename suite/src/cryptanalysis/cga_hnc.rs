@@ -992,7 +992,7 @@ pub fn cga_hnc_attack_verbose(
                         let test_q = pt_scalar_mul(p_pt, &d_mod, a_0, p_mod);
                         if &test_q == q_pt {
                             residual_recovered_d = Some(d_mod);
-                            residual_bsgs_cost = Some(((u_range as f64).sqrt().ceil()) as u64);
+                            residual_bsgs_cost = Some(ceil_isqrt_u64(u_range));
                         }
                     }
                 }
@@ -1035,15 +1035,32 @@ fn crt_combine_map(pairs: &std::collections::HashMap<u64, (u64, u64)>) -> (BigIn
     (d, m)
 }
 
+/// The CRT modulus as a `u64`, or `None` when it does not fit (or is
+/// negative). Zero maps to 1 as before. The old version returned the low
+/// 64-bit limb, so a modulus of `2^64 + 5` was read as 5.
 fn modulus_to_u64(m: &BigInt) -> Option<u64> {
-    m.to_u64_digits().1.first().copied().or(Some(1))
+    if m.is_zero() {
+        return Some(1);
+    }
+    m.to_u64()
+}
+
+/// Exact `ceil(sqrt(n))` for any `u64` (the f64 form `(n as f64).sqrt().ceil()`
+/// can return `m` with `m·m < n` once `n > 2^52`).
+fn ceil_isqrt_u64(n: u64) -> u64 {
+    let r = n.isqrt();
+    if (r as u128) * (r as u128) < n as u128 {
+        r + 1
+    } else {
+        r
+    }
 }
 
 /// Baby-step giant-step DLP on an affine curve.  Searches for `d ∈
 /// [0, n)` such that `d · base = target`.  `O(√n)` time and memory.
 fn bsgs_dlp(base: &Pt2, target: &Pt2, n: u64, a: &BigInt, p_mod: &BigInt) -> Option<u64> {
     use std::collections::HashMap;
-    let m = (n as f64).sqrt().ceil() as u64;
+    let m = ceil_isqrt_u64(n);
     if m == 0 {
         return None;
     }
@@ -1223,6 +1240,41 @@ fn gcd_bi(a: &BigInt, b: &BigInt) -> BigInt {
 mod tests {
     use super::*;
     use num_bigint::BigInt;
+
+    /// `ceil_isqrt_u64` is exact above 2^52, where the f64 form is not:
+    /// for n = k^2 + 1 with k = 2^30 − 1, `(n as f64).sqrt().ceil()` is k.
+    #[test]
+    fn ceil_isqrt_exact_above_2p52() {
+        let k = (1u64 << 30) - 1;
+        let n = k * k + 1;
+        assert_eq!(ceil_isqrt_u64(n), k + 1);
+        assert_eq!(ceil_isqrt_u64(k * k), k);
+        for n in [
+            (1u64 << 53) + 1,
+            (1u64 << 62) + 3,
+            u64::MAX - 1,
+            u64::MAX,
+            0,
+            1,
+            2,
+            1000,
+        ] {
+            let m = ceil_isqrt_u64(n) as u128;
+            assert!(m * m >= n as u128, "{n}");
+            assert!(m == 0 || (m - 1) * (m - 1) < n as u128, "{n}");
+        }
+        assert_eq!(ceil_isqrt_u64(u64::MAX), 1u64 << 32);
+    }
+
+    /// A CRT modulus above 2^64 is refused, not reduced to its low limb.
+    #[test]
+    fn modulus_to_u64_refuses_above_2p64() {
+        let big = (BigInt::one() << 64u32) + BigInt::from(5);
+        assert_eq!(modulus_to_u64(&big), None);
+        assert_eq!(modulus_to_u64(&BigInt::from(u64::MAX)), Some(u64::MAX));
+        assert_eq!(modulus_to_u64(&BigInt::zero()), Some(1));
+        assert_eq!(modulus_to_u64(&BigInt::from(-3)), None);
+    }
 
     /// j(y² = x³ + 1) ≡ 0.
     #[test]
@@ -1741,7 +1793,7 @@ mod tests {
             let residual_range = p_order.checked_div(m_u).unwrap_or(p_order);
             let bsgs_ops = result
                 .residual_bsgs_cost
-                .unwrap_or(((residual_range as f64).sqrt().ceil()) as u64);
+                .unwrap_or(ceil_isqrt_u64(residual_range));
             let recovered = result.residual_recovered_d.is_some();
             println!(
                 "| {:>9} | {:>6} | {:>11} | {:>7} | {:>14} | {:>8} | {:>10} |  d_known={}",

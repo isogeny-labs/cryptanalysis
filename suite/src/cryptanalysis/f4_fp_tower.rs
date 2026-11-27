@@ -83,9 +83,13 @@ struct Fp {
 
 impl Fp {
     fn new(p: u64) -> Self {
+        // Design cap (single-word Barrett products need p < 2^32); no
+        // fallible entry point exists, so the panic names the limit and p.
         assert!(
             (3..1 << 32).contains(&p),
-            "f4_fp_tower: the prime must be odd and below 2^32"
+            "f4_fp_tower: the prime must be odd and lie in [3, 2^32) (single-word Barrett \
+             products); got p = {p} ({} bits)",
+            64 - p.leading_zeros()
         );
         Fp {
             p,
@@ -1985,6 +1989,13 @@ pub fn f4_tower(input: &[RPoly], ring: &TowerRing, opts: &TowerF4Options) -> Tow
 mod tests {
     use super::*;
     use std::collections::BTreeMap;
+
+    /// A 33..64-bit prime is refused with a message naming the limit and p.
+    #[test]
+    #[should_panic(expected = "got p = 4294967311 (33 bits)")]
+    fn tower_f4_names_the_2p32_limit() {
+        let _ = Fp::new(4_294_967_311);
+    }
 
     fn fp(p: u64) -> Fp {
         Fp::new(p)

@@ -59,7 +59,7 @@
 use crate::cryptanalysis::cga_hnc::{pt_add, pt_double, pt_scalar_mul, Pt2};
 use crate::utils::mod_inverse;
 use num_bigint::{BigInt, BigUint, RandBigInt, ToBigInt};
-use num_traits::{One, Zero};
+use num_traits::{One, ToPrimitive, Zero};
 use rand::rngs::StdRng;
 use rand::SeedableRng;
 use std::collections::HashMap;
@@ -305,18 +305,12 @@ pub fn p256_negation_rho(
     Err("rho exhausted max_restarts on sterile collisions")
 }
 
+/// `x` as the nearest `f64` (`num_traits::ToPrimitive::to_f64`).
+///
+/// The old hand-rolled version returned `2^bits` for every `x` of 53 bits
+/// or more, ignoring the mantissa: up to 2× wrong.
 fn bigint_to_f64(x: &BigInt) -> f64 {
-    let bits = x.bits();
-    if bits < 53 {
-        let bytes = x.to_signed_bytes_be();
-        let mut v: u64 = 0;
-        for b in bytes.iter() {
-            v = (v << 8) | (*b as u64);
-        }
-        v as f64
-    } else {
-        2f64.powi(bits as i32)
-    }
+    x.to_f64().unwrap_or(f64::NAN)
 }
 
 // ── Novel hybrid: ECDSA-transcript-filtered rho ──────────────────────
@@ -535,6 +529,20 @@ pub fn hybrid_rho_filter(
 mod tests {
     use super::*;
     use num_bigint::BigInt;
+
+    /// Correctly rounded at and above 2^53 (the old helper gave 2^bits).
+    #[test]
+    fn bigint_to_f64_uses_the_mantissa_above_2p53() {
+        let three = BigInt::from(3) << 60u32; // 62 bits; old result 2^62
+        assert_eq!(bigint_to_f64(&three), 3.0 * 2f64.powi(60));
+        let big = (BigInt::from(5) << 200u32) + 1;
+        assert_eq!(bigint_to_f64(&big), 5.0 * 2f64.powi(200));
+        assert_eq!(bigint_to_f64(&BigInt::from(1_000_003)), 1_000_003.0);
+        assert_eq!(
+            bigint_to_f64(&(BigInt::from(1u64 << 53) + 1)),
+            2f64.powi(53)
+        );
+    }
 
     /// Find a small toy curve isomorphic to P-256 in *structure*
     /// (no special automorphisms beyond ±1).  We use a curve where

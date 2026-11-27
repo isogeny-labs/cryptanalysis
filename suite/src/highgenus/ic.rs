@@ -847,7 +847,9 @@ pub fn solve_log_mod_n(relations: &[Relation], fb_size: usize, n: u64) -> (Optio
     }
     let xcol = ncols;
     let width = ncols + 2; // + x + rhs
-    let red = |v: i64| -> u64 { (((v % n as i64) + n as i64) % n as i64) as u64 };
+                           // `rem_euclid` never overflows; the old `(v % n) + n` overflowed i64 for
+                           // n in (2^62, 2^63) (accepted by `index_calculus_dlp`) and positive v.
+    let red = |v: i64| -> u64 { (v as i128).rem_euclid(n as i128) as u64 };
     let mut mat: Vec<Vec<u64>> = relations
         .iter()
         .map(|r| {
@@ -984,6 +986,37 @@ pub fn inverse_mod(a: &BigUint, n: &BigUint) -> Option<BigUint> {
 mod tests {
     use super::*;
     use crate::highgenus::cantor::HyperellipticCurve;
+
+    /// `solve_log_mod_n` at the top of the accepted range, n = 2^63 − 25
+    /// (prime). A coefficient 30 made the old `(v % n) + n` overflow i64.
+    #[test]
+    fn solve_log_mod_n_near_2p63() {
+        let n: u64 = (1u64 << 63) - 25;
+        let x0 = 12_345u64;
+        let rels = vec![
+            // y0 = 7
+            Relation {
+                coeffs: vec![(0, 1)],
+                alpha: BigUint::from(7u32),
+                beta: BigUint::zero(),
+            },
+            // 30·y0 − x = 210 − x0
+            Relation {
+                coeffs: vec![(0, 30)],
+                alpha: BigUint::from(n - (x0 - 210)),
+                beta: BigUint::one(),
+            },
+            // −5·y1 = −35  (negative coefficient)
+            Relation {
+                coeffs: vec![(1, -5)],
+                alpha: BigUint::from(n - 35),
+                beta: BigUint::zero(),
+            },
+        ];
+        let (sol, dim) = solve_log_mod_n(&rels, 2, n);
+        assert_eq!(sol, Some(x0));
+        assert_eq!(dim, 3);
+    }
 
     #[test]
     fn det_exact_matches_small_cases() {

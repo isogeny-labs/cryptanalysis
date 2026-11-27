@@ -501,15 +501,17 @@ fn solve_structural(
         gx,
         gy,
         n: ch.subgroup_order.clone(),
-        h: u32::try_from(&ch.cofactor).unwrap_or(0),
+        h: 0, // set below
     };
-    let curve_order = rec["group_order"]
+    let recorded_order = rec["group_order"]
         .as_str()
         .map(|s| {
             let t = s.trim_start_matches("0x");
             BigUint::parse_bytes(t.as_bytes(), 16)
         })
         .unwrap_or(None);
+    let (h, curve_order) = cofactor_and_order(&ch.cofactor, &ch.subgroup_order, recorded_order);
+    let curve = crate::ecc::curve::CurveParams { h, ..curve };
     let mut opts = AttackOptions {
         force: match a.method {
             Method::Smart => Some(W::Smart),
@@ -607,5 +609,47 @@ fn solve_structural(
             "{}: no applicable attack within the limits (see the notes)",
             a.id
         ))),
+    }
+}
+
+/// `CurveParams::h` is a `u32`, and `weak_curves` reads `h = 0` as "unknown
+/// cofactor". A cofactor of 2^32 or more used to become that 0 silently,
+/// leaving the MOV check without `#E` unless the record also listed it.
+/// Now such a cofactor is carried exactly as `#E = n·h` in `curve_order`
+/// (a recorded group order still wins).
+fn cofactor_and_order(
+    cofactor: &BigUint,
+    subgroup_order: &BigUint,
+    recorded_order: Option<BigUint>,
+) -> (u32, Option<BigUint>) {
+    match u32::try_from(cofactor) {
+        Ok(h) => (h, recorded_order),
+        Err(_) => (
+            0,
+            recorded_order.or_else(|| Some(subgroup_order * cofactor)),
+        ),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// A cofactor above u32 reaches the attacks as an exact group order.
+    #[test]
+    fn wide_cofactor_becomes_exact_group_order() {
+        let n = (BigUint::one() << 100u32) + BigUint::from(277u32);
+        let h = (BigUint::one() << 40u32) + BigUint::from(3u32);
+        let (h32, order) = cofactor_and_order(&h, &n, None);
+        assert_eq!(h32, 0);
+        assert_eq!(order, Some(&n * &h));
+        // A recorded group order is kept.
+        let rec = BigUint::from(12345u32);
+        assert_eq!(cofactor_and_order(&h, &n, Some(rec.clone())).1, Some(rec));
+        // Small cofactors are unchanged.
+        assert_eq!(
+            cofactor_and_order(&BigUint::from(4u32), &n, None),
+            (4, None)
+        );
     }
 }
