@@ -7,9 +7,10 @@ use crate::arithmetic::{RandomSource, Seeded};
 use crate::curve::{Curve, Point};
 use crate::reduction::{self, Certificate, Config, FactorBase};
 use crate::subgroup::SubgroupPoint;
-use crate::{integrity, invalid, overflow, Meter, Result};
+use crate::{integrity, invalid, overflow, BigUint, Meter, Result};
+use num_traits::{One, Zero};
 use std::cell::RefCell;
-use std::collections::{hash_map::RandomState, BTreeMap, HashSet};
+use std::collections::{hash_map::RandomState, BTreeMap, HashMap};
 use std::hash::BuildHasher;
 
 /// Observable events, not calibrated work units or runtime measurements.
@@ -41,7 +42,9 @@ pub struct PairTable<S = RandomState> {
     curve: Curve,
     bases: [FactorBase; 2],
     ordered: [Vec<Point>; 2],
-    members: [HashSet<Point, S>; 2],
+    // One exact map per slot serves membership, matrix columns and graph IDs.
+    // A physical point in both slots has two distinct global column numbers.
+    columns: [HashMap<Point, usize, S>; 2],
 }
 
 impl PairTable {
@@ -76,7 +79,7 @@ impl PairTable {
         if bases.len() != 2 || indexes.len() != 2 {
             return Err(invalid("prepared pair requires exactly two indexed bases"));
         }
-        Self::from_complete_points(
+        let table = Self::from_complete_points(
             curve,
             bases,
             [
@@ -86,12 +89,22 @@ impl PairTable {
             RandomState::new(),
             statistics,
             meter,
-        )
+        )?;
+        for (slot, index) in indexes.iter().enumerate() {
+            if index.len() != table.columns[slot].len()
+                || index
+                    .iter()
+                    .any(|(point, column)| table.columns[slot].get(point) != Some(column))
+            {
+                return Err(integrity("prepared column mapping"));
+            }
+        }
+        Ok(table)
     }
 }
 
 impl<S: BuildHasher + Clone> PairTable<S> {
-    fn from_complete_points(
+    pub(crate) fn from_complete_points(
         curve: &Curve,
         bases: &[FactorBase],
         points: [Vec<Point>; 2],
@@ -103,23 +116,36 @@ impl<S: BuildHasher + Clone> PairTable<S> {
             return Err(invalid("prepared pair requires exactly two bases"));
         }
         let mut build = |base: &FactorBase,
-                         points: Vec<Point>|
-         -> Result<(Vec<Point>, HashSet<Point, S>)> {
+                         offset: usize,
+                         mut points: Vec<Point>|
+         -> Result<(Vec<Point>, HashMap<Point, usize, S>)> {
             if base.prime() < &(curve.modulus() << 1) || base.prime() > &(curve.modulus() << 2) {
                 return Err(invalid("prepared base belongs to a different field"));
             }
             meter.vector(points.len(), "prepared selector points")?;
             let mut keyed = Vec::with_capacity(points.len());
-            let mut members = HashSet::with_hasher(hasher.clone());
-            members
+            let mut columns = HashMap::with_hasher(hasher.clone());
+            columns
                 .try_reserve(points.len())
                 .map_err(|_| crate::Error::Limit("prepared hash allocation".into()))?;
-            meter.vector(members.capacity(), "prepared hash capacity")?;
-            for point in points {
+            meter.vector(columns.capacity(), "prepared hash capacity")?;
+            // BTreeMap's original column order is the full Point order, not
+            // enumeration or selector order. Preserve it before sorting scans.
+            points.sort();
+            for (local, point) in points.into_iter().enumerate() {
                 meter.charge(1, "prepared full point key")?;
                 let selector =
                     (&base.seed().alpha * curve.encode(&point)? + &base.seed().beta) % base.prime();
-                if &selector >= base.threshold() || !members.insert(point.clone()) {
+                if &selector >= base.threshold()
+                    || columns
+                        .insert(
+                            point.clone(),
+                            offset
+                                .checked_add(local)
+                                .ok_or_else(|| overflow("prepared column"))?,
+                        )
+                        .is_some()
+                {
                     return Err(integrity("invalid or repeated prepared point"));
                 }
                 keyed.push((selector, point));
@@ -128,11 +154,12 @@ impl<S: BuildHasher + Clone> PairTable<S> {
             if keyed.windows(2).any(|p| p[0].0 == p[1].0) {
                 return Err(integrity("duplicate prepared selector"));
             }
-            Ok((keyed.into_iter().map(|(_, point)| point).collect(), members))
+            Ok((keyed.into_iter().map(|(_, point)| point).collect(), columns))
         };
         let [left, right] = points;
-        let (left, left_members) = build(&bases[0], left)?;
-        let (right, right_members) = build(&bases[1], right)?;
+        let right_offset = left.len();
+        let (left, left_columns) = build(&bases[0], 0, left)?;
+        let (right, right_columns) = build(&bases[1], right_offset, right)?;
         let total = left
             .len()
             .checked_add(right.len())
@@ -143,8 +170,35 @@ impl<S: BuildHasher + Clone> PairTable<S> {
             curve: curve.clone(),
             bases: [bases[0].clone(), bases[1].clone()],
             ordered: [left, right],
-            members: [left_members, right_members],
+            columns: [left_columns, right_columns],
         })
+    }
+
+    /// Exact global column for this slot and canonical point.
+    pub(crate) fn column(&self, slot: usize, point: &Point) -> Result<usize> {
+        self.columns
+            .get(slot)
+            .and_then(|columns| columns.get(point))
+            .copied()
+            .ok_or_else(|| integrity("relation point missing from slot base"))
+    }
+
+    /// Build a v1 row from the same columns used by membership and the graph.
+    pub(crate) fn matrix_row(&self, relation: &reduction::Relation) -> Result<Vec<BigUint>> {
+        if relation.points.len() != 2 {
+            return Err(integrity("relation slot count"));
+        }
+        let count = self.columns[0]
+            .len()
+            .checked_add(self.columns[1].len())
+            .ok_or_else(|| overflow("relation columns"))?;
+        let mut row = vec![BigUint::zero(); count];
+        for (slot, point) in relation.points.iter().enumerate() {
+            let column = self.column(slot, point)?;
+            *row.get_mut(column)
+                .ok_or_else(|| integrity("prepared column range"))? = BigUint::one();
+        }
+        Ok(row)
     }
 
     /// Return the same first witness as the final-slot selector oracle.
@@ -288,7 +342,7 @@ impl<S: BuildHasher + Clone> PairTable<S> {
                 position += 1;
                 offset += 1;
                 add(&mut statistics.prepared.lookups, 1)?;
-                if !self.members[last].contains(&complement) {
+                if !self.columns[last].contains_key(&complement) {
                     return Ok(ScanStep::Miss);
                 }
                 let mut witness = vec![point, complement];
@@ -340,7 +394,7 @@ impl<S: BuildHasher + Clone> PairTable<S> {
             meter.charge(1, "prepared pair candidate")?;
             let complement = self.curve.add(target, &self.curve.negate(point)?, meter)?;
             add(&mut statistics.lookups, 1)?;
-            if !self.members[last].contains(&complement) {
+            if !self.columns[last].contains_key(&complement) {
                 continue;
             }
             let mut witness = vec![point.clone(), complement];
@@ -490,6 +544,78 @@ mod tests {
         fn write(&mut self, _: &[u8]) {}
     }
     #[test]
+    fn shared_columns_match_independent_tree_rows_even_with_hash_collisions() {
+        let mut meter = Meter::new(Limits::default());
+        let curve = curve(&mut meter);
+        let bases = bases(&curve, &mut meter);
+        let old = reduction::indexed_bases(&curve, &bases, &mut Seeded(3), &mut meter).unwrap();
+        let points = [
+            bases[0]
+                .enumerate(&curve, &mut Seeded(3), &mut meter)
+                .unwrap(),
+            bases[1]
+                .enumerate(&curve, &mut Seeded(3), &mut meter)
+                .unwrap(),
+        ];
+        let table = PairTable::from_complete_points(
+            &curve,
+            &bases,
+            points,
+            BuildHasherDefault::<ConstantHash>::default(),
+            &mut Statistics::default(),
+            &mut meter,
+        )
+        .unwrap();
+        let columns = old.iter().map(BTreeMap::len).sum();
+        for (slot, index) in old.iter().enumerate() {
+            for (point, &column) in index {
+                assert_eq!(table.column(slot, point).unwrap(), column);
+            }
+        }
+        let left = old[0].keys().next().unwrap().clone();
+        let right = old[1].keys().next().unwrap().clone();
+        let relation = reduction::Relation {
+            u: BigUint::zero(),
+            v: BigUint::zero(),
+            points: vec![left, right],
+        };
+        assert_eq!(
+            table.matrix_row(&relation).unwrap(),
+            reduction::matrix_row(&relation, &old, columns).unwrap()
+        );
+        assert!(table.column(1, &relation.points[1]).unwrap() >= old[0].len());
+        let foreign = Point::Infinity;
+        assert!(table.column(0, &foreign).is_err());
+    }
+    #[test]
+    fn shared_columns_keep_equal_physical_points_in_distinct_graph_slots() {
+        let mut meter = Meter::new(Limits::default());
+        let curve = curve(&mut meter);
+        let base = bases(&curve, &mut meter).remove(0);
+        let points = base.enumerate(&curve, &mut Seeded(5), &mut meter).unwrap();
+        let table = PairTable::from_complete_points(
+            &curve,
+            &[base.clone(), base],
+            [points.clone(), points.clone()],
+            BuildHasherDefault::<ConstantHash>::default(),
+            &mut Statistics::default(),
+            &mut meter,
+        )
+        .unwrap();
+        let point = points.first().unwrap();
+        let left = table.column(0, point).unwrap();
+        let right = table.column(1, point).unwrap();
+        assert!(left < points.len());
+        assert!(right >= points.len());
+        let graph = crate::relation_graph::RelationGraph::new(
+            [points.len(), points.len()],
+            curve.order(),
+            &mut meter,
+        )
+        .unwrap();
+        assert!(!graph.would_close(left, right, &mut meter).unwrap());
+    }
+    #[test]
     fn constant_hashes_keep_complete_answers_and_exact_point_equality() {
         let mut meter = Meter::new(Limits::default());
         let curve = curve(&mut meter);
@@ -525,12 +651,12 @@ mod tests {
                     .unwrap()
             );
         }
-        assert!(!table.members[0].contains(&Point::Infinity));
+        assert!(!table.columns[0].contains_key(&Point::Infinity));
         for point in &table.ordered[0] {
             let Point::Affine { x, y } = point else {
                 unreachable!()
             };
-            assert!(!table.members[0].contains(&Point::Affine {
+            assert!(!table.columns[0].contains_key(&Point::Affine {
                 x: x + curve.modulus(),
                 y: y.clone()
             }));
@@ -545,12 +671,12 @@ mod tests {
         let mut table = PairTable::new(&curve, &bases, &mut statistics, &mut meter).unwrap();
         let foreign = (1..19u8)
             .map(|k| curve.mul(curve.generator(), &k.into(), &mut meter).unwrap())
-            .find(|p| !table.members[1].contains(p))
+            .find(|p| !table.columns[1].contains_key(p))
             .unwrap();
         let target = curve
             .add(&table.ordered[0][0], &foreign, &mut meter)
             .unwrap();
-        table.members[1].insert(foreign);
+        table.columns[1].insert(foreign, usize::MAX);
         assert!(matches!(
             table.decompose(&target, false, &mut statistics, &mut meter),
             Err(Error::Integrity(_))
@@ -639,7 +765,7 @@ mod tests {
             PairTable::new(&curve, &bases, &mut Statistics::default(), &mut meter).unwrap();
         let foreign = (1..19u8)
             .map(|k| curve.mul(curve.generator(), &k.into(), &mut meter).unwrap())
-            .find(|p| !table.members[1].contains(p))
+            .find(|p| !table.columns[1].contains_key(p))
             .unwrap();
         let raw = curve
             .add(&table.ordered[0][0], &foreign, &mut meter)
@@ -647,7 +773,7 @@ mod tests {
         let admitted = SubgroupContext::new(&curve)
             .validate(&raw, &mut meter)
             .unwrap();
-        table.members[1].insert(foreign);
+        table.columns[1].insert(foreign, usize::MAX);
         let mut stats = Statistics::default();
         assert!(matches!(
             table.decompose_subgroup(&admitted, false, &mut stats, &mut meter),

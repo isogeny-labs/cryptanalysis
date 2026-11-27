@@ -48,6 +48,7 @@
 
 ## Blocked / questions
 
+- Shared native point-index PR #2003 has source-matched Rust 1.88 scratch controls, but the tracked native `--locked` build fails on its inherited Cargo.lock; the declared Rust 1.85 floor and hosted applicable checks remain unqualified. No lock, dependency or gate change is proposed in this PR. [pcc:unverified]
 - Full native CT244/CT300 pricing and 695/701 record replay still require approved authenticated original six-object artifact custody; previous STS invalid-token and S3 403 are unresolved. This source-only correction does not authorize paid compute, artifact substitution, modified provenance or protected merge.
 
 ## Priority

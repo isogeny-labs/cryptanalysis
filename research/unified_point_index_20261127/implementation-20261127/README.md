@@ -1,0 +1,7 @@
+# Mirror shared point-index development receipt
+
+Mirror implementation for cryptanalysis PR #2003, paired with Crypto PR #5282. The changed native prepared/optimized Rust files and two docs are byte-identical to their Crypto counterparts; `native-source.sha256` pins these mirror paths. The complete local command outputs and original tracked-lock failure are in the lossless `development.tar.xz`. These are producer development controls, not signed execution or performance standing. [pcc:unverified]
+
+The mirror's tracked native `Cargo.lock` still fails `--locked` before compilation; its bytes were not edited. An isolated scratch copy with an offline regenerated lock passes seven prepared units, nine five-lead integrations, five prepared-pair tests, seven optimized CLI tests, strict all-target Clippy, full crate rustfmt and all-target Rust 1.88 compilation. The declared Rust 1.85 floor remains unqualified because the inherited `sha2` dependency requires 1.88 and that toolchain is absent here. The scratch lock is retained only in scratch; it is not a proposed repository repair. [pcc:unverified]
+
+The implementation shares one exact point-to-global-column hash map per validated slot among membership, matrix rows and graph vertices in the optimized two-slot collector. It preserves selector order, original trial RNG and full witness/certificate replay. Legacy reduction and independent verification retain their own tree indexes. There is no measured runtime or relation-yield result, new challenge scalar, or scientific launch. [pcc:unverified]

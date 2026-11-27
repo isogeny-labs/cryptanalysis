@@ -45,8 +45,10 @@ Under uncapped controls the first witness/absence and full seeded certificate
 are compared with the original selector oracle. Different work envelopes may
 produce different completion, which must be reported separately.
 
-Preparation keeps ordered point vectors and full-key hash sets in addition to
-the reduction's original matrix indexes. All retained copies, construction,
+Preparation keeps ordered point vectors and full-key point-to-column hash maps.
+The legacy `prepared::solve` still retains the reduction's independent matrix
+indexes, while `optimized::solve` shares each slot's hash map with its matrix
+and graph paths. All retained copies, construction,
 key/hash/equality work and memory must be charged in a measured comparison.
 The existing native meter bounds preparation/query work and hash capacity, but
 is not a full arithmetic, byte or runtime price. This integration establishes
