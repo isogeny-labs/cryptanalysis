@@ -1,0 +1,3546 @@
+{
+  "schema": "m31-pair-root-e2e/v1",
+  "input_sha256": "c31c6fba0c2a761902c51f2ce8e5d43aba100d6ef518f6267b32a7072c2e0109",
+  "binary_sha256": {
+    "baseline": "4d578e525dedff4e3954ae45cfa023a493b229d6797411474129f3fa2a8a38f8",
+    "candidate": "9f96e6e2d5a98534ab19d112f92d1e79ced2d681b487b1b52025578171b48542"
+  },
+  "rows": [
+    {
+      "arm": "candidate",
+      "command": [
+        "/workspace/isogeny-workspace/repos/cryptanalysis/suite/target/release/ca-ic",
+        "auxiliary",
+        "--input",
+        "/workspace/isogeny-workspace/repos/cryptanalysis/suite/docs/ic/runs/fp-m31-pair-roots-20261127/q0.json",
+        "--torus-depth",
+        "7",
+        "--without-auxiliary",
+        "--summands",
+        "4",
+        "--seed",
+        "9961743651143974399",
+        "--walk-lanes",
+        "64",
+        "--max-queries",
+        "100000",
+        "--max-relations",
+        "512",
+        "--max-proof-nodes",
+        "4194304",
+        "--profile-phases"
+      ],
+      "returncode": 0,
+      "wall_ns": 3240330797,
+      "timeout": false,
+      "stdout": "{\n  \"binary_blake3\": \"b28b9e343c1fe6c6797358cab1d7138789270220ded25e33782a2d7509b22f6f\",\n  \"certificate\": {\n    \"P\": [\n      1,\n      814455902\n    ],\n    \"Q\": [\n      2144058214,\n      807222724\n    ],\n    \"order\": 2147505293,\n    \"relations\": [\n      {\n        \"a\": 984958047,\n        \"b\": 615575961,\n        \"terms\": [\n          {\n            \"column\": 6,\n            \"sign\": 1\n          },\n          {\n            \"column\": 20,\n            \"sign\": -1\n          },\n          {\n            \"column\": 63,\n            \"sign\": 1\n          },\n          {\n            \"column\": 64,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 2055646857,\n        \"b\": 1350276860,\n        \"terms\": [\n          {\n            \"column\": 20,\n            \"sign\": -1\n          },\n          {\n            \"column\": 47,\n            \"sign\": 1\n          },\n          {\n            \"column\": 66,\n            \"sign\": -1\n          },\n          {\n            \"column\": 69,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 894679277,\n        \"b\": 1950285430,\n        \"terms\": [\n          {\n            \"column\": 7,\n            \"sign\": -1\n          },\n          {\n            \"column\": 32,\n            \"sign\": -1\n          },\n          {\n            \"column\": 46,\n            \"sign\": 1\n          },\n          {\n            \"column\": 46,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 464291422,\n        \"b\": 2064603534,\n        \"terms\": [\n          {\n            \"column\": 28,\n            \"sign\": 1\n          },\n          {\n            \"column\": 29,\n            \"sign\": -1\n          },\n          {\n            \"column\": 46,\n            \"sign\": -1\n          },\n          {\n            \"column\": 61,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1495427913,\n        \"b\": 1451795652,\n        \"terms\": [\n          {\n            \"column\": 29,\n            \"sign\": -1\n          },\n          {\n            \"column\": 49,\n            \"sign\": -1\n          },\n          {\n            \"column\": 55,\n            \"sign\": 1\n          },\n          {\n            \"column\": 63,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 927075742,\n        \"b\": 1841721354,\n        \"terms\": [\n          {\n            \"column\": 7,\n            \"sign\": 1\n          },\n          {\n            \"column\": 10,\n            \"sign\": 1\n          },\n          {\n            \"column\": 20,\n            \"sign\": -1\n          },\n          {\n            \"column\": 26,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1701011129,\n        \"b\": 275779039,\n        \"terms\": [\n          {\n            \"column\": 0,\n            \"sign\": -1\n          },\n          {\n            \"column\": 14,\n            \"sign\": 1\n          },\n          {\n            \"column\": 52,\n            \"sign\": 1\n          },\n          {\n            \"column\": 54,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 780785171,\n        \"b\": 683319996,\n        \"terms\": [\n          {\n            \"column\": 19,\n            \"sign\": 1\n          },\n          {\n            \"column\": 29,\n            \"sign\": -1\n          },\n          {\n            \"column\": 33,\n            \"sign\": -1\n          },\n          {\n            \"column\": 51,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 316973523,\n        \"b\": 848385145,\n        \"terms\": [\n          {\n            \"column\": 1,\n            \"sign\": -1\n          },\n          {\n            \"column\": 46,\n            \"sign\": -1\n          },\n          {\n            \"column\": 56,\n            \"sign\": -1\n          },\n          {\n            \"column\": 57,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 101388578,\n        \"b\": 1222042842,\n        \"terms\": [\n          {\n            \"column\": 10,\n            \"sign\": -1\n          },\n          {\n            \"column\": 20,\n            \"sign\": 1\n          },\n          {\n            \"column\": 21,\n            \"sign\": 1\n          },\n          {\n            \"column\": 30,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1198538025,\n        \"b\": 143430377,\n        \"terms\": [\n          {\n            \"column\": 4,\n            \"sign\": 1\n          },\n          {\n            \"column\": 7,\n            \"sign\": -1\n          },\n          {\n            \"column\": 22,\n            \"sign\": -1\n          },\n          {\n            \"column\": 48,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1921633642,\n        \"b\": 1877512553,\n        \"terms\": [\n          {\n            \"column\": 6,\n            \"sign\": -1\n          },\n          {\n            \"column\": 49,\n            \"sign\": 1\n          },\n          {\n            \"column\": 64,\n            \"sign\": -1\n          },\n          {\n            \"column\": 67,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 826721759,\n        \"b\": 543347150,\n        \"terms\": [\n          {\n            \"column\": 5,\n            \"sign\": -1\n          },\n          {\n            \"column\": 14,\n            \"sign\": 1\n          },\n          {\n            \"column\": 47,\n            \"sign\": -1\n          },\n          {\n            \"column\": 70,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 691109630,\n        \"b\": 1970424524,\n        \"terms\": [\n          {\n            \"column\": 18,\n            \"sign\": 1\n          },\n          {\n            \"column\": 20,\n            \"sign\": 1\n          },\n          {\n            \"column\": 24,\n            \"sign\": -1\n          },\n          {\n            \"column\": 69,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 643671219,\n        \"b\": 1354303132,\n        \"terms\": [\n          {\n            \"column\": 8,\n            \"sign\": -1\n          },\n          {\n            \"column\": 45,\n            \"sign\": -1\n          },\n          {\n            \"column\": 68,\n            \"sign\": 1\n          },\n          {\n            \"column\": 69,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1364897782,\n        \"b\": 380439223,\n        \"terms\": [\n          {\n            \"column\": 38,\n            \"sign\": -1\n          },\n          {\n            \"column\": 44,\n            \"sign\": -1\n          },\n          {\n            \"column\": 46,\n            \"sign\": 1\n          },\n          {\n            \"column\": 52,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1846335031,\n        \"b\": 1758501401,\n        \"terms\": [\n          {\n            \"column\": 0,\n            \"sign\": 1\n          },\n          {\n            \"column\": 8,\n            \"sign\": 1\n          },\n          {\n            \"column\": 27,\n            \"sign\": 1\n          },\n          {\n            \"column\": 30,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1411235899,\n        \"b\": 1710363649,\n        \"terms\": [\n          {\n            \"column\": 0,\n            \"sign\": -1\n          },\n          {\n            \"column\": 50,\n            \"sign\": -1\n          },\n          {\n            \"column\": 58,\n            \"sign\": 1\n          },\n          {\n            \"column\": 64,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1631749609,\n        \"b\": 2062462735,\n        \"terms\": [\n          {\n            \"column\": 18,\n            \"sign\": 1\n          },\n          {\n            \"column\": 19,\n            \"sign\": -1\n          },\n          {\n            \"column\": 43,\n            \"sign\": -1\n          },\n          {\n            \"column\": 45,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 2115879442,\n        \"b\": 1895702581,\n        \"terms\": [\n          {\n            \"column\": 9,\n            \"sign\": -1\n          },\n          {\n            \"column\": 11,\n            \"sign\": -1\n          },\n          {\n            \"column\": 14,\n            \"sign\": 1\n          },\n          {\n            \"column\": 35,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 802144021,\n        \"b\": 1501633742,\n        \"terms\": [\n          {\n            \"column\": 3,\n            \"sign\": -1\n          },\n          {\n            \"column\": 3,\n            \"sign\": -1\n          },\n          {\n            \"column\": 28,\n            \"sign\": -1\n          },\n          {\n            \"column\": 45,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1453554081,\n        \"b\": 13127539,\n        \"terms\": [\n          {\n            \"column\": 22,\n            \"sign\": -1\n          },\n          {\n            \"column\": 27,\n            \"sign\": -1\n          },\n          {\n            \"column\": 41,\n            \"sign\": 1\n          },\n          {\n            \"column\": 59,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1869537864,\n        \"b\": 762624646,\n        \"terms\": [\n          {\n            \"column\": 18,\n            \"sign\": -1\n          },\n          {\n            \"column\": 22,\n            \"sign\": 1\n          },\n          {\n            \"column\": 46,\n            \"sign\": -1\n          },\n          {\n            \"column\": 67,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1784749894,\n        \"b\": 473152881,\n        \"terms\": [\n          {\n            \"column\": 1,\n            \"sign\": -1\n          },\n          {\n            \"column\": 20,\n            \"sign\": -1\n          },\n          {\n            \"column\": 37,\n            \"sign\": -1\n          },\n          {\n            \"column\": 53,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 654042202,\n        \"b\": 1780457012,\n        \"terms\": [\n          {\n            \"column\": 0,\n            \"sign\": -1\n          },\n          {\n            \"column\": 18,\n            \"sign\": -1\n          },\n          {\n            \"column\": 68,\n            \"sign\": -1\n          },\n          {\n            \"column\": 68,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 814619991,\n        \"b\": 2043097238,\n        \"terms\": [\n          {\n            \"column\": 34,\n            \"sign\": -1\n          },\n          {\n            \"column\": 57,\n            \"sign\": -1\n          },\n          {\n            \"column\": 60,\n            \"sign\": 1\n          },\n          {\n            \"column\": 65,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1211673660,\n        \"b\": 106922068,\n        \"terms\": [\n          {\n            \"column\": 34,\n            \"sign\": -1\n          },\n          {\n            \"column\": 38,\n            \"sign\": 1\n          },\n          {\n            \"column\": 46,\n            \"sign\": -1\n          },\n          {\n            \"column\": 54,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1346332663,\n        \"b\": 1968648832,\n        \"terms\": [\n          {\n            \"column\": 18,\n            \"sign\": 1\n          },\n          {\n            \"column\": 23,\n            \"sign\": -1\n          },\n          {\n            \"column\": 36,\n            \"sign\": -1\n          },\n          {\n            \"column\": 36,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1860570566,\n        \"b\": 1117544405,\n        \"terms\": [\n          {\n            \"column\": 22,\n            \"sign\": 1\n          },\n          {\n            \"column\": 45,\n            \"sign\": 1\n          },\n          {\n            \"column\": 65,\n            \"sign\": -1\n          },\n          {\n            \"column\": 70,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 360924752,\n        \"b\": 1400291686,\n        \"terms\": [\n          {\n            \"column\": 1,\n            \"sign\": -1\n          },\n          {\n            \"column\": 26,\n            \"sign\": 1\n          },\n          {\n            \"column\": 55,\n            \"sign\": -1\n          },\n          {\n            \"column\": 62,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 516857848,\n        \"b\": 1858718788,\n        \"terms\": [\n          {\n            \"column\": 5,\n            \"sign\": -1\n          },\n          {\n            \"column\": 37,\n            \"sign\": -1\n          },\n          {\n            \"column\": 53,\n            \"sign\": -1\n          },\n          {\n            \"column\": 60,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1178699481,\n        \"b\": 1050608940,\n        \"terms\": [\n          {\n            \"column\": 1,\n            \"sign\": 1\n          },\n          {\n            \"column\": 23,\n            \"sign\": -1\n          },\n          {\n            \"column\": 26,\n            \"sign\": 1\n          },\n          {\n            \"column\": 51,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 2017647733,\n        \"b\": 641851476,\n        \"terms\": [\n          {\n            \"column\": 2,\n            \"sign\": -1\n          },\n          {\n            \"column\": 15,\n            \"sign\": 1\n          },\n          {\n            \"column\": 47,\n            \"sign\": 1\n          },\n          {\n            \"column\": 52,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1896428165,\n        \"b\": 1610816824,\n        \"terms\": [\n          {\n            \"column\": 2,\n            \"sign\": 1\n          },\n          {\n            \"column\": 21,\n            \"sign\": -1\n          },\n          {\n            \"column\": 34,\n            \"sign\": 1\n          },\n          {\n            \"column\": 66,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1019419584,\n        \"b\": 950611293,\n        \"terms\": [\n          {\n            \"column\": 30,\n            \"sign\": 1\n          },\n          {\n            \"column\": 41,\n            \"sign\": -1\n          },\n          {\n            \"column\": 51,\n            \"sign\": -1\n          },\n          {\n            \"column\": 57,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1385124102,\n        \"b\": 291508711,\n        \"terms\": [\n          {\n            \"column\": 31,\n            \"sign\": 1\n          },\n          {\n            \"column\": 50,\n            \"sign\": -1\n          },\n          {\n            \"column\": 67,\n            \"sign\": -1\n          },\n          {\n            \"column\": 68,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 18466543,\n        \"b\": 239322888,\n        \"terms\": [\n          {\n            \"column\": 25,\n            \"sign\": 1\n          },\n          {\n            \"column\": 28,\n            \"sign\": 1\n          },\n          {\n            \"column\": 64,\n            \"sign\": 1\n          },\n          {\n            \"column\": 65,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 637627867,\n        \"b\": 48362381,\n        \"terms\": [\n          {\n            \"column\": 3,\n            \"sign\": 1\n          },\n          {\n            \"column\": 7,\n            \"sign\": 1\n          },\n          {\n            \"column\": 41,\n            \"sign\": -1\n          },\n          {\n            \"column\": 65,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 456007196,\n        \"b\": 609537085,\n        \"terms\": [\n          {\n            \"column\": 5,\n            \"sign\": 1\n          },\n          {\n            \"column\": 7,\n            \"sign\": 1\n          },\n          {\n            \"column\": 20,\n            \"sign\": -1\n          },\n          {\n            \"column\": 42,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1621519225,\n        \"b\": 82518423,\n        \"terms\": [\n          {\n            \"column\": 34,\n            \"sign\": -1\n          },\n          {\n            \"column\": 40,\n            \"sign\": 1\n          },\n          {\n            \"column\": 56,\n            \"sign\": 1\n          },\n          {\n            \"column\": 60,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1069335725,\n        \"b\": 130308408,\n        \"terms\": [\n          {\n            \"column\": 19,\n            \"sign\": 1\n          },\n          {\n            \"column\": 30,\n            \"sign\": 1\n          },\n          {\n            \"column\": 35,\n            \"sign\": 1\n          },\n          {\n            \"column\": 64,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 700363581,\n        \"b\": 413430849,\n        \"terms\": [\n          {\n            \"column\": 43,\n            \"sign\": -1\n          },\n          {\n            \"column\": 63,\n            \"sign\": 1\n          },\n          {\n            \"column\": 63,\n            \"sign\": 1\n          },\n          {\n            \"column\": 66,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1397892566,\n        \"b\": 1010881515,\n        \"terms\": [\n          {\n            \"column\": 19,\n            \"sign\": -1\n          },\n          {\n            \"column\": 38,\n            \"sign\": 1\n          },\n          {\n            \"column\": 38,\n            \"sign\": 1\n          },\n          {\n            \"column\": 54,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1469372751,\n        \"b\": 1607631593,\n        \"terms\": [\n          {\n            \"column\": 25,\n            \"sign\": -1\n          },\n          {\n            \"column\": 30,\n            \"sign\": -1\n          },\n          {\n            \"column\": 47,\n            \"sign\": -1\n          },\n          {\n            \"column\": 69,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 199069475,\n        \"b\": 762633877,\n        \"terms\": [\n          {\n            \"column\": 3,\n            \"sign\": -1\n          },\n          {\n            \"column\": 18,\n            \"sign\": -1\n          },\n          {\n            \"column\": 19,\n            \"sign\": -1\n          },\n          {\n            \"column\": 65,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1011165243,\n        \"b\": 443410889,\n        \"terms\": [\n          {\n            \"column\": 23,\n            \"sign\": 1\n          },\n          {\n            \"column\": 27,\n            \"sign\": -1\n          },\n          {\n            \"column\": 31,\n            \"sign\": -1\n          },\n          {\n            \"column\": 51,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 387342505,\n        \"b\": 1439228471,\n        \"terms\": [\n          {\n            \"column\": 15,\n            \"sign\": -1\n          },\n          {\n            \"column\": 34,\n            \"sign\": 1\n          },\n          {\n            \"column\": 57,\n            \"sign\": -1\n          },\n          {\n            \"column\": 67,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 730026370,\n        \"b\": 325635244,\n        \"terms\": [\n          {\n            \"column\": 21,\n            \"sign\": -1\n          },\n          {\n            \"column\": 50,\n            \"sign\": 1\n          },\n          {\n            \"column\": 63,\n            \"sign\": 1\n          },\n          {\n            \"column\": 64,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 280440001,\n        \"b\": 1118258148,\n        \"terms\": [\n          {\n            \"column\": 28,\n            \"sign\": -1\n          },\n          {\n            \"column\": 44,\n            \"sign\": 1\n          },\n          {\n            \"column\": 46,\n            \"sign\": 1\n          },\n          {\n            \"column\": 50,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 890571498,\n        \"b\": 1022906748,\n        \"terms\": [\n          {\n            \"column\": 22,\n            \"sign\": -1\n          },\n          {\n            \"column\": 43,\n            \"sign\": -1\n          },\n          {\n            \"column\": 64,\n            \"sign\": 1\n          },\n          {\n            \"column\": 67,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 345861202,\n        \"b\": 1257348066,\n        \"terms\": [\n          {\n            \"column\": 19,\n            \"sign\": -1\n          },\n          {\n            \"column\": 33,\n            \"sign\": -1\n          },\n          {\n            \"column\": 38,\n            \"sign\": -1\n          },\n          {\n            \"column\": 69,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1947282052,\n        \"b\": 513532374,\n        \"terms\": [\n          {\n            \"column\": 4,\n            \"sign\": -1\n          },\n          {\n            \"column\": 28,\n            \"sign\": 1\n          },\n          {\n            \"column\": 63,\n            \"sign\": -1\n          },\n          {\n            \"column\": 70,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1313119021,\n        \"b\": 1550766338,\n        \"terms\": [\n          {\n            \"column\": 20,\n            \"sign\": -1\n          },\n          {\n            \"column\": 24,\n            \"sign\": -1\n          },\n          {\n            \"column\": 28,\n            \"sign\": 1\n          },\n          {\n            \"column\": 49,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 437396712,\n        \"b\": 1662498111,\n        \"terms\": [\n          {\n            \"column\": 2,\n            \"sign\": -1\n          },\n          {\n            \"column\": 14,\n            \"sign\": 1\n          },\n          {\n            \"column\": 24,\n            \"sign\": -1\n          },\n          {\n            \"column\": 27,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 57860596,\n        \"b\": 1777436062,\n        \"terms\": [\n          {\n            \"column\": 7,\n            \"sign\": -1\n          },\n          {\n            \"column\": 48,\n            \"sign\": 1\n          },\n          {\n            \"column\": 55,\n            \"sign\": 1\n          },\n          {\n            \"column\": 69,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 481250623,\n        \"b\": 1792421655,\n        \"terms\": [\n          {\n            \"column\": 9,\n            \"sign\": -1\n          },\n          {\n            \"column\": 31,\n            \"sign\": -1\n          },\n          {\n            \"column\": 37,\n            \"sign\": 1\n          },\n          {\n            \"column\": 61,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1117012821,\n        \"b\": 1432074954,\n        \"terms\": [\n          {\n            \"column\": 5,\n            \"sign\": 1\n          },\n          {\n            \"column\": 6,\n            \"sign\": 1\n          },\n          {\n            \"column\": 11,\n            \"sign\": -1\n          },\n          {\n            \"column\": 65,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 930278039,\n        \"b\": 1882017683,\n        \"terms\": [\n          {\n            \"column\": 10,\n            \"sign\": 1\n          },\n          {\n            \"column\": 29,\n            \"sign\": -1\n          },\n          {\n            \"column\": 35,\n            \"sign\": -1\n          },\n          {\n            \"column\": 42,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 169799674,\n        \"b\": 1954077225,\n        \"terms\": [\n          {\n            \"column\": 28,\n            \"sign\": 1\n          },\n          {\n            \"column\": 30,\n            \"sign\": 1\n          },\n          {\n            \"column\": 55,\n            \"sign\": 1\n          },\n          {\n            \"column\": 64,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 198549758,\n        \"b\": 1501795825,\n        \"terms\": [\n          {\n            \"column\": 10,\n            \"sign\": -1\n          },\n          {\n            \"column\": 15,\n            \"sign\": -1\n          },\n          {\n            \"column\": 67,\n            \"sign\": 1\n          },\n          {\n            \"column\": 67,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 407953234,\n        \"b\": 1194336498,\n        \"terms\": [\n          {\n            \"column\": 30,\n            \"sign\": -1\n          },\n          {\n            \"column\": 35,\n            \"sign\": -1\n          },\n          {\n            \"column\": 56,\n            \"sign\": -1\n          },\n          {\n            \"column\": 65,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1015842475,\n        \"b\": 926463851,\n        \"terms\": [\n          {\n            \"column\": 25,\n            \"sign\": 1\n          },\n          {\n            \"column\": 45,\n            \"sign\": -1\n          },\n          {\n            \"column\": 47,\n            \"sign\": -1\n          },\n          {\n            \"column\": 55,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1922762064,\n        \"b\": 40542652,\n        \"terms\": [\n          {\n            \"column\": 14,\n            \"sign\": -1\n          },\n          {\n            \"column\": 19,\n            \"sign\": 1\n          },\n          {\n            \"column\": 41,\n            \"sign\": 1\n          },\n          {\n            \"column\": 51,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 969798028,\n        \"b\": 979246906,\n        \"terms\": [\n          {\n            \"column\": 8,\n            \"sign\": 1\n          },\n          {\n            \"column\": 13,\n            \"sign\": 1\n          },\n          {\n            \"column\": 16,\n            \"sign\": -1\n          },\n          {\n            \"column\": 31,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1018387908,\n        \"b\": 657313033,\n        \"terms\": [\n          {\n            \"column\": 2,\n            \"sign\": -1\n          },\n          {\n            \"column\": 39,\n            \"sign\": -1\n          },\n          {\n            \"column\": 60,\n            \"sign\": 1\n          },\n          {\n            \"column\": 60,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1379220759,\n        \"b\": 1564140999,\n        \"terms\": [\n          {\n            \"column\": 0,\n            \"sign\": -1\n          },\n          {\n            \"column\": 0,\n            \"sign\": -1\n          },\n          {\n            \"column\": 43,\n            \"sign\": 1\n          },\n          {\n            \"column\": 51,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1265393797,\n        \"b\": 507691375,\n        \"terms\": [\n          {\n            \"column\": 4,\n            \"sign\": -1\n          },\n          {\n            \"column\": 5,\n            \"sign\": -1\n          },\n          {\n            \"column\": 47,\n            \"sign\": 1\n          },\n          {\n            \"column\": 68,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 967821845,\n        \"b\": 274307395,\n        \"terms\": [\n          {\n            \"column\": 10,\n            \"sign\": 1\n          },\n          {\n            \"column\": 33,\n            \"sign\": 1\n          },\n          {\n            \"column\": 54,\n            \"sign\": 1\n          },\n          {\n            \"column\": 54,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 821492418,\n        \"b\": 812802671,\n        \"terms\": [\n          {\n            \"column\": 19,\n            \"sign\": -1\n          },\n          {\n            \"column\": 49,\n            \"sign\": 1\n          },\n          {\n            \"column\": 50,\n            \"sign\": 1\n          },\n          {\n            \"column\": 66,\n            \"sign\": -1\n          }\n        ]\n      }\n    ],\n    \"scalar\": 345912577,\n    \"summands\": 4,\n    \"weights\": [\n      1795974005,\n      1137698693,\n      0,\n      1085603054,\n      1061689705,\n      1794472567,\n      1548869380,\n      1059031903,\n      189768801,\n      2133135344,\n      1113915604,\n      710370951,\n      443212846,\n      1344707778,\n      1342993805,\n      1260828225,\n      1342993805,\n      0,\n      376137082,\n      1085603054,\n      1913600544,\n      0,\n      1985173772,\n      1604703766,\n      3514788,\n      1604703766,\n      1408616116,\n      0,\n      568031207,\n      0,\n      1604703766,\n      1794472567,\n      1859464138,\n      163437607,\n      2117311947,\n      708869513,\n      838957777,\n      1411852095,\n      1088685924,\n      0,\n      1984520177,\n      1301136301,\n      673874754,\n      674037010,\n      1879661593,\n      1794472567,\n      702376982,\n      1969697737,\n      1260828225,\n      1439289375,\n      1495537399,\n      1011244053,\n      351318753,\n      451478762,\n      1033589689,\n      1061902239,\n      1061902239,\n      1088685924,\n      2034810425,\n      1157087156,\n      1957736492,\n      1982584526,\n      1381658749,\n      0,\n      0,\n      969057465,\n      102671551,\n      407064009,\n      1\n    ]\n  },\n  \"cli_accounting\": {\n    \"before_online\": 2394,\n    \"cold_total\": null,\n    \"ic_observed_total\": 3182645144,\n    \"independent_replay\": null,\n    \"observed_total\": 3182645144,\n    \"online\": 3180965446,\n    \"preparation\": 272722,\n    \"process_start_exit\": null,\n    \"reference\": 0,\n    \"reporting\": 1404582,\n    \"schema\": \"auxiliary-ic-cli-costs/v1\",\n    \"scope\": \"run-entry-through-resource-snapshot; excludes accounting serialization\",\n    \"unit\": \"ns\",\n    \"upstream_preparation\": null\n  },\n  \"configured_search\": {\n    \"max_millis\": null,\n    \"max_proof_nodes\": 4194304,\n    \"max_queries\": 100000,\n    \"max_relations\": 512,\n    \"profile_phases\": true,\n    \"seed\": 9961743651143974399,\n    \"summands\": 4,\n    \"walk_lanes\": 64\n  },\n  \"execution_class\": \"cpu-only\",\n  \"factor_base\": {\n    \"affine_points\": 142,\n    \"backend\": \"scalar\",\n    \"columns_blake3\": \"003eb1e8be482c521babf20c8c32062b838e400e3c49a7a1607f16f66b632af0\",\n    \"encoding\": {\n      \"kind\": \"direct\"\n    },\n    \"folded_columns\": 71,\n    \"raw_roots\": 128,\n    \"selection_encoding\": {\n      \"depth\": 7,\n      \"kind\": \"torus\",\n      \"trace\": 3\n    },\n    \"terminal_coordinate\": 340921998,\n    \"uses_auxiliary_maps\": false,\n    \"uses_circuit\": false\n  },\n  \"field_bits\": 31,\n  \"gpu\": {\n    \"devices\": []\n  },\n  \"input_blake3\": \"e8f55864e4f15d6abdbe26eb9792b3a7a2cf0607c1462e1d03f8c4a4b5b28766\",\n  \"mode\": \"bounded-single-target-search\",\n  \"online_accounting\": {\n    \"call_overhead\": 67750,\n    \"core\": 3180897516,\n    \"independent_replay\": null,\n    \"input_validation\": 180,\n    \"schema\": \"auxiliary-ic-online-call/v1\",\n    \"scope\": \"target-point-validation-through-local-replay\",\n    \"total\": 3180965446,\n    \"unit\": \"ns\"\n  },\n  \"online_call_wall_seconds\": 3.180965446,\n  \"online_exclusive_phases\": {\n    \"clock\": \"std::time::Instant\",\n    \"clock_overhead\": \"included-not-subtracted\",\n    \"clock_reads\": 14141,\n    \"durations\": {\n      \"bookkeeping\": 12103547,\n      \"certificate_replay\": 794663,\n      \"decomposition\": 3160371201,\n      \"graph_recovery\": 5761780,\n      \"initialization\": 165615,\n      \"row_validation\": 1159958,\n      \"target_walk\": 540752\n    },\n    \"independent_replay\": null,\n    \"schema\": \"auxiliary-ic-online-phases/v1\",\n    \"scope\": \"core-search-including-local-replay\",\n    \"total\": 3180897516,\n    \"unit\": \"ns\"\n  },\n  \"online_wall_ns\": 3180965446,\n  \"online_wall_seconds\": 3.180965446,\n  \"operation\": \"auxiliary-prime-field-ic\",\n  \"producer_check_passed\": true,\n  \"public\": {\n    \"P\": [\n      1,\n      814455902\n    ],\n    \"Q\": [\n      2144058214,\n      807222724\n    ],\n    \"a\": 2,\n    \"b\": 14,\n    \"n\": 2147505293,\n    \"p\": 2147483647\n  },\n  \"qualification\": \"unverified producer diagnostic; no signed independent replay or admitted performance tier\",\n  \"qualified_speedup\": null,\n  \"resources\": {\n    \"cpu_seconds\": 3.1924210000000004,\n    \"peak_rss_bytes\": 10616832,\n    \"scope\": \"process counters sampled before report emission; peak resident memory, not allocated bytes\"\n  },\n  \"sampler\": \"splitmix64-rejection-public-coefficient-walks\",\n  \"schema_version\": 2,\n  \"software\": {\n    \"arch\": \"x86_64\",\n    \"binary_blake3\": \"b28b9e343c1fe6c6797358cab1d7138789270220ded25e33782a2d7509b22f6f\",\n    \"git_commit\": \"fa66e3c2b5488c2f73c6f54378e50c7b43226d31\",\n    \"os\": \"linux\",\n    \"version\": \"0.1.0\"\n  },\n  \"source_commit\": \"fa66e3c2b5488c2f73c6f54378e50c7b43226d31\",\n  \"status\": \"solved\",\n  \"target_independent_preparation_ns\": 272722,\n  \"target_independent_preparation_seconds\": 0.000272722,\n  \"work\": {\n    \"backend\": \"scalar\",\n    \"circuit_queries\": 0,\n    \"duplicate_rows\": 0,\n    \"generated_targets\": 6848,\n    \"lane_rounds\": 107,\n    \"matrix_rank\": 68,\n    \"proof_nodes\": 647,\n    \"queries\": 6823,\n    \"relations\": 69\n  }\n}",
+      "stderr": "",
+      "report": {
+        "binary_blake3": "b28b9e343c1fe6c6797358cab1d7138789270220ded25e33782a2d7509b22f6f",
+        "certificate": {
+          "P": [
+            1,
+            814455902
+          ],
+          "Q": [
+            2144058214,
+            807222724
+          ],
+          "order": 2147505293,
+          "relations": [
+            {
+              "a": 984958047,
+              "b": 615575961,
+              "terms": [
+                {
+                  "column": 6,
+                  "sign": 1
+                },
+                {
+                  "column": 20,
+                  "sign": -1
+                },
+                {
+                  "column": 63,
+                  "sign": 1
+                },
+                {
+                  "column": 64,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 2055646857,
+              "b": 1350276860,
+              "terms": [
+                {
+                  "column": 20,
+                  "sign": -1
+                },
+                {
+                  "column": 47,
+                  "sign": 1
+                },
+                {
+                  "column": 66,
+                  "sign": -1
+                },
+                {
+                  "column": 69,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 894679277,
+              "b": 1950285430,
+              "terms": [
+                {
+                  "column": 7,
+                  "sign": -1
+                },
+                {
+                  "column": 32,
+                  "sign": -1
+                },
+                {
+                  "column": 46,
+                  "sign": 1
+                },
+                {
+                  "column": 46,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 464291422,
+              "b": 2064603534,
+              "terms": [
+                {
+                  "column": 28,
+                  "sign": 1
+                },
+                {
+                  "column": 29,
+                  "sign": -1
+                },
+                {
+                  "column": 46,
+                  "sign": -1
+                },
+                {
+                  "column": 61,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1495427913,
+              "b": 1451795652,
+              "terms": [
+                {
+                  "column": 29,
+                  "sign": -1
+                },
+                {
+                  "column": 49,
+                  "sign": -1
+                },
+                {
+                  "column": 55,
+                  "sign": 1
+                },
+                {
+                  "column": 63,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 927075742,
+              "b": 1841721354,
+              "terms": [
+                {
+                  "column": 7,
+                  "sign": 1
+                },
+                {
+                  "column": 10,
+                  "sign": 1
+                },
+                {
+                  "column": 20,
+                  "sign": -1
+                },
+                {
+                  "column": 26,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1701011129,
+              "b": 275779039,
+              "terms": [
+                {
+                  "column": 0,
+                  "sign": -1
+                },
+                {
+                  "column": 14,
+                  "sign": 1
+                },
+                {
+                  "column": 52,
+                  "sign": 1
+                },
+                {
+                  "column": 54,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 780785171,
+              "b": 683319996,
+              "terms": [
+                {
+                  "column": 19,
+                  "sign": 1
+                },
+                {
+                  "column": 29,
+                  "sign": -1
+                },
+                {
+                  "column": 33,
+                  "sign": -1
+                },
+                {
+                  "column": 51,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 316973523,
+              "b": 848385145,
+              "terms": [
+                {
+                  "column": 1,
+                  "sign": -1
+                },
+                {
+                  "column": 46,
+                  "sign": -1
+                },
+                {
+                  "column": 56,
+                  "sign": -1
+                },
+                {
+                  "column": 57,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 101388578,
+              "b": 1222042842,
+              "terms": [
+                {
+                  "column": 10,
+                  "sign": -1
+                },
+                {
+                  "column": 20,
+                  "sign": 1
+                },
+                {
+                  "column": 21,
+                  "sign": 1
+                },
+                {
+                  "column": 30,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1198538025,
+              "b": 143430377,
+              "terms": [
+                {
+                  "column": 4,
+                  "sign": 1
+                },
+                {
+                  "column": 7,
+                  "sign": -1
+                },
+                {
+                  "column": 22,
+                  "sign": -1
+                },
+                {
+                  "column": 48,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1921633642,
+              "b": 1877512553,
+              "terms": [
+                {
+                  "column": 6,
+                  "sign": -1
+                },
+                {
+                  "column": 49,
+                  "sign": 1
+                },
+                {
+                  "column": 64,
+                  "sign": -1
+                },
+                {
+                  "column": 67,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 826721759,
+              "b": 543347150,
+              "terms": [
+                {
+                  "column": 5,
+                  "sign": -1
+                },
+                {
+                  "column": 14,
+                  "sign": 1
+                },
+                {
+                  "column": 47,
+                  "sign": -1
+                },
+                {
+                  "column": 70,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 691109630,
+              "b": 1970424524,
+              "terms": [
+                {
+                  "column": 18,
+                  "sign": 1
+                },
+                {
+                  "column": 20,
+                  "sign": 1
+                },
+                {
+                  "column": 24,
+                  "sign": -1
+                },
+                {
+                  "column": 69,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 643671219,
+              "b": 1354303132,
+              "terms": [
+                {
+                  "column": 8,
+                  "sign": -1
+                },
+                {
+                  "column": 45,
+                  "sign": -1
+                },
+                {
+                  "column": 68,
+                  "sign": 1
+                },
+                {
+                  "column": 69,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1364897782,
+              "b": 380439223,
+              "terms": [
+                {
+                  "column": 38,
+                  "sign": -1
+                },
+                {
+                  "column": 44,
+                  "sign": -1
+                },
+                {
+                  "column": 46,
+                  "sign": 1
+                },
+                {
+                  "column": 52,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1846335031,
+              "b": 1758501401,
+              "terms": [
+                {
+                  "column": 0,
+                  "sign": 1
+                },
+                {
+                  "column": 8,
+                  "sign": 1
+                },
+                {
+                  "column": 27,
+                  "sign": 1
+                },
+                {
+                  "column": 30,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1411235899,
+              "b": 1710363649,
+              "terms": [
+                {
+                  "column": 0,
+                  "sign": -1
+                },
+                {
+                  "column": 50,
+                  "sign": -1
+                },
+                {
+                  "column": 58,
+                  "sign": 1
+                },
+                {
+                  "column": 64,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1631749609,
+              "b": 2062462735,
+              "terms": [
+                {
+                  "column": 18,
+                  "sign": 1
+                },
+                {
+                  "column": 19,
+                  "sign": -1
+                },
+                {
+                  "column": 43,
+                  "sign": -1
+                },
+                {
+                  "column": 45,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 2115879442,
+              "b": 1895702581,
+              "terms": [
+                {
+                  "column": 9,
+                  "sign": -1
+                },
+                {
+                  "column": 11,
+                  "sign": -1
+                },
+                {
+                  "column": 14,
+                  "sign": 1
+                },
+                {
+                  "column": 35,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 802144021,
+              "b": 1501633742,
+              "terms": [
+                {
+                  "column": 3,
+                  "sign": -1
+                },
+                {
+                  "column": 3,
+                  "sign": -1
+                },
+                {
+                  "column": 28,
+                  "sign": -1
+                },
+                {
+                  "column": 45,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1453554081,
+              "b": 13127539,
+              "terms": [
+                {
+                  "column": 22,
+                  "sign": -1
+                },
+                {
+                  "column": 27,
+                  "sign": -1
+                },
+                {
+                  "column": 41,
+                  "sign": 1
+                },
+                {
+                  "column": 59,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1869537864,
+              "b": 762624646,
+              "terms": [
+                {
+                  "column": 18,
+                  "sign": -1
+                },
+                {
+                  "column": 22,
+                  "sign": 1
+                },
+                {
+                  "column": 46,
+                  "sign": -1
+                },
+                {
+                  "column": 67,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1784749894,
+              "b": 473152881,
+              "terms": [
+                {
+                  "column": 1,
+                  "sign": -1
+                },
+                {
+                  "column": 20,
+                  "sign": -1
+                },
+                {
+                  "column": 37,
+                  "sign": -1
+                },
+                {
+                  "column": 53,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 654042202,
+              "b": 1780457012,
+              "terms": [
+                {
+                  "column": 0,
+                  "sign": -1
+                },
+                {
+                  "column": 18,
+                  "sign": -1
+                },
+                {
+                  "column": 68,
+                  "sign": -1
+                },
+                {
+                  "column": 68,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 814619991,
+              "b": 2043097238,
+              "terms": [
+                {
+                  "column": 34,
+                  "sign": -1
+                },
+                {
+                  "column": 57,
+                  "sign": -1
+                },
+                {
+                  "column": 60,
+                  "sign": 1
+                },
+                {
+                  "column": 65,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1211673660,
+              "b": 106922068,
+              "terms": [
+                {
+                  "column": 34,
+                  "sign": -1
+                },
+                {
+                  "column": 38,
+                  "sign": 1
+                },
+                {
+                  "column": 46,
+                  "sign": -1
+                },
+                {
+                  "column": 54,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1346332663,
+              "b": 1968648832,
+              "terms": [
+                {
+                  "column": 18,
+                  "sign": 1
+                },
+                {
+                  "column": 23,
+                  "sign": -1
+                },
+                {
+                  "column": 36,
+                  "sign": -1
+                },
+                {
+                  "column": 36,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1860570566,
+              "b": 1117544405,
+              "terms": [
+                {
+                  "column": 22,
+                  "sign": 1
+                },
+                {
+                  "column": 45,
+                  "sign": 1
+                },
+                {
+                  "column": 65,
+                  "sign": -1
+                },
+                {
+                  "column": 70,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 360924752,
+              "b": 1400291686,
+              "terms": [
+                {
+                  "column": 1,
+                  "sign": -1
+                },
+                {
+                  "column": 26,
+                  "sign": 1
+                },
+                {
+                  "column": 55,
+                  "sign": -1
+                },
+                {
+                  "column": 62,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 516857848,
+              "b": 1858718788,
+              "terms": [
+                {
+                  "column": 5,
+                  "sign": -1
+                },
+                {
+                  "column": 37,
+                  "sign": -1
+                },
+                {
+                  "column": 53,
+                  "sign": -1
+                },
+                {
+                  "column": 60,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1178699481,
+              "b": 1050608940,
+              "terms": [
+                {
+                  "column": 1,
+                  "sign": 1
+                },
+                {
+                  "column": 23,
+                  "sign": -1
+                },
+                {
+                  "column": 26,
+                  "sign": 1
+                },
+                {
+                  "column": 51,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 2017647733,
+              "b": 641851476,
+              "terms": [
+                {
+                  "column": 2,
+                  "sign": -1
+                },
+                {
+                  "column": 15,
+                  "sign": 1
+                },
+                {
+                  "column": 47,
+                  "sign": 1
+                },
+                {
+                  "column": 52,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1896428165,
+              "b": 1610816824,
+              "terms": [
+                {
+                  "column": 2,
+                  "sign": 1
+                },
+                {
+                  "column": 21,
+                  "sign": -1
+                },
+                {
+                  "column": 34,
+                  "sign": 1
+                },
+                {
+                  "column": 66,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1019419584,
+              "b": 950611293,
+              "terms": [
+                {
+                  "column": 30,
+                  "sign": 1
+                },
+                {
+                  "column": 41,
+                  "sign": -1
+                },
+                {
+                  "column": 51,
+                  "sign": -1
+                },
+                {
+                  "column": 57,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1385124102,
+              "b": 291508711,
+              "terms": [
+                {
+                  "column": 31,
+                  "sign": 1
+                },
+                {
+                  "column": 50,
+                  "sign": -1
+                },
+                {
+                  "column": 67,
+                  "sign": -1
+                },
+                {
+                  "column": 68,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 18466543,
+              "b": 239322888,
+              "terms": [
+                {
+                  "column": 25,
+                  "sign": 1
+                },
+                {
+                  "column": 28,
+                  "sign": 1
+                },
+                {
+                  "column": 64,
+                  "sign": 1
+                },
+                {
+                  "column": 65,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 637627867,
+              "b": 48362381,
+              "terms": [
+                {
+                  "column": 3,
+                  "sign": 1
+                },
+                {
+                  "column": 7,
+                  "sign": 1
+                },
+                {
+                  "column": 41,
+                  "sign": -1
+                },
+                {
+                  "column": 65,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 456007196,
+              "b": 609537085,
+              "terms": [
+                {
+                  "column": 5,
+                  "sign": 1
+                },
+                {
+                  "column": 7,
+                  "sign": 1
+                },
+                {
+                  "column": 20,
+                  "sign": -1
+                },
+                {
+                  "column": 42,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1621519225,
+              "b": 82518423,
+              "terms": [
+                {
+                  "column": 34,
+                  "sign": -1
+                },
+                {
+                  "column": 40,
+                  "sign": 1
+                },
+                {
+                  "column": 56,
+                  "sign": 1
+                },
+                {
+                  "column": 60,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1069335725,
+              "b": 130308408,
+              "terms": [
+                {
+                  "column": 19,
+                  "sign": 1
+                },
+                {
+                  "column": 30,
+                  "sign": 1
+                },
+                {
+                  "column": 35,
+                  "sign": 1
+                },
+                {
+                  "column": 64,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 700363581,
+              "b": 413430849,
+              "terms": [
+                {
+                  "column": 43,
+                  "sign": -1
+                },
+                {
+                  "column": 63,
+                  "sign": 1
+                },
+                {
+                  "column": 63,
+                  "sign": 1
+                },
+                {
+                  "column": 66,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1397892566,
+              "b": 1010881515,
+              "terms": [
+                {
+                  "column": 19,
+                  "sign": -1
+                },
+                {
+                  "column": 38,
+                  "sign": 1
+                },
+                {
+                  "column": 38,
+                  "sign": 1
+                },
+                {
+                  "column": 54,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1469372751,
+              "b": 1607631593,
+              "terms": [
+                {
+                  "column": 25,
+                  "sign": -1
+                },
+                {
+                  "column": 30,
+                  "sign": -1
+                },
+                {
+                  "column": 47,
+                  "sign": -1
+                },
+                {
+                  "column": 69,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 199069475,
+              "b": 762633877,
+              "terms": [
+                {
+                  "column": 3,
+                  "sign": -1
+                },
+                {
+                  "column": 18,
+                  "sign": -1
+                },
+                {
+                  "column": 19,
+                  "sign": -1
+                },
+                {
+                  "column": 65,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1011165243,
+              "b": 443410889,
+              "terms": [
+                {
+                  "column": 23,
+                  "sign": 1
+                },
+                {
+                  "column": 27,
+                  "sign": -1
+                },
+                {
+                  "column": 31,
+                  "sign": -1
+                },
+                {
+                  "column": 51,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 387342505,
+              "b": 1439228471,
+              "terms": [
+                {
+                  "column": 15,
+                  "sign": -1
+                },
+                {
+                  "column": 34,
+                  "sign": 1
+                },
+                {
+                  "column": 57,
+                  "sign": -1
+                },
+                {
+                  "column": 67,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 730026370,
+              "b": 325635244,
+              "terms": [
+                {
+                  "column": 21,
+                  "sign": -1
+                },
+                {
+                  "column": 50,
+                  "sign": 1
+                },
+                {
+                  "column": 63,
+                  "sign": 1
+                },
+                {
+                  "column": 64,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 280440001,
+              "b": 1118258148,
+              "terms": [
+                {
+                  "column": 28,
+                  "sign": -1
+                },
+                {
+                  "column": 44,
+                  "sign": 1
+                },
+                {
+                  "column": 46,
+                  "sign": 1
+                },
+                {
+                  "column": 50,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 890571498,
+              "b": 1022906748,
+              "terms": [
+                {
+                  "column": 22,
+                  "sign": -1
+                },
+                {
+                  "column": 43,
+                  "sign": -1
+                },
+                {
+                  "column": 64,
+                  "sign": 1
+                },
+                {
+                  "column": 67,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 345861202,
+              "b": 1257348066,
+              "terms": [
+                {
+                  "column": 19,
+                  "sign": -1
+                },
+                {
+                  "column": 33,
+                  "sign": -1
+                },
+                {
+                  "column": 38,
+                  "sign": -1
+                },
+                {
+                  "column": 69,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1947282052,
+              "b": 513532374,
+              "terms": [
+                {
+                  "column": 4,
+                  "sign": -1
+                },
+                {
+                  "column": 28,
+                  "sign": 1
+                },
+                {
+                  "column": 63,
+                  "sign": -1
+                },
+                {
+                  "column": 70,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1313119021,
+              "b": 1550766338,
+              "terms": [
+                {
+                  "column": 20,
+                  "sign": -1
+                },
+                {
+                  "column": 24,
+                  "sign": -1
+                },
+                {
+                  "column": 28,
+                  "sign": 1
+                },
+                {
+                  "column": 49,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 437396712,
+              "b": 1662498111,
+              "terms": [
+                {
+                  "column": 2,
+                  "sign": -1
+                },
+                {
+                  "column": 14,
+                  "sign": 1
+                },
+                {
+                  "column": 24,
+                  "sign": -1
+                },
+                {
+                  "column": 27,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 57860596,
+              "b": 1777436062,
+              "terms": [
+                {
+                  "column": 7,
+                  "sign": -1
+                },
+                {
+                  "column": 48,
+                  "sign": 1
+                },
+                {
+                  "column": 55,
+                  "sign": 1
+                },
+                {
+                  "column": 69,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 481250623,
+              "b": 1792421655,
+              "terms": [
+                {
+                  "column": 9,
+                  "sign": -1
+                },
+                {
+                  "column": 31,
+                  "sign": -1
+                },
+                {
+                  "column": 37,
+                  "sign": 1
+                },
+                {
+                  "column": 61,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1117012821,
+              "b": 1432074954,
+              "terms": [
+                {
+                  "column": 5,
+                  "sign": 1
+                },
+                {
+                  "column": 6,
+                  "sign": 1
+                },
+                {
+                  "column": 11,
+                  "sign": -1
+                },
+                {
+                  "column": 65,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 930278039,
+              "b": 1882017683,
+              "terms": [
+                {
+                  "column": 10,
+                  "sign": 1
+                },
+                {
+                  "column": 29,
+                  "sign": -1
+                },
+                {
+                  "column": 35,
+                  "sign": -1
+                },
+                {
+                  "column": 42,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 169799674,
+              "b": 1954077225,
+              "terms": [
+                {
+                  "column": 28,
+                  "sign": 1
+                },
+                {
+                  "column": 30,
+                  "sign": 1
+                },
+                {
+                  "column": 55,
+                  "sign": 1
+                },
+                {
+                  "column": 64,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 198549758,
+              "b": 1501795825,
+              "terms": [
+                {
+                  "column": 10,
+                  "sign": -1
+                },
+                {
+                  "column": 15,
+                  "sign": -1
+                },
+                {
+                  "column": 67,
+                  "sign": 1
+                },
+                {
+                  "column": 67,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 407953234,
+              "b": 1194336498,
+              "terms": [
+                {
+                  "column": 30,
+                  "sign": -1
+                },
+                {
+                  "column": 35,
+                  "sign": -1
+                },
+                {
+                  "column": 56,
+                  "sign": -1
+                },
+                {
+                  "column": 65,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1015842475,
+              "b": 926463851,
+              "terms": [
+                {
+                  "column": 25,
+                  "sign": 1
+                },
+                {
+                  "column": 45,
+                  "sign": -1
+                },
+                {
+                  "column": 47,
+                  "sign": -1
+                },
+                {
+                  "column": 55,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1922762064,
+              "b": 40542652,
+              "terms": [
+                {
+                  "column": 14,
+                  "sign": -1
+                },
+                {
+                  "column": 19,
+                  "sign": 1
+                },
+                {
+                  "column": 41,
+                  "sign": 1
+                },
+                {
+                  "column": 51,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 969798028,
+              "b": 979246906,
+              "terms": [
+                {
+                  "column": 8,
+                  "sign": 1
+                },
+                {
+                  "column": 13,
+                  "sign": 1
+                },
+                {
+                  "column": 16,
+                  "sign": -1
+                },
+                {
+                  "column": 31,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1018387908,
+              "b": 657313033,
+              "terms": [
+                {
+                  "column": 2,
+                  "sign": -1
+                },
+                {
+                  "column": 39,
+                  "sign": -1
+                },
+                {
+                  "column": 60,
+                  "sign": 1
+                },
+                {
+                  "column": 60,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1379220759,
+              "b": 1564140999,
+              "terms": [
+                {
+                  "column": 0,
+                  "sign": -1
+                },
+                {
+                  "column": 0,
+                  "sign": -1
+                },
+                {
+                  "column": 43,
+                  "sign": 1
+                },
+                {
+                  "column": 51,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1265393797,
+              "b": 507691375,
+              "terms": [
+                {
+                  "column": 4,
+                  "sign": -1
+                },
+                {
+                  "column": 5,
+                  "sign": -1
+                },
+                {
+                  "column": 47,
+                  "sign": 1
+                },
+                {
+                  "column": 68,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 967821845,
+              "b": 274307395,
+              "terms": [
+                {
+                  "column": 10,
+                  "sign": 1
+                },
+                {
+                  "column": 33,
+                  "sign": 1
+                },
+                {
+                  "column": 54,
+                  "sign": 1
+                },
+                {
+                  "column": 54,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 821492418,
+              "b": 812802671,
+              "terms": [
+                {
+                  "column": 19,
+                  "sign": -1
+                },
+                {
+                  "column": 49,
+                  "sign": 1
+                },
+                {
+                  "column": 50,
+                  "sign": 1
+                },
+                {
+                  "column": 66,
+                  "sign": -1
+                }
+              ]
+            }
+          ],
+          "scalar": 345912577,
+          "summands": 4,
+          "weights": [
+            1795974005,
+            1137698693,
+            0,
+            1085603054,
+            1061689705,
+            1794472567,
+            1548869380,
+            1059031903,
+            189768801,
+            2133135344,
+            1113915604,
+            710370951,
+            443212846,
+            1344707778,
+            1342993805,
+            1260828225,
+            1342993805,
+            0,
+            376137082,
+            1085603054,
+            1913600544,
+            0,
+            1985173772,
+            1604703766,
+            3514788,
+            1604703766,
+            1408616116,
+            0,
+            568031207,
+            0,
+            1604703766,
+            1794472567,
+            1859464138,
+            163437607,
+            2117311947,
+            708869513,
+            838957777,
+            1411852095,
+            1088685924,
+            0,
+            1984520177,
+            1301136301,
+            673874754,
+            674037010,
+            1879661593,
+            1794472567,
+            702376982,
+            1969697737,
+            1260828225,
+            1439289375,
+            1495537399,
+            1011244053,
+            351318753,
+            451478762,
+            1033589689,
+            1061902239,
+            1061902239,
+            1088685924,
+            2034810425,
+            1157087156,
+            1957736492,
+            1982584526,
+            1381658749,
+            0,
+            0,
+            969057465,
+            102671551,
+            407064009,
+            1
+          ]
+        },
+        "cli_accounting": {
+          "before_online": 2394,
+          "cold_total": null,
+          "ic_observed_total": 3182645144,
+          "independent_replay": null,
+          "observed_total": 3182645144,
+          "online": 3180965446,
+          "preparation": 272722,
+          "process_start_exit": null,
+          "reference": 0,
+          "reporting": 1404582,
+          "schema": "auxiliary-ic-cli-costs/v1",
+          "scope": "run-entry-through-resource-snapshot; excludes accounting serialization",
+          "unit": "ns",
+          "upstream_preparation": null
+        },
+        "configured_search": {
+          "max_millis": null,
+          "max_proof_nodes": 4194304,
+          "max_queries": 100000,
+          "max_relations": 512,
+          "profile_phases": true,
+          "seed": 9961743651143974399,
+          "summands": 4,
+          "walk_lanes": 64
+        },
+        "execution_class": "cpu-only",
+        "factor_base": {
+          "affine_points": 142,
+          "backend": "scalar",
+          "columns_blake3": "003eb1e8be482c521babf20c8c32062b838e400e3c49a7a1607f16f66b632af0",
+          "encoding": {
+            "kind": "direct"
+          },
+          "folded_columns": 71,
+          "raw_roots": 128,
+          "selection_encoding": {
+            "depth": 7,
+            "kind": "torus",
+            "trace": 3
+          },
+          "terminal_coordinate": 340921998,
+          "uses_auxiliary_maps": false,
+          "uses_circuit": false
+        },
+        "field_bits": 31,
+        "gpu": {
+          "devices": []
+        },
+        "input_blake3": "e8f55864e4f15d6abdbe26eb9792b3a7a2cf0607c1462e1d03f8c4a4b5b28766",
+        "mode": "bounded-single-target-search",
+        "online_accounting": {
+          "call_overhead": 67750,
+          "core": 3180897516,
+          "independent_replay": null,
+          "input_validation": 180,
+          "schema": "auxiliary-ic-online-call/v1",
+          "scope": "target-point-validation-through-local-replay",
+          "total": 3180965446,
+          "unit": "ns"
+        },
+        "online_call_wall_seconds": 3.180965446,
+        "online_exclusive_phases": {
+          "clock": "std::time::Instant",
+          "clock_overhead": "included-not-subtracted",
+          "clock_reads": 14141,
+          "durations": {
+            "bookkeeping": 12103547,
+            "certificate_replay": 794663,
+            "decomposition": 3160371201,
+            "graph_recovery": 5761780,
+            "initialization": 165615,
+            "row_validation": 1159958,
+            "target_walk": 540752
+          },
+          "independent_replay": null,
+          "schema": "auxiliary-ic-online-phases/v1",
+          "scope": "core-search-including-local-replay",
+          "total": 3180897516,
+          "unit": "ns"
+        },
+        "online_wall_ns": 3180965446,
+        "online_wall_seconds": 3.180965446,
+        "operation": "auxiliary-prime-field-ic",
+        "producer_check_passed": true,
+        "public": {
+          "P": [
+            1,
+            814455902
+          ],
+          "Q": [
+            2144058214,
+            807222724
+          ],
+          "a": 2,
+          "b": 14,
+          "n": 2147505293,
+          "p": 2147483647
+        },
+        "qualification": "unverified producer diagnostic; no signed independent replay or admitted performance tier",
+        "qualified_speedup": null,
+        "resources": {
+          "cpu_seconds": 3.1924210000000004,
+          "peak_rss_bytes": 10616832,
+          "scope": "process counters sampled before report emission; peak resident memory, not allocated bytes"
+        },
+        "sampler": "splitmix64-rejection-public-coefficient-walks",
+        "schema_version": 2,
+        "software": {
+          "arch": "x86_64",
+          "binary_blake3": "b28b9e343c1fe6c6797358cab1d7138789270220ded25e33782a2d7509b22f6f",
+          "git_commit": "fa66e3c2b5488c2f73c6f54378e50c7b43226d31",
+          "os": "linux",
+          "version": "0.1.0"
+        },
+        "source_commit": "fa66e3c2b5488c2f73c6f54378e50c7b43226d31",
+        "status": "solved",
+        "target_independent_preparation_ns": 272722,
+        "target_independent_preparation_seconds": 0.000272722,
+        "work": {
+          "backend": "scalar",
+          "circuit_queries": 0,
+          "duplicate_rows": 0,
+          "generated_targets": 6848,
+          "lane_rounds": 107,
+          "matrix_rank": 68,
+          "proof_nodes": 647,
+          "queries": 6823,
+          "relations": 69
+        }
+      },
+      "independent_python_scalar_replay": true
+    },
+    {
+      "arm": "baseline",
+      "command": [
+        "/workspace/cryptanalysis-baseline/suite/target/release/ca-ic",
+        "auxiliary",
+        "--input",
+        "/workspace/isogeny-workspace/repos/cryptanalysis/suite/docs/ic/runs/fp-m31-pair-roots-20261127/q0.json",
+        "--torus-depth",
+        "7",
+        "--without-auxiliary",
+        "--summands",
+        "4",
+        "--seed",
+        "9961743651143974399",
+        "--walk-lanes",
+        "64",
+        "--max-queries",
+        "100000",
+        "--max-relations",
+        "512",
+        "--max-proof-nodes",
+        "4194304",
+        "--profile-phases"
+      ],
+      "returncode": 1,
+      "wall_ns": 56453416660,
+      "timeout": false,
+      "stdout": "{\n  \"binary_blake3\": \"78ee7afcf0ed000688680675f1cc090f3c7dfc373c796e9be3600671f004e244\",\n  \"certificate\": {\n    \"P\": [\n      1,\n      814455902\n    ],\n    \"Q\": [\n      2144058214,\n      807222724\n    ],\n    \"order\": 2147505293,\n    \"relations\": [\n      {\n        \"a\": 984958047,\n        \"b\": 615575961,\n        \"terms\": [\n          {\n            \"column\": 6,\n            \"sign\": 1\n          },\n          {\n            \"column\": 20,\n            \"sign\": -1\n          },\n          {\n            \"column\": 63,\n            \"sign\": 1\n          },\n          {\n            \"column\": 64,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 2055646857,\n        \"b\": 1350276860,\n        \"terms\": [\n          {\n            \"column\": 20,\n            \"sign\": -1\n          },\n          {\n            \"column\": 47,\n            \"sign\": 1\n          },\n          {\n            \"column\": 66,\n            \"sign\": -1\n          },\n          {\n            \"column\": 69,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 894679277,\n        \"b\": 1950285430,\n        \"terms\": [\n          {\n            \"column\": 7,\n            \"sign\": -1\n          },\n          {\n            \"column\": 32,\n            \"sign\": -1\n          },\n          {\n            \"column\": 46,\n            \"sign\": 1\n          },\n          {\n            \"column\": 46,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 464291422,\n        \"b\": 2064603534,\n        \"terms\": [\n          {\n            \"column\": 28,\n            \"sign\": 1\n          },\n          {\n            \"column\": 29,\n            \"sign\": -1\n          },\n          {\n            \"column\": 46,\n            \"sign\": -1\n          },\n          {\n            \"column\": 61,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1495427913,\n        \"b\": 1451795652,\n        \"terms\": [\n          {\n            \"column\": 29,\n            \"sign\": -1\n          },\n          {\n            \"column\": 49,\n            \"sign\": -1\n          },\n          {\n            \"column\": 55,\n            \"sign\": 1\n          },\n          {\n            \"column\": 63,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 927075742,\n        \"b\": 1841721354,\n        \"terms\": [\n          {\n            \"column\": 7,\n            \"sign\": 1\n          },\n          {\n            \"column\": 10,\n            \"sign\": 1\n          },\n          {\n            \"column\": 20,\n            \"sign\": -1\n          },\n          {\n            \"column\": 26,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1701011129,\n        \"b\": 275779039,\n        \"terms\": [\n          {\n            \"column\": 0,\n            \"sign\": -1\n          },\n          {\n            \"column\": 14,\n            \"sign\": 1\n          },\n          {\n            \"column\": 52,\n            \"sign\": 1\n          },\n          {\n            \"column\": 54,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 780785171,\n        \"b\": 683319996,\n        \"terms\": [\n          {\n            \"column\": 19,\n            \"sign\": 1\n          },\n          {\n            \"column\": 29,\n            \"sign\": -1\n          },\n          {\n            \"column\": 33,\n            \"sign\": -1\n          },\n          {\n            \"column\": 51,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 316973523,\n        \"b\": 848385145,\n        \"terms\": [\n          {\n            \"column\": 1,\n            \"sign\": -1\n          },\n          {\n            \"column\": 46,\n            \"sign\": -1\n          },\n          {\n            \"column\": 56,\n            \"sign\": -1\n          },\n          {\n            \"column\": 57,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 101388578,\n        \"b\": 1222042842,\n        \"terms\": [\n          {\n            \"column\": 10,\n            \"sign\": -1\n          },\n          {\n            \"column\": 20,\n            \"sign\": 1\n          },\n          {\n            \"column\": 21,\n            \"sign\": 1\n          },\n          {\n            \"column\": 30,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1198538025,\n        \"b\": 143430377,\n        \"terms\": [\n          {\n            \"column\": 4,\n            \"sign\": 1\n          },\n          {\n            \"column\": 7,\n            \"sign\": -1\n          },\n          {\n            \"column\": 22,\n            \"sign\": -1\n          },\n          {\n            \"column\": 48,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1921633642,\n        \"b\": 1877512553,\n        \"terms\": [\n          {\n            \"column\": 6,\n            \"sign\": -1\n          },\n          {\n            \"column\": 49,\n            \"sign\": 1\n          },\n          {\n            \"column\": 64,\n            \"sign\": -1\n          },\n          {\n            \"column\": 67,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 826721759,\n        \"b\": 543347150,\n        \"terms\": [\n          {\n            \"column\": 5,\n            \"sign\": -1\n          },\n          {\n            \"column\": 14,\n            \"sign\": 1\n          },\n          {\n            \"column\": 47,\n            \"sign\": -1\n          },\n          {\n            \"column\": 70,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 691109630,\n        \"b\": 1970424524,\n        \"terms\": [\n          {\n            \"column\": 18,\n            \"sign\": 1\n          },\n          {\n            \"column\": 20,\n            \"sign\": 1\n          },\n          {\n            \"column\": 24,\n            \"sign\": -1\n          },\n          {\n            \"column\": 69,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 643671219,\n        \"b\": 1354303132,\n        \"terms\": [\n          {\n            \"column\": 8,\n            \"sign\": -1\n          },\n          {\n            \"column\": 45,\n            \"sign\": -1\n          },\n          {\n            \"column\": 68,\n            \"sign\": 1\n          },\n          {\n            \"column\": 69,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1364897782,\n        \"b\": 380439223,\n        \"terms\": [\n          {\n            \"column\": 38,\n            \"sign\": -1\n          },\n          {\n            \"column\": 44,\n            \"sign\": -1\n          },\n          {\n            \"column\": 46,\n            \"sign\": 1\n          },\n          {\n            \"column\": 52,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1846335031,\n        \"b\": 1758501401,\n        \"terms\": [\n          {\n            \"column\": 0,\n            \"sign\": 1\n          },\n          {\n            \"column\": 8,\n            \"sign\": 1\n          },\n          {\n            \"column\": 27,\n            \"sign\": 1\n          },\n          {\n            \"column\": 30,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1411235899,\n        \"b\": 1710363649,\n        \"terms\": [\n          {\n            \"column\": 0,\n            \"sign\": -1\n          },\n          {\n            \"column\": 50,\n            \"sign\": -1\n          },\n          {\n            \"column\": 58,\n            \"sign\": 1\n          },\n          {\n            \"column\": 64,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1631749609,\n        \"b\": 2062462735,\n        \"terms\": [\n          {\n            \"column\": 18,\n            \"sign\": 1\n          },\n          {\n            \"column\": 19,\n            \"sign\": -1\n          },\n          {\n            \"column\": 43,\n            \"sign\": -1\n          },\n          {\n            \"column\": 45,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 2115879442,\n        \"b\": 1895702581,\n        \"terms\": [\n          {\n            \"column\": 9,\n            \"sign\": -1\n          },\n          {\n            \"column\": 11,\n            \"sign\": -1\n          },\n          {\n            \"column\": 14,\n            \"sign\": 1\n          },\n          {\n            \"column\": 35,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 802144021,\n        \"b\": 1501633742,\n        \"terms\": [\n          {\n            \"column\": 3,\n            \"sign\": -1\n          },\n          {\n            \"column\": 3,\n            \"sign\": -1\n          },\n          {\n            \"column\": 28,\n            \"sign\": -1\n          },\n          {\n            \"column\": 45,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1453554081,\n        \"b\": 13127539,\n        \"terms\": [\n          {\n            \"column\": 22,\n            \"sign\": -1\n          },\n          {\n            \"column\": 27,\n            \"sign\": -1\n          },\n          {\n            \"column\": 41,\n            \"sign\": 1\n          },\n          {\n            \"column\": 59,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1869537864,\n        \"b\": 762624646,\n        \"terms\": [\n          {\n            \"column\": 18,\n            \"sign\": -1\n          },\n          {\n            \"column\": 22,\n            \"sign\": 1\n          },\n          {\n            \"column\": 46,\n            \"sign\": -1\n          },\n          {\n            \"column\": 67,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1784749894,\n        \"b\": 473152881,\n        \"terms\": [\n          {\n            \"column\": 1,\n            \"sign\": -1\n          },\n          {\n            \"column\": 20,\n            \"sign\": -1\n          },\n          {\n            \"column\": 37,\n            \"sign\": -1\n          },\n          {\n            \"column\": 53,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 654042202,\n        \"b\": 1780457012,\n        \"terms\": [\n          {\n            \"column\": 0,\n            \"sign\": -1\n          },\n          {\n            \"column\": 18,\n            \"sign\": -1\n          },\n          {\n            \"column\": 68,\n            \"sign\": -1\n          },\n          {\n            \"column\": 68,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 814619991,\n        \"b\": 2043097238,\n        \"terms\": [\n          {\n            \"column\": 34,\n            \"sign\": -1\n          },\n          {\n            \"column\": 57,\n            \"sign\": -1\n          },\n          {\n            \"column\": 60,\n            \"sign\": 1\n          },\n          {\n            \"column\": 65,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1211673660,\n        \"b\": 106922068,\n        \"terms\": [\n          {\n            \"column\": 34,\n            \"sign\": -1\n          },\n          {\n            \"column\": 38,\n            \"sign\": 1\n          },\n          {\n            \"column\": 46,\n            \"sign\": -1\n          },\n          {\n            \"column\": 54,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1346332663,\n        \"b\": 1968648832,\n        \"terms\": [\n          {\n            \"column\": 18,\n            \"sign\": 1\n          },\n          {\n            \"column\": 23,\n            \"sign\": -1\n          },\n          {\n            \"column\": 36,\n            \"sign\": -1\n          },\n          {\n            \"column\": 36,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1860570566,\n        \"b\": 1117544405,\n        \"terms\": [\n          {\n            \"column\": 22,\n            \"sign\": 1\n          },\n          {\n            \"column\": 45,\n            \"sign\": 1\n          },\n          {\n            \"column\": 65,\n            \"sign\": -1\n          },\n          {\n            \"column\": 70,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 360924752,\n        \"b\": 1400291686,\n        \"terms\": [\n          {\n            \"column\": 1,\n            \"sign\": -1\n          },\n          {\n            \"column\": 26,\n            \"sign\": 1\n          },\n          {\n            \"column\": 55,\n            \"sign\": -1\n          },\n          {\n            \"column\": 62,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 516857848,\n        \"b\": 1858718788,\n        \"terms\": [\n          {\n            \"column\": 5,\n            \"sign\": -1\n          },\n          {\n            \"column\": 37,\n            \"sign\": -1\n          },\n          {\n            \"column\": 53,\n            \"sign\": -1\n          },\n          {\n            \"column\": 60,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1178699481,\n        \"b\": 1050608940,\n        \"terms\": [\n          {\n            \"column\": 1,\n            \"sign\": 1\n          },\n          {\n            \"column\": 23,\n            \"sign\": -1\n          },\n          {\n            \"column\": 26,\n            \"sign\": 1\n          },\n          {\n            \"column\": 51,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 2017647733,\n        \"b\": 641851476,\n        \"terms\": [\n          {\n            \"column\": 2,\n            \"sign\": -1\n          },\n          {\n            \"column\": 15,\n            \"sign\": 1\n          },\n          {\n            \"column\": 47,\n            \"sign\": 1\n          },\n          {\n            \"column\": 52,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1896428165,\n        \"b\": 1610816824,\n        \"terms\": [\n          {\n            \"column\": 2,\n            \"sign\": 1\n          },\n          {\n            \"column\": 21,\n            \"sign\": -1\n          },\n          {\n            \"column\": 34,\n            \"sign\": 1\n          },\n          {\n            \"column\": 66,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1019419584,\n        \"b\": 950611293,\n        \"terms\": [\n          {\n            \"column\": 30,\n            \"sign\": 1\n          },\n          {\n            \"column\": 41,\n            \"sign\": -1\n          },\n          {\n            \"column\": 51,\n            \"sign\": -1\n          },\n          {\n            \"column\": 57,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1385124102,\n        \"b\": 291508711,\n        \"terms\": [\n          {\n            \"column\": 31,\n            \"sign\": 1\n          },\n          {\n            \"column\": 50,\n            \"sign\": -1\n          },\n          {\n            \"column\": 67,\n            \"sign\": -1\n          },\n          {\n            \"column\": 68,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 18466543,\n        \"b\": 239322888,\n        \"terms\": [\n          {\n            \"column\": 25,\n            \"sign\": 1\n          },\n          {\n            \"column\": 28,\n            \"sign\": 1\n          },\n          {\n            \"column\": 64,\n            \"sign\": 1\n          },\n          {\n            \"column\": 65,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 637627867,\n        \"b\": 48362381,\n        \"terms\": [\n          {\n            \"column\": 3,\n            \"sign\": 1\n          },\n          {\n            \"column\": 7,\n            \"sign\": 1\n          },\n          {\n            \"column\": 41,\n            \"sign\": -1\n          },\n          {\n            \"column\": 65,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 456007196,\n        \"b\": 609537085,\n        \"terms\": [\n          {\n            \"column\": 5,\n            \"sign\": 1\n          },\n          {\n            \"column\": 7,\n            \"sign\": 1\n          },\n          {\n            \"column\": 20,\n            \"sign\": -1\n          },\n          {\n            \"column\": 42,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1621519225,\n        \"b\": 82518423,\n        \"terms\": [\n          {\n            \"column\": 34,\n            \"sign\": -1\n          },\n          {\n            \"column\": 40,\n            \"sign\": 1\n          },\n          {\n            \"column\": 56,\n            \"sign\": 1\n          },\n          {\n            \"column\": 60,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1069335725,\n        \"b\": 130308408,\n        \"terms\": [\n          {\n            \"column\": 19,\n            \"sign\": 1\n          },\n          {\n            \"column\": 30,\n            \"sign\": 1\n          },\n          {\n            \"column\": 35,\n            \"sign\": 1\n          },\n          {\n            \"column\": 64,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 700363581,\n        \"b\": 413430849,\n        \"terms\": [\n          {\n            \"column\": 43,\n            \"sign\": -1\n          },\n          {\n            \"column\": 63,\n            \"sign\": 1\n          },\n          {\n            \"column\": 63,\n            \"sign\": 1\n          },\n          {\n            \"column\": 66,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1397892566,\n        \"b\": 1010881515,\n        \"terms\": [\n          {\n            \"column\": 19,\n            \"sign\": -1\n          },\n          {\n            \"column\": 38,\n            \"sign\": 1\n          },\n          {\n            \"column\": 38,\n            \"sign\": 1\n          },\n          {\n            \"column\": 54,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1469372751,\n        \"b\": 1607631593,\n        \"terms\": [\n          {\n            \"column\": 25,\n            \"sign\": -1\n          },\n          {\n            \"column\": 30,\n            \"sign\": -1\n          },\n          {\n            \"column\": 47,\n            \"sign\": -1\n          },\n          {\n            \"column\": 69,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 199069475,\n        \"b\": 762633877,\n        \"terms\": [\n          {\n            \"column\": 3,\n            \"sign\": -1\n          },\n          {\n            \"column\": 18,\n            \"sign\": -1\n          },\n          {\n            \"column\": 19,\n            \"sign\": -1\n          },\n          {\n            \"column\": 65,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1011165243,\n        \"b\": 443410889,\n        \"terms\": [\n          {\n            \"column\": 23,\n            \"sign\": 1\n          },\n          {\n            \"column\": 27,\n            \"sign\": -1\n          },\n          {\n            \"column\": 31,\n            \"sign\": -1\n          },\n          {\n            \"column\": 51,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 387342505,\n        \"b\": 1439228471,\n        \"terms\": [\n          {\n            \"column\": 15,\n            \"sign\": -1\n          },\n          {\n            \"column\": 34,\n            \"sign\": 1\n          },\n          {\n            \"column\": 57,\n            \"sign\": -1\n          },\n          {\n            \"column\": 67,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 730026370,\n        \"b\": 325635244,\n        \"terms\": [\n          {\n            \"column\": 21,\n            \"sign\": -1\n          },\n          {\n            \"column\": 50,\n            \"sign\": 1\n          },\n          {\n            \"column\": 63,\n            \"sign\": 1\n          },\n          {\n            \"column\": 64,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 280440001,\n        \"b\": 1118258148,\n        \"terms\": [\n          {\n            \"column\": 28,\n            \"sign\": -1\n          },\n          {\n            \"column\": 44,\n            \"sign\": 1\n          },\n          {\n            \"column\": 46,\n            \"sign\": 1\n          },\n          {\n            \"column\": 50,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 890571498,\n        \"b\": 1022906748,\n        \"terms\": [\n          {\n            \"column\": 22,\n            \"sign\": -1\n          },\n          {\n            \"column\": 43,\n            \"sign\": -1\n          },\n          {\n            \"column\": 64,\n            \"sign\": 1\n          },\n          {\n            \"column\": 67,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 345861202,\n        \"b\": 1257348066,\n        \"terms\": [\n          {\n            \"column\": 19,\n            \"sign\": -1\n          },\n          {\n            \"column\": 33,\n            \"sign\": -1\n          },\n          {\n            \"column\": 38,\n            \"sign\": -1\n          },\n          {\n            \"column\": 69,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1947282052,\n        \"b\": 513532374,\n        \"terms\": [\n          {\n            \"column\": 4,\n            \"sign\": -1\n          },\n          {\n            \"column\": 28,\n            \"sign\": 1\n          },\n          {\n            \"column\": 63,\n            \"sign\": -1\n          },\n          {\n            \"column\": 70,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1313119021,\n        \"b\": 1550766338,\n        \"terms\": [\n          {\n            \"column\": 20,\n            \"sign\": -1\n          },\n          {\n            \"column\": 24,\n            \"sign\": -1\n          },\n          {\n            \"column\": 28,\n            \"sign\": 1\n          },\n          {\n            \"column\": 49,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 437396712,\n        \"b\": 1662498111,\n        \"terms\": [\n          {\n            \"column\": 2,\n            \"sign\": -1\n          },\n          {\n            \"column\": 14,\n            \"sign\": 1\n          },\n          {\n            \"column\": 24,\n            \"sign\": -1\n          },\n          {\n            \"column\": 27,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 57860596,\n        \"b\": 1777436062,\n        \"terms\": [\n          {\n            \"column\": 7,\n            \"sign\": -1\n          },\n          {\n            \"column\": 48,\n            \"sign\": 1\n          },\n          {\n            \"column\": 55,\n            \"sign\": 1\n          },\n          {\n            \"column\": 69,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 481250623,\n        \"b\": 1792421655,\n        \"terms\": [\n          {\n            \"column\": 9,\n            \"sign\": -1\n          },\n          {\n            \"column\": 31,\n            \"sign\": -1\n          },\n          {\n            \"column\": 37,\n            \"sign\": 1\n          },\n          {\n            \"column\": 61,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1117012821,\n        \"b\": 1432074954,\n        \"terms\": [\n          {\n            \"column\": 5,\n            \"sign\": 1\n          },\n          {\n            \"column\": 6,\n            \"sign\": 1\n          },\n          {\n            \"column\": 11,\n            \"sign\": -1\n          },\n          {\n            \"column\": 65,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 930278039,\n        \"b\": 1882017683,\n        \"terms\": [\n          {\n            \"column\": 10,\n            \"sign\": 1\n          },\n          {\n            \"column\": 29,\n            \"sign\": -1\n          },\n          {\n            \"column\": 35,\n            \"sign\": -1\n          },\n          {\n            \"column\": 42,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 169799674,\n        \"b\": 1954077225,\n        \"terms\": [\n          {\n            \"column\": 28,\n            \"sign\": 1\n          },\n          {\n            \"column\": 30,\n            \"sign\": 1\n          },\n          {\n            \"column\": 55,\n            \"sign\": 1\n          },\n          {\n            \"column\": 64,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 198549758,\n        \"b\": 1501795825,\n        \"terms\": [\n          {\n            \"column\": 10,\n            \"sign\": -1\n          },\n          {\n            \"column\": 15,\n            \"sign\": -1\n          },\n          {\n            \"column\": 67,\n            \"sign\": 1\n          },\n          {\n            \"column\": 67,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 407953234,\n        \"b\": 1194336498,\n        \"terms\": [\n          {\n            \"column\": 30,\n            \"sign\": -1\n          },\n          {\n            \"column\": 35,\n            \"sign\": -1\n          },\n          {\n            \"column\": 56,\n            \"sign\": -1\n          },\n          {\n            \"column\": 65,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1015842475,\n        \"b\": 926463851,\n        \"terms\": [\n          {\n            \"column\": 25,\n            \"sign\": 1\n          },\n          {\n            \"column\": 45,\n            \"sign\": -1\n          },\n          {\n            \"column\": 47,\n            \"sign\": -1\n          },\n          {\n            \"column\": 55,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1922762064,\n        \"b\": 40542652,\n        \"terms\": [\n          {\n            \"column\": 14,\n            \"sign\": -1\n          },\n          {\n            \"column\": 19,\n            \"sign\": 1\n          },\n          {\n            \"column\": 41,\n            \"sign\": 1\n          },\n          {\n            \"column\": 51,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 969798028,\n        \"b\": 979246906,\n        \"terms\": [\n          {\n            \"column\": 8,\n            \"sign\": 1\n          },\n          {\n            \"column\": 13,\n            \"sign\": 1\n          },\n          {\n            \"column\": 16,\n            \"sign\": -1\n          },\n          {\n            \"column\": 31,\n            \"sign\": -1\n          }\n        ]\n      },\n      {\n        \"a\": 1018387908,\n        \"b\": 657313033,\n        \"terms\": [\n          {\n            \"column\": 2,\n            \"sign\": -1\n          },\n          {\n            \"column\": 39,\n            \"sign\": -1\n          },\n          {\n            \"column\": 60,\n            \"sign\": 1\n          },\n          {\n            \"column\": 60,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1379220759,\n        \"b\": 1564140999,\n        \"terms\": [\n          {\n            \"column\": 0,\n            \"sign\": -1\n          },\n          {\n            \"column\": 0,\n            \"sign\": -1\n          },\n          {\n            \"column\": 43,\n            \"sign\": 1\n          },\n          {\n            \"column\": 51,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 1265393797,\n        \"b\": 507691375,\n        \"terms\": [\n          {\n            \"column\": 4,\n            \"sign\": -1\n          },\n          {\n            \"column\": 5,\n            \"sign\": -1\n          },\n          {\n            \"column\": 47,\n            \"sign\": 1\n          },\n          {\n            \"column\": 68,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 967821845,\n        \"b\": 274307395,\n        \"terms\": [\n          {\n            \"column\": 10,\n            \"sign\": 1\n          },\n          {\n            \"column\": 33,\n            \"sign\": 1\n          },\n          {\n            \"column\": 54,\n            \"sign\": 1\n          },\n          {\n            \"column\": 54,\n            \"sign\": 1\n          }\n        ]\n      },\n      {\n        \"a\": 821492418,\n        \"b\": 812802671,\n        \"terms\": [\n          {\n            \"column\": 19,\n            \"sign\": -1\n          },\n          {\n            \"column\": 49,\n            \"sign\": 1\n          },\n          {\n            \"column\": 50,\n            \"sign\": 1\n          },\n          {\n            \"column\": 66,\n            \"sign\": -1\n          }\n        ]\n      }\n    ],\n    \"scalar\": 345912577,\n    \"summands\": 4,\n    \"weights\": [\n      1795974005,\n      1137698693,\n      0,\n      1085603054,\n      1061689705,\n      1794472567,\n      1548869380,\n      1059031903,\n      189768801,\n      2133135344,\n      1113915604,\n      710370951,\n      443212846,\n      1344707778,\n      1342993805,\n      1260828225,\n      1342993805,\n      0,\n      376137082,\n      1085603054,\n      1913600544,\n      0,\n      1985173772,\n      1604703766,\n      3514788,\n      1604703766,\n      1408616116,\n      0,\n      568031207,\n      0,\n      1604703766,\n      1794472567,\n      1859464138,\n      163437607,\n      2117311947,\n      708869513,\n      838957777,\n      1411852095,\n      1088685924,\n      0,\n      1984520177,\n      1301136301,\n      673874754,\n      674037010,\n      1879661593,\n      1794472567,\n      702376982,\n      1969697737,\n      1260828225,\n      1439289375,\n      1495537399,\n      1011244053,\n      351318753,\n      451478762,\n      1033589689,\n      1061902239,\n      1061902239,\n      1088685924,\n      2034810425,\n      1157087156,\n      1957736492,\n      1982584526,\n      1381658749,\n      0,\n      0,\n      969057465,\n      102671551,\n      407064009,\n      1\n    ]\n  },\n  \"cli_accounting\": {\n    \"before_online\": 1863,\n    \"cold_total\": null,\n    \"ic_observed_total\": 56354933905,\n    \"independent_replay\": null,\n    \"observed_total\": 56354933905,\n    \"online\": 56348905860,\n    \"preparation\": 431617,\n    \"process_start_exit\": null,\n    \"reference\": 0,\n    \"reporting\": 5594565,\n    \"schema\": \"auxiliary-ic-cli-costs/v1\",\n    \"scope\": \"run-entry-through-resource-snapshot; excludes accounting serialization\",\n    \"unit\": \"ns\",\n    \"upstream_preparation\": null\n  },\n  \"configured_search\": {\n    \"max_millis\": null,\n    \"max_proof_nodes\": 4194304,\n    \"max_queries\": 100000,\n    \"max_relations\": 512,\n    \"profile_phases\": true,\n    \"seed\": 9961743651143974399,\n    \"summands\": 4,\n    \"walk_lanes\": 64\n  },\n  \"execution_class\": \"cpu-only\",\n  \"factor_base\": {\n    \"affine_points\": 142,\n    \"backend\": \"scalar\",\n    \"columns_blake3\": \"003eb1e8be482c521babf20c8c32062b838e400e3c49a7a1607f16f66b632af0\",\n    \"encoding\": {\n      \"kind\": \"direct\"\n    },\n    \"folded_columns\": 71,\n    \"raw_roots\": 128,\n    \"selection_encoding\": {\n      \"depth\": 7,\n      \"kind\": \"torus\",\n      \"trace\": 3\n    },\n    \"terminal_coordinate\": 340921998,\n    \"uses_auxiliary_maps\": false,\n    \"uses_circuit\": false\n  },\n  \"field_bits\": 31,\n  \"gpu\": {\n    \"devices\": []\n  },\n  \"input_blake3\": \"e8f55864e4f15d6abdbe26eb9792b3a7a2cf0607c1462e1d03f8c4a4b5b28766\",\n  \"mode\": \"bounded-single-target-search\",\n  \"online_accounting\": {\n    \"call_overhead\": 69021,\n    \"core\": 56348836508,\n    \"independent_replay\": null,\n    \"input_validation\": 331,\n    \"schema\": \"auxiliary-ic-online-call/v1\",\n    \"scope\": \"target-point-validation-through-local-replay\",\n    \"total\": 56348905860,\n    \"unit\": \"ns\"\n  },\n  \"online_call_wall_seconds\": 56.34890586,\n  \"online_exclusive_phases\": {\n    \"clock\": \"std::time::Instant\",\n    \"clock_overhead\": \"included-not-subtracted\",\n    \"clock_reads\": 14141,\n    \"durations\": {\n      \"bookkeeping\": 6431067,\n      \"certificate_replay\": 845948,\n      \"decomposition\": 56318468344,\n      \"graph_recovery\": 15214990,\n      \"initialization\": 160647,\n      \"row_validation\": 5662660,\n      \"target_walk\": 2052852\n    },\n    \"independent_replay\": null,\n    \"schema\": \"auxiliary-ic-online-phases/v1\",\n    \"scope\": \"core-search-including-local-replay\",\n    \"total\": 56348836508,\n    \"unit\": \"ns\"\n  },\n  \"online_wall_ns\": 56348905860,\n  \"online_wall_seconds\": 56.34890586,\n  \"operation\": \"auxiliary-prime-field-ic\",\n  \"producer_check_passed\": true,\n  \"public\": {\n    \"P\": [\n      1,\n      814455902\n    ],\n    \"Q\": [\n      2144058214,\n      807222724\n    ],\n    \"a\": 2,\n    \"b\": 14,\n    \"n\": 2147505293,\n    \"p\": 2147483647\n  },\n  \"qualification\": \"unverified producer diagnostic; no signed independent replay or admitted performance tier\",\n  \"qualified_speedup\": null,\n  \"resources\": {\n    \"cpu_seconds\": 56.193816000000005,\n    \"peak_rss_bytes\": 10747904,\n    \"scope\": \"process counters sampled before report emission; peak resident memory, not allocated bytes\"\n  },\n  \"sampler\": \"splitmix64-rejection-public-coefficient-walks\",\n  \"schema_version\": 2,\n  \"software\": {\n    \"arch\": \"x86_64\",\n    \"binary_blake3\": \"78ee7afcf0ed000688680675f1cc090f3c7dfc373c796e9be3600671f004e244\",\n    \"git_commit\": \"fa66e3c2b5488c2f73c6f54378e50c7b43226d31\",\n    \"os\": \"linux\",\n    \"version\": \"0.1.0\"\n  },\n  \"source_commit\": \"fa66e3c2b5488c2f73c6f54378e50c7b43226d31\",\n  \"status\": \"solved\",\n  \"target_independent_preparation_ns\": 431617,\n  \"target_independent_preparation_seconds\": 0.000431617,\n  \"work\": {\n    \"backend\": \"scalar\",\n    \"circuit_queries\": 0,\n    \"duplicate_rows\": 0,\n    \"generated_targets\": 6848,\n    \"lane_rounds\": 107,\n    \"matrix_rank\": 68,\n    \"proof_nodes\": 647,\n    \"queries\": 6823,\n    \"relations\": 69\n  }\n}",
+      "stderr": "",
+      "report": {
+        "binary_blake3": "78ee7afcf0ed000688680675f1cc090f3c7dfc373c796e9be3600671f004e244",
+        "certificate": {
+          "P": [
+            1,
+            814455902
+          ],
+          "Q": [
+            2144058214,
+            807222724
+          ],
+          "order": 2147505293,
+          "relations": [
+            {
+              "a": 984958047,
+              "b": 615575961,
+              "terms": [
+                {
+                  "column": 6,
+                  "sign": 1
+                },
+                {
+                  "column": 20,
+                  "sign": -1
+                },
+                {
+                  "column": 63,
+                  "sign": 1
+                },
+                {
+                  "column": 64,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 2055646857,
+              "b": 1350276860,
+              "terms": [
+                {
+                  "column": 20,
+                  "sign": -1
+                },
+                {
+                  "column": 47,
+                  "sign": 1
+                },
+                {
+                  "column": 66,
+                  "sign": -1
+                },
+                {
+                  "column": 69,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 894679277,
+              "b": 1950285430,
+              "terms": [
+                {
+                  "column": 7,
+                  "sign": -1
+                },
+                {
+                  "column": 32,
+                  "sign": -1
+                },
+                {
+                  "column": 46,
+                  "sign": 1
+                },
+                {
+                  "column": 46,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 464291422,
+              "b": 2064603534,
+              "terms": [
+                {
+                  "column": 28,
+                  "sign": 1
+                },
+                {
+                  "column": 29,
+                  "sign": -1
+                },
+                {
+                  "column": 46,
+                  "sign": -1
+                },
+                {
+                  "column": 61,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1495427913,
+              "b": 1451795652,
+              "terms": [
+                {
+                  "column": 29,
+                  "sign": -1
+                },
+                {
+                  "column": 49,
+                  "sign": -1
+                },
+                {
+                  "column": 55,
+                  "sign": 1
+                },
+                {
+                  "column": 63,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 927075742,
+              "b": 1841721354,
+              "terms": [
+                {
+                  "column": 7,
+                  "sign": 1
+                },
+                {
+                  "column": 10,
+                  "sign": 1
+                },
+                {
+                  "column": 20,
+                  "sign": -1
+                },
+                {
+                  "column": 26,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1701011129,
+              "b": 275779039,
+              "terms": [
+                {
+                  "column": 0,
+                  "sign": -1
+                },
+                {
+                  "column": 14,
+                  "sign": 1
+                },
+                {
+                  "column": 52,
+                  "sign": 1
+                },
+                {
+                  "column": 54,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 780785171,
+              "b": 683319996,
+              "terms": [
+                {
+                  "column": 19,
+                  "sign": 1
+                },
+                {
+                  "column": 29,
+                  "sign": -1
+                },
+                {
+                  "column": 33,
+                  "sign": -1
+                },
+                {
+                  "column": 51,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 316973523,
+              "b": 848385145,
+              "terms": [
+                {
+                  "column": 1,
+                  "sign": -1
+                },
+                {
+                  "column": 46,
+                  "sign": -1
+                },
+                {
+                  "column": 56,
+                  "sign": -1
+                },
+                {
+                  "column": 57,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 101388578,
+              "b": 1222042842,
+              "terms": [
+                {
+                  "column": 10,
+                  "sign": -1
+                },
+                {
+                  "column": 20,
+                  "sign": 1
+                },
+                {
+                  "column": 21,
+                  "sign": 1
+                },
+                {
+                  "column": 30,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1198538025,
+              "b": 143430377,
+              "terms": [
+                {
+                  "column": 4,
+                  "sign": 1
+                },
+                {
+                  "column": 7,
+                  "sign": -1
+                },
+                {
+                  "column": 22,
+                  "sign": -1
+                },
+                {
+                  "column": 48,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1921633642,
+              "b": 1877512553,
+              "terms": [
+                {
+                  "column": 6,
+                  "sign": -1
+                },
+                {
+                  "column": 49,
+                  "sign": 1
+                },
+                {
+                  "column": 64,
+                  "sign": -1
+                },
+                {
+                  "column": 67,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 826721759,
+              "b": 543347150,
+              "terms": [
+                {
+                  "column": 5,
+                  "sign": -1
+                },
+                {
+                  "column": 14,
+                  "sign": 1
+                },
+                {
+                  "column": 47,
+                  "sign": -1
+                },
+                {
+                  "column": 70,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 691109630,
+              "b": 1970424524,
+              "terms": [
+                {
+                  "column": 18,
+                  "sign": 1
+                },
+                {
+                  "column": 20,
+                  "sign": 1
+                },
+                {
+                  "column": 24,
+                  "sign": -1
+                },
+                {
+                  "column": 69,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 643671219,
+              "b": 1354303132,
+              "terms": [
+                {
+                  "column": 8,
+                  "sign": -1
+                },
+                {
+                  "column": 45,
+                  "sign": -1
+                },
+                {
+                  "column": 68,
+                  "sign": 1
+                },
+                {
+                  "column": 69,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1364897782,
+              "b": 380439223,
+              "terms": [
+                {
+                  "column": 38,
+                  "sign": -1
+                },
+                {
+                  "column": 44,
+                  "sign": -1
+                },
+                {
+                  "column": 46,
+                  "sign": 1
+                },
+                {
+                  "column": 52,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1846335031,
+              "b": 1758501401,
+              "terms": [
+                {
+                  "column": 0,
+                  "sign": 1
+                },
+                {
+                  "column": 8,
+                  "sign": 1
+                },
+                {
+                  "column": 27,
+                  "sign": 1
+                },
+                {
+                  "column": 30,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1411235899,
+              "b": 1710363649,
+              "terms": [
+                {
+                  "column": 0,
+                  "sign": -1
+                },
+                {
+                  "column": 50,
+                  "sign": -1
+                },
+                {
+                  "column": 58,
+                  "sign": 1
+                },
+                {
+                  "column": 64,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1631749609,
+              "b": 2062462735,
+              "terms": [
+                {
+                  "column": 18,
+                  "sign": 1
+                },
+                {
+                  "column": 19,
+                  "sign": -1
+                },
+                {
+                  "column": 43,
+                  "sign": -1
+                },
+                {
+                  "column": 45,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 2115879442,
+              "b": 1895702581,
+              "terms": [
+                {
+                  "column": 9,
+                  "sign": -1
+                },
+                {
+                  "column": 11,
+                  "sign": -1
+                },
+                {
+                  "column": 14,
+                  "sign": 1
+                },
+                {
+                  "column": 35,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 802144021,
+              "b": 1501633742,
+              "terms": [
+                {
+                  "column": 3,
+                  "sign": -1
+                },
+                {
+                  "column": 3,
+                  "sign": -1
+                },
+                {
+                  "column": 28,
+                  "sign": -1
+                },
+                {
+                  "column": 45,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1453554081,
+              "b": 13127539,
+              "terms": [
+                {
+                  "column": 22,
+                  "sign": -1
+                },
+                {
+                  "column": 27,
+                  "sign": -1
+                },
+                {
+                  "column": 41,
+                  "sign": 1
+                },
+                {
+                  "column": 59,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1869537864,
+              "b": 762624646,
+              "terms": [
+                {
+                  "column": 18,
+                  "sign": -1
+                },
+                {
+                  "column": 22,
+                  "sign": 1
+                },
+                {
+                  "column": 46,
+                  "sign": -1
+                },
+                {
+                  "column": 67,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1784749894,
+              "b": 473152881,
+              "terms": [
+                {
+                  "column": 1,
+                  "sign": -1
+                },
+                {
+                  "column": 20,
+                  "sign": -1
+                },
+                {
+                  "column": 37,
+                  "sign": -1
+                },
+                {
+                  "column": 53,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 654042202,
+              "b": 1780457012,
+              "terms": [
+                {
+                  "column": 0,
+                  "sign": -1
+                },
+                {
+                  "column": 18,
+                  "sign": -1
+                },
+                {
+                  "column": 68,
+                  "sign": -1
+                },
+                {
+                  "column": 68,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 814619991,
+              "b": 2043097238,
+              "terms": [
+                {
+                  "column": 34,
+                  "sign": -1
+                },
+                {
+                  "column": 57,
+                  "sign": -1
+                },
+                {
+                  "column": 60,
+                  "sign": 1
+                },
+                {
+                  "column": 65,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1211673660,
+              "b": 106922068,
+              "terms": [
+                {
+                  "column": 34,
+                  "sign": -1
+                },
+                {
+                  "column": 38,
+                  "sign": 1
+                },
+                {
+                  "column": 46,
+                  "sign": -1
+                },
+                {
+                  "column": 54,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1346332663,
+              "b": 1968648832,
+              "terms": [
+                {
+                  "column": 18,
+                  "sign": 1
+                },
+                {
+                  "column": 23,
+                  "sign": -1
+                },
+                {
+                  "column": 36,
+                  "sign": -1
+                },
+                {
+                  "column": 36,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1860570566,
+              "b": 1117544405,
+              "terms": [
+                {
+                  "column": 22,
+                  "sign": 1
+                },
+                {
+                  "column": 45,
+                  "sign": 1
+                },
+                {
+                  "column": 65,
+                  "sign": -1
+                },
+                {
+                  "column": 70,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 360924752,
+              "b": 1400291686,
+              "terms": [
+                {
+                  "column": 1,
+                  "sign": -1
+                },
+                {
+                  "column": 26,
+                  "sign": 1
+                },
+                {
+                  "column": 55,
+                  "sign": -1
+                },
+                {
+                  "column": 62,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 516857848,
+              "b": 1858718788,
+              "terms": [
+                {
+                  "column": 5,
+                  "sign": -1
+                },
+                {
+                  "column": 37,
+                  "sign": -1
+                },
+                {
+                  "column": 53,
+                  "sign": -1
+                },
+                {
+                  "column": 60,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1178699481,
+              "b": 1050608940,
+              "terms": [
+                {
+                  "column": 1,
+                  "sign": 1
+                },
+                {
+                  "column": 23,
+                  "sign": -1
+                },
+                {
+                  "column": 26,
+                  "sign": 1
+                },
+                {
+                  "column": 51,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 2017647733,
+              "b": 641851476,
+              "terms": [
+                {
+                  "column": 2,
+                  "sign": -1
+                },
+                {
+                  "column": 15,
+                  "sign": 1
+                },
+                {
+                  "column": 47,
+                  "sign": 1
+                },
+                {
+                  "column": 52,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1896428165,
+              "b": 1610816824,
+              "terms": [
+                {
+                  "column": 2,
+                  "sign": 1
+                },
+                {
+                  "column": 21,
+                  "sign": -1
+                },
+                {
+                  "column": 34,
+                  "sign": 1
+                },
+                {
+                  "column": 66,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1019419584,
+              "b": 950611293,
+              "terms": [
+                {
+                  "column": 30,
+                  "sign": 1
+                },
+                {
+                  "column": 41,
+                  "sign": -1
+                },
+                {
+                  "column": 51,
+                  "sign": -1
+                },
+                {
+                  "column": 57,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1385124102,
+              "b": 291508711,
+              "terms": [
+                {
+                  "column": 31,
+                  "sign": 1
+                },
+                {
+                  "column": 50,
+                  "sign": -1
+                },
+                {
+                  "column": 67,
+                  "sign": -1
+                },
+                {
+                  "column": 68,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 18466543,
+              "b": 239322888,
+              "terms": [
+                {
+                  "column": 25,
+                  "sign": 1
+                },
+                {
+                  "column": 28,
+                  "sign": 1
+                },
+                {
+                  "column": 64,
+                  "sign": 1
+                },
+                {
+                  "column": 65,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 637627867,
+              "b": 48362381,
+              "terms": [
+                {
+                  "column": 3,
+                  "sign": 1
+                },
+                {
+                  "column": 7,
+                  "sign": 1
+                },
+                {
+                  "column": 41,
+                  "sign": -1
+                },
+                {
+                  "column": 65,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 456007196,
+              "b": 609537085,
+              "terms": [
+                {
+                  "column": 5,
+                  "sign": 1
+                },
+                {
+                  "column": 7,
+                  "sign": 1
+                },
+                {
+                  "column": 20,
+                  "sign": -1
+                },
+                {
+                  "column": 42,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1621519225,
+              "b": 82518423,
+              "terms": [
+                {
+                  "column": 34,
+                  "sign": -1
+                },
+                {
+                  "column": 40,
+                  "sign": 1
+                },
+                {
+                  "column": 56,
+                  "sign": 1
+                },
+                {
+                  "column": 60,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1069335725,
+              "b": 130308408,
+              "terms": [
+                {
+                  "column": 19,
+                  "sign": 1
+                },
+                {
+                  "column": 30,
+                  "sign": 1
+                },
+                {
+                  "column": 35,
+                  "sign": 1
+                },
+                {
+                  "column": 64,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 700363581,
+              "b": 413430849,
+              "terms": [
+                {
+                  "column": 43,
+                  "sign": -1
+                },
+                {
+                  "column": 63,
+                  "sign": 1
+                },
+                {
+                  "column": 63,
+                  "sign": 1
+                },
+                {
+                  "column": 66,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1397892566,
+              "b": 1010881515,
+              "terms": [
+                {
+                  "column": 19,
+                  "sign": -1
+                },
+                {
+                  "column": 38,
+                  "sign": 1
+                },
+                {
+                  "column": 38,
+                  "sign": 1
+                },
+                {
+                  "column": 54,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1469372751,
+              "b": 1607631593,
+              "terms": [
+                {
+                  "column": 25,
+                  "sign": -1
+                },
+                {
+                  "column": 30,
+                  "sign": -1
+                },
+                {
+                  "column": 47,
+                  "sign": -1
+                },
+                {
+                  "column": 69,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 199069475,
+              "b": 762633877,
+              "terms": [
+                {
+                  "column": 3,
+                  "sign": -1
+                },
+                {
+                  "column": 18,
+                  "sign": -1
+                },
+                {
+                  "column": 19,
+                  "sign": -1
+                },
+                {
+                  "column": 65,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1011165243,
+              "b": 443410889,
+              "terms": [
+                {
+                  "column": 23,
+                  "sign": 1
+                },
+                {
+                  "column": 27,
+                  "sign": -1
+                },
+                {
+                  "column": 31,
+                  "sign": -1
+                },
+                {
+                  "column": 51,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 387342505,
+              "b": 1439228471,
+              "terms": [
+                {
+                  "column": 15,
+                  "sign": -1
+                },
+                {
+                  "column": 34,
+                  "sign": 1
+                },
+                {
+                  "column": 57,
+                  "sign": -1
+                },
+                {
+                  "column": 67,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 730026370,
+              "b": 325635244,
+              "terms": [
+                {
+                  "column": 21,
+                  "sign": -1
+                },
+                {
+                  "column": 50,
+                  "sign": 1
+                },
+                {
+                  "column": 63,
+                  "sign": 1
+                },
+                {
+                  "column": 64,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 280440001,
+              "b": 1118258148,
+              "terms": [
+                {
+                  "column": 28,
+                  "sign": -1
+                },
+                {
+                  "column": 44,
+                  "sign": 1
+                },
+                {
+                  "column": 46,
+                  "sign": 1
+                },
+                {
+                  "column": 50,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 890571498,
+              "b": 1022906748,
+              "terms": [
+                {
+                  "column": 22,
+                  "sign": -1
+                },
+                {
+                  "column": 43,
+                  "sign": -1
+                },
+                {
+                  "column": 64,
+                  "sign": 1
+                },
+                {
+                  "column": 67,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 345861202,
+              "b": 1257348066,
+              "terms": [
+                {
+                  "column": 19,
+                  "sign": -1
+                },
+                {
+                  "column": 33,
+                  "sign": -1
+                },
+                {
+                  "column": 38,
+                  "sign": -1
+                },
+                {
+                  "column": 69,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1947282052,
+              "b": 513532374,
+              "terms": [
+                {
+                  "column": 4,
+                  "sign": -1
+                },
+                {
+                  "column": 28,
+                  "sign": 1
+                },
+                {
+                  "column": 63,
+                  "sign": -1
+                },
+                {
+                  "column": 70,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1313119021,
+              "b": 1550766338,
+              "terms": [
+                {
+                  "column": 20,
+                  "sign": -1
+                },
+                {
+                  "column": 24,
+                  "sign": -1
+                },
+                {
+                  "column": 28,
+                  "sign": 1
+                },
+                {
+                  "column": 49,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 437396712,
+              "b": 1662498111,
+              "terms": [
+                {
+                  "column": 2,
+                  "sign": -1
+                },
+                {
+                  "column": 14,
+                  "sign": 1
+                },
+                {
+                  "column": 24,
+                  "sign": -1
+                },
+                {
+                  "column": 27,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 57860596,
+              "b": 1777436062,
+              "terms": [
+                {
+                  "column": 7,
+                  "sign": -1
+                },
+                {
+                  "column": 48,
+                  "sign": 1
+                },
+                {
+                  "column": 55,
+                  "sign": 1
+                },
+                {
+                  "column": 69,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 481250623,
+              "b": 1792421655,
+              "terms": [
+                {
+                  "column": 9,
+                  "sign": -1
+                },
+                {
+                  "column": 31,
+                  "sign": -1
+                },
+                {
+                  "column": 37,
+                  "sign": 1
+                },
+                {
+                  "column": 61,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1117012821,
+              "b": 1432074954,
+              "terms": [
+                {
+                  "column": 5,
+                  "sign": 1
+                },
+                {
+                  "column": 6,
+                  "sign": 1
+                },
+                {
+                  "column": 11,
+                  "sign": -1
+                },
+                {
+                  "column": 65,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 930278039,
+              "b": 1882017683,
+              "terms": [
+                {
+                  "column": 10,
+                  "sign": 1
+                },
+                {
+                  "column": 29,
+                  "sign": -1
+                },
+                {
+                  "column": 35,
+                  "sign": -1
+                },
+                {
+                  "column": 42,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 169799674,
+              "b": 1954077225,
+              "terms": [
+                {
+                  "column": 28,
+                  "sign": 1
+                },
+                {
+                  "column": 30,
+                  "sign": 1
+                },
+                {
+                  "column": 55,
+                  "sign": 1
+                },
+                {
+                  "column": 64,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 198549758,
+              "b": 1501795825,
+              "terms": [
+                {
+                  "column": 10,
+                  "sign": -1
+                },
+                {
+                  "column": 15,
+                  "sign": -1
+                },
+                {
+                  "column": 67,
+                  "sign": 1
+                },
+                {
+                  "column": 67,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 407953234,
+              "b": 1194336498,
+              "terms": [
+                {
+                  "column": 30,
+                  "sign": -1
+                },
+                {
+                  "column": 35,
+                  "sign": -1
+                },
+                {
+                  "column": 56,
+                  "sign": -1
+                },
+                {
+                  "column": 65,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1015842475,
+              "b": 926463851,
+              "terms": [
+                {
+                  "column": 25,
+                  "sign": 1
+                },
+                {
+                  "column": 45,
+                  "sign": -1
+                },
+                {
+                  "column": 47,
+                  "sign": -1
+                },
+                {
+                  "column": 55,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1922762064,
+              "b": 40542652,
+              "terms": [
+                {
+                  "column": 14,
+                  "sign": -1
+                },
+                {
+                  "column": 19,
+                  "sign": 1
+                },
+                {
+                  "column": 41,
+                  "sign": 1
+                },
+                {
+                  "column": 51,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 969798028,
+              "b": 979246906,
+              "terms": [
+                {
+                  "column": 8,
+                  "sign": 1
+                },
+                {
+                  "column": 13,
+                  "sign": 1
+                },
+                {
+                  "column": 16,
+                  "sign": -1
+                },
+                {
+                  "column": 31,
+                  "sign": -1
+                }
+              ]
+            },
+            {
+              "a": 1018387908,
+              "b": 657313033,
+              "terms": [
+                {
+                  "column": 2,
+                  "sign": -1
+                },
+                {
+                  "column": 39,
+                  "sign": -1
+                },
+                {
+                  "column": 60,
+                  "sign": 1
+                },
+                {
+                  "column": 60,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1379220759,
+              "b": 1564140999,
+              "terms": [
+                {
+                  "column": 0,
+                  "sign": -1
+                },
+                {
+                  "column": 0,
+                  "sign": -1
+                },
+                {
+                  "column": 43,
+                  "sign": 1
+                },
+                {
+                  "column": 51,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 1265393797,
+              "b": 507691375,
+              "terms": [
+                {
+                  "column": 4,
+                  "sign": -1
+                },
+                {
+                  "column": 5,
+                  "sign": -1
+                },
+                {
+                  "column": 47,
+                  "sign": 1
+                },
+                {
+                  "column": 68,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 967821845,
+              "b": 274307395,
+              "terms": [
+                {
+                  "column": 10,
+                  "sign": 1
+                },
+                {
+                  "column": 33,
+                  "sign": 1
+                },
+                {
+                  "column": 54,
+                  "sign": 1
+                },
+                {
+                  "column": 54,
+                  "sign": 1
+                }
+              ]
+            },
+            {
+              "a": 821492418,
+              "b": 812802671,
+              "terms": [
+                {
+                  "column": 19,
+                  "sign": -1
+                },
+                {
+                  "column": 49,
+                  "sign": 1
+                },
+                {
+                  "column": 50,
+                  "sign": 1
+                },
+                {
+                  "column": 66,
+                  "sign": -1
+                }
+              ]
+            }
+          ],
+          "scalar": 345912577,
+          "summands": 4,
+          "weights": [
+            1795974005,
+            1137698693,
+            0,
+            1085603054,
+            1061689705,
+            1794472567,
+            1548869380,
+            1059031903,
+            189768801,
+            2133135344,
+            1113915604,
+            710370951,
+            443212846,
+            1344707778,
+            1342993805,
+            1260828225,
+            1342993805,
+            0,
+            376137082,
+            1085603054,
+            1913600544,
+            0,
+            1985173772,
+            1604703766,
+            3514788,
+            1604703766,
+            1408616116,
+            0,
+            568031207,
+            0,
+            1604703766,
+            1794472567,
+            1859464138,
+            163437607,
+            2117311947,
+            708869513,
+            838957777,
+            1411852095,
+            1088685924,
+            0,
+            1984520177,
+            1301136301,
+            673874754,
+            674037010,
+            1879661593,
+            1794472567,
+            702376982,
+            1969697737,
+            1260828225,
+            1439289375,
+            1495537399,
+            1011244053,
+            351318753,
+            451478762,
+            1033589689,
+            1061902239,
+            1061902239,
+            1088685924,
+            2034810425,
+            1157087156,
+            1957736492,
+            1982584526,
+            1381658749,
+            0,
+            0,
+            969057465,
+            102671551,
+            407064009,
+            1
+          ]
+        },
+        "cli_accounting": {
+          "before_online": 1863,
+          "cold_total": null,
+          "ic_observed_total": 56354933905,
+          "independent_replay": null,
+          "observed_total": 56354933905,
+          "online": 56348905860,
+          "preparation": 431617,
+          "process_start_exit": null,
+          "reference": 0,
+          "reporting": 5594565,
+          "schema": "auxiliary-ic-cli-costs/v1",
+          "scope": "run-entry-through-resource-snapshot; excludes accounting serialization",
+          "unit": "ns",
+          "upstream_preparation": null
+        },
+        "configured_search": {
+          "max_millis": null,
+          "max_proof_nodes": 4194304,
+          "max_queries": 100000,
+          "max_relations": 512,
+          "profile_phases": true,
+          "seed": 9961743651143974399,
+          "summands": 4,
+          "walk_lanes": 64
+        },
+        "execution_class": "cpu-only",
+        "factor_base": {
+          "affine_points": 142,
+          "backend": "scalar",
+          "columns_blake3": "003eb1e8be482c521babf20c8c32062b838e400e3c49a7a1607f16f66b632af0",
+          "encoding": {
+            "kind": "direct"
+          },
+          "folded_columns": 71,
+          "raw_roots": 128,
+          "selection_encoding": {
+            "depth": 7,
+            "kind": "torus",
+            "trace": 3
+          },
+          "terminal_coordinate": 340921998,
+          "uses_auxiliary_maps": false,
+          "uses_circuit": false
+        },
+        "field_bits": 31,
+        "gpu": {
+          "devices": []
+        },
+        "input_blake3": "e8f55864e4f15d6abdbe26eb9792b3a7a2cf0607c1462e1d03f8c4a4b5b28766",
+        "mode": "bounded-single-target-search",
+        "online_accounting": {
+          "call_overhead": 69021,
+          "core": 56348836508,
+          "independent_replay": null,
+          "input_validation": 331,
+          "schema": "auxiliary-ic-online-call/v1",
+          "scope": "target-point-validation-through-local-replay",
+          "total": 56348905860,
+          "unit": "ns"
+        },
+        "online_call_wall_seconds": 56.34890586,
+        "online_exclusive_phases": {
+          "clock": "std::time::Instant",
+          "clock_overhead": "included-not-subtracted",
+          "clock_reads": 14141,
+          "durations": {
+            "bookkeeping": 6431067,
+            "certificate_replay": 845948,
+            "decomposition": 56318468344,
+            "graph_recovery": 15214990,
+            "initialization": 160647,
+            "row_validation": 5662660,
+            "target_walk": 2052852
+          },
+          "independent_replay": null,
+          "schema": "auxiliary-ic-online-phases/v1",
+          "scope": "core-search-including-local-replay",
+          "total": 56348836508,
+          "unit": "ns"
+        },
+        "online_wall_ns": 56348905860,
+        "online_wall_seconds": 56.34890586,
+        "operation": "auxiliary-prime-field-ic",
+        "producer_check_passed": true,
+        "public": {
+          "P": [
+            1,
+            814455902
+          ],
+          "Q": [
+            2144058214,
+            807222724
+          ],
+          "a": 2,
+          "b": 14,
+          "n": 2147505293,
+          "p": 2147483647
+        },
+        "qualification": "unverified producer diagnostic; no signed independent replay or admitted performance tier",
+        "qualified_speedup": null,
+        "resources": {
+          "cpu_seconds": 56.193816000000005,
+          "peak_rss_bytes": 10747904,
+          "scope": "process counters sampled before report emission; peak resident memory, not allocated bytes"
+        },
+        "sampler": "splitmix64-rejection-public-coefficient-walks",
+        "schema_version": 2,
+        "software": {
+          "arch": "x86_64",
+          "binary_blake3": "78ee7afcf0ed000688680675f1cc090f3c7dfc373c796e9be3600671f004e244",
+          "git_commit": "fa66e3c2b5488c2f73c6f54378e50c7b43226d31",
+          "os": "linux",
+          "version": "0.1.0"
+        },
+        "source_commit": "fa66e3c2b5488c2f73c6f54378e50c7b43226d31",
+        "status": "solved",
+        "target_independent_preparation_ns": 431617,
+        "target_independent_preparation_seconds": 0.000431617,
+        "work": {
+          "backend": "scalar",
+          "circuit_queries": 0,
+          "duplicate_rows": 0,
+          "generated_targets": 6848,
+          "lane_rounds": 107,
+          "matrix_rank": 68,
+          "proof_nodes": 647,
+          "queries": 6823,
+          "relations": 69
+        }
+      },
+      "independent_python_scalar_replay": true
+    }
+  ]
+}

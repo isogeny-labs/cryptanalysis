@@ -1,7 +1,9 @@
 # Active research tasks
 
 ## Active items
-- [x] Integrate and optimize an end-to-end M31 coordinate-input IC solver with complete cost/replay evidence (Codex, started 2026-11-27, branch codex/m31-e2e-20261127; PR #2005, parent #2002; local runs authorized; 5/5 fresh m2 recoveries, 71.356 ms median cold, producer/unqualified; suite/docs/ic/runs/m31-e2e-20261127/REPORT.md)
+- [ ] Complete the M31 deliverable: reconcile remote/local implementations, clean-build fast command, standalone certificate checking and publication checks (Codex, resumed 2026-11-27; PR #2005; local runs authorized)
+- [x] Integrated native M31 recovery and separate measured pair-root acceleration; retain both study directories, frozen inputs, all raw outcomes and their producer-only standing (PR #2005; suite/docs/ic/runs/m31-e2e-20261127/REPORT.md and suite/docs/ic/runs/fp-m31-pair-roots-20261127/RESULTS.md)
+
 
 - [x] Implement and compare the original five relation leads over Fp p=2147483647 (Codex, resumed 2026-11-27, branch codex/fp-m31-local-20261127; PR #2002; 146-cell local comparison plus separate 4-cell degree diagnostic; suite/docs/ic/runs/fp-m31-leads-20261127/REPORT.md; unverified producer evidence, qualification remains open)
 
