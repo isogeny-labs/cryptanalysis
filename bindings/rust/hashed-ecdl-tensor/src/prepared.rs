@@ -5,6 +5,7 @@
 
 use crate::arithmetic::{RandomSource, Seeded};
 use crate::curve::{Curve, Point};
+use crate::factor_base_lsh::BitSampleIndex;
 use crate::reduction::{self, Certificate, Config, FactorBase};
 use crate::subgroup::SubgroupPoint;
 use crate::{integrity, invalid, overflow, Meter, Result};
@@ -25,6 +26,10 @@ pub struct Statistics {
     pub lookups: u64,
     /// Witnesses passing original arithmetic membership and sum replay.
     pub replays: u64,
+    /// Queries routed through the optional bit-sampling bucket index.
+    pub lsh_probes: u64,
+    /// Full point comparisons after bit-sampling bucket selection.
+    pub lsh_candidates: u64,
 }
 
 fn add(value: &mut u64, amount: usize) -> Result<()> {
@@ -42,6 +47,7 @@ pub struct PairTable<S = RandomState> {
     bases: [FactorBase; 2],
     ordered: [Vec<Point>; 2],
     members: [HashSet<Point, S>; 2],
+    lsh: Option<[BitSampleIndex; 2]>,
 }
 
 impl PairTable {
@@ -144,7 +150,48 @@ impl<S: BuildHasher + Clone> PairTable<S> {
             bases: [bases[0].clone(), bases[1].clone()],
             ordered: [left, right],
             members: [left_members, right_members],
+            lsh: None,
         })
+    }
+
+    /// Build opt-in coordinate-bit LSH buckets from both complete bases.
+    /// Equal points always share a bucket and every hit is checked by full
+    /// point equality. This is a candidate index, not a relation heuristic:
+    /// coordinate proximity does not imply an additive group relation.
+    /// The public seed selects bit positions without consuming relation RNG.
+    pub fn enable_lsh(&mut self, bits: u8, seed: u64, meter: &mut Meter) -> Result<()> {
+        if self.lsh.is_some() {
+            return Err(invalid("factor-base LSH already prepared"));
+        }
+        let width = self.curve.modulus().bits();
+        let left = BitSampleIndex::new(&self.ordered[0], width, bits, seed, meter)?;
+        let right = BitSampleIndex::new(
+            &self.ordered[1],
+            width,
+            bits,
+            seed ^ 0x9e3779b97f4a7c15,
+            meter,
+        )?;
+        self.lsh = Some([left, right]);
+        Ok(())
+    }
+
+    fn contains_slot(
+        &self,
+        slot: usize,
+        point: &Point,
+        statistics: &mut Statistics,
+        meter: &mut Meter,
+    ) -> Result<bool> {
+        if let Some(indexes) = &self.lsh {
+            add(&mut statistics.lsh_probes, 1)?;
+            let (found, compared) =
+                indexes[slot].contains_exact(&self.ordered[slot], point, meter)?;
+            add(&mut statistics.lsh_candidates, compared)?;
+            Ok(found)
+        } else {
+            Ok(self.members[slot].contains(point))
+        }
     }
 
     /// Return the same first witness as the final-slot selector oracle.
@@ -288,7 +335,7 @@ impl<S: BuildHasher + Clone> PairTable<S> {
                 position += 1;
                 offset += 1;
                 add(&mut statistics.prepared.lookups, 1)?;
-                if !self.members[last].contains(&complement) {
+                if !self.contains_slot(last, &complement, &mut statistics.prepared, work)? {
                     return Ok(ScanStep::Miss);
                 }
                 let mut witness = vec![point, complement];
@@ -340,7 +387,7 @@ impl<S: BuildHasher + Clone> PairTable<S> {
             meter.charge(1, "prepared pair candidate")?;
             let complement = self.curve.add(target, &self.curve.negate(point)?, meter)?;
             add(&mut statistics.lookups, 1)?;
-            if !self.members[last].contains(&complement) {
+            if !self.contains_slot(last, &complement, statistics, meter)? {
                 continue;
             }
             let mut witness = vec![point.clone(), complement];
@@ -385,6 +432,7 @@ pub fn solve(
         smallest_first,
         statistics,
         false,
+        None,
         meter,
     )
 }
@@ -409,6 +457,34 @@ pub fn solve_joint(
         smallest_first,
         statistics,
         true,
+        None,
+        meter,
+    )
+}
+
+/// Collect two-slot index-calculus relations with bit-sampling factor-base
+/// buckets. The exact first witness, label RNG, and version-one certificate
+/// are preserved; this opt-in lookup has no established runtime advantage.
+pub fn solve_joint_lsh(
+    curve: &Curve,
+    target: &Point,
+    config: &Config,
+    rng: &mut impl RandomSource,
+    smallest_first: bool,
+    bits: u8,
+    seed: u64,
+    statistics: &mut Statistics,
+    meter: &mut Meter,
+) -> Result<Certificate> {
+    solve_using(
+        curve,
+        target,
+        config,
+        rng,
+        smallest_first,
+        statistics,
+        true,
+        Some((bits, seed)),
         meter,
     )
 }
@@ -421,6 +497,7 @@ fn solve_using(
     smallest_first: bool,
     statistics: &mut Statistics,
     joint_targets: bool,
+    lsh: Option<(u8, u64)>,
     meter: &mut Meter,
 ) -> Result<Certificate> {
     if config.slots != 2 {
@@ -433,7 +510,12 @@ fn solve_using(
         config,
         rng,
         |c, bases, indexes, work| {
-            PairTable::from_indexes(c, bases, indexes, &mut statistics.borrow_mut(), work)
+            let mut table =
+                PairTable::from_indexes(c, bases, indexes, &mut statistics.borrow_mut(), work)?;
+            if let Some((bits, seed)) = lsh {
+                table.enable_lsh(bits, seed, work)?;
+            }
+            Ok(table)
         },
         |_, _, table, query, work| {
             table.decompose(query, smallest_first, &mut statistics.borrow_mut(), work)

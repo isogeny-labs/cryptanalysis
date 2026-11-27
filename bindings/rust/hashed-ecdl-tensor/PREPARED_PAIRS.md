@@ -101,3 +101,27 @@ Complete seeded certificate, RNG and search-event equality are development
 controls. A reduced addition count is not a runtime speedup. [pcc:unverified]
 
 Source: [HAC14.88 and14.90, pp617–618](https://cacr.uwaterloo.ca/hac/about/chap14.pdf).
+
+## Optional coordinate-bit buckets
+
+`PairTable::enable_lsh(bits, seed, meter)` builds a separate bit-sampling index
+from both **complete validated** factor bases. `bits` is 1–24, bounded by the
+combined coordinate width; `seed` is public and selects distinct coordinate
+bit positions without consuming relation-label RNG. A query derives the same
+exact complement `Q=R-P` as before and visits its signature bucket. Every
+candidate still receives full point equality, followed by the original
+factor-base membership and sum replay for a witness. Equal points have equal
+signatures, so the bucket index cannot turn an exact hit into a miss.
+
+`prepared::solve_joint_lsh` exposes this as an opt-in two-slot relation
+collector. The default `solve_joint` and CLI retain their full-point hash
+sets. The new `lsh_probes` and `lsh_candidates` counters record bucket work,
+not elapsed time. Bit-sampling is an LSH family for coordinate Hamming
+distance, but no additive-relation locality is established for these random
+hashed bases. It therefore does **not** reduce complement additions or imply
+a relation-yield gain. Extra index memory and per-candidate comparisons may
+make it slower than the exact hash table; a matched cold/online measurement is
+still required. [pcc:unverified]
+
+Source: [Indyk–Motwani, *Approximate Nearest Neighbors: Towards Removing the
+Curse of Dimensionality*](https://graphics.stanford.edu/courses/cs468-06-fall/Papers/06%20indyk%20motwani%20-%20stoc98.pdf), for the bit-sampling LSH construction, applied here only as an exact-key candidate index.
