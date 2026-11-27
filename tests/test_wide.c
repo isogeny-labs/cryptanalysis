@@ -150,7 +150,7 @@ static void test_zp_full_group(void)
         uint64_t root = ca_primitive_root(p);
         CHECK(root != 0);
         CHECK_EQ_U64(ca_mult_order(root, p), p - 1);
-        uint64_t w[4] = {root, 0, 0, 0};
+        const uint64_t w[4] = {root, 0, 0, 0};
         ca_elem gen;
         CHECK(ca_group_encode(&g, &gen, w));
         ca_rng rng;
@@ -188,8 +188,8 @@ static void solve_intervals(const ca_group *g, const ca_elem *gen, uint64_t n, u
     /* A 51-bit field has no prime subgroup above 2^50, so the "just above
      * 2^50" secret falls back to 3n/4 there. */
     const uint64_t above = UINT64_C(1) << 50;
-    uint64_t xs[4] = {n - 1, n > above + 12345 ? above + 12345 : n - n / 4, n / 2 + 7,
-                      n / 4 + ca_rng_below(&rng, n - n / 4)};
+    const uint64_t xs[4] = {n - 1, n > above + 12345 ? above + 12345 : n - n / 4, n / 2 + 7,
+                            n / 4 + ca_rng_below(&rng, n - n / 4)};
     for (int k = 0; k < 4; k++) {
         uint64_t x = xs[k];
         uint64_t lo = x > half ? x - half + 17 : 0;

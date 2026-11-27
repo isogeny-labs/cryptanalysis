@@ -12,9 +12,11 @@ static void check_remove(uint64_t v, uint32_t q, const ca_ic_divisor *d)
 
 static void test_fixed_divisors(void)
 {
-    uint32_t primes[1600];
+    /* One slot beyond the sieve's cap for the extra prime appended below. */
+    uint32_t primes[1601];
     size_t n = ca_sieve_primes(13000, primes, 1600);
     CHECK(n <= 1600);
+    if (n > 1600) return; /* CHECK records the failure; never index past the array */
     /* Include the largest 32-bit prime, beyond the normal IC base. */
     primes[n++] = UINT32_C(4294967291);
     ca_rng rng;
