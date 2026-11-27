@@ -22,7 +22,14 @@ def native(m,name,command,**meta):
     status=watch.watched_run([*PIN,*map(str,command)],path,2,20,poll=.002,cwd=REPO)
     found=[]
     for line in path.read_text(errors='replace').splitlines():
-        try:found.append(json.loads(line))
+        try:
+            value=json.loads(line)
+            if isinstance(value,dict):found.append(value)
+        except json.JSONDecodeError:pass
+    if not found:
+        try:
+            value=json.loads(path.read_text())
+            if isinstance(value,dict):found.append(value)
         except json.JSONDecodeError:pass
     report=found[-1] if found else None
     if report is not None:(path.with_suffix('.json')).write_text(json.dumps(report,indent=2)+'\n')
@@ -63,34 +70,47 @@ def dev():
 def evaluate():
     m=load();s=json.loads((HERE/'selection.json').read_text());assert sha(BIN)==s['binary_sha256']==m['binary_sha256']
     m['reference_binary_sha256_at_evaluation']=sha(RHO)
-    m['evaluation_source_commit']=source()
+    m.setdefault('evaluation_source_commit',source())
+    m.setdefault('resume_source_commits',[]).append(source())
     save(m)
     frozen=subprocess.check_output(['git','show','HEAD:'+str((HERE/'selection.json').relative_to(REPO))],cwd=REPO)
     assert frozen==(HERE/'selection.json').read_bytes(),'Commit selection before heldout fixture generation'
-    assert not (HERE/'inputs').exists();(HERE/'inputs').mkdir();(HERE/'evaluator').mkdir()
     scalar_map={};points={}
-    for stream in SEEDS['heldout']:
-        rep=stream['replicate'];fixture=json.loads(subprocess.check_output([str(FIXTURE),str(stream['evaluator_only'])],text=True))
-        scalar_map[rep]=fixture['evaluator']['scalar'];points[rep]=fixture['public']['Q']
-        fixture.pop('evaluator');fixture['structured_roots']=list(range(128));(HERE/'inputs'/f'target-{rep}.json').write_text(json.dumps(fixture,sort_keys=True)+'\n')
-    (HERE/'evaluator/scalars.json').write_text(json.dumps(scalar_map,indent=2)+'\n')
+    if (HERE/'inputs').exists():
+        scalar_map={int(k):v for k,v in json.loads((HERE/'evaluator/scalars.json').read_text()).items()}
+        points={rep:json.loads((HERE/'inputs'/f'target-{rep}.json').read_text())['public']['Q'] for rep in range(5)}
+    else:
+        (HERE/'inputs').mkdir();(HERE/'evaluator').mkdir()
+        for stream in SEEDS['heldout']:
+            rep=stream['replicate'];fixture=json.loads(subprocess.check_output([str(FIXTURE),str(stream['evaluator_only'])],text=True))
+            scalar_map[rep]=fixture['evaluator']['scalar'];points[rep]=fixture['public']['Q']
+            fixture.pop('evaluator');fixture['structured_roots']=list(range(128));(HERE/'inputs'/f'target-{rep}.json').write_text(json.dumps(fixture,sort_keys=True)+'\n')
+        (HERE/'evaluator/scalars.json').write_text(json.dumps(scalar_map,indent=2)+'\n')
     for stream in SEEDS['heldout']:
         rep=stream['replicate'];q=points[rep]
         arms=[('selected-aa0',s['selected']),('direct',{**s['selected'],'method':'direct'}),('m3-reference',s['m3_reference']),('selected-aa1',s['selected'])]
         if rep%2:arms.reverse()
         for arm,config in arms:
+            if any(c['id']==f'heldout-T{rep}-{arm}' for c in m['cells']):continue
             row=ic(m,f'heldout-T{rep}-{arm}',q,stream,config,stage='heldout',replicate=rep,arm=arm)
             if row['report'] and row['report'].get('status')=='solved':
                 assert row['report']['scalar']==scalar_map[rep],'Wrong recovered scalar'
                 row['expected_scalar_match']=True;save(m)
         path=HERE/'raw'/f'rho-T{rep}-native.json';input_path=HERE/'inputs'/f'target-{rep}.json'
-        row=native(m,f'rho-T{rep}',[RHO,'--json','--out',path,'auxiliary','--input',input_path,'--without-auxiliary','--backend','scalar','--summands',2,'--seed',stream['sampler'],'--max-queries',1,'--max-millis',1,'--rho','--rho-max-ops',200000],stage='rho',replicate=rep)
+        previous=next((c for c in m['cells'] if c['id']==f'rho-T{rep}'),None)
+        if previous is None:
+            row=native(m,f'rho-T{rep}',[RHO,'--json','--out',path,'auxiliary','--input',input_path,'--without-auxiliary','--backend','scalar','--summands',2,'--seed',stream['sampler'],'--max-queries',1,'--max-millis',1,'--rho','--rho-max-ops',200000],stage='rho',replicate=rep)
+        else:
+            row=previous
+            if not isinstance(row['report'],dict):
+                row['stdout_parse_fragment']=row['report'];row['parser_recovery']='Use original complete native --out report; no process repeated'
         if path.exists():
             row['report']=json.loads(path.read_text());row['native_rho_report_sha256']=sha(path)
             ref=row['report'].get('rho',{})
             if ref.get('status')=='solved':assert ref['scalar']==scalar_map[rep] and ref['producer_check_passed'];row['expected_scalar_match']=True
             save(m)
-    ic(m,'selected-phase-profile',[2144058214,807222724],SEEDS['development'][0],s['selected'],stage='profile',replicate=0)
+    if not any(c['id']=='selected-phase-profile' for c in m['cells']):
+        ic(m,'selected-phase-profile',[2144058214,807222724],SEEDS['development'][0],s['selected'],stage='profile',replicate=0)
     assert len(m['cells'])==46
     save(m)
 if __name__=='__main__':
