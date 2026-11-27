@@ -2,7 +2,7 @@ use crate::field::{is_prime, F};
 use crate::kernel::{Circuit, Scalar, Step, Terminal};
 use crate::solve::{hasse_cofactor, SplitMix64};
 use crate::{BatchScratch, Curve, Error, Point, Result};
-use std::collections::BTreeSet;
+use std::collections::{BTreeSet, HashMap};
 
 #[cfg(target_arch = "x86_64")]
 #[path = "circuit_x86.rs"]
@@ -142,12 +142,11 @@ pub struct CandidateWorkspace {
     indices: Vec<usize>,
     active: usize,
     differences: Vec<Option<Point>>,
-    inner_differences: Vec<Option<Point>>,
     pair_points: Vec<Option<Point>>,
     pair_steps: Vec<Option<Point>>,
     pair_meta: Vec<(usize, bool, usize, bool)>,
+    pair_roots: Option<HashMap<Option<Point>, Vec<(SignedTerm, SignedTerm)>>>,
     batch: BatchScratch,
-    inner_batch: BatchScratch,
 }
 
 impl CandidateWorkspace {
@@ -858,12 +857,11 @@ impl<const B: u32> FactorBase<B> {
             indices: Vec::with_capacity(self.points.len()),
             active: 0,
             differences: vec![None; self.direct_steps.len()],
-            inner_differences: vec![None; self.direct_steps.len()],
             pair_points: Vec::with_capacity(256),
             pair_steps: Vec::with_capacity(256),
             pair_meta: Vec::with_capacity(256),
+            pair_roots: None,
             batch: BatchScratch::default(),
-            inner_batch: BatchScratch::default(),
         }
     }
     /// Evaluate the exact circuit at all usable coordinates, without a GCD.
@@ -972,76 +970,6 @@ impl<const B: u32> FactorBase<B> {
             i += 1;
         }
     }
-    fn zero_indices_from(
-        &self,
-        start: usize,
-        target_x: u64,
-        workspace: &mut CandidateWorkspace,
-    ) -> Result<()> {
-        let x2 = F::<B>::sq(target_x);
-        workspace.indices.clear();
-        workspace.active = 0;
-        if start >= self.points.len() {
-            return Ok(());
-        }
-        match self.backend {
-            #[cfg(target_arch = "x86_64")]
-            Backend::Avx2 => {
-                // SAFETY: selection checked CPU support and xs/squares are tile-padded.
-                unsafe {
-                    x86::evaluate_zeros_from_avx2(self, start, target_x, x2, &mut workspace.indices)
-                };
-            }
-            #[cfg(all(target_arch = "x86_64", auxiliary_ic_avx512))]
-            Backend::Avx512 => {
-                // SAFETY: same checked feature and array-length invariants.
-                unsafe {
-                    x86::evaluate_zeros_from_avx512(
-                        self,
-                        start,
-                        target_x,
-                        x2,
-                        &mut workspace.indices,
-                    )
-                };
-            }
-            Backend::Scalar => {
-                let circuit = self.circuit.as_ref().expect("compiled circuit");
-                let q = self.s3_query(target_x, x2);
-                let len = self.points.len();
-                let mut i = start;
-                while i + 4 <= len {
-                    let mut d = [0; 4];
-                    let mut c = [0; 4];
-                    let mut h = [0; 4];
-                    for lane in 0..4 {
-                        let (di, ci, hi) = q.coeffs::<B>(self.xs[i + lane], self.squares[i + lane]);
-                        d[lane] = di;
-                        c[lane] = ci;
-                        h[lane] = hi;
-                    }
-                    circuit.evaluate::<B, Scalar, 4>(&mut d, &mut c, &mut h);
-                    for (lane, &val) in h.iter().enumerate() {
-                        if val == 0 {
-                            workspace.indices.push(i + lane);
-                        }
-                    }
-                    i += 4;
-                }
-                while i < len {
-                    let (di, ci, hi) = q.coeffs::<B>(self.xs[i], self.squares[i]);
-                    let (mut d, mut c, mut h) = ([di], [ci], [hi]);
-                    circuit.evaluate::<B, Scalar, 1>(&mut d, &mut c, &mut h);
-                    if h[0] == 0 {
-                        workspace.indices.push(i);
-                    }
-                    i += 1;
-                }
-            }
-            _ => return Err(Error::UnsupportedBackend),
-        }
-        Ok(())
-    }
     /// Find the first verified signed decomposition; no pair table is stored.
     pub fn decompose(
         &self,
@@ -1086,6 +1014,7 @@ impl<const B: u32> FactorBase<B> {
                 .decompose_inner(target, workspace)?
                 .map(MultiSignedRelation::from_pair));
         }
+        self.ensure_pair_roots(workspace);
         let k = self.points.len();
         workspace.differences.clear();
         workspace.differences.resize(2 * k, Some(target));
@@ -1214,123 +1143,67 @@ impl<const B: u32> FactorBase<B> {
         residual: Option<Point>,
         workspace: &mut CandidateWorkspace,
     ) -> Result<Option<(SignedTerm, SignedTerm)>> {
-        let Some(r) = residual else {
-            for (ia, point) in self.points.iter().enumerate().skip(min_idx) {
-                if point.y() == 0 {
-                    if ia == min_idx && prev_neg {
-                        continue;
-                    }
-                    return Ok(Some((
-                        SignedTerm {
-                            index: ia,
-                            negative: false,
-                        },
-                        SignedTerm {
-                            index: ia,
-                            negative: false,
-                        },
-                    )));
-                }
-            }
-            return Ok(None);
-        };
-        if self.uses_circuit() {
-            self.zero_indices_from(min_idx, r.x(), workspace)?;
-            for &ia in &workspace.indices {
-                for neg_a in [false, true] {
-                    if self.points[ia].y() == 0 && neg_a {
-                        continue;
-                    }
-                    if ia == min_idx && neg_a != prev_neg {
-                        continue;
-                    }
-                    let step_a = self.direct_steps[2 * ia + usize::from(neg_a)];
-                    let Some(pb) = self.curve.add_inner(Some(r), step_a) else {
-                        continue;
-                    };
-                    let Ok(rel_ib) = self.points[ia..].binary_search_by_key(&pb.x(), |p| p.x())
-                    else {
-                        continue;
-                    };
-                    let ib = ia + rel_ib;
-                    let neg_b = pb.y() != self.points[ib].y();
-                    if ib == ia && neg_b != neg_a {
-                        continue;
-                    }
-                    let pa = self.signed_point(SignedTerm {
-                        index: ia,
-                        negative: neg_a,
-                    });
-                    let pb_rep = self.signed_point(SignedTerm {
-                        index: ib,
-                        negative: neg_b,
-                    });
-                    if self.curve.add_inner(Some(pa), Some(pb_rep)) == Some(r) {
-                        return Ok(Some((
-                            SignedTerm {
-                                index: ia,
-                                negative: neg_a,
-                            },
-                            SignedTerm {
-                                index: ib,
-                                negative: neg_b,
-                            },
-                        )));
-                    }
-                }
-            }
-            return Ok(None);
-        }
-        let slice = &self.direct_steps[2 * min_idx..];
-        workspace.inner_differences.clear();
-        workspace.inner_differences.resize(slice.len(), Some(r));
-        self.curve.batch_add_inner(
-            &mut workspace.inner_differences,
-            slice,
-            &mut workspace.inner_batch,
-        );
-        for (offset, &pb_opt) in workspace.inner_differences.iter().enumerate() {
-            let ia = min_idx + offset / 2;
-            let neg_a = offset % 2 == 1;
-            if self.points[ia].y() == 0 && neg_a {
-                continue;
-            }
-            if ia == min_idx && neg_a != prev_neg {
-                continue;
-            }
-            let Some(pb) = pb_opt else {
-                continue;
-            };
-            let Ok(rel_ib) = self.points[ia..].binary_search_by_key(&pb.x(), |p| p.x()) else {
-                continue;
-            };
-            let ib = ia + rel_ib;
-            let neg_b = pb.y() != self.points[ib].y();
-            if ib == ia && neg_b != neg_a {
-                continue;
-            }
-            let pa = self.signed_point(SignedTerm {
-                index: ia,
-                negative: neg_a,
-            });
-            let pb_rep = self.signed_point(SignedTerm {
-                index: ib,
-                negative: neg_b,
-            });
-            if self.curve.add_inner(Some(pa), Some(pb_rep)) == Some(r) {
-                return Ok(Some((
-                    SignedTerm {
-                        index: ia,
-                        negative: neg_a,
-                    },
-                    SignedTerm {
-                        index: ib,
-                        negative: neg_b,
-                    },
-                )));
+        if let Some(candidates) = workspace
+            .pair_roots
+            .as_ref()
+            .expect("multi-summand pair roots initialized")
+            .get(&residual)
+        {
+            if let Some(&(a, b)) = candidates
+                .iter()
+                .find(|(a, _)| a.index > min_idx || (a.index == min_idx && a.negative == prev_neg))
+            {
+                debug_assert_eq!(
+                    self.curve
+                        .add_inner(Some(self.signed_point(a)), Some(self.signed_point(b))),
+                    residual
+                );
+                return Ok(Some((a, b)));
             }
         }
         Ok(None)
+    }
+    fn ensure_pair_roots(&self, workspace: &mut CandidateWorkspace) {
+        if workspace.pair_roots.is_some() {
+            return;
+        }
+        // The signed two-point root set is target independent. Build it once
+        // per caller-owned workspace instead of repeating an O(k) batched
+        // subtraction for every outer m=3/m=4 term of every relation query.
+        // Entries retain the old canonical scan order, so certificates stay
+        // deterministic.
+        let mut roots: HashMap<Option<Point>, Vec<(SignedTerm, SignedTerm)>> =
+            HashMap::with_capacity(self.points.len() * self.points.len());
+        for ia in 0..self.points.len() {
+            for negative_a in [false, true] {
+                if self.points[ia].y() == 0 && negative_a {
+                    continue;
+                }
+                let a = SignedTerm {
+                    index: ia,
+                    negative: negative_a,
+                };
+                for ib in ia..self.points.len() {
+                    for negative_b in [false, true] {
+                        if self.points[ib].y() == 0 && negative_b {
+                            continue;
+                        }
+                        if ib == ia && negative_b != negative_a {
+                            continue;
+                        }
+                        let b = SignedTerm {
+                            index: ib,
+                            negative: negative_b,
+                        };
+                        let root = self
+                            .curve
+                            .add_inner(Some(self.signed_point(a)), Some(self.signed_point(b)));
+                        roots.entry(root).or_default().push((a, b));
+                    }
+                }
+            }
+        }
+        workspace.pair_roots = Some(roots);
     }
     pub(crate) fn decompose_inner(
         &self,
