@@ -28,6 +28,8 @@ jobs:
   pinned-source-only:
     runs-on: ubuntu-latest
     timeout-minutes: 12
+    env:
+      ARTIFACTS_PULL_SOURCE: remote
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:

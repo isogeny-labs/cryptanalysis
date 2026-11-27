@@ -13,6 +13,8 @@ jobs:
   ct245-checked-release:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    env:
+      ARTIFACTS_PULL_SOURCE: remote
     steps:
       - name: Checkout exact PR head
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
