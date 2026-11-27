@@ -1,7 +1,7 @@
 # Active research tasks
 
 ## Active items
-- [ ] Integrate and optimize an end-to-end M31 coordinate-input IC solver with complete cost/replay evidence (Codex, started 2026-11-27, branch codex/m31-e2e-20261127; parent PR #2002; local runs authorized)
+- [ ] Integrate and optimize an end-to-end M31 coordinate-input IC solver with complete cost/replay evidence (Codex, started 2026-11-27, branch codex/m31-e2e-20261127; PR #2005, parent #2002; local runs authorized)
 
 - [x] Implement and compare the original five relation leads over Fp p=2147483647 (Codex, resumed 2026-11-27, branch codex/fp-m31-local-20261127; PR #2002; 146-cell local comparison plus separate 4-cell degree diagnostic; suite/docs/ic/runs/fp-m31-leads-20261127/REPORT.md; unverified producer evidence, qualification remains open)
 

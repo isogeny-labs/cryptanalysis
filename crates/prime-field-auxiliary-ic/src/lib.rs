@@ -11,6 +11,7 @@ mod circuit;
 mod field;
 mod graph;
 mod kernel;
+mod pair_index;
 mod phases;
 mod solve;
 
@@ -19,6 +20,7 @@ pub use circuit::{
     RandomBaseStats, SignedRelation, SignedTerm,
 };
 pub use field::{BatchScratch, Curve, Point};
+pub use pair_index::{PairIndex, PairIndexStats, PairWorkspace};
 pub use phases::SearchPhases;
 pub use solve::{
     solve, solve_multi, verify_certificate, verify_multi_certificate, Certificate, Config,
