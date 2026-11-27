@@ -48,3 +48,21 @@ cost with exact row parity; a null result or regression is retained. This
 panel alone does not qualify an end-to-end IC speedup because it does not time
 rho, isolation, full relation collection through recovered scalar, or signed
 independent evidence admission. [pcc:unverified]
+
+## Frozen complete-recovery follow-up
+
+After the fixed-prefix row-parity screen passes, run one complete coordinate-
+input recovery on Q0 with each exact baseline/candidate source. Use torus depth
+7 direct-control arithmetic, m=4, relation seed 9961743651143974399,
+`walk_lanes=64`, `max_queries=100000`, `max_relations=512`,
+`max_proof_nodes=4194304`, and a 180-second process cap. Charge base/workspace
+construction, relation search, sparse elimination and certificate replay in
+the reported cold wall. The input contains only public curve and point
+coordinates; neither worker receives the target scalar.
+
+The candidate succeeds only if it returns a locally replayed certificate and
+the recovered scalar independently reproduces Q0 under native multiplication.
+The baseline is not replaced or downscaled if it caps. A completed matched
+pair supports only a producer-local end-to-end engineering comparison; it
+still lacks admitted isolation, matched rho and signed independent evidence.
+[pcc:unverified]
