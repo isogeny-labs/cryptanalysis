@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Replay a single saved report; optional public target binding prevents substitution.
+set -euo pipefail
+repo_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+target_dir=${CARGO_TARGET_DIR:-"$repo_dir/suite/target"}
+CARGO_PROFILE_DEV_DEBUG=${CARGO_PROFILE_DEV_DEBUG:-0} CARGO_BUILD_JOBS=${CARGO_BUILD_JOBS:-2} \
+  cargo +1.88.0 build --quiet --locked --manifest-path "$repo_dir/suite/Cargo.toml" --example m31_certificate_verify >&2
+exec "$target_dir/debug/examples/m31_certificate_verify" "$@"

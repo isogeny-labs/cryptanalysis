@@ -1,4 +1,34 @@
-# Integrated native M31 recovery
+# Complete M31 recovery command
+
+From repository root, with Rust1.88 installed:
+
+```sh
+scripts/m31-complete 2144058214 807222724 --out recovery.json --seed 1
+```
+
+This builds current source, recovers from public coordinates, saves the complete
+signed dependency, and checks the saved report through the original strict
+certificate verifier and a second native arithmetic implementation. Existing
+output files are refused. Success returns exit0 and a checked-result JSON;
+a bounded incomplete result is retained and returns1; invalid input returns2.
+These are local producer checks, not a signed independent PCC verdict.
+[pcc:unverified]
+
+To use the components separately:
+
+```sh
+scripts/m31-fast 2144058214 807222724 --seed 1 > recovery.json
+scripts/m31-verify recovery.json --qx 2144058214 --qy 807222724
+```
+
+The optional expected target binds the saved certificate to the point you
+intend to check. The normal native executable is `m31-fast`; `--help` lists
+all budgets and base choices. The fixed public lab curve is
+Fp p=2147483647, y²=x³+2x+14, N=2147505293, G=(1,814455902).
+Defaults are the prospectively selected B256/m2 interval-base configuration.
+The full build cost and final JSON emission sit outside the historical native
+cold timing boundary; binary/source hashes distinguish the completed command
+from the original frozen measurement worker. [pcc:unverified]
 
 The original source-compatible direct pipeline remains available. The new
 indexed path uses a target-independent signed pair table with all collision

@@ -6,6 +6,9 @@ on:
       - experiments/prime-field-auxiliary-ic/**
       - crates/prime-field-auxiliary-ic/**
       - suite/src/cli/tools/ic/auxiliary.rs
+      - suite/examples/m31_certificate_verify.rs
+      - suite/docs/ic/runs/m31-e2e-20261127/check_delivery.py
+      - scripts/m31-*
       - bindings/rust/cryptanalysis/tests/auxiliary_ic.rs
       - .github/workflows/prime-field-auxiliary-ic.yml
   workflow_dispatch:
@@ -90,8 +93,16 @@ jobs:
             --auxiliary "$AUXILIARY_IC_REPORT_FIXTURE_DIR/auxiliary.json" \
             --same-base "$AUXILIARY_IC_REPORT_FIXTURE_DIR/same_base.json" \
             --random "$AUXILIARY_IC_REPORT_FIXTURE_DIR/random.json"
+      - name: Standalone M31 recovery and certificate rejection controls
+        run: |
+          cargo test --locked --manifest-path suite/Cargo.toml --example m31_certificate_verify
+          cargo build --locked --release --manifest-path crates/prime-field-auxiliary-ic/Cargo.toml --bin m31-fast
+          cargo build --locked --manifest-path suite/Cargo.toml --example m31_certificate_verify
+          python3 suite/docs/ic/runs/m31-e2e-20261127/check_delivery.py \
+            --worker crates/prime-field-auxiliary-ic/target/release/m31-fast \
+            --verifier suite/target/debug/examples/m31_certificate_verify
       - name: CLI source formatting
-        run: rustfmt --edition 2021 --check suite/src/cli/tools/ic/auxiliary.rs
+        run: rustfmt --edition 2021 --check suite/src/cli/tools/ic/auxiliary.rs suite/examples/m31_certificate_verify.rs
   implementation-checks:
     runs-on: ubuntu-24.04
     timeout-minutes: 20

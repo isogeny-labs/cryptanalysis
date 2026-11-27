@@ -148,6 +148,8 @@ pub struct CandidateWorkspace {
     pair_steps: Vec<Option<Point>>,
     pair_meta: Vec<(usize, bool, usize, bool)>,
     pair_roots: Option<PairRootIndex>,
+    pair_base: Vec<Point>,
+    pair_curve: Option<(u64, (u64, u64))>,
     batch: BatchScratch,
 }
 
@@ -863,6 +865,8 @@ impl<const B: u32> FactorBase<B> {
             pair_steps: Vec::with_capacity(256),
             pair_meta: Vec::with_capacity(256),
             pair_roots: None,
+            pair_base: Vec::new(),
+            pair_curve: None,
             batch: BatchScratch::default(),
         }
     }
@@ -986,11 +990,12 @@ impl<const B: u32> FactorBase<B> {
     /// Find the first verified non-cancelling `2..=4`-summand decomposition.
     ///
     /// For `m = 3`, shifts `R' = R - s_1 P_{i_1}` are computed with one shared
-    /// Montgomery batch inversion and pushed through the division-free centered
-    /// resultant circuit (or batched direct subtraction in direct controls).
+    /// Montgomery batch inversion and matched against retained signed pair roots.
+    /// Pair-root arithmetic is scalar, independently of the m2 circuit backend.
     /// For `m = 4`, canonical non-cancelling outer pairs `(s_1 P_{i_1}, s_2 P_{i_2})`
-    /// shift `R` in bounded batches before evaluating the resultant circuit on
-    /// the inner pair `s_3 P_{i_3} + s_4 P_{i_4} = R''`.
+    /// shift `R` in bounded batches before looking up the retained signed inner
+    /// pair `s_3 P_{i_3} + s_4 P_{i_4} = R''`. The reusable pair-root workspace
+    /// is capped at 4,194,304 signed witnesses before allocating the table.
     pub fn decompose_multi(
         &self,
         summands: u8,
@@ -1016,7 +1021,7 @@ impl<const B: u32> FactorBase<B> {
                 .decompose_inner(target, workspace)?
                 .map(MultiSignedRelation::from_pair));
         }
-        self.ensure_pair_roots(workspace);
+        self.ensure_pair_roots(workspace)?;
         let k = self.points.len();
         workspace.differences.clear();
         workspace.differences.resize(2 * k, Some(target));
@@ -1165,16 +1170,33 @@ impl<const B: u32> FactorBase<B> {
         }
         Ok(None)
     }
-    fn ensure_pair_roots(&self, workspace: &mut CandidateWorkspace) {
-        if workspace.pair_roots.is_some() {
-            return;
+    fn ensure_pair_roots(&self, workspace: &mut CandidateWorkspace) -> Result<()> {
+        let curve_key = (self.curve.modulus(), self.curve.coefficients());
+        if workspace.pair_roots.is_some()
+            && workspace.pair_curve == Some(curve_key)
+            && workspace.pair_base == self.points
+        {
+            return Ok(());
+        }
+        // A reusable public workspace may have belonged to another base/field.
+        workspace.pair_roots = None;
+        workspace.pair_base.clear();
+        workspace.pair_curve = None;
+        let pairs = self
+            .points
+            .len()
+            .checked_mul(self.points.len())
+            .and_then(|n| n.checked_mul(2))
+            .ok_or(Error::ResourceLimit("pair-root size overflow"))?;
+        if pairs > 4_194_304 {
+            return Err(Error::ResourceLimit("pair-root witness reservation"));
         }
         // The signed two-point root set is target independent. Build it once
         // per caller-owned workspace instead of repeating an O(k) batched
         // subtraction for every outer m=3/m=4 term of every relation query.
         // Entries retain the old canonical scan order, so certificates stay
         // deterministic.
-        let mut roots = PairRootIndex::with_capacity(self.points.len() * self.points.len());
+        let mut roots = PairRootIndex::with_capacity(pairs / 2);
         for ia in 0..self.points.len() {
             for negative_a in [false, true] {
                 if self.points[ia].y() == 0 && negative_a {
@@ -1205,6 +1227,9 @@ impl<const B: u32> FactorBase<B> {
             }
         }
         workspace.pair_roots = Some(roots);
+        workspace.pair_base.clone_from(&self.points);
+        workspace.pair_curve = Some(curve_key);
+        Ok(())
     }
     pub(crate) fn decompose_inner(
         &self,

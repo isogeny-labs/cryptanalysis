@@ -3,12 +3,14 @@ import json,hashlib,platform,subprocess,os
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from PIL import Image
 from matplotlib.patches import FancyBboxPatch
 P=Path(__file__).resolve().parent
 a=json.loads((P/'summary.json').read_text());b=json.loads((P/'m2/summary.json').read_text())
 plt.rcParams.update({'font.size':10,'svg.fonttype':'none'})
 def save(fig,name):
  fig.savefig(P/(name+'.svg'),bbox_inches='tight');fig.savefig(P/(name+'.png'),dpi=150,bbox_inches='tight');plt.close(fig)
+ im=Image.open(P/(name+'.png')).convert('RGB').quantize(colors=128);im.save(P/(name+'.png'),optimize=True,dpi=(150,150))
 fig,ax=plt.subplots(figsize=(9.4,3.4));xs=list(range(5))
 for arm,label,color,mark in [('selected-aa0','m2, B=256 primary','#087f8c','o'),('selected-aa1','m2 A/A repeat','#7ab6bd','x'),('m3-reference','m3, B=512','#d28e00','s'),('m4-reference','m4, B=512','#7656a2','^')]:
  ax.plot(xs,[r[arm]['cold_ms'] for r in b['rows']],marker=mark,label=label,color=color,lw=1)

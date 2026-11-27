@@ -91,7 +91,7 @@ The user authorized local CPU execution and local storage. Raw outputs, evaluato
 Canonical scoreboard, progress timeline, curve routes and catalogue were checked; exploratory results do not satisfy their admission rules, so those graphs remain unchanged. Only these study figures and the unqualified benchmark progress/metrics series change. The next measured optimization would be a separate gain-graph m2 elimination comparison or packed table representation; neither is included in the present timings. [pcc:unverified]
 
 
-Final publication check: `pcc ledger verify --base origin/main` fails at
+Original delivery publication check (18:12 UTC): `pcc ledger verify --base origin/main` fails at
 entry3583 (seq3535). This branch makes no change to pcc/; the HEAD ledger
 has exactly the parent b4e8b ledger bytes. The global artifact gate also
 retains missing/unuploaded historical and local raw objects. No push,
@@ -100,3 +100,40 @@ these gates. The completed implementation, measurements and original
 commits are delivered locally; PRs remain tracking drafts. These concrete
 publication failures do not invalidate or independently verify the local
 mathematical outputs. [pcc:unverified]
+
+
+## Completion update
+
+The final software now supplies `scripts/m31-complete QX QY --out NEW.json`
+for source build, coordinate-input recovery, atomic new-file publication and
+full saved-certificate checking. `scripts/m31-verify` accepts an optional
+expected public target to reject substitution. The checker runs the strict
+original dependency verifier plus the suite's distinct PrimeCurve arithmetic;
+there is no scalar input or rho fallback. The new native executable has
+selected B256/m2 defaults and explicit solved/incomplete/invalid exit codes.
+The two code checkpoints were merged without replacing their frozen evidence.
+[pcc:unverified]
+
+Review of the remote checkpoint also found an unbounded default pair-cache
+reservation and cache reuse across different factor bases. Both are fixed:
+reservation is checked before allocation, and reuse is bound to the field,
+curve and exact base. A finite-domain control changes bases in one public
+workspace and compares every result with a fresh workspace. Scalar pair-root
+work now reports scalar backend and zero circuit queries. These corrections
+are not new measured speedups and do not rewrite older reports. [pcc:unverified]
+
+Current checks pass45 native release tests plus a documentation test,
+Clippy all targets with warnings denied, two saved-proof verifier tests,
+twelve auxiliary CLI tests, the exit-status control,24 executable controls
+against a clean native build and the atomic overwrite control. Initial
+verifier-fixture/Clippy errors and a sparse fixture miss are retained; exact
+tracked fixture bytes were restored and no test or verification threshold was
+relaxed. The offline archive adds both executable commands, a successful saved
+example, both source histories and all completion logs. [pcc:unverified]
+
+Historical timing remains bound to original worker SHA256ee67b819...; the
+completed command and extra checker are not relabeled as that71.356ms clock.
+The original archive remains unchanged. Final merge remains subject to the
+repository's original PCC/data gates; the base ledger and missing historical
+raw artifacts were not edited, waived or falsely marked uploaded.
+[pcc:unverified]

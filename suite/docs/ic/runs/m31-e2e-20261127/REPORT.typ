@@ -68,9 +68,61 @@ AMD EPYC9V74, x86-64 Linux container, five allowed CPUs, one exposed CPU pinned,
 Full source-linked narrative, exact commands, limitations and requirement/evidence table: REPORT.md. Raw evidence: manifest.json, summary.json, replay.json and m2/ counterparts. Local delivery: /workspace/isogeny-m31-e2e.zip. Source PR cryptanalysis#2005, stacked on#2002; workspace#192. No new PCC claims, general scaling result or rho victory is asserted. Canonical scoreboard/curve-route graphs remain unchanged because the exploratory records lack admission; study graphs and unqualified progress metrics carry this result. [pcc:unverified]
 
 
-Publication check: the inherited PCC ledger fails at entry3583 (seq3535);
+Initial delivery checkpoint (18:12 UTC): the inherited PCC ledger fails at entry3583 (seq3535);
 HEAD has exactly the parent ledger bytes and pcc/ is unchanged. Missing
 artifact uploads also fail the global publication gate. No push/merge or
-ready transition is attempted past those gates. Original source commits
-and outputs are delivered locally; the PRs remain tracking drafts.
+ready transition was attempted at that checkpoint. Original source commits
+and outputs were delivered locally; the PRs were tracking drafts.
 [pcc:unverified]
+
+
+#pagebreak()
+= Completion update: usable command and saved-proof checking
+The final source reconciles the separately published pair-root acceleration
+checkpoint with the prospectively measured B256/m2 indexed path. Both studies,
+protocols, source histories and original outputs remain separate. The original
+71.356ms median is a frozen worker measurement; the new wrapper's builds,
+process startup, file emission and extra checker are not relabeled as that
+clock. No new performance claim is made by these correctness controls.
+[pcc:unverified]
+
+One command now rebuilds current source, recovers from coordinates, saves a
+new complete certificate and checks it through the original strict verifier
+and a second native arithmetic implementation:
+#raw("scripts/m31-complete 2144058214 807222724 \
+  --out recovery.json --seed 1", block: true)
+
+The saved certificate can be checked separately and bound to the intended
+public target:
+#raw("scripts/m31-verify recovery.json \
+  --qx 2144058214 --qy 807222724", block: true)
+
+Existing destination files are refused atomically. A valid checked recovery
+returns0; a bounded incomplete report is saved and returns1; invalid worker
+arguments/points return2 without a panic. The checker rejects an incomplete
+or malformed report, incorrect scalar, signed column, weight, missing or
+duplicate row, wrong curve and substitution of another target.
+[pcc:unverified]
+
+The merged native library passes45 release tests and its documentation test.
+Clippy all-targets with warnings denied passes after installing the declared
+component; no lint was disabled. Two verifier tests check a complete nontrivial
+three-row dependency and corruption controls. Twenty-four executable controls
+pass against a clean native build in a separate target directory. The combined
+command recovers and checks the public example, and the overwrite control
+preserves its existing file SHA256. Normal auxiliary CLI and exit checks
+are retained. These are local correctness checks, not signed independent
+verification. [pcc:unverified]
+
+The new delivery archive includes both Linux x86-64 executables, a run-complete
+entry point, the saved example, both original frozen panels, the other remote
+checkpoint's study, original and merged source bundles, build/test/failure logs,
+and SHA256SUMS. It can be used without Cargo or network access; source builds
+remain available in the owning repository. The earlier archive is retained
+unchanged. [pcc:unverified]
+
+Repository-wide PCC/data admission remains separate: the inherited ledger
+sequence error and unavailable S3-backed inputs are not repaired by changing
+claims or disabling checks. Source parity and local correctness can pass while
+these base-branch dependencies prevent merge. The tracking PR records the exact
+CI state; no merge or independent standing is asserted. [pcc:unverified]

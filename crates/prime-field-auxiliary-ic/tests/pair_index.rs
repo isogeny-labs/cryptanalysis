@@ -167,3 +167,41 @@ fn mersenne31_pair_witness_sign_cache_and_local_replay() {
         }
     }
 }
+
+#[test]
+fn merged_default_pair_roots_check_reservation_before_allocating() {
+    let c = Curve::<31>::new(2, 14).unwrap();
+    let roots: Vec<_> = (0..10000)
+        .filter(|&x| c.lift_x(x).unwrap().is_some())
+        .take(2049)
+        .collect();
+    assert_eq!(roots.len(), 2049);
+    let base = FactorBase::without_maps(c, &roots).unwrap();
+    let mut scratch = base.workspace();
+    assert!(matches!(
+        base.decompose_multi(3, c.point(1, 814455902).unwrap(), &mut scratch),
+        Err(Error::ResourceLimit("pair-root witness reservation"))
+    ));
+}
+
+#[test]
+fn default_pair_cache_refreshes_when_a_public_workspace_changes_factor_base() {
+    let c = Curve::<5>::new(2, 14).unwrap();
+    let roots: Vec<_> = (0..31)
+        .filter(|&x| c.lift_x(x).unwrap().is_some())
+        .collect();
+    let a = FactorBase::without_maps(c, &roots[..4]).unwrap();
+    let b = FactorBase::without_maps(c, &roots[4..8]).unwrap();
+    let mut reused = a.workspace();
+    for m in 3..=4 {
+        let mut fresh = b.workspace();
+        for &x in &roots {
+            let target = c.lift_x(x).unwrap().unwrap();
+            a.decompose_multi(m, target, &mut reused).unwrap();
+            assert_eq!(
+                b.decompose_multi(m, target, &mut reused).unwrap(),
+                b.decompose_multi(m, target, &mut fresh).unwrap()
+            );
+        }
+    }
+}

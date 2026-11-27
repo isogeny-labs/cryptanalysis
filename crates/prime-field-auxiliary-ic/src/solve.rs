@@ -468,8 +468,12 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
             config,
             yield_only,
             profiler,
-            self.base.backend(),
-            self.base.uses_circuit(),
+            if summands == 2 {
+                self.base.backend()
+            } else {
+                Backend::Scalar
+            },
+            summands == 2 && self.base.uses_circuit(),
             |m, q| self.base.decompose_multi_inner(m, q, &mut workspace),
         )
     }

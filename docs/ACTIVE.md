@@ -1,7 +1,7 @@
 # Active research tasks
 
 ## Active items
-- [ ] Complete the M31 deliverable: reconcile remote/local implementations, clean-build fast command, standalone certificate checking and publication checks (Codex, resumed 2026-11-27; PR #2005; local runs authorized)
+- [x] Complete the M31 deliverable: reconcile remote/local implementations, clean-build fast command, standalone certificate checking and publication checks (Codex, resumed 2026-11-27; PR #2005; local runs authorized; combined command, single-proof checker, clean-build controls and offline bundle; merge remains gated)
 - [x] Integrated native M31 recovery and separate measured pair-root acceleration; retain both study directories, frozen inputs, all raw outcomes and their producer-only standing (PR #2005; suite/docs/ic/runs/m31-e2e-20261127/REPORT.md and suite/docs/ic/runs/fp-m31-pair-roots-20261127/RESULTS.md)
 
 
