@@ -1,0 +1,25 @@
+{
+  "schema": "fp-m31-local-seeds/v1",
+  "master_seed": "0x0000000000000000",
+  "derivation": "SHA256 UTF8 fp-m31-native/v1|rep=<integer>|stream=<label>; first8bytes interpreted little-endian u64; no wallclock randomness",
+  "sampler": "native SplitMix64 as src/solve.rs",
+  "target_custody": "target-private is evaluator preparation only; scalar mapped into1..N-1; only public Q coordinates reach solver process",
+  "replicates": [
+    {
+      "replicate": 0,
+      "streams": {
+        "sampler": 13278325787951376526,
+        "factor-base": 13493305759439970643,
+        "target-private": 2559120713333646596
+      }
+    },
+    {
+      "replicate": 1,
+      "streams": {
+        "sampler": 7996699001791978753,
+        "factor-base": 12458066285612794378,
+        "target-private": 7232108098431950073
+      }
+    }
+  ]
+}

@@ -59,6 +59,21 @@ protocol exist. No such run is launched by this import PR.
 
 ## Resolution and history
 
+2026-11-27, user-authorized local M31 diagnostic: the existing native CLI
+ran 56 cells on the same curve above, with two new public synthetic targets,
+m=2,3,4, depth-7 torus/same-base direct/interval controls. All 18 planted
+rows replayed locally; none of 18 bounded IC searches recovered a target,
+while both native rho references recovered and replayed their scalars.
+See the [descriptive report](../suite/docs/ic/runs/fp-m31-local-20261127/REPORT.md).
+Eight yield prefixes were time-censored; no signed independent verdict,
+admitted timing tier, complete cold cost or new PCC ID is supplied. The
+five-target qualification panel remains unmet. Serial/balanced/S4 equation
+systems, guarded addition-constraint solving and outside-point partial
+relation generation remain missing from this CLI. The next controlled
+encoding comparison needs those implementations and a prospective protocol;
+the existing shorter structured prefixes motivate a separately frozen
+batch/circuit diagnostic first. No follow-up run is scheduled. [pcc:unverified]
+
 2026-11-16, the user explicitly instructed **Proceed without S3**. S3 upload
 is no longer an admission prerequisite for this task; retain resumable source
 and small evidence in Git/PR instead. The earlier failed upload attempt and

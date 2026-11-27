@@ -2,7 +2,7 @@
 
 ## Active items
 
-- [ ] Run corrected M31 prime-field diagnostics at p=2147483647 (Codex, started2026-11-27, branch codex/fp-m31-local-20261127; local execution authorized)
+- [x] Run corrected M31 prime-field local diagnostics at p=2147483647 (Codex, started 2026-11-27, branch codex/fp-m31-local-20261127; PR #2002; report: suite/docs/ic/runs/fp-m31-local-20261127/REPORT.md; broader equation-encoding/partial-relation comparisons remain open)
 - [ ] Audit p plus one smoothness leads on public fixtures (Codex, started 2026-11-25, branch codex/p1-smoothness-leads-20261125, PR #1979) [pcc:unverified]
 - [x] Publish degree-5 horizontal joint S4 component screen (Codex, started 2026-11-23, branch research/cm-joint-s4-screen-20261123, PR #1967): same-base positive and negative query checks, source/endpoint/wire/joint solve costs, and bounded conclusion in research/cm_joint_s4_20261123/. [pcc:unverified]
 - [ ] Batch ECDLP: lower the IC-vs-batch-rho crossover (Claude Code, started 2026-11-23, branch claude/batch-ecdlp-crossover-20261123, draft PR; workspace item PR #91): freeze prediction first; rebuild the `ca-ic prime` batch IC arm on `mitm-prime-batched` (#1891) / k=3 harvester (#1901) where they apply to F_p curves; re-measure up-front and per-target cost and the crossover K vs executed folded batch rho at 20/24/28 bits with CIs; define and measure best-seeded rho and report distance remaining
