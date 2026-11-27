@@ -62,6 +62,9 @@ def dev():
     (HERE/'selection.json').write_text(json.dumps(selection,indent=2)+'\n');print(json.dumps(selection),flush=True)
 def evaluate():
     m=load();s=json.loads((HERE/'selection.json').read_text());assert sha(BIN)==s['binary_sha256']==m['binary_sha256']
+    m['reference_binary_sha256_at_evaluation']=sha(RHO)
+    m['evaluation_source_commit']=source()
+    save(m)
     frozen=subprocess.check_output(['git','show','HEAD:'+str((HERE/'selection.json').relative_to(REPO))],cwd=REPO)
     assert frozen==(HERE/'selection.json').read_bytes(),'Commit selection before heldout fixture generation'
     assert not (HERE/'inputs').exists();(HERE/'inputs').mkdir();(HERE/'evaluator').mkdir()

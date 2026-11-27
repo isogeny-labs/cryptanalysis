@@ -14,10 +14,16 @@ cargo +1.88.0 build --release \
   --manifest-path crates/prime-field-auxiliary-ic/Cargo.toml --example m31_e2e
 crates/prime-field-auxiliary-ic/target/release/examples/m31_e2e \
   --qx 2144058214 --qy 807222724 --method indexed \
-  --columns 256 --summands 4 --base interval --seed 1
+  --columns 512 --summands 4 --base interval --seed 1
 ```
 
 The worker accepts public coordinates only and emits a full recovery
 certificate, exact base points, complete cost boundaries and counters.
 Use `--profile` only for a separate diagnostic. See PROTOCOL.md for frozen
 tuning/held-out selection and the exact scope of any reported result.
+
+The normal CLI also exposes `ca-ic auxiliary --pair-index --summands 4`.
+Its pair-index setup is included in target-independent preparation, and
+only a checked solved/replayed auxiliary report receives a successful
+exit status. The direct path and all verifier thresholds remain intact.
+[pcc:unverified]

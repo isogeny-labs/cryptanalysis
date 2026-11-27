@@ -70,6 +70,16 @@ pub struct AuxiliaryArgs {
     /// Signed factor-base summands per relation (2, 3, or 4).
     #[arg(long, default_value_t = 2, value_parser = clap::value_parser!(u8).range(2..=4))]
     pub summands: u8,
+    /// Precompute signed pair witnesses for indexed end-to-end recovery.
+    /// Preparation and memory are charged; the original direct path is retained.
+    #[arg(long, conflicts_with_all = ["decompose_only", "replay_relations", "relation_yield_only"])]
+    pub pair_index: bool,
+    /// Pair build/probe chunk (default 64), used with --pair-index.
+    #[arg(long, requires = "pair_index", value_parser = clap::value_parser!(u16).range(1..=16384))]
+    pub pair_index_chunk: Option<u16>,
+    /// Maximum raw pair witnesses reserved (default 4194304).
+    #[arg(long, requires = "pair_index", value_parser = clap::value_parser!(u64).range(1..=4194304))]
+    pub pair_index_max_pairs: Option<u64>,
     /// Processed-query cap, including failed queries and infinity targets.
     #[arg(long, default_value_t = 1_000_000)]
     pub max_queries: u64,
@@ -493,6 +503,24 @@ fn execute<const B: u32>(
     }
     let prepared =
         aux::PreparedSolver::new(&base, public.n, generator).map_err(|e| e.to_string())?;
+    let pair_begin = Instant::now();
+    let pair_index = if args.pair_index {
+        Some(
+            aux::PairIndex::new(
+                &base,
+                args.pair_index_max_pairs.unwrap_or(4_194_304) as usize,
+                usize::from(args.pair_index_chunk.unwrap_or(64)),
+            )
+            .map_err(|e| e.to_string())?,
+        )
+    } else {
+        None
+    };
+    if let Some(index) = &pair_index {
+        report["decomposition_oracle"] = json!("retained-signed-pair-index");
+        report["pair_index"] = json!({"preparation_ns":nanos(pair_begin.elapsed())?,"setup_counts":pair_index_stats_json(index.stats()),"chunk":args.pair_index_chunk.unwrap_or(64),"max_pairs":args.pair_index_max_pairs.unwrap_or(4_194_304),"online_counts":null});
+        report["factor_base"]["queries_bypass_auxiliary_maps"] = json!(true);
+    }
     let prepared_at = Instant::now();
     let preparation = prepared_at.duration_since(begin);
     report["target_independent_preparation_seconds"] = json!(preparation.as_secs_f64());
@@ -649,7 +677,7 @@ fn execute<const B: u32>(
         )?;
         return Ok(report);
     }
-    if args.summands == 2 {
+    if args.summands == 2 && pair_index.is_none() {
         let (outcome, phases) = if args.profile_phases {
             prepared
                 .solve_profiled(target, &config)
@@ -701,7 +729,23 @@ fn execute<const B: u32>(
         )?;
         Ok(report)
     } else {
-        let (outcome, phases) = if args.profile_phases {
+        let (outcome, phases) = if let Some(index) = &pair_index {
+            if args.profile_phases {
+                prepared
+                    .solve_multi_indexed_profiled(args.summands, target, &config, index)
+                    .map(|(outcome, stats, phases)| {
+                        report["pair_index"]["online_counts"] = pair_index_stats_json(&stats);
+                        (outcome, Some(phases))
+                    })
+            } else {
+                prepared
+                    .solve_multi_indexed(args.summands, target, &config, index)
+                    .map(|(outcome, stats)| {
+                        report["pair_index"]["online_counts"] = pair_index_stats_json(&stats);
+                        (outcome, None)
+                    })
+            }
+        } else if args.profile_phases {
             prepared
                 .solve_multi_profiled(args.summands, target, &config)
                 .map(|(outcome, phases)| (outcome, Some(phases)))
@@ -752,6 +796,10 @@ fn execute<const B: u32>(
         )?;
         Ok(report)
     }
+}
+
+fn pair_index_stats_json(stats: &aux::PairIndexStats) -> Value {
+    json!({"constructed_pairs":stats.constructed_pairs,"entries":stats.entries,"collision_witnesses":stats.collision_witnesses,"generated_candidates":stats.generated_candidates,"lookups":stats.lookups,"hits":stats.hits,"cache_hits":stats.cache_hits,"group_replays":stats.group_replays})
 }
 
 fn run_rho_reference<const B: u32>(
@@ -1360,5 +1408,49 @@ mod tests {
                 execute::<7>(&decomp_args, &input, "fixture".into(), Instant::now()).unwrap();
             assert_eq!(decomp["mode"], "single-decomposition-control");
         }
+    }
+
+    #[test]
+    fn indexed_cli_recovers_with_cold_setup_charged_and_rejects_reservation_overflow() {
+        let c = aux::Curve::<7>::new(2, 51).unwrap();
+        let g = c.point(3, 46).unwrap();
+        let q = c.mul(Some(g), 37).unwrap().unwrap();
+        let input:Input=serde_json::from_value(json!({"public":{"p":127,"a":2,"b":51,"n":109,"P":[g.x(),g.y()],"Q":[q.x(),q.y()]},"roots":(0..20).collect::<Vec<_>>()})).unwrap();
+        let mut args = TestCli::parse_from([
+            "test",
+            "--input",
+            "unused",
+            "--without-auxiliary",
+            "--pair-index",
+            "--summands",
+            "4",
+            "--seed",
+            "43",
+            "--max-queries",
+            "5000",
+            "--profile-phases",
+        ])
+        .args;
+        let r = execute::<7>(&args, &input, "fixture".into(), Instant::now()).unwrap();
+        assert_eq!(r["status"], "solved");
+        assert_eq!(r["certificate"]["scalar"], 37);
+        assert_eq!(r["producer_check_passed"], true);
+        let n = r["factor_base"]["folded_columns"].as_u64().unwrap();
+        assert_eq!(r["pair_index"]["setup_counts"]["constructed_pairs"], n * n);
+        assert!(
+            r["target_independent_preparation_ns"].as_u64().unwrap()
+                >= r["pair_index"]["preparation_ns"].as_u64().unwrap()
+        );
+        assert!(!r["pair_index"]["online_counts"].is_null());
+        args.pair_index_max_pairs = Some(1);
+        assert!(execute::<7>(&args, &input, "fixture".into(), Instant::now()).is_err());
+        assert!(TestCli::try_parse_from([
+            "test",
+            "--input",
+            "unused",
+            "--pair-index",
+            "--relation-yield-only"
+        ])
+        .is_err());
     }
 }
