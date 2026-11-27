@@ -1,6 +1,6 @@
 use ecdlp_surfaces::binary::{
-    check_n83, is_prime_u64, n83_fixture, parse_binary_point, power_of_two_decimal, BinaryCurve,
-    BinaryField, BinaryPoint,
+    check_n83, is_prime_u64, n83_fixture, parse_binary_point, power_of_two_decimal, primality_u128,
+    BinaryCurve, BinaryField, BinaryPoint, Primality,
 };
 
 fn points(curve: BinaryCurve) -> Vec<BinaryPoint> {
@@ -249,4 +249,32 @@ fn exact_decimal_and_point_encodings_preserve_high_words() {
     );
     assert!(parse_binary_point("not-a-point").is_err());
     assert!(parse_binary_point("0xZZ,1").is_err());
+}
+
+#[test]
+fn u128_primality_covers_orders_above_u64() {
+    // Pinned N83 a=0 subgroup order (~2.4e24) is above 2^64 and must be checked.
+    let r = n83_fixture(0).unwrap().subgroup_order;
+    assert!(r > u128::from(u64::MAX));
+    assert_eq!(primality_u128(r), Primality::Prime);
+    assert_eq!(primality_u128(r + 2), Primality::Composite);
+    assert_eq!(primality_u128(r * 3), Primality::Composite);
+    // 2^61-1 prime, 2^89-1 prime (but above the bound); 2^67-1 = 193707721 * 761838257287 composite.
+    assert_eq!(primality_u128((1 << 61) - 1), Primality::Prime);
+    assert_eq!(primality_u128((1 << 89) - 1), Primality::ProbablyPrime); // above 3.317e24
+    assert_eq!(primality_u128((1 << 67) - 1), Primality::Composite);
+    // Products of two 64-bit primes (a 128-bit modulus exercising the wide mulmod).
+    let p = 18_446_744_073_709_551_557u128;
+    assert_eq!(
+        primality_u128(p * 18_446_744_073_709_551_533),
+        Primality::Composite
+    );
+    // Above the deterministic bound the answer is explicitly only probable.
+    assert_eq!(primality_u128((1 << 127) - 1), Primality::ProbablyPrime);
+    assert_eq!(primality_u128(u128::MAX), Primality::Composite);
+    // Strong pseudoprime to bases 2..=37 (Sorenson-Webster bound is the first for 13 bases).
+    assert_eq!(
+        primality_u128(3_825_123_056_546_413_051),
+        Primality::Composite
+    );
 }
