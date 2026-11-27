@@ -755,10 +755,7 @@ where
         report["software"] = json!({"version":env!("CARGO_PKG_VERSION"),"os":std::env::consts::OS,
             "arch":std::env::consts::ARCH,"binary_blake3":binary_hash(),"git_commit":git_commit()});
     }
-    let success = matches!(
-        report["status"].as_str(),
-        Some("complete" | "checks_passed" | "stopped")
-    ) || report.get("operation").is_none();
+    let success = successful_report(&report);
     let text = serde_json::to_string_pretty(&report).expect("JSON serializable");
     if let Some(path) = &cli.out {
         let result = OpenOptions::new()
@@ -796,5 +793,30 @@ where
         ExitCode::from(2)
     } else {
         ExitCode::FAILURE
+    }
+}
+
+fn successful_report(report: &Value) -> bool {
+    matches!(
+        report["status"].as_str(),
+        Some("complete" | "checks_passed" | "solved" | "stopped" | "verified")
+    ) || report.get("operation").is_none()
+}
+
+#[cfg(test)]
+mod status_tests {
+    use super::*;
+
+    #[test]
+    fn solved_and_verified_reports_are_successful() {
+        assert!(successful_report(
+            &json!({"operation":"auxiliary","status":"solved"})
+        ));
+        assert!(successful_report(
+            &json!({"operation":"auxiliary","status":"verified"})
+        ));
+        assert!(!successful_report(
+            &json!({"operation":"auxiliary","status":"not_solved"})
+        ));
     }
 }

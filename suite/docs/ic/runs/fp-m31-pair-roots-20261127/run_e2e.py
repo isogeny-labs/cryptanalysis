@@ -53,7 +53,13 @@ def run(arm, binary):
         completed = subprocess.run(command, text=True, capture_output=True,
                                    timeout=180, check=False)
         stdout = completed.stdout.strip()
-        report = json.loads(stdout) if completed.returncode == 0 else None
+        # Older ca-ic binaries returned 1 even after emitting a valid solved
+        # report.  Parse the report independently of the process status so a
+        # frozen baseline remains replayable; retain returncode in the row.
+        try:
+            report = json.loads(stdout)
+        except json.JSONDecodeError:
+            report = None
         scalar = report.get("certificate", {}).get("scalar") if report else None
         independent_replay = scalar is not None and mul(generator, scalar) == target
         return {"arm": arm, "command": command, "returncode": completed.returncode,
