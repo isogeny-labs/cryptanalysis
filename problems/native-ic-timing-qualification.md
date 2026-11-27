@@ -88,3 +88,17 @@ instruction-level and native results separately. A larger effect may be easier
 to resolve, but that is a hypothesis, not a performance result. Resolving this
 measurement problem would qualify only that declared comparison, not the broad
 ECDLP/GPU goal. [pcc:unverified]
+
+
+2026-11-27 M31 successor: the coordinate-input native solver now includes retained
+signed pair witnesses, bounded table construction and shared sparse recovery.
+The [separate frozen panels](../suite/docs/ic/runs/m31-e2e-20261127/REPORT.md)
+retain all78 reports, including capped direct searches and one capped m2
+development cell. The five fresh m2 primary targets recovered with full
+certificates at71.356ms median cold; another native arithmetic path replayed
+all ten primary certificates across both panels and rejected mutations.
+These are local, shared-host producer observations, with user-authorized
+local storage, absent isolation admission/S3 upload/signed independent verdict.
+They do not resolve this timing qualification problem or move the verified
+baseline. Study figures and exploratory metrics retain the engineering
+outcome; the original blockers and historical records remain. [pcc:unverified]

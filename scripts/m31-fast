@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Fixed public M31 lab curve: y^2=x^3+2x+14, p=2147483647.
+# Usage: scripts/m31-fast QX QY [native worker options]
+set -euo pipefail
+if [[ $# -lt 2 || ${1:-} == --help ]]; then
+  echo 'Usage: scripts/m31-fast QX QY [--seed N] [--max-queries N] [--max-ms N]' >&2
+  echo 'Returns JSON with scalar, full signed relation certificate, and cold costs.' >&2
+  echo 'Fixed lab curve only. Default: interval base 256, signed pair lookup, 4M queries.' >&2
+  exit 2
+fi
+repo_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+worker_path="$repo_dir/crates/prime-field-auxiliary-ic/target/release/examples/m31_e2e"
+if [[ ! -x "$worker_path" ]]; then
+  cargo +1.88.0 build --locked --release --manifest-path "$repo_dir/crates/prime-field-auxiliary-ic/Cargo.toml" --example m31_e2e >&2
+fi
+qx=$1
+qy=$2
+shift 2
+exec "$worker_path" --columns 256 --summands 2 --base interval --method indexed \
+  --max-queries 4000000 --lanes 64 --chunk 64 --qx "$qx" --qy "$qy" "$@"

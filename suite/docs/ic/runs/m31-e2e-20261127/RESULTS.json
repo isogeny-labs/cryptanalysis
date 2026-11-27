@@ -1,0 +1,288 @@
+{
+  "schema": "m31-e2e-delivery/v1",
+  "standing": "pcc:unverified",
+  "original_panel": {
+    "schema": "m31-e2e-result/v1",
+    "standing": "pcc:unverified",
+    "selected": {
+      "columns": 512,
+      "summands": 4,
+      "base": "interval",
+      "method": "indexed"
+    },
+    "primary_solved": 5,
+    "aa_solved": 5,
+    "m3_solved": 5,
+    "direct_solved": 0,
+    "rho_solved": 5,
+    "median_cold_ms": 215.426156,
+    "range_cold_ms": [
+      193.337495,
+      311.479621
+    ],
+    "engineering_target_all_correct_and_median_below_1s": true,
+    "paired_selected_over_m3_geomean": 1.0392581032483639,
+    "conditional_paired_bootstrap_95": [
+      0.9029522605768551,
+      1.169314154051372
+    ],
+    "aa_repeatability_ratio_range": [
+      0.7512511259926055,
+      1.1893545508002288
+    ],
+    "median_rho_reference_call_ms": 1.451234,
+    "selected_cold_over_rho_call_geomean": 148.44430516153668,
+    "host_qualification": "exploratory shared host; no admitted isolation or qualified speedup; bootstrap conditional on these five targets and seeds",
+    "source_commit": "bfa695d0c5963a2bbdb6a59766683188a40df8f4",
+    "evaluation_source_commit": "a52ce2f71a2348eaedb887244f6437e7df8fffd4",
+    "development_nuisance": "Development overlapped an independent two-job ca-ic reference rebuild. Timing selection is exploratory, not an isolated tuning ranking. The build is completed before heldout evaluation; heldout configuration remains frozen and evaluated on fresh targets."
+  },
+  "followup_panel": {
+    "schema": "m31-e2e-m2-result/v1",
+    "standing": "pcc:unverified",
+    "selected": {
+      "columns": 256,
+      "summands": 2,
+      "base": "interval",
+      "method": "indexed",
+      "max_queries": 4000000
+    },
+    "solved": {
+      "selected-aa0": 5,
+      "selected-aa1": 5,
+      "m3-reference": 5,
+      "m4-reference": 5
+    },
+    "rows": [
+      {
+        "replicate": 0,
+        "selected-aa0": {
+          "solved": true,
+          "cold_ms": 110.804362,
+          "queries": 2744789,
+          "relations": 152,
+          "peak_rss_mib": 14.336,
+          "process_wall_ms": 114.0
+        },
+        "m3-reference": {
+          "solved": true,
+          "cold_ms": 293.205179,
+          "queries": 6044,
+          "relations": 470,
+          "peak_rss_mib": 34.304,
+          "process_wall_ms": 299.0
+        },
+        "m4-reference": {
+          "solved": true,
+          "cold_ms": 218.68883,
+          "queries": 474,
+          "relations": 474,
+          "peak_rss_mib": 34.6112,
+          "process_wall_ms": 225.0
+        },
+        "selected-aa1": {
+          "solved": true,
+          "cold_ms": 92.379937,
+          "queries": 2744789,
+          "relations": 152,
+          "peak_rss_mib": 21.0944,
+          "process_wall_ms": 97.0
+        },
+        "rho_reference_call_ms": 2.602926
+      },
+      {
+        "replicate": 1,
+        "selected-aa1": {
+          "solved": true,
+          "cold_ms": 58.41387,
+          "queries": 1774359,
+          "relations": 92,
+          "peak_rss_mib": 21.7088,
+          "process_wall_ms": 61.0
+        },
+        "m4-reference": {
+          "solved": true,
+          "cold_ms": 266.458279,
+          "queries": 478,
+          "relations": 478,
+          "peak_rss_mib": 34.5088,
+          "process_wall_ms": 276.0
+        },
+        "m3-reference": {
+          "solved": true,
+          "cold_ms": 220.240305,
+          "queries": 6010,
+          "relations": 470,
+          "peak_rss_mib": 34.2016,
+          "process_wall_ms": 231.0
+        },
+        "selected-aa0": {
+          "solved": true,
+          "cold_ms": 54.148371,
+          "queries": 1774359,
+          "relations": 92,
+          "peak_rss_mib": 26.5216,
+          "process_wall_ms": 59.0
+        },
+        "rho_reference_call_ms": 1.981416
+      },
+      {
+        "replicate": 2,
+        "selected-aa0": {
+          "solved": true,
+          "cold_ms": 71.355946,
+          "queries": 1978990,
+          "relations": 115,
+          "peak_rss_mib": 26.9312,
+          "process_wall_ms": 76.0
+        },
+        "m3-reference": {
+          "solved": true,
+          "cold_ms": 190.329365,
+          "queries": 6216,
+          "relations": 474,
+          "peak_rss_mib": 34.304,
+          "process_wall_ms": 198.0
+        },
+        "m4-reference": {
+          "solved": true,
+          "cold_ms": 197.440588,
+          "queries": 465,
+          "relations": 465,
+          "peak_rss_mib": 34.5088,
+          "process_wall_ms": 204.0
+        },
+        "selected-aa1": {
+          "solved": true,
+          "cold_ms": 66.510122,
+          "queries": 1978990,
+          "relations": 115,
+          "peak_rss_mib": 31.6416,
+          "process_wall_ms": 70.0
+        },
+        "rho_reference_call_ms": 0.961433
+      },
+      {
+        "replicate": 3,
+        "selected-aa1": {
+          "solved": true,
+          "cold_ms": 64.998962,
+          "queries": 1961482,
+          "relations": 122,
+          "peak_rss_mib": 32.1536,
+          "process_wall_ms": 70.0
+        },
+        "m4-reference": {
+          "solved": true,
+          "cold_ms": 249.394929,
+          "queries": 486,
+          "relations": 486,
+          "peak_rss_mib": 34.5088,
+          "process_wall_ms": 257.0
+        },
+        "m3-reference": {
+          "solved": true,
+          "cold_ms": 202.224044,
+          "queries": 6188,
+          "relations": 476,
+          "peak_rss_mib": 34.9184,
+          "process_wall_ms": 208.0
+        },
+        "selected-aa0": {
+          "solved": true,
+          "cold_ms": 63.934578,
+          "queries": 1961482,
+          "relations": 122,
+          "peak_rss_mib": 36.864,
+          "process_wall_ms": 67.0
+        },
+        "rho_reference_call_ms": 1.278083
+      },
+      {
+        "replicate": 4,
+        "selected-aa0": {
+          "solved": true,
+          "cold_ms": 79.943919,
+          "queries": 2509943,
+          "relations": 156,
+          "peak_rss_mib": 37.4784,
+          "process_wall_ms": 86.0
+        },
+        "m3-reference": {
+          "solved": true,
+          "cold_ms": 275.947648,
+          "queries": 6422,
+          "relations": 481,
+          "peak_rss_mib": 37.9904,
+          "process_wall_ms": 283.0
+        },
+        "m4-reference": {
+          "solved": true,
+          "cold_ms": 212.068138,
+          "queries": 478,
+          "relations": 478,
+          "peak_rss_mib": 40.0384,
+          "process_wall_ms": 219.0
+        },
+        "selected-aa1": {
+          "solved": true,
+          "cold_ms": 77.211729,
+          "queries": 2509943,
+          "relations": 156,
+          "peak_rss_mib": 42.3936,
+          "process_wall_ms": 80.0
+        },
+        "rho_reference_call_ms": 1.934125
+      }
+    ],
+    "median_cold_ms": 71.355946,
+    "range_cold_ms": [
+      54.148371,
+      110.804362
+    ],
+    "comparisons": {
+      "m3": {
+        "complete_pairs": 5,
+        "selected_over_reference_geomean": 0.3167903816189948,
+        "conditional_family_bootstrap": [
+          0.26716865710350446,
+          0.36407982058242216
+        ]
+      },
+      "m4": {
+        "complete_pairs": 5,
+        "selected_over_reference_geomean": 0.3244648624945574,
+        "conditional_family_bootstrap": [
+          0.23885926397567794,
+          0.4463740126239521
+        ]
+      }
+    },
+    "aa_repeatability_ratio_range": [
+      0.833721121917565,
+      1.078774281132114
+    ],
+    "median_rho_reference_call_ms": 1.934125,
+    "selected_cold_over_rho_call_geomean": 44.70321004544348,
+    "recommend_m2_on_this_panel": true,
+    "host_qualification": "exploratory shared host; no admitted isolation; five targets, conditional intervals; panels not pooled",
+    "source_commit": "0f5ec2dd351b8e3c2e839f56b930d6268e94319e"
+  },
+  "source_refs": {
+    "worker_execution": "bfa695d0c5963a2bbdb6a59766683188a40df8f4",
+    "original_selection": "a52ce2f71a2348eaedb887244f6437e7df8fffd4",
+    "followup_protocol": "c94c0b7",
+    "followup_runner": "0f5ec2dd351b8e3c2e839f56b930d6268e94319e",
+    "followup_selection_analysis": "67f5e90"
+  },
+  "artifact": "/workspace/isogeny-m31-e2e.zip",
+  "binary_sha256": "ee67b81916a6a762af01e781a4ae72af6faee98c7e5715663444c60138f1d067",
+  "bindings": {
+    "manifest.json": "89a7f19f817a613bdff9d5c8d655171e56de325138c2162781f037104ee53786",
+    "summary.json": "f016157eff8b3a40ebf6fd2c10d65704c9b829b430795a50c552a489065d76cb",
+    "replay.json": "4b38da6484a83ccc173d4054f3f6ccdbbd380a42dccf514fde272ba33c99833e",
+    "m2/manifest.json": "48270b4db147da4bb5b44efb2fea775b62e4c9f2d5c95593283d7b16ee4c1e1c",
+    "m2/summary.json": "2fb77702b03757d4ef04978afb7eb1c331d4ebf5d0c9b54199c9bf6ef0375566",
+    "m2/replay.json": "a3cf6879b2655e1908998f936a7e98562f1f02491332eb849f44f492222a0a5f"
+  }
+}
