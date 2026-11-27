@@ -374,13 +374,17 @@ that limits a row, and it says so through `accepts`.
 `descent-edge-chain` is the matched characteristic-two presentation plug-in.
 At `m = 3` it replaces the direct `S4` by two chained `S3` links, introduces
 one full-field intermediate, and lifts one product in the cubic link. Its
-`presentation` is `edge-ab` (the standard product), `edge-ac` (the
-support-selected mixed edge) or `edge-bc`; every generator is quadratic and
-all three arms have the same variables and field-equation count. The plug-in
-accepts exactly `m = 3`: at `m = 2` there is no cubic link to lift, while the
-current 64-variable symbolic mask makes `m >= 4` unsupported on the pinned
-lead-sweep instances. Those cells are recorded as unsupported rather than
-attempted as failed runs.
+`presentation` is `edge-ab` (the full-width standard product),
+`edge-ab-compressed` (the same exact product represented in its product space
+`V·V`), `edge-ac` (the support-selected mixed edge) or `edge-bc`. Every
+generator is quadratic. The three full-width arms have the same variables and
+field-equation count; the compressed arm keeps the same ideal but reduces the
+first lift from `n` variables and ambient-coordinate rows to `dim(V·V)` of
+each. This is an injective coordinate change on that product constraint, not
+an equation relaxation. The plug-in accepts exactly `m = 3`: at `m = 2` there
+is no cubic link to lift, while the current 64-variable symbolic mask makes
+`m >= 4` unsupported on the pinned lead-sweep instances. Those cells are
+recorded as unsupported rather than attempted as failed runs.
 
 ### `SystemSolver` — F4, F5, XL, SAT, anything
 

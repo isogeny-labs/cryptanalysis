@@ -918,7 +918,7 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for DescentAlgebraicOracle<'_> {
                 ("m", "summands, exactly 3 (one cubic S3 link)"),
                 (
                     "presentation",
-                    "edge-ab (standard lift), edge-ac (default mixed edge) or edge-bc (matched alternative)",
+                    "edge-ab (full-width control), edge-ab-compressed (leaf-product space), edge-ac (default mixed edge) or edge-bc (matched alternative)",
                 ),
             ]
         } else {
@@ -1188,6 +1188,32 @@ mod edge_presentation_tests {
             ));
         }
         assert!(shapes.windows(2).all(|pair| pair[0] == pair[1]));
+
+        let mut compressed = DescentAlgebraicOracle::new_edge_chain(
+            3,
+            &inst,
+            super::super::solvers::solver_by_name("matrix-f4").unwrap(),
+            Params::default(),
+            None,
+        );
+        let mut compressed_params = Params::default();
+        compressed_params.set("presentation", "edge-ab-compressed");
+        compressed
+            .prepare(&ctx, &fb, &compressed_params, &mut GroupOps::default())
+            .unwrap();
+        let compressed_system = compressed.descend(inst.generator.x).unwrap();
+        let Descended::ChainEdge(compressed_chain) = &compressed_system else {
+            panic!("compressed product did not select the chained presentation")
+        };
+        assert_eq!(compressed_chain.lift_bases[0].len(), 5);
+        assert_eq!(compressed_chain.n_vars, 3 * 3 + 11 + 5);
+        assert_eq!(compressed_chain.equations.len(), 2 * 11 + 5);
+        let compressed_shape = system_of(&compressed_system).shape();
+        assert!(compressed_shape.degrees.iter().all(|&degree| degree <= 2));
+        assert!(compressed_chain.n_vars < shapes[0].0);
+        assert!(compressed
+            .describe(&compressed_params)
+            .contains("edge-ab-compressed"));
 
         let mut invalid = DescentAlgebraicOracle::new_edge_chain(
             3,

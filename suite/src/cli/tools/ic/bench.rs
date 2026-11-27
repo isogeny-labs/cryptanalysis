@@ -241,7 +241,7 @@ fn listing() -> Value {
                      "parameters": [{"name": "m", "means": "summands, 2 (descends S3), 3 (descends S4) or 4 (balanced split of S5)"},{"name": "inter_dim", "means": "m = 4 only: dimension of the subspace span(1..z^(l-1)) the two intermediates are restricted to (the representation filter); default n"}],
                      "needs": "a subspace factor base (binary-subspace or koblitz-orbit) and --solver"},
                     {"name": "descent-edge-chain", "summands": "3", "regimes": ["char2", "koblitz"],
-                     "parameters": [{"name": "m", "means": "summands, exactly 3 (one cubic S3 link)"},{"name": "presentation", "means": "edge-ab (standard lift), edge-ac (default mixed edge) or edge-bc (matched alternative)"}],
+                     "parameters": [{"name": "m", "means": "summands, exactly 3 (one cubic S3 link)"},{"name": "presentation", "means": "edge-ab (full-width control), edge-ab-compressed (leaf-product space), edge-ac (default mixed edge) or edge-bc (matched alternative)"}],
                      "needs": "a subspace factor base (binary-subspace or koblitz-orbit) and --solver; m = 2 has no cubic link and m >= 4 exceeds the current 64-variable symbolic mask on registry instances"},
                 ],
             },
