@@ -85,6 +85,31 @@ pub fn is_prime_u64(n: u64) -> bool {
     true
 }
 
+/// Exact floor square root of a `u128` (no floating point).
+pub fn isqrt_u128(n: u128) -> u128 {
+    if n < 2 {
+        return n;
+    }
+    let mut x = 1u128 << ((128 - n.leading_zeros()).div_ceil(2));
+    loop {
+        let y = (x + n / x) / 2;
+        if y >= x {
+            return x;
+        }
+        x = y;
+    }
+}
+
+/// Exact ceiling square root of a `u128`.
+pub fn isqrt_ceil_u128(n: u128) -> u128 {
+    let r = isqrt_u128(n);
+    if r * r == n {
+        r
+    } else {
+        r + 1
+    }
+}
+
 #[inline]
 pub fn mod_mul_u64(a: u64, b: u64, m: u64) -> u64 {
     ((a as u128 * b as u128) % (m as u128)) as u64
@@ -313,25 +338,30 @@ impl CurveU64 {
             (PtU64::Inf, q) => q,
             (q, PtU64::Inf) => q,
             (PtU64::Aff(x1, y1), PtU64::Aff(x2, y2)) => {
+                // All sums are formed in u128 so p up to 2^64 cannot overflow.
+                let pw = p as u128;
                 if x1 == x2 {
-                    if (y1 + y2) % p == 0 {
+                    if (y1 as u128 + y2 as u128) % pw == 0 {
                         return PtU64::Inf;
                     }
-                    let num =
-                        (3 * (x1 as u128 * x1 as u128 % p as u128) + self.a as u128) % p as u128;
-                    let den = (2 * y1) % p;
+                    let num = (3 * (x1 as u128 * x1 as u128 % pw) + self.a as u128) % pw;
+                    let den = ((2 * y1 as u128) % pw) as u64;
                     let inv = mod_inv_u64(den, p).expect("invertible 2y");
                     let lam = mod_mul_u64(num as u64, inv, p);
-                    let x3 = (mod_mul_u64(lam, lam, p) + p - (2 * x1 % p)) % p;
-                    let y3 = (mod_mul_u64(lam, (x1 + p - x3) % p, p) + p - y1) % p;
+                    let x3 = ((mod_mul_u64(lam, lam, p) as u128 + pw - (2 * x1 as u128 % pw)) % pw)
+                        as u64;
+                    let t = ((x1 as u128 + pw - x3 as u128) % pw) as u64;
+                    let y3 = ((mod_mul_u64(lam, t, p) as u128 + pw - y1 as u128) % pw) as u64;
                     return PtU64::Aff(x3, y3);
                 }
-                let num = (y2 + p - y1) % p;
-                let den = (x2 + p - x1) % p;
+                let num = ((y2 as u128 + pw - y1 as u128) % pw) as u64;
+                let den = ((x2 as u128 + pw - x1 as u128) % pw) as u64;
                 let inv = mod_inv_u64(den, p).expect("invertible dx");
                 let lam = mod_mul_u64(num, inv, p);
-                let x3 = (mod_mul_u64(lam, lam, p) + 2 * p - x1 - x2) % p;
-                let y3 = (mod_mul_u64(lam, (x1 + p - x3) % p, p) + p - y1) % p;
+                let x3 = ((mod_mul_u64(lam, lam, p) as u128 + 2 * pw - x1 as u128 - x2 as u128)
+                    % pw) as u64;
+                let t = ((x1 as u128 + pw - x3 as u128) % pw) as u64;
+                let y3 = ((mod_mul_u64(lam, t, p) as u128 + pw - y1 as u128) % pw) as u64;
                 PtU64::Aff(x3, y3)
             }
         }
@@ -403,16 +433,17 @@ impl CurveU64 {
     /// that annihilates two independent random points; verify uniqueness in Hasse's interval.
     fn prime_curve_order(&self) -> Option<(u64, (u64, u64))> {
         let p = self.p;
-        let hasse = (2.0 * (p as f64).sqrt()).floor() as u64;
-        let lo = (p + 1).saturating_sub(hasse);
-        let hi = p + 1 + hasse;
+        // floor(2 sqrt(p)) = isqrt(4 p), exact (the f64 form is off by one above 2^52).
+        let hasse: u128 = isqrt_u128(4 * p as u128);
+        let lo = (p as u128 + 1).saturating_sub(hasse);
+        let hi = p as u128 + 1 + hasse;
 
         let g = self.first_point(1)?;
         let g2 = self.first_point(p / 3 + 7)?;
 
-        // BSGS of width m ~ sqrt(2 * hasse + 1) <= 2 * p^(1/4) + 2 (~240 at 28 bits).
+        // BSGS of width m = ceil(sqrt(span)) ~ 2 * p^(1/4) (~2^17 at 64 bits).
         let span = hi - lo + 1;
-        let m = ((span as f64).sqrt().ceil() as u64).max(2);
+        let m = (isqrt_ceil_u128(span) as u64).max(2);
         let mut baby: HashMap<PtU64, Vec<u64>> = HashMap::with_capacity(m as usize + 2);
         let mut cur = PtU64::Inf;
         for j in 0..m {
@@ -420,20 +451,22 @@ impl CurveU64 {
             cur = self.add(cur, g);
         }
         let step = self.neg(self.mul(m, g));
-        let mut gamma = self.neg(self.mul(lo, g));
-        let n_steps = span.div_ceil(m);
+        let mut gamma = self.neg(self.mul(lo as u64, g)); // lo < p fits u64
+        let n_steps = span.div_ceil(m as u128);
         let mut prime_orders = Vec::new();
         for i in 0..=n_steps {
             if let Some(js) = baby.get(&gamma) {
                 for &j in js {
-                    let cand = lo + i * m + j;
-                    if cand >= lo
-                        && cand <= hi
-                        && is_prime_u64(cand)
-                        && self.mul(cand, g) == PtU64::Inf
-                        && self.mul(cand, g2) == PtU64::Inf
-                    {
-                        prime_orders.push(cand);
+                    let cand = lo + i * m as u128 + j as u128;
+                    // An order above u64::MAX is not representable in the result.
+                    if cand >= lo && cand <= hi && cand <= u64::MAX as u128 {
+                        let cand = cand as u64;
+                        if is_prime_u64(cand)
+                            && self.mul(cand, g) == PtU64::Inf
+                            && self.mul(cand, g2) == PtU64::Inf
+                        {
+                            prime_orders.push(cand);
+                        }
                     }
                 }
             }
@@ -444,7 +477,7 @@ impl CurveU64 {
         // For p >= 37, Hasse's interval width 4*sqrt(p) < p + 1 - 2*sqrt(p), so if both
         // points have prime order > 4*sqrt(p) (true for all prime-order curves with p >= 37),
         // the curve order is uniquely determined!
-        if prime_orders.len() == 1 && prime_orders[0] > 4 * hasse + 2 {
+        if prime_orders.len() == 1 && prime_orders[0] as u128 > 4 * hasse + 2 {
             if let PtU64::Aff(gx, gy) = g {
                 return Some((prime_orders[0], (gx, gy)));
             }
@@ -471,7 +504,8 @@ pub fn find_prime_order_curve(p: u64) -> Result<PrimeOrderCurveInstance, String>
     }
     let a = 3u64 % p;
     for b in 1..p {
-        let disc = (4 * mod_pow_u64(a, 3, p) + 27 * mod_mul_u64(b, b, p)) % p;
+        let disc = ((4 * mod_pow_u64(a, 3, p) as u128 + 27 * mod_mul_u64(b, b, p) as u128)
+            % p as u128) as u64;
         if disc == 0 {
             continue;
         }
@@ -625,6 +659,72 @@ pub fn expected_pollard_rho_ops(order: &BigInt) -> f64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// First prime p >= start whose float Hasse bound floor(2 sqrt p) differs from the exact one.
+    fn p_with_inexact_float_hasse() -> u64 {
+        let mut p = (1u64 << 53) + 1;
+        loop {
+            p += 2;
+            if is_prime_u64(p)
+                && (2.0 * (p as f64).sqrt()).floor() as u128 != isqrt_u128(4 * p as u128)
+            {
+                return p;
+            }
+        }
+    }
+
+    #[test]
+    fn exact_isqrt_matches_definition_above_2_53() {
+        for n in [
+            (1u128 << 64) - 1,
+            (1u128 << 106) + 12345,
+            4 * ((1u128 << 64) - 59),
+        ] {
+            let r = isqrt_u128(n);
+            assert!(r * r <= n && (r + 1) * (r + 1) > n);
+            let c = isqrt_ceil_u128(n);
+            assert!(c * c >= n && (c - 1) * (c - 1) < n);
+        }
+        let p = p_with_inexact_float_hasse();
+        let h = isqrt_u128(4 * p as u128);
+        assert!(h * h <= 4 * p as u128 && (h + 1) * (h + 1) > 4 * p as u128);
+    }
+
+    #[test]
+    fn curve_u64_add_no_overflow_near_2_64() {
+        let p = u64::MAX - 58; // largest 64-bit prime
+        assert!(is_prime_u64(p));
+        let (a, b) = (p - 3, 7u64);
+        let c = CurveU64 { p, a, b };
+        let g = c.first_point(1).expect("point");
+        let pw = PrimeWeierstrass::new(BigInt::from(p), BigInt::from(a), BigInt::from(b)).unwrap();
+        let (gx, gy) = match g {
+            PtU64::Aff(x, y) => (x, y),
+            PtU64::Inf => unreachable!(),
+        };
+        let g_big = EcPoint::Affine(BigInt::from(gx), BigInt::from(gy));
+        let mut ops = 0u64;
+        let mut acc_small = PtU64::Inf;
+        let mut acc_big = EcPoint::Infinity;
+        for _ in 0..40 {
+            acc_small = c.add(acc_small, g);
+            acc_big = pw.add(&acc_big, &g_big, &mut ops).unwrap();
+            let expect = match &acc_big {
+                EcPoint::Infinity => PtU64::Inf,
+                EcPoint::Affine(x, y) => PtU64::Aff(x.try_into().unwrap(), y.try_into().unwrap()),
+            };
+            assert_eq!(acc_small, expect);
+        }
+    }
+
+    #[test]
+    fn prime_order_curve_above_2_53() {
+        let p = p_with_inexact_float_hasse();
+        let inst = find_prime_order_curve(p).unwrap();
+        assert!(is_prime_u64(inst.order));
+        let diff = (inst.order as i128 - (p as i128 + 1)).unsigned_abs();
+        assert!(diff <= isqrt_u128(4 * p as u128));
+    }
 
     #[test]
     fn prime_order_curve_finder_and_pollard_rho_verify_end_to_end() {

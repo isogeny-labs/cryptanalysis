@@ -19,6 +19,7 @@ pub mod curve;
 pub mod encoding;
 pub mod factoring;
 pub mod network;
+pub mod primality;
 pub mod reduction;
 pub mod ring;
 pub mod weighted;
