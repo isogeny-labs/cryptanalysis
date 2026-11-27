@@ -9,7 +9,7 @@ use crate::reduction::{self, Certificate, Config, FactorBase};
 use crate::subgroup::SubgroupPoint;
 use crate::{integrity, invalid, overflow, Meter, Result};
 use std::cell::RefCell;
-use std::collections::{hash_map::RandomState, BTreeMap, HashSet};
+use std::collections::{hash_map::RandomState, BTreeMap, HashMap, HashSet};
 use std::hash::BuildHasher;
 
 /// Observable events, not calibrated work units or runtime measurements.
@@ -42,6 +42,9 @@ pub struct PairTable<S = RandomState> {
     bases: [FactorBase; 2],
     ordered: [Vec<Point>; 2],
     members: [HashSet<Point, S>; 2],
+    // Built only for the graph route. Values are the original global matrix
+    // columns, so equal points in different slots retain distinct vertices.
+    graph_columns: Option<[HashMap<Point, usize, S>; 2]>,
 }
 
 impl PairTable {
@@ -144,7 +147,73 @@ impl<S: BuildHasher + Clone> PairTable<S> {
             bases: [bases[0].clone(), bases[1].clone()],
             ordered: [left, right],
             members: [left_members, right_members],
+            graph_columns: None,
         })
+    }
+
+    /// Index the already validated point sets with their original slot columns.
+    /// Hash equality is full canonical point equality. Preparation is atomic:
+    /// a rejected mapping never becomes visible to graph collection.
+    pub(crate) fn prepare_graph_columns(
+        &mut self,
+        indexes: &[BTreeMap<Point, usize>],
+        meter: &mut Meter,
+    ) -> Result<()> {
+        if indexes.len() != 2 || self.graph_columns.is_some() {
+            return Err(invalid("prepared graph index configuration"));
+        }
+        let mut build = |slot: usize, offset: usize| -> Result<HashMap<Point, usize, S>> {
+            let len = self.members[slot].len();
+            if indexes[slot].len() != len {
+                return Err(integrity("prepared graph index size"));
+            }
+            meter.vector(len, "prepared graph columns")?;
+            let mut seen = Vec::new();
+            seen.try_reserve_exact(len)
+                .map_err(|_| crate::Error::Limit("prepared graph seen allocation".into()))?;
+            seen.resize(len, false);
+            let mut columns = HashMap::with_hasher(self.members[slot].hasher().clone());
+            columns
+                .try_reserve(len)
+                .map_err(|_| crate::Error::Limit("prepared graph hash allocation".into()))?;
+            meter.vector(columns.capacity(), "prepared graph hash capacity")?;
+            for (point, &column) in &indexes[slot] {
+                meter.charge(1, "prepared graph point key")?;
+                let local = column
+                    .checked_sub(offset)
+                    .filter(|&index| index < len)
+                    .ok_or_else(|| integrity("prepared graph column range"))?;
+                if !self.members[slot].contains(point) || seen[local] {
+                    return Err(integrity("prepared graph point or repeated column"));
+                }
+                seen[local] = true;
+                columns.insert(point.clone(), column);
+            }
+            Ok(columns)
+        };
+        let left = build(0, 0)?;
+        let right = build(1, left.len())?;
+        self.graph_columns = Some([left, right]);
+        Ok(())
+    }
+
+    /// Return the exact slot-tagged graph vertex for a replayed point.
+    pub(crate) fn graph_column(
+        &self,
+        slot: usize,
+        point: &Point,
+        meter: &mut Meter,
+    ) -> Result<usize> {
+        meter.charge(1, "prepared graph point lookup")?;
+        let columns = self
+            .graph_columns
+            .as_ref()
+            .and_then(|columns| columns.get(slot))
+            .ok_or_else(|| integrity("prepared graph index absent"))?;
+        columns
+            .get(point)
+            .copied()
+            .ok_or_else(|| integrity("graph witness point missing from slot base"))
     }
 
     /// Return the same first witness as the final-slot selector oracle.
@@ -488,6 +557,71 @@ mod tests {
             0
         }
         fn write(&mut self, _: &[u8]) {}
+    }
+    #[test]
+    fn graph_point_hash_preserves_slot_columns_and_rejects_bad_maps() {
+        let mut work = Meter::new(Limits::default());
+        let curve = curve(&mut work);
+        let base = bases(&curve, &mut work).remove(0);
+        let points = base.enumerate(&curve, &mut Seeded(1), &mut work).unwrap();
+        assert!(!points.is_empty());
+        let offset = points.len();
+        let left: BTreeMap<_, _> = points
+            .iter()
+            .cloned()
+            .enumerate()
+            .map(|(index, point)| (point, index))
+            .collect();
+        let right: BTreeMap<_, _> = points
+            .iter()
+            .cloned()
+            .enumerate()
+            .map(|(index, point)| (point, index + offset))
+            .collect();
+        let bases = [base.clone(), base];
+        let indexes = [left, right];
+        let mut table = PairTable::from_complete_points(
+            &curve,
+            &bases,
+            [points.clone(), points.clone()],
+            BuildHasherDefault::<ConstantHash>::default(),
+            &mut Statistics::default(),
+            &mut work,
+        )
+        .unwrap();
+        let mut bad = indexes.clone();
+        *bad[1].get_mut(&points[0]).unwrap() = 0;
+        assert!(matches!(
+            table.prepare_graph_columns(&bad, &mut work),
+            Err(Error::Integrity(_))
+        ));
+        assert!(table.graph_column(0, &points[0], &mut work).is_err());
+        table.prepare_graph_columns(&indexes, &mut work).unwrap();
+        for point in &points {
+            assert_eq!(
+                table.graph_column(0, point, &mut work).unwrap(),
+                indexes[0][point]
+            );
+            assert_eq!(
+                table.graph_column(1, point, &mut work).unwrap(),
+                indexes[1][point]
+            );
+            assert_ne!(
+                table.graph_column(0, point, &mut work).unwrap(),
+                table.graph_column(1, point, &mut work).unwrap()
+            );
+        }
+        let Point::Affine { x, y } = &points[0] else {
+            unreachable!()
+        };
+        let noncanonical = Point::Affine {
+            x: x + curve.modulus(),
+            y: y.clone(),
+        };
+        assert!(matches!(
+            table.graph_column(0, &noncanonical, &mut work),
+            Err(Error::Integrity(_))
+        ));
     }
     #[test]
     fn constant_hashes_keep_complete_answers_and_exact_point_equality() {
