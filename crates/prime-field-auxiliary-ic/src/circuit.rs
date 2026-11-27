@@ -135,6 +135,8 @@ pub struct FactorBase<const B: u32> {
     direct_steps: Vec<Option<Point>>,
 }
 
+type PairRootIndex = HashMap<Option<Point>, Vec<(SignedTerm, SignedTerm)>>;
+
 /// Caller-owned scratch avoids allocation and shared mutable kernel state.
 #[derive(Clone, Debug)]
 pub struct CandidateWorkspace {
@@ -145,7 +147,7 @@ pub struct CandidateWorkspace {
     pair_points: Vec<Option<Point>>,
     pair_steps: Vec<Option<Point>>,
     pair_meta: Vec<(usize, bool, usize, bool)>,
-    pair_roots: Option<HashMap<Option<Point>, Vec<(SignedTerm, SignedTerm)>>>,
+    pair_roots: Option<PairRootIndex>,
     batch: BatchScratch,
 }
 
@@ -1172,8 +1174,7 @@ impl<const B: u32> FactorBase<B> {
         // subtraction for every outer m=3/m=4 term of every relation query.
         // Entries retain the old canonical scan order, so certificates stay
         // deterministic.
-        let mut roots: HashMap<Option<Point>, Vec<(SignedTerm, SignedTerm)>> =
-            HashMap::with_capacity(self.points.len() * self.points.len());
+        let mut roots = PairRootIndex::with_capacity(self.points.len() * self.points.len());
         for ia in 0..self.points.len() {
             for negative_a in [false, true] {
                 if self.points[ia].y() == 0 && negative_a {
