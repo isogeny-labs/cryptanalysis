@@ -1,0 +1,145 @@
+{
+  "branch": "codex/fp-m31-local-20261127",
+  "closed_utc": "2026-11-27T17:03:51+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "suite/docs/ic/runs/fp-m31-leads-20261127/degree16/run.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-27T17:01:35+00:00",
+      "wall_s": 6.409
+    },
+    {
+      "argv": [
+        "suite/target/debug/examples/m31_relation_replay",
+        "suite/docs/ic/runs/fp-m31-leads-20261127/degree16/manifest.json"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-27T17:03:08+00:00",
+      "wall_s": 0.006
+    }
+  ],
+  "commit": "2fd6c60def42a897633b25b9f90e45d5ff5b21d5",
+  "commit_dirty": true,
+  "created_utc": "2026-11-27T17:01:03+00:00",
+  "curve_uid": null,
+  "entries": [],
+  "host": {
+    "cpu": "AMD EPYC 9V74 80-Core Processor",
+    "cpus_online": 5,
+    "hostname": "5e08c105784f",
+    "isolation": "unstated",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41"
+  },
+  "id": "20261127T1701Z-fp-m31-degree16",
+  "metrics": [
+    {
+      "baseline": null,
+      "better": "higher",
+      "n": null,
+      "name": "actual_critical_pair_cells",
+      "note": "Selected fixed-case diagnostic, not independent replication; pcc:unverified",
+      "reference": null,
+      "reference_kind": null,
+      "spread": null,
+      "unit": "count",
+      "value": 4.0
+    }
+  ],
+  "problem": "fp-m31-degree-cap-diagnostic",
+  "raw": [
+    {
+      "bytes": 7407,
+      "path": "suite/docs/ic/runs/fp-m31-leads-20261127/degree16/raw/monolithic-global.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/5c/5c9195ce183c495fc40250f8df5026921a8c37f1024218519476e4c28c75149e",
+      "sha256": "5c9195ce183c495fc40250f8df5026921a8c37f1024218519476e4c28c75149e",
+      "uploaded": false
+    },
+    {
+      "bytes": 3342,
+      "path": "suite/docs/ic/runs/fp-m31-leads-20261127/degree16/raw/monolithic-global.txt",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/bd/bd093074cfe1092fdc42d72280bf965ff5f8fb937db7652781e347577fa11301",
+      "sha256": "bd093074cfe1092fdc42d72280bf965ff5f8fb937db7652781e347577fa11301",
+      "uploaded": false
+    },
+    {
+      "bytes": 7710,
+      "path": "suite/docs/ic/runs/fp-m31-leads-20261127/degree16/raw/monolithic-staged.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/7c/7ce268fee3d9f56c1ec3edef3f6a451133074887f577cfef03567230b39e101e",
+      "sha256": "7ce268fee3d9f56c1ec3edef3f6a451133074887f577cfef03567230b39e101e",
+      "uploaded": false
+    },
+    {
+      "bytes": 3547,
+      "path": "suite/docs/ic/runs/fp-m31-leads-20261127/degree16/raw/monolithic-staged.txt",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/4a/4a0b6adb7abfecf830e1fd00e2cf5a3a05220064aef4c3a78f8246f59f881283",
+      "sha256": "4a0b6adb7abfecf830e1fd00e2cf5a3a05220064aef4c3a78f8246f59f881283",
+      "uploaded": false
+    },
+    {
+      "bytes": 7880,
+      "path": "suite/docs/ic/runs/fp-m31-leads-20261127/degree16/raw/partial-global.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/c9/c992e6ae5bb92ee8e5464f67daa7492028ef7858ae49e993092784298ea98c97",
+      "sha256": "c992e6ae5bb92ee8e5464f67daa7492028ef7858ae49e993092784298ea98c97",
+      "uploaded": false
+    },
+    {
+      "bytes": 3591,
+      "path": "suite/docs/ic/runs/fp-m31-leads-20261127/degree16/raw/partial-global.txt",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/9c/9c05d7ec44c36e1a217fb6990bd5d2a15228ebdc7ed16849f8b795b54678a5f5",
+      "sha256": "9c05d7ec44c36e1a217fb6990bd5d2a15228ebdc7ed16849f8b795b54678a5f5",
+      "uploaded": false
+    },
+    {
+      "bytes": 8499,
+      "path": "suite/docs/ic/runs/fp-m31-leads-20261127/degree16/raw/partial-staged.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/db/db78876b8625b6736bf5b4651594904789800b0e6705c5fe77fcad26eb6277df",
+      "sha256": "db78876b8625b6736bf5b4651594904789800b0e6705c5fe77fcad26eb6277df",
+      "uploaded": false
+    },
+    {
+      "bytes": 4014,
+      "path": "suite/docs/ic/runs/fp-m31-leads-20261127/degree16/raw/partial-staged.txt",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/2f/2faa937c78f601a03aff5285810e96ce52cf7a37bb76d2042d566caf2613020f",
+      "sha256": "2faa937c78f601a03aff5285810e96ce52cf7a37bb76d2042d566caf2613020f",
+      "uploaded": false
+    },
+    {
+      "bytes": 50244,
+      "path": "suite/docs/ic/runs/fp-m31-leads-20261127/degree16/manifest.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/db/db0c3a29de7aa04a01ef4ca1496598d875a64fe766f5a42ded8389889140a0ed",
+      "sha256": "db0c3a29de7aa04a01ef4ca1496598d875a64fe766f5a42ded8389889140a0ed",
+      "uploaded": false
+    },
+    {
+      "bytes": 1807,
+      "path": "suite/docs/ic/runs/fp-m31-leads-20261127/degree16/summary.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/4e/4e2b7d208bcf0508e61bc1d7e961aad6f1652c4a6a51839f2e974f9d24cbb5a8",
+      "sha256": "4e2b7d208bcf0508e61bc1d7e961aad6f1652c4a6a51839f2e974f9d24cbb5a8",
+      "uploaded": false
+    },
+    {
+      "bytes": 887,
+      "path": "suite/docs/ic/runs/fp-m31-leads-20261127/degree16/native-replay.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/1b/1b8dfeb5439737e139b5a2229b4b8b6e12aa3f188435c09dcade2103a937601c",
+      "sha256": "1b8dfeb5439737e139b5a2229b4b8b6e12aa3f188435c09dcade2103a937601c",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "suite/docs/ic/runs/fp-m31-leads-20261127/REPORT.pdf",
+    "png": [],
+    "svg": []
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "fp-m31-degree16",
+  "status": "invalid",
+  "summary": "Unqualified for performance admission: selected stage-only shared-host diagnostic. All4 native cells complete with actual F4 work and replayed witnesses; no independent replicate, cold pipeline cost or signed verdict. Original146-cell run unchanged. pcc:unverified.",
+  "validation": null
+}

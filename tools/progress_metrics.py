@@ -244,12 +244,49 @@ def main():
     a = args()
     ic_bench(a.ref, a.since)
     ic_native_walk_evidence(a.ref, a.since)
+    m31_relation_lead_evidence(a.ref, a.since)
     ecc2k130_runs(a.ref, a.since)
     readme_headline(a.ref)
     ghs_quartic_evidence(a.ref, a.since)
     hecke_d39_finite(a.ref, a.since)
     hecke_sparse_study(a.ref, a.since)
     hecke_pair_reuse(a.ref, a.since)
+
+
+def m31_relation_lead_evidence(ref, since):
+    """Local, censored component counts; never promoted timing or solve metrics."""
+    path = "benchmarks/records/20261127T1649Z-fp-m31-five-leads.json"
+    raw = show(ref, path)
+    if not raw:
+        return
+    record = json.loads(raw)
+    day = record.get("created_utc", "")[:10]
+    if (day < since or record.get("schema") != "bench.record/v1"
+            or record.get("problem") != "fp-m31-five-lead-comparison"
+            or record.get("status") != "censored"):
+        return
+    for metric in record.get("metrics", []):
+        emit("ic.m31_relation_leads.exploratory." + metric["name"], metric["value"],
+             date=day, problem=record["problem"], unit=metric["unit"],
+             better=metric.get("better", "neutral"),
+             label="M31 local component count, censored and unverified: " + metric["name"],
+             source=path)
+    supplement = "benchmarks/records/20261127T1701Z-fp-m31-degree16.json"
+    raw = show(ref, supplement)
+    if not raw:
+        return
+    record = json.loads(raw)
+    day = record.get("created_utc", "")[:10]
+    if (day < since or record.get("schema") != "bench.record/v1"
+            or record.get("problem") != "fp-m31-degree-cap-diagnostic"
+            or record.get("status") != "invalid"):
+        return
+    for metric in record.get("metrics", []):
+        emit("ic.m31_degree16.exploratory." + metric["name"], metric["value"],
+             date=day, problem=record["problem"], unit=metric["unit"],
+             better=metric.get("better", "neutral"),
+             label="M31 selected stage diagnostic; unqualified: " + metric["name"],
+             source=supplement)
 
 
 def hecke_d39_finite(ref, since):

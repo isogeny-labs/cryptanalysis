@@ -59,6 +59,25 @@ protocol exist. No such run is launched by this import PR.
 
 ## Resolution and history
 
+2026-11-27, actual five-lead follow-up: new native suite examples now
+implement monolithic S4/S5, serial/balanced/partially split systems, complete
+guarded addition constraints, mixed-lift salvage, local tree signs/x-cache,
+outside-coefficient elimination and actual partial-generation/base panels.
+The original146-cell prospective run and a separately frozen four-cell
+degree16 diagnostic are retained in the [new report](../suite/docs/ic/runs/fp-m31-leads-20261127/REPORT.md).
+Balanced, monolithic and partial methods return witnesses on all four
+planted cases under both schedules; serial and explicit addition retain
+their caps. The degree16 follow-up performs actual F4 work on all four
+selected cells; the originaldegree8 monolithic result used finite-domain
+substitution. Actual generation accepts4partials but yields0outside
+cancellations; synthetic cancellation controls remain separate. Final
+source controls pass10/10, with additional native group/oracle replay.
+These are experimental examples, not integration into ca-ic auxiliary,
+admitted performance, signed independent verification or a new IC recovery.
+Optional shorter-length dispatch is tested separately; neither frozen panel
+was rerun. The original qualification requirements remain open.
+[pcc:unverified]
+
 2026-11-27, user-authorized local M31 diagnostic: the existing native CLI
 ran 56 cells on the same curve above, with two new public synthetic targets,
 m=2,3,4, depth-7 torus/same-base direct/interval controls. All 18 planted

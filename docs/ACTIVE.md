@@ -2,7 +2,7 @@
 
 ## Active items
 
-- [ ] Implement and compare the original five relation leads over Fp p=2147483647 (Codex, resumed 2026-11-27, branch codex/fp-m31-local-20261127; PR #2002; baseline diagnostic is separate)
+- [x] Implement and compare the original five relation leads over Fp p=2147483647 (Codex, resumed 2026-11-27, branch codex/fp-m31-local-20261127; PR #2002; 146-cell local comparison plus separate 4-cell degree diagnostic; suite/docs/ic/runs/fp-m31-leads-20261127/REPORT.md; unverified producer evidence, qualification remains open)
 
 - [x] Run corrected M31 prime-field local diagnostics at p=2147483647 (Codex, started 2026-11-27, branch codex/fp-m31-local-20261127; PR #2002; report: suite/docs/ic/runs/fp-m31-local-20261127/REPORT.md; broader equation-encoding/partial-relation comparisons remain open)
 - [ ] Audit p plus one smoothness leads on public fixtures (Codex, started 2026-11-25, branch codex/p1-smoothness-leads-20261125, PR #1979) [pcc:unverified]
