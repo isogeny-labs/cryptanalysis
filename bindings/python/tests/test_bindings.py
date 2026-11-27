@@ -367,5 +367,71 @@ class NumberTheoryTests(unittest.TestCase):
             ca.is_prime(7.0)
 
 
+# Groups above 2^53 (where a float stops holding every integer) up to the
+# library's 64-bit limit; the same instances as tests/test_wide.c.  Every
+# answer is checked against Python's own big-integer arithmetic.
+WIDE_P = (1 << 64) - 3059
+WIDE_Q = (WIDE_P - 1) // 4
+WIDE_X = (1 << 62) - 904
+SMOOTH_P = 18412301237266326539  # 64-bit prime with 2^28-smooth p - 1
+EC64_P, EC64_A, EC64_B = 18446744056529682403, 5, 5
+EC64_N, EC64_Q = 18446744051100303869, 2635249150157186267  # N = 7 * Q
+
+
+class WideGroupTests(unittest.TestCase):
+    def test_zp_prime_subgroup_intervals(self):
+        with ca.Group.zp(WIDE_P, WIDE_Q) as G:
+            g = G.find_generator(seed=3)
+            self.assertEqual(pow(g.x, WIDE_Q, WIDE_P), 1)
+            h = G.mul(g, WIDE_X)
+            self.assertEqual(h.x, pow(g.x, WIDE_X, WIDE_P))
+            lo, hi = WIDE_X - (1 << 30), WIDE_Q - 1
+            opts = ca.Options(seed=7)
+            for solve in (G.bsgs, G.kangaroo, G.grumpy):
+                x, _ = solve(g, h, lo, hi, opts)
+                self.assertEqual(x, WIDE_X, solve.__name__)
+            with self.assertRaises(ca.NotFoundError):
+                G.bsgs(g, h, 1 << 51, (1 << 51) + (1 << 20), opts)
+
+    def test_zp_full_group_pohlig_hellman(self):
+        self.assertTrue(max(q for q, _ in ca.factorize(SMOOTH_P - 1)) < 1 << 28)
+        with ca.Group.zp(SMOOTH_P) as G:
+            self.assertEqual(G.order, SMOOTH_P - 1)
+            root = ca.primitive_root(SMOOTH_P)
+            for x in (SMOOTH_P - 2, (1 << 53) + 1, (1 << 63) + 12345):
+                h = G.mul(root, x)
+                self.assertEqual(h.x, pow(root, x, SMOOTH_P))
+                got, _ = G.dlog(root, h)
+                self.assertEqual(got, x)
+
+    def test_ec_64bit_curve(self):
+        self.assertEqual(ca.Group.ec_count_points(EC64_P, EC64_A, EC64_B), EC64_N)
+        self.assertEqual(ca.factorize(EC64_N), [(7, 1), (EC64_Q, 1)])
+        with ca.Group.ec(EC64_P, EC64_A, EC64_B, EC64_Q) as E:
+            E.set_order(EC64_Q, EC64_N // EC64_Q)
+            g = E.find_generator(seed=5)
+            self.assertTrue(E.validate(g))
+            self.assertEqual(E.elem_order(g), EC64_Q)
+            x = EC64_Q - 123456789
+            h = E.mul(g, x)
+            # Affine check of the curve equation with Python integers.
+            self.assertEqual(
+                (h.y * h.y - (h.x**3 + EC64_A * h.x + EC64_B)) % EC64_P, 0, "h not on the curve"
+            )
+            for solve in (E.bsgs, E.kangaroo, E.grumpy):
+                got, _ = solve(g, h, x - (1 << 30), EC64_Q - 1, ca.Options(seed=9))
+                self.assertEqual(got, x, solve.__name__)
+
+    def test_ic_above_2_50(self):
+        p = 4503599627370023  # 52-bit safe prime
+        self.assertTrue(ca.is_prime(p) and ca.is_prime((p - 1) // 2))
+        g = ca.primitive_root(p)
+        h = pow(g, (1 << 51) + 7, p)
+        x, _ = ca.ic_solve(p, g, h, ca.ICParams(seed=3))
+        self.assertEqual(pow(g, x, p), h)
+        with self.assertRaises(ca.UnsupportedError):
+            ca.ic_solve(WIDE_P, ca.primitive_root(WIDE_P), 99)
+
+
 if __name__ == "__main__":
     unittest.main()
