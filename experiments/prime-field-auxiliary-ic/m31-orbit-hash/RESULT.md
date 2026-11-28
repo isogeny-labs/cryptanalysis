@@ -81,8 +81,11 @@ call/fallback counts. Native inverse and scanner tests ran before every panel.
 
 The repeated local result supports a roughly 6–9% full-pipeline reduction
 versus this fused-scan IC control on the two frozen public bases. The table
-phase improves about 43–46%. It does not establish a rho crossover, a broad
+phase improves about 43–46%. The subsequent direct same-target cold comparison
+in `RHO_RESULT.md` measured orbit/rho wall ratios of 6.809 auxiliary and
+5.194 plain; the orbit path remains slower than that archived rho reference.
+The IC/IC gain does not establish a rho crossover, a broad
 target distribution result, x86/GPU performance, or novelty over existing
 signed-point table representations. The next decisive comparison is a
-same-target cold orbit-versus-matched-rho panel, with setup and failed attempts
-charged, followed by independent replay on a second host. [pcc:unverified]
+second-host independent replay and a method change large enough to close the
+remaining same-target gap. [pcc:unverified]
