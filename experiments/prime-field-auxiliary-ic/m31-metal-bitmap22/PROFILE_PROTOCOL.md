@@ -1,0 +1,3 @@
+# Fixed-input phase diagnosis after the 22-bit panel
+
+The frozen 15-block 20/22 comparison completed before this diagnosis and remains authoritative for its gate. Use only the archived admission Q0 `(1767503692,244402461)` and seed `2911332506172719186`, in 20-then-22 order. Add a timer around each `m31_metal_screen` FFI call and report its accumulated wall time separately from shader initialization and the full online solve. The difference between online and screen times includes Rust masked lookup, relation collection, elimination and other bookkeeping; it is not a separately isolated CPU-mask measurement. Compare certificates and work identity. This fixed-input profile diagnoses cost attribution and does not promote a new speedup claim.
