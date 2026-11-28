@@ -6,7 +6,7 @@ use std::{ffi::CString,time::{Instant,Duration}};
 struct WirePoint { x:u64, y:u64, finite:u64 }
 #[link(name="m31metal")]
 unsafe extern "C" {
-    fn m31_metal_init(points:*const WirePoint,count:i32,bits:*const u64,words:i32,bitmap_bits:i32,path:*const i8)->i32;
+    fn m31_metal_init(points:*const WirePoint,count:i32,bits:*const u64,words:i32,bitmap_bits:i32,use_coarse:i32,path:*const i8)->i32;
     fn m31_metal_screen(targets:*const WirePoint,count:i32,output:*mut u8)->i32;
 }
 fn wire(point:Option<prime_field_auxiliary_ic::Point>)->WirePoint {
@@ -23,7 +23,9 @@ fn main() {
     let qy=args.get(3).map_or(244_402_461,|x|x.parse().unwrap());
     let seed=args.get(4).map_or(2_911_332_506_172_719_186,|x|x.parse().unwrap());
     let bitmap_bits:usize=args.get(5).map_or(20,|x|x.parse().unwrap());
+    let use_coarse:i32=args.get(6).map_or(0,|x|x.parse().unwrap());
     assert!(bitmap_bits==20 || bitmap_bits==22);
+    assert!(use_coarse==0 || (use_coarse==1 && bitmap_bits==22));
     let q=c.point(qx,qy).unwrap();
     let roots:Vec<_>=(0..c.modulus()).filter(|&x| c.lift_x(x).unwrap().is_some()).take(195).collect();
     let base=FactorBase::without_maps(c,&roots).unwrap();
@@ -36,6 +38,8 @@ fn main() {
     let mut screens=0u64;
     let mut screen_ns=0u128;
     let mut positive_flags=0u64;
+    let audit_flags=std::env::var_os("M31_AUDIT_FLAGS").is_some();
+    let mut flag_digest=14_695_981_039_346_656_037u64;
     let online=Instant::now();
     let (outcome,probe)=if mode=="cpu" {
         prepared.solve_multi_indexed(4,q,&config,&index).unwrap()
@@ -46,7 +50,7 @@ fn main() {
         let path=std::env::current_dir().unwrap().join("experiments/prime-field-auxiliary-ic/m31-metal-four-sum/screen.metal");
         let path=CString::new(path.to_str().unwrap()).unwrap();
         let init=Instant::now();
-        let code=unsafe { m31_metal_init(entries.as_ptr(),entries.len() as i32,bitmap.as_ptr(),bitmap.len() as i32,bitmap_bits as i32,path.as_ptr()) };
+        let code=unsafe { m31_metal_init(entries.as_ptr(),entries.len() as i32,bitmap.as_ptr(),bitmap.len() as i32,bitmap_bits as i32,use_coarse,path.as_ptr()) };
         assert_eq!(code,0,"Metal initialization failed");
         metal_init_ns=init.elapsed().as_nanos();
         prepared.solve_multi_indexed_screened(q,&config,&index,|points| {
@@ -56,6 +60,9 @@ fn main() {
             let code=unsafe { m31_metal_screen(targets.as_ptr(),targets.len() as i32,flags.as_mut_ptr()) };
             screen_ns+=screen_started.elapsed().as_nanos();
             if code!=0 { return Err(Error::Invalid("Metal candidate dispatch")); }
+            if audit_flags {
+                for &flag in &flags { flag_digest=(flag_digest^u64::from(flag)).wrapping_mul(1_099_511_628_211); }
+            }
             screens+=1;
             positive_flags+=flags.iter().filter(|&&x|x!=0).count() as u64;
             Ok(flags)
@@ -84,5 +91,5 @@ fn main() {
         digest=(digest^weight).wrapping_mul(1_099_511_628_211);
     }
     let total_ns=started.elapsed().as_nanos();
-    println!("{{\"schema\":\"m31-metal-full-rust/v2\",\"mode\":\"{mode}\",\"bitmap_bits\":{bitmap_bits},\"Q\":[{qx},{qy}],\"seed\":{seed},\"status\":\"solved\",\"scalar\":{},\"certificate_digest\":{digest},\"queries\":{},\"relations\":{},\"rank\":{},\"generated_candidates\":{},\"lookups\":{},\"gpu_screens\":{screens},\"screen_ns\":{screen_ns},\"positive_flags\":{positive_flags},\"setup_ns\":{setup_ns},\"metal_init_ns\":{metal_init_ns},\"online_ns\":{online_ns},\"total_ns\":{total_ns}}}",certificate.scalar,stats.queries,stats.relations,stats.matrix_rank,probe.generated_candidates,probe.lookups);
+    println!("{{\"schema\":\"m31-metal-full-rust/v2\",\"mode\":\"{mode}\",\"bitmap_bits\":{bitmap_bits},\"use_coarse\":{use_coarse},\"Q\":[{qx},{qy}],\"seed\":{seed},\"status\":\"solved\",\"scalar\":{},\"certificate_digest\":{digest},\"flag_digest\":{flag_digest},\"queries\":{},\"relations\":{},\"rank\":{},\"generated_candidates\":{},\"lookups\":{},\"gpu_screens\":{screens},\"screen_ns\":{screen_ns},\"positive_flags\":{positive_flags},\"setup_ns\":{setup_ns},\"metal_init_ns\":{metal_init_ns},\"online_ns\":{online_ns},\"total_ns\":{total_ns}}}",certificate.scalar,stats.queries,stats.relations,stats.matrix_rank,probe.generated_candidates,probe.lookups);
 }
