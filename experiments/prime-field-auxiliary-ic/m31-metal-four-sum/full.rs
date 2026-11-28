@@ -25,7 +25,7 @@ fn main() {
     let bitmap_bits:usize=args.get(5).map_or(20,|x|x.parse().unwrap());
     let use_coarse:i32=args.get(6).map_or(0,|x|x.parse().unwrap());
     assert!(bitmap_bits==20 || bitmap_bits==22);
-    assert!(use_coarse==0 || ((use_coarse==1 || use_coarse==2) && bitmap_bits==22));
+    assert!(use_coarse==0 || ((1..=3).contains(&use_coarse) && bitmap_bits==22));
     let q=c.point(qx,qy).unwrap();
     let roots:Vec<_>=(0..c.modulus()).filter(|&x| c.lift_x(x).unwrap().is_some()).take(195).collect();
     let base=FactorBase::without_maps(c,&roots).unwrap();
@@ -61,17 +61,20 @@ fn main() {
             let code=unsafe { m31_metal_screen(targets.as_ptr(),targets.len() as i32,flags.as_mut_ptr()) };
             screen_ns+=screen_started.elapsed().as_nanos();
             if code!=0 { return Err(Error::Invalid("Metal candidate dispatch")); }
-            if std::env::var_os("M31_AUDIT_EXACT_X").is_some() && screens==0 && use_coarse==2 {
+            if std::env::var_os("M31_AUDIT_EXACT_X").is_some() && screens==0 && (use_coarse==2 || use_coarse==3) {
                 let present:std::collections::HashSet<_>=screen_points.iter().flatten().map(|p|p.x()).collect();
-                for (i,&outer) in screen_points.iter().enumerate() {
-                    for sign in 0..2 {
-                        let term=if sign==0 { outer.map(|p|c.negate(p)).transpose()? } else {outer};
-                        let candidate=c.add(points[0],term)?;
-                        let expected=match candidate {
-                            None=>2,
-                            Some(p)=>u8::from(present.contains(&p.x())),
-                        };
-                        assert_eq!(flags[2*i+sign],expected,"first-round exact x flag {i}/{sign}");
+                for (lane,&target) in points.iter().enumerate() {
+                    for (i,&outer) in screen_points.iter().enumerate() {
+                        for sign in 0..2 {
+                            let term=if sign==0 { outer.map(|p|c.negate(p)).transpose()? } else {outer};
+                            let candidate=c.add(target,term)?;
+                            let expected=match candidate {
+                                None=>2,
+                                Some(p)=>u8::from(present.contains(&p.x())),
+                            };
+                            assert_eq!(flags[2*(lane*entries.len()+i)+sign],expected,
+                                "first-round exact x flag {lane}/{i}/{sign}");
+                        }
                     }
                 }
             }
