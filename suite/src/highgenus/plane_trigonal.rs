@@ -34,6 +34,8 @@ pub struct TrigonalPlaneChart {
 #[derive(Clone, Debug, Default)]
 pub struct AffineLineScan {
     pub scanned: usize,
+    /// Lines whose zero divisors were accepted at the collector's degree bound.
+    /// For the rational collector these are completely split lines.
     pub split: usize,
     pub relations: Vec<Relation>,
 }
@@ -724,6 +726,59 @@ impl TrigonalPlaneChart {
         }
         result
     }
+
+    /// Scan at most `max_lines` affine lines in lexicographic order and
+    /// retain distinct nonzero homogeneous rows with ordinary place degrees
+    /// at most three. Genus four uses separate horizontal and nonhorizontal
+    /// pole families. `split` counts lines accepted at the degree-three
+    /// bound, including lines with quadratic or cubic zero places.
+    pub fn collect_affine_line_relations_degree_three(
+        &self,
+        curve: &SuperellipticCurve,
+        factor_base: &FactorBase<Ideal>,
+        max_lines: usize,
+        rng: &mut impl RngCore,
+    ) -> AffineLineScan {
+        let mut result = AffineLineScan::default();
+        if factor_base.bound < 3 || !self.matches_curve(curve) {
+            return result;
+        }
+        let mut anchors: [Option<(u64, u64)>; 2] = [None, None];
+        let mut seen = HashSet::new();
+        let p = self.field.p();
+        for slope in 0..p {
+            for intercept in 0..p {
+                if result.scanned == max_lines {
+                    return result;
+                }
+                result.scanned += 1;
+                if self
+                    .affine_line_divisor_degree_three(curve, slope, intercept, rng)
+                    .is_none()
+                {
+                    continue;
+                }
+                result.split += 1;
+                let family = usize::from(self.genus == 4 && slope != 0);
+                let Some(anchor) = anchors[family] else {
+                    anchors[family] = Some((slope, intercept));
+                    continue;
+                };
+                if let Some(row) = self.affine_line_relation_degree_three(
+                    curve,
+                    factor_base,
+                    anchor,
+                    (slope, intercept),
+                    rng,
+                ) {
+                    if !row.coeffs.is_empty() && seen.insert(row.coeffs.clone()) {
+                        result.relations.push(row);
+                    }
+                }
+            }
+        }
+        result
+    }
 }
 
 #[cfg(test)]
@@ -1284,6 +1339,62 @@ mod tests {
     }
 
     #[test]
+    fn collected_cubic_line_rows_feed_a_genus_five_dlp() {
+        let field = Fp::new(7).unwrap();
+        let curve = SuperellipticCurve::new(
+            field,
+            3,
+            vec![
+                (Poly::from_coeffs(vec![4, 3, 6, 0, 5, 1], &field), 1),
+                (Poly::from_coeffs(vec![4, 1], &field), 2),
+            ],
+        )
+        .unwrap();
+        assert_eq!(curve.genus, 5);
+        let chart = TrigonalPlaneChart::new(&curve).unwrap();
+        let mut rng = StdRng::seed_from_u64(0x2026_577);
+        let base = build_factor_base(&curve, 3, &mut rng).unwrap();
+        let scan = chart.collect_affine_line_relations_degree_three(&curve, &base, 49, &mut rng);
+        assert_eq!(scan.scanned, 49);
+        assert!(!scan.relations.is_empty());
+        assert!(scan.relations.iter().any(|row| {
+            row.coeffs
+                .iter()
+                .any(|&(index, coefficient)| coefficient != 0 && base.places[index].degree == 3)
+        }));
+        let n = BigUint::from(577u64);
+        let mut d1 = curve.identity();
+        for _ in 0..64 {
+            d1 = curve.scalar_mul(&BigUint::from(144u64), &curve.random_element(2, &mut rng));
+            if !curve.is_identity(&d1) {
+                break;
+            }
+        }
+        assert!(!curve.is_identity(&d1));
+        assert!(curve.is_identity(&curve.scalar_mul(&n, &d1)));
+        let target = curve.scalar_mul(&BigUint::from(36u64), &d1);
+        let params = IcParams {
+            extra_relations: 8,
+            max_trials: 100_000,
+            seed: 20261128,
+            ..Default::default()
+        };
+        let report = index_calculus_dlp_with_seed_relations(
+            &curve,
+            &base,
+            &d1,
+            &target,
+            &n,
+            &scan.relations,
+            &params,
+        )
+        .unwrap();
+        assert_eq!(report.k, BigUint::from(36u64));
+        assert_eq!(curve.scalar_mul(&report.k, &d1), target);
+        assert!(report.relations >= scan.relations.len());
+    }
+
+    #[test]
     fn vertical_ramified_fibers_give_verified_rows() {
         let field = Fp::new(17).unwrap();
         let mut rng = StdRng::seed_from_u64(0x2026_11ab);
@@ -1679,6 +1790,79 @@ mod tests {
     fn cubic_affine_line_rows_replay_in_genus_four_and_five() {
         check_cubic_affine_line_row(5, &[0, 1, 2], &[3, 4], 0x2026_11c3);
         check_cubic_affine_line_row(7, &[0, 1, 2, 3, 5], &[6], 0x2026_11c5);
+    }
+
+    fn check_cubic_line_collector(p: u64, roots1: &[u64], roots2: &[u64], seed: u64) {
+        let field = Fp::new(p).unwrap();
+        let mut rng = StdRng::seed_from_u64(seed);
+        let curve = SuperellipticCurve::new(
+            field,
+            3,
+            vec![
+                (split_poly(&field, roots1), 1),
+                (split_poly(&field, roots2), 2),
+            ],
+        )
+        .unwrap();
+        let chart = TrigonalPlaneChart::new(&curve).unwrap();
+        let degree_two = build_factor_base(&curve, 2, &mut rng).unwrap();
+        let degree_three = build_factor_base(&curve, 3, &mut rng).unwrap();
+        let empty =
+            chart.collect_affine_line_relations_degree_three(&curve, &degree_three, 0, &mut rng);
+        assert_eq!(empty.scanned, 0);
+        assert!(empty.relations.is_empty());
+        let wrong_bound = chart.collect_affine_line_relations_degree_three(
+            &curve,
+            &degree_two,
+            (p * p) as usize,
+            &mut rng,
+        );
+        assert_eq!(wrong_bound.scanned, 0);
+        assert!(wrong_bound.relations.is_empty());
+        let scan = chart.collect_affine_line_relations_degree_three(
+            &curve,
+            &degree_three,
+            (p * p) as usize,
+            &mut rng,
+        );
+        assert_eq!(scan.scanned, (p * p) as usize);
+        assert!(scan.split >= 2);
+        assert!(!scan.relations.is_empty());
+        assert!(scan.relations.iter().any(|row| {
+            row.coeffs.iter().any(|&(index, coefficient)| {
+                coefficient != 0 && degree_three.places[index].degree == 3
+            })
+        }));
+        let mut unique = HashSet::new();
+        for row in &scan.relations {
+            assert!(unique.insert(row.coeffs.clone()));
+            assert!(!row.coeffs.is_empty());
+            assert!(row.alpha.is_zero() && row.beta.is_zero());
+            let replay = row
+                .coeffs
+                .iter()
+                .fold(curve.identity(), |sum, &(index, coefficient)| {
+                    let term = curve.scalar_mul(
+                        &BigUint::from(coefficient.unsigned_abs()),
+                        &degree_three.places[index].elem,
+                    );
+                    curve.add(
+                        &sum,
+                        &if coefficient < 0 {
+                            curve.neg(&term)
+                        } else {
+                            term
+                        },
+                    )
+                });
+            assert!(curve.is_identity(&replay));
+        }
+    }
+
+    #[test]
+    fn bounded_cubic_affine_line_collector_replays_in_genus_four_and_five() {
+        check_cubic_line_collector(5, &[0, 1, 2], &[3, 4], 0x2026_11c4);
+        check_cubic_line_collector(7, &[0, 1, 2, 3, 5], &[6], 0x2026_11c6);
     }
 
     fn check_ordinary_cubic_target(p: u64, roots1: &[u64], roots2: &[u64], seed: u64) {
