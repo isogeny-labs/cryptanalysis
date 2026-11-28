@@ -61,13 +61,23 @@ fn main() {
     verify_multi_certificate(&base,&certificate).unwrap();
     assert_eq!(c.mul(Some(g),certificate.scalar).unwrap(),Some(q));
     let mut digest=14_695_981_039_346_656_037u64;
+    for word in [certificate.summands as u64,certificate.order,
+                 certificate.generator.x(),certificate.generator.y(),
+                 certificate.target.x(),certificate.target.y(),certificate.scalar,
+                 certificate.relations.len() as u64,certificate.weights.len() as u64] {
+        digest=(digest^word).wrapping_mul(1_099_511_628_211);
+    }
     for row in &certificate.relations {
         for word in [row.a,row.b] { digest=(digest^word).wrapping_mul(1_099_511_628_211); }
+        digest=(digest^(row.decomposition.summands().len() as u64)).wrapping_mul(1_099_511_628_211);
         for term in row.decomposition.summands() {
             digest=(digest^(term.index as u64)).wrapping_mul(1_099_511_628_211);
             digest=(digest^u64::from(term.negative)).wrapping_mul(1_099_511_628_211);
         }
     }
+    for &weight in &certificate.weights {
+        digest=(digest^weight).wrapping_mul(1_099_511_628_211);
+    }
     let total_ns=started.elapsed().as_nanos();
-    println!("{{\"schema\":\"m31-metal-full-rust/v1\",\"mode\":\"{mode}\",\"Q\":[{qx},{qy}],\"seed\":{seed},\"status\":\"solved\",\"scalar\":{},\"certificate_digest\":{digest},\"queries\":{},\"relations\":{},\"rank\":{},\"generated_candidates\":{},\"lookups\":{},\"gpu_screens\":{screens},\"positive_flags\":{positive_flags},\"setup_ns\":{setup_ns},\"metal_init_ns\":{metal_init_ns},\"online_ns\":{online_ns},\"total_ns\":{total_ns}}}",certificate.scalar,stats.queries,stats.relations,stats.matrix_rank,probe.generated_candidates,probe.lookups);
+    println!("{{\"schema\":\"m31-metal-full-rust/v2\",\"mode\":\"{mode}\",\"Q\":[{qx},{qy}],\"seed\":{seed},\"status\":\"solved\",\"scalar\":{},\"certificate_digest\":{digest},\"queries\":{},\"relations\":{},\"rank\":{},\"generated_candidates\":{},\"lookups\":{},\"gpu_screens\":{screens},\"positive_flags\":{positive_flags},\"setup_ns\":{setup_ns},\"metal_init_ns\":{metal_init_ns},\"online_ns\":{online_ns},\"total_ns\":{total_ns}}}",certificate.scalar,stats.queries,stats.relations,stats.matrix_rank,probe.generated_candidates,probe.lookups);
 }
