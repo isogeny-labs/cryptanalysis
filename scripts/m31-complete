@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Recover, save the complete dependency without overwriting a file, and replay it.
+set -euo pipefail
+if [[ ${1:-} == --help || ${1:-} == -h ]]; then
+  echo 'Usage: scripts/m31-complete QX QY --out NEW_REPORT.json [worker options]'
+  echo 'Recovers from public coordinates, saves the full certificate, then checks it.'
+  echo 'Exit: 0 checked recovery; 1 incomplete/rejected; 2 usage/input error.'
+  exit 0
+fi
+if [[ $# -lt 4 || $3 != --out || -z $4 ]]; then
+  echo 'Usage: scripts/m31-complete QX QY --out NEW_REPORT.json [worker options]' >&2
+  exit 2
+fi
+repo_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+qx=$1
+qy=$2
+output=$4
+shift 4
+if [[ -e $output || -L $output ]]; then
+  echo "m31-complete: refusing to overwrite $output" >&2
+  exit 2
+fi
+report_tmp=$(mktemp "${output}.tmp.XXXXXX")
+trap 'rm -f -- "$report_tmp"' EXIT
+status=0
+"$repo_dir/scripts/m31-fast" "$qx" "$qy" "$@" > "$report_tmp" || status=$?
+if [[ $status -gt 1 || ! -s $report_tmp ]]; then
+  exit "$status"
+fi
+# Same-directory hard link publishes atomically and refuses an existing destination.
+ln -- "$report_tmp" "$output"
+if [[ $status -ne 0 ]]; then
+  echo "m31-complete: bounded incomplete report retained at $output" >&2
+  exit "$status"
+fi
+"$repo_dir/scripts/m31-verify" "$output" --qx "$qx" --qy "$qy"

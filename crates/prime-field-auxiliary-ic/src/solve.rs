@@ -2,8 +2,8 @@ use crate::field::{add_mod, is_prime, mul_mod, sub_mod};
 use crate::graph::{GainGraph, SparseSystem};
 use crate::phases::{Phase, Profiler, Recorder};
 use crate::{
-    Backend, BatchScratch, Error, FactorBase, MultiSignedRelation, Point, Result, SearchPhases,
-    SignedRelation,
+    Backend, BatchScratch, Error, FactorBase, MultiSignedRelation, PairIndex, PairIndexStats,
+    Point, Result, SearchPhases, SignedRelation,
 };
 use std::collections::BTreeSet;
 use std::time::{Duration, Instant};
@@ -369,6 +369,59 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
         let outcome = self.search_multi(summands, target, config, false, &mut recorder)?;
         Ok((outcome, recorder.finish()))
     }
+    /// End-to-end recovery with a target-independent signed pair index.
+    /// Setup of `index` is external and must be charged by the caller.
+    /// The original sampler, sparse elimination and complete certificate
+    /// verification are shared with the direct/algebraic search.
+    pub fn solve_multi_indexed(
+        &self,
+        summands: u8,
+        target: Point,
+        config: &Config,
+        index: &PairIndex<B>,
+    ) -> Result<(MultiSolveOutcome, PairIndexStats)> {
+        if !index.matches(self.base) {
+            return Err(Error::Invalid("pair index does not match solver base"));
+        }
+        let mut workspace = index.workspace();
+        let outcome = self.search_multi_with(
+            summands,
+            target,
+            config,
+            false,
+            &mut (),
+            Backend::Scalar,
+            false,
+            |m, q| index.decompose(m, q, &mut workspace),
+        )?;
+        Ok((outcome, workspace.stats().clone()))
+    }
+    /// Indexed recovery with exclusive native search phases. These phases
+    /// include instrumentation overhead and are for diagnosis, not speed claims.
+    pub fn solve_multi_indexed_profiled(
+        &self,
+        summands: u8,
+        target: Point,
+        config: &Config,
+        index: &PairIndex<B>,
+    ) -> Result<(MultiSolveOutcome, PairIndexStats, SearchPhases)> {
+        if !index.matches(self.base) {
+            return Err(Error::Invalid("pair index does not match solver base"));
+        }
+        let mut workspace = index.workspace();
+        let mut recorder = Recorder::start();
+        let outcome = self.search_multi_with(
+            summands,
+            target,
+            config,
+            false,
+            &mut recorder,
+            Backend::Scalar,
+            false,
+            |m, q| index.decompose(m, q, &mut workspace),
+        )?;
+        Ok((outcome, workspace.stats().clone(), recorder.finish()))
+    }
     /// Measure `2..=4`-summand relation counts on an identical public query prefix.
     pub fn relation_yield_multi(
         &self,
@@ -408,6 +461,37 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
         yield_only: bool,
         profiler: &mut P,
     ) -> Result<MultiSolveOutcome> {
+        let mut workspace = self.base.workspace();
+        self.search_multi_with(
+            summands,
+            target,
+            config,
+            yield_only,
+            profiler,
+            if summands == 2 {
+                self.base.backend()
+            } else {
+                Backend::Scalar
+            },
+            summands == 2 && self.base.uses_circuit(),
+            |m, q| self.base.decompose_multi_inner(m, q, &mut workspace),
+        )
+    }
+    #[allow(clippy::too_many_arguments)]
+    fn search_multi_with<
+        P: Profiler,
+        D: FnMut(u8, Point) -> Result<Option<MultiSignedRelation>>,
+    >(
+        &self,
+        summands: u8,
+        target: Point,
+        config: &Config,
+        yield_only: bool,
+        profiler: &mut P,
+        backend: Backend,
+        circuit_oracle: bool,
+        mut decompose: D,
+    ) -> Result<MultiSolveOutcome> {
         if !(2..=4).contains(&summands) {
             return Err(Error::Invalid("summand count must be 2, 3, or 4"));
         }
@@ -427,7 +511,7 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
                 .is_some_and(|(start, limit)| start.elapsed() >= limit)
         };
         let mut stats = SearchStats {
-            backend: self.base.backend(),
+            backend,
             ..SearchStats::default()
         };
         if config.max_queries == 0 {
@@ -480,7 +564,6 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
         let mut relations = Vec::new();
         let mut seen = BTreeSet::new();
         let mut batch = BatchScratch::default();
-        let mut workspace = self.base.workspace();
         profiler.enter(Phase::Bookkeeping);
         while stats.queries < config.max_queries {
             if expired() {
@@ -512,11 +595,9 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
                 let Some(query) = points[i] else {
                     continue;
                 };
-                stats.circuit_queries += u64::from(self.base.uses_circuit());
+                stats.circuit_queries += u64::from(circuit_oracle);
                 profiler.enter(Phase::Decomposition);
-                let decomposition =
-                    self.base
-                        .decompose_multi_inner(summands, query, &mut workspace)?;
+                let decomposition = decompose(summands, query)?;
                 profiler.enter(Phase::Bookkeeping);
                 let Some(decomposition) = decomposition else {
                     continue;

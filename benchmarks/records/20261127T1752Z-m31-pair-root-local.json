@@ -1,0 +1,137 @@
+{
+  "branch": "codex/m31-e2e-20261127",
+  "closed_utc": "2026-11-27T18:01:30+00:00",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "suite/docs/ic/runs/fp-m31-pair-roots-20261127/run.py",
+        "/workspace/cryptanalysis-baseline/crates/prime-field-auxiliary-ic/target/release/examples/m31_pair_root_bench",
+        "/workspace/isogeny-workspace/repos/cryptanalysis/crates/prime-field-auxiliary-ic/target/release/examples/m31_pair_root_bench",
+        "suite/docs/ic/runs/fp-m31-pair-roots-20261127/raw/panel.json"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-27T17:53:56+00:00",
+      "wall_s": 292.368
+    },
+    {
+      "argv": [
+        "python3",
+        "suite/docs/ic/runs/fp-m31-pair-roots-20261127/run_aa.py",
+        "/workspace/isogeny-workspace/repos/cryptanalysis/crates/prime-field-auxiliary-ic/target/release/examples/m31_pair_root_bench",
+        "suite/docs/ic/runs/fp-m31-pair-roots-20261127/raw/aa.json"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "started_utc": "2026-11-27T17:59:56+00:00",
+      "wall_s": 29.882
+    }
+  ],
+  "commit": "82a2f42a49a0458a58969b5d3b62d832aae73b57",
+  "commit_dirty": true,
+  "created_utc": "2026-11-27T17:52:56+00:00",
+  "curve_uid": "EC1P31C2B14N2147505293",
+  "entries": [
+    "suite/docs/ic/runs/fp-m31-pair-roots-20261127"
+  ],
+  "host": {
+    "cpu": "AMD EPYC 9V74 80-Core Processor",
+    "cpus_online": 5,
+    "hostname": "806e3029ac1d",
+    "isolation": "unstated",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41"
+  },
+  "id": "20261127T1752Z-m31-pair-root-local",
+  "metrics": [
+    {
+      "baseline": 0.698518365,
+      "better": "lower",
+      "n": 4,
+      "name": "m31_q0_m3_cold_wall",
+      "note": "producer-local; exact row parity; zero relations in this prefix",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.031911646,
+        0.037587109
+      ],
+      "unit": "wall_s",
+      "value": 0.0360002435
+    },
+    {
+      "baseline": 33.91685756,
+      "better": "lower",
+      "n": 4,
+      "name": "m31_q0_m4_cold_wall",
+      "note": "producer-local; 27 identical relations and digest",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.760548447,
+        1.884987421
+      ],
+      "unit": "wall_s",
+      "value": 1.7775180505
+    },
+    {
+      "baseline": 0.7246190185,
+      "better": "lower",
+      "n": 4,
+      "name": "m31_q1_m3_cold_wall",
+      "note": "producer-local; exact row parity; zero relations in this prefix",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        0.031330648,
+        0.061987788
+      ],
+      "unit": "wall_s",
+      "value": 0.0402512755
+    },
+    {
+      "baseline": 34.0867282395,
+      "better": "lower",
+      "n": 4,
+      "name": "m31_q1_m4_cold_wall",
+      "note": "producer-local; 26 identical relations and digest",
+      "reference": null,
+      "reference_kind": null,
+      "spread": [
+        1.757947004,
+        1.839715413
+      ],
+      "unit": "wall_s",
+      "value": 1.807527621
+    }
+  ],
+  "problem": "ic:m31-pair-root-index",
+  "raw": [
+    {
+      "bytes": 34859,
+      "path": "suite/docs/ic/runs/fp-m31-pair-roots-20261127/raw/panel.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/18/1844af5f9a6451ba06a6075d8d1be9a4b3cd5b8cc5cb543ec434fe81687dd8d8",
+      "sha256": "1844af5f9a6451ba06a6075d8d1be9a4b3cd5b8cc5cb543ec434fe81687dd8d8",
+      "uploaded": false
+    },
+    {
+      "bytes": 32297,
+      "path": "suite/docs/ic/runs/fp-m31-pair-roots-20261127/raw/aa.json",
+      "s3_uri": "s3://setec-astronomy-artifacts/store/sha256/2e/2e26a7a5f093fcd0c2a7eb63a9dad483f4938e8dff3507002341e1f94412ed91",
+      "sha256": "2e26a7a5f093fcd0c2a7eb63a9dad483f4938e8dff3507002341e1f94412ed91",
+      "uploaded": false
+    }
+  ],
+  "repo": "cryptanalysis",
+  "reports": {
+    "pdf": "suite/docs/ic/runs/fp-m31-pair-roots-20261127/RESULTS.pdf",
+    "png": [],
+    "svg": []
+  },
+  "schema": "bench.record/v1",
+  "session": null,
+  "slug": "m31-pair-root-local",
+  "status": "measured",
+  "summary": "Producer-local M31 pair-root stage: exact row parity and 18.00x-19.40x paired median cold reduction; not independently admitted or end-to-end.",
+  "validation": "suite/docs/ic/runs/fp-m31-pair-roots-20261127/VALIDATION.json"
+}
