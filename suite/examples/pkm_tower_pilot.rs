@@ -1216,17 +1216,20 @@ fn system(
     let n = m * t + (m - 2);
     let mut eqs = summation(tower, curve, m, n, target.x_r);
     if control == Control::Null {
-        // S₃'s support, random coefficients, planted zero.
-        assert_eq!(m, 2);
-        let mut f = Pol::zero(n);
-        for e in eqs[0].terms.keys() {
-            f.terms.insert(e.clone(), rng.gen_range(1..p));
+        // Each S₃ of the summation part (one at m = 2, the m − 1 links of
+        // the chain at m ≥ 3): same support, random coefficients, planted
+        // zero kept.
+        for eq in eqs.iter_mut() {
+            let mut f = Pol::zero(n);
+            for e in eq.terms.keys() {
+                f.terms.insert(e.clone(), rng.gen_range(1..p));
+            }
+            if let Some(sol) = &target.solution {
+                let c = f.eval(sol, p);
+                f = f.sub(&Pol::constant(n, c, p), p);
+            }
+            *eq = f;
         }
-        if let Some(sol) = &target.solution {
-            let c = f.eval(sol, p);
-            f = f.sub(&Pol::constant(n, c, p), p);
-        }
-        eqs[0] = f;
     }
     let towers_from = eqs.len();
     for i in 0..m {
@@ -2409,7 +2412,7 @@ fn main() {
                 .copied()
                 .filter(|c| match c {
                     Control::Tower => true,
-                    Control::Null => m == 2,
+                    Control::Null => m >= 2,
                     Control::Naive => m == 2 && kind == Kind::Kummer,
                     Control::Ladder => false,
                     Control::Sym => m >= 2,
