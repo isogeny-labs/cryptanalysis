@@ -328,11 +328,11 @@ impl TrigonalPlaneChart {
         })
     }
 
-    /// Direct target descent when a normalized target ideal has only
-    /// degree-one support. Each support place is checked against the plane
-    /// chart (including ramified `f2` fibers), mapped to the supplied factor
-    /// base, and replayed in the source Jacobian. No target scalar is used.
-    /// A target with higher-degree support needs a separate descent step.
+    /// Direct target descent when a normalized target ideal has only places
+    /// of degree at most the supplied factor-base bound (one or two). Each
+    /// place is checked against the plane chart, mapped to the factor base,
+    /// and replayed in the source Jacobian. No target scalar is used.
+    /// Support above degree two needs a separate descent step.
     pub fn direct_target_relation(
         &self,
         curve: &SuperellipticCurve,
@@ -340,30 +340,61 @@ impl TrigonalPlaneChart {
         target: &Ideal,
         rng: &mut impl RngCore,
     ) -> Option<Relation> {
-        if !self.matches_curve(curve) || !curve.is_canonical(target) || factor_base.bound != 1 {
+        if !self.matches_curve(curve)
+            || !curve.is_canonical(target)
+            || !(1..=2).contains(&factor_base.bound)
+        {
             return None;
         }
-        let support = curve.decompose(target, 1, rng)?;
+        let support = curve.decompose(target, factor_base.bound, rng)?;
         let mut coefficients = BTreeMap::<usize, i64>::new();
         let mut replay = curve.identity();
         for (key, multiplicity) in support {
-            if key.pi.degree() != Some(1) {
+            let degree = key.pi.degree()?;
+            if degree == 0 || degree > factor_base.bound {
                 return None;
             }
-            let x = self.field.neg(*key.pi.c.first()?);
-            let source = if self.f2.eval(x, &self.field) == 0 {
-                if !key.r.is_zero() {
-                    return None;
+            let source = if degree == 1 {
+                let x = self.field.neg(*key.pi.c.first()?);
+                if self.f2.eval(x, &self.field) == 0 {
+                    if !key.r.is_zero() {
+                        return None;
+                    }
+                    let fiber = self.vertical_divisor(curve, x, rng)?;
+                    if fiber.len() != 1 || fiber[0].1 != 3 {
+                        return None;
+                    }
+                    fiber[0].0.clone()
+                } else {
+                    let y = *key.r.c.first().unwrap_or(&0);
+                    let u = self.plane_u(x, y)?;
+                    self.source_place(curve, x, u, rng)?
                 }
-                let fiber = self.vertical_divisor(curve, x, rng)?;
-                if fiber.len() != 1 || fiber[0].1 != 3 {
-                    return None;
-                }
-                fiber[0].0.clone()
             } else {
-                let y = *key.r.c.first().unwrap_or(&0);
-                let u = self.plane_u(x, y)?;
-                self.source_place(curve, x, u, rng)?
+                let k = &self.field;
+                let f2 = self.f2.rem(&key.pi, k);
+                if f2.is_zero() {
+                    // An irreducible quadratic f2 gives one ramified
+                    // normalized place, absent from the affine chart.
+                    if !key.r.is_zero() {
+                        return None;
+                    }
+                } else {
+                    let u = Poly::mulmod(&key.r, &f2.inv_mod(&key.pi, k)?, &key.pi, k);
+                    let cube = Poly::mulmod(&Poly::mulmod(&u, &u, &key.pi, k), &u, &key.pi, k);
+                    if !Poly::mulmod(&f2, &cube, &key.pi, k)
+                        .sub(&self.f1, k)
+                        .rem(&key.pi, k)
+                        .is_zero()
+                    {
+                        return None;
+                    }
+                }
+                let place = curve
+                    .places_above(&key.pi, rng)
+                    .into_iter()
+                    .find(|(_, residue)| *residue == key.r)?;
+                curve.canonical(&place.0)
             };
             let column = *factor_base.index.get(&key)?;
             if factor_base.places.get(column)?.elem != source {
@@ -1067,5 +1098,72 @@ mod tests {
                 });
             assert_eq!(replay, target);
         }
+    }
+
+    #[test]
+    fn degree_two_target_support_is_certified_in_the_plane_chart() {
+        let field = Fp::new(11).unwrap();
+        let mut rng = StdRng::seed_from_u64(0x2026_112a);
+        let f2 = Poly::from_coeffs(vec![1, 0, 1], &field);
+        assert_eq!(f2.degree(), Some(2));
+        let curve = SuperellipticCurve::new(
+            field,
+            3,
+            vec![(split_poly(&field, &[0, 1, 2]), 1), (f2.clone(), 2)],
+        )
+        .unwrap();
+        let chart = TrigonalPlaneChart::new(&curve).unwrap();
+        let degree_one = build_factor_base(&curve, 1, &mut rng).unwrap();
+        let degree_two = build_factor_base(&curve, 2, &mut rng).unwrap();
+        let replay = |target: &Ideal, row: &Relation| {
+            assert_eq!(row.beta, BigUint::from(1u32));
+            let mut sum = curve.identity();
+            for &(i, coefficient) in &row.coeffs {
+                assert!(coefficient > 0);
+                for _ in 0..coefficient {
+                    sum = curve.add(&sum, &degree_two.places[i].elem);
+                }
+            }
+            assert_eq!(&sum, target);
+        };
+
+        let ramified = curve.places_above(&f2, &mut rng);
+        assert_eq!(ramified.len(), 1);
+        assert!(ramified[0].1.is_zero());
+        let exceptional = curve.canonical(&ramified[0].0);
+        assert!(chart
+            .direct_target_relation(&curve, &degree_one, &exceptional, &mut rng)
+            .is_none());
+        let exceptional_row = chart
+            .direct_target_relation(&curve, &degree_two, &exceptional, &mut rng)
+            .unwrap();
+        replay(&exceptional, &exceptional_row);
+
+        let mut ordinary = None;
+        for pi in Poly::all_monic_irreducibles(2, &field) {
+            if f2.rem(&pi, &field).is_zero() {
+                continue;
+            }
+            for (place, _) in curve.places_above(&pi, &mut rng) {
+                let target = curve.canonical(&place);
+                if chart
+                    .direct_target_relation(&curve, &degree_one, &target, &mut rng)
+                    .is_some()
+                {
+                    continue;
+                }
+                if let Some(row) =
+                    chart.direct_target_relation(&curve, &degree_two, &target, &mut rng)
+                {
+                    ordinary = Some((target, row));
+                    break;
+                }
+            }
+            if ordinary.is_some() {
+                break;
+            }
+        }
+        let (target, row) = ordinary.expect("no ordinary degree-two target place");
+        replay(&target, &row);
     }
 }
