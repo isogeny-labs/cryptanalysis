@@ -152,9 +152,10 @@ impl TrigonalPlaneChart {
         u_order.max(if slope % self.field.p() == 0 { 0 } else { 3 })
     }
 
-    /// The affine `u` coordinate of an ordinary quadratic normalized place.
-    fn quadratic_plane_u(&self, pi: &Poly, y: &Poly) -> Option<Poly> {
-        if pi.degree() != Some(2) {
+    /// The affine `u` coordinate of an ordinary degree-two or degree-three
+    /// normalized place, checked against the plane equation modulo `pi`.
+    fn ordinary_plane_u(&self, pi: &Poly, y: &Poly) -> Option<Poly> {
+        if !(2..=3).contains(&pi.degree()?) {
             return None;
         }
         let k = &self.field;
@@ -166,6 +167,13 @@ impl TrigonalPlaneChart {
             .rem(pi, k)
             .is_zero()
             .then_some(u)
+    }
+
+    fn quadratic_plane_u(&self, pi: &Poly, y: &Poly) -> Option<Poly> {
+        if pi.degree() != Some(2) {
+            return None;
+        }
+        self.ordinary_plane_u(pi, y)
     }
 
     /// Zeros of the affine line function `u−slope*x−intercept` on the
@@ -425,10 +433,10 @@ impl TrigonalPlaneChart {
     }
 
     /// Direct target descent when a normalized target ideal has only places
-    /// of degree at most the supplied factor-base bound (one or two). Each
+    /// of degree at most the supplied factor-base bound (one to three). Each
     /// place is checked against the plane chart, mapped to the factor base,
     /// and replayed in the source Jacobian. No target scalar is used.
-    /// Support above degree two needs a separate descent step.
+    /// Support above degree three needs a separate descent step.
     pub fn direct_target_relation(
         &self,
         curve: &SuperellipticCurve,
@@ -438,7 +446,7 @@ impl TrigonalPlaneChart {
     ) -> Option<Relation> {
         if !self.matches_curve(curve)
             || !curve.is_canonical(target)
-            || !(1..=2).contains(&factor_base.bound)
+            || !(1..=3).contains(&factor_base.bound)
         {
             return None;
         }
@@ -476,7 +484,7 @@ impl TrigonalPlaneChart {
                         return None;
                     }
                 } else {
-                    self.quadratic_plane_u(&key.pi, &key.r)?;
+                    self.ordinary_plane_u(&key.pi, &key.r)?;
                 }
                 let place = curve
                     .places_above(&key.pi, rng)
@@ -1445,6 +1453,66 @@ mod tests {
         }
         let (target, row) = ordinary.expect("no ordinary degree-two target place");
         replay(&target, &row);
+    }
+
+    fn check_ordinary_cubic_target(p: u64, roots1: &[u64], roots2: &[u64], seed: u64) {
+        let field = Fp::new(p).unwrap();
+        let mut rng = StdRng::seed_from_u64(seed);
+        let curve = SuperellipticCurve::new(
+            field,
+            3,
+            vec![
+                (split_poly(&field, roots1), 1),
+                (split_poly(&field, roots2), 2),
+            ],
+        )
+        .unwrap();
+        let chart = TrigonalPlaneChart::new(&curve).unwrap();
+        let degree_two = build_factor_base(&curve, 2, &mut rng).unwrap();
+        let degree_three = build_factor_base(&curve, 3, &mut rng).unwrap();
+        let mut found = None;
+        'places: for pi in Poly::all_monic_irreducibles(3, &field) {
+            for (place, _) in curve.places_above(&pi, &mut rng) {
+                let target = curve.canonical(&place);
+                if chart
+                    .direct_target_relation(&curve, &degree_two, &target, &mut rng)
+                    .is_some()
+                {
+                    continue;
+                }
+                let Some(row) =
+                    chart.direct_target_relation(&curve, &degree_three, &target, &mut rng)
+                else {
+                    continue;
+                };
+                if row.coeffs.iter().any(|&(index, coefficient)| {
+                    coefficient != 0 && degree_three.places[index].degree == 3
+                }) {
+                    found = Some((target, row));
+                    break 'places;
+                }
+            }
+        }
+        let (target, row) = found.expect("no ordinary cubic target in the bounded scan");
+        assert_eq!(row.beta, BigUint::from(1u32));
+        let replay = row
+            .coeffs
+            .iter()
+            .fold(curve.identity(), |sum, &(index, coefficient)| {
+                assert!(coefficient > 0);
+                let mut sum = sum;
+                for _ in 0..coefficient {
+                    sum = curve.add(&sum, &degree_three.places[index].elem);
+                }
+                sum
+            });
+        assert_eq!(replay, target);
+    }
+
+    #[test]
+    fn ordinary_cubic_target_support_replays_in_genus_four_and_five() {
+        check_ordinary_cubic_target(5, &[0, 1, 2], &[3, 4], 0x2026_11c3);
+        check_ordinary_cubic_target(7, &[0, 1, 2, 3, 5], &[6], 0x2026_11c5);
     }
 
     fn check_quadratic_target_descends(
