@@ -50,6 +50,7 @@
 
 use num_bigint::{BigInt, BigUint, Sign, ToBigInt};
 use num_traits::{One, Zero};
+use serde::Serialize;
 
 use crate::asymmetric::rsa::is_prime;
 use crate::utils::mod_pow;
@@ -70,7 +71,8 @@ pub struct CurveParams {
 }
 
 /// Verdict for one of the documented attacks.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum SafetyCheck {
     /// Check passed — no evidence of vulnerability.
     Pass,
@@ -92,7 +94,7 @@ impl SafetyCheck {
 }
 
 /// Aggregate report from [`CurveParams::analyse`].
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize)]
 pub struct SafetyReport {
     pub order_size: SafetyCheck,
     pub order_smoothness: SafetyCheck,
