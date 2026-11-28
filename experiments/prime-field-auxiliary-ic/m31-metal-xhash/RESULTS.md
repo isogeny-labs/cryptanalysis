@@ -20,3 +20,20 @@ The prespecified ≥1.20 wall and CPU median gates and ≥12/15 win gates passed
 ## Matched archived rho distance
 
 `RHO_PROTOCOL.md` was frozen before outcomes. All 15 archived C++ rho processes completed on the same public Q and walk seeds, and an independent Python affine multiplication checked each scalar. Its median charged process wall and child CPU were 15.621 and 13.118 ms. Median paired exact-x IC/rho ratios were **7.536× wall** and **4.673× child CPU**. The wide paired wall range, 1.217–17.555×, reflects visible host variation and should not be pooled with the IC-vs-IC gain. `RHO_MANIFEST.json` fixes the source and binary hashes; `RHO_RAW.jsonl` retains all 15 outcomes. This archived rho is a distance control, and the exact-x index calculus remains slower on the median single-target comparison. [pcc:unverified]
+
+## Fresh-seed confirmation
+
+The independently seeded `CONFIRM_PROTOCOL.md` kept the source, workload, timing boundary and ≥1.20 paired wall/CPU gate unchanged. All 30 fresh-process arms completed; `verify_confirm.py` independently checked every public answer and all 15 matched pairs had identical complete certificate digests, queries, relations and rank. No arm failed or timed out. Raw records and hashes are in `CONFIRM_RAW.jsonl` and `CONFIRM_MANIFEST.json`. [pcc:unverified]
+
+| Metric | 20-bit control | Exact-x candidate |
+| --- | ---: | ---: |
+| Median charged wall, 15 arms each | 165.249 ms | 141.574 ms |
+| Median charged child CPU, 15 arms each | 90.394 ms | 61.415 ms |
+| Median GPU-positive candidates | 1,559,442 | 1,462 |
+| Median Rust exact lookups | 1,152,648 | 200 |
+| Median accumulated GPU screen | 55.613 ms | 57.072 ms |
+| Median paired control/candidate wall ratio | — | **1.194×** |
+| Median paired control/candidate CPU ratio | — | **1.480×** |
+| Candidate wins, wall / CPU | — | 15/15 / 15/15 |
+
+The confirmation **missed the frozen 1.20× wall gate**. The first panel passed, and both panels show an operational gain in these local runs, but the prespecified selection rule requires the fresh-seed confirmation to pass. The exact-x candidate is therefore not promoted as the default. The result is compatible with the expected CPU replay reduction; it is not independent performance standing or a proof of a rho crossover. [pcc:unverified]
