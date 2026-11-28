@@ -34,6 +34,7 @@ fn main() {
         max_duration:Some(Duration::from_secs(5)),..Config::default() };
     let mut metal_init_ns=0;
     let mut screens=0u64;
+    let mut screen_ns=0u128;
     let mut positive_flags=0u64;
     let online=Instant::now();
     let (outcome,probe)=if mode=="cpu" {
@@ -51,7 +52,9 @@ fn main() {
         prepared.solve_multi_indexed_screened(q,&config,&index,|points| {
             let targets:Vec<_>=points.iter().copied().map(wire).collect();
             let mut flags=vec![0u8;targets.len()*entries.len()*2];
+            let screen_started=Instant::now();
             let code=unsafe { m31_metal_screen(targets.as_ptr(),targets.len() as i32,flags.as_mut_ptr()) };
+            screen_ns+=screen_started.elapsed().as_nanos();
             if code!=0 { return Err(Error::Invalid("Metal candidate dispatch")); }
             screens+=1;
             positive_flags+=flags.iter().filter(|&&x|x!=0).count() as u64;
@@ -81,5 +84,5 @@ fn main() {
         digest=(digest^weight).wrapping_mul(1_099_511_628_211);
     }
     let total_ns=started.elapsed().as_nanos();
-    println!("{{\"schema\":\"m31-metal-full-rust/v2\",\"mode\":\"{mode}\",\"bitmap_bits\":{bitmap_bits},\"Q\":[{qx},{qy}],\"seed\":{seed},\"status\":\"solved\",\"scalar\":{},\"certificate_digest\":{digest},\"queries\":{},\"relations\":{},\"rank\":{},\"generated_candidates\":{},\"lookups\":{},\"gpu_screens\":{screens},\"positive_flags\":{positive_flags},\"setup_ns\":{setup_ns},\"metal_init_ns\":{metal_init_ns},\"online_ns\":{online_ns},\"total_ns\":{total_ns}}}",certificate.scalar,stats.queries,stats.relations,stats.matrix_rank,probe.generated_candidates,probe.lookups);
+    println!("{{\"schema\":\"m31-metal-full-rust/v2\",\"mode\":\"{mode}\",\"bitmap_bits\":{bitmap_bits},\"Q\":[{qx},{qy}],\"seed\":{seed},\"status\":\"solved\",\"scalar\":{},\"certificate_digest\":{digest},\"queries\":{},\"relations\":{},\"rank\":{},\"generated_candidates\":{},\"lookups\":{},\"gpu_screens\":{screens},\"screen_ns\":{screen_ns},\"positive_flags\":{positive_flags},\"setup_ns\":{setup_ns},\"metal_init_ns\":{metal_init_ns},\"online_ns\":{online_ns},\"total_ns\":{total_ns}}}",certificate.scalar,stats.queries,stats.relations,stats.matrix_rank,probe.generated_candidates,probe.lookups);
 }
