@@ -205,6 +205,76 @@ impl TrigonalPlaneChart {
         .then_some(divisor)
     }
 
+    /// Zeros of `u−slope*x−intercept` with ordinary factors of degree at
+    /// most two. A quadratic factor is mapped through `y=u*f2(x)` to its
+    /// unique matching normalized Kummer place. Exceptional branches are
+    /// still refused; the pole divisor is shared within a slope family.
+    pub fn affine_line_divisor_degree_two(
+        &self,
+        curve: &SuperellipticCurve,
+        slope: u64,
+        intercept: u64,
+        rng: &mut impl RngCore,
+    ) -> Option<Vec<(Ideal, usize)>> {
+        if !self.matches_curve(curve) {
+            return None;
+        }
+        let k = &self.field;
+        let slope = slope % k.p();
+        let intercept = intercept % k.p();
+        let line = Poly::from_coeffs(vec![intercept, slope], k);
+        let cube = line.mul(&line, k).mul(&line, k);
+        let h = self.f1.sub(&self.f2.mul(&cube, k), k);
+        let mut divisor = Vec::new();
+        let mut weighted_degree = 0;
+        for (factor, multiplicity) in h.factor(k, rng) {
+            let degree = factor.degree()?;
+            let place = match degree {
+                1 => {
+                    let x = k.neg(factor.c.first().copied().unwrap_or(0));
+                    let u = k.add(k.mul(slope, x), intercept);
+                    self.source_place(curve, x, u, rng)?
+                }
+                2 => {
+                    if self.f2.rem(&factor, k).is_zero() {
+                        return None;
+                    }
+                    let y = Poly::mulmod(&line, &self.f2, &factor, k);
+                    let place = curve
+                        .places_above(&factor, rng)
+                        .into_iter()
+                        .find(|(_, residue)| *residue == y)?;
+                    curve.canonical(&place.0)
+                }
+                _ => return None,
+            };
+            weighted_degree += degree * multiplicity;
+            divisor.push((place, multiplicity));
+        }
+        (weighted_degree == h.degree().unwrap_or(0)).then_some(divisor)
+    }
+
+    /// A homogeneous relation between affine lines whose zeros have
+    /// normalized support of degree at most two. The factor-base index
+    /// checks the places; callers must replay the row in the Jacobian.
+    pub fn affine_line_relation_degree_two(
+        &self,
+        curve: &SuperellipticCurve,
+        factor_base: &FactorBase<Ideal>,
+        first: (u64, u64),
+        second: (u64, u64),
+        rng: &mut impl RngCore,
+    ) -> Option<Relation> {
+        if factor_base.bound < 2
+            || self.affine_infinity_pole_order(first.0) != self.affine_infinity_pole_order(second.0)
+        {
+            return None;
+        }
+        let a = self.affine_line_divisor_degree_two(curve, first.0, first.1, rng)?;
+        let b = self.affine_line_divisor_degree_two(curve, second.0, second.1, rng)?;
+        self.divisor_relation(curve, factor_base, &a, &b, rng)
+    }
+
     /// The horizontal special case `u=c`; all heights share the same pole
     /// divisor, including the exceptional fibers and infinity.
     pub fn horizontal_divisor(
@@ -928,9 +998,22 @@ mod tests {
         assert_eq!(curve.genus, 5);
         let chart = TrigonalPlaneChart::new(&curve).unwrap();
         let mut rng = StdRng::seed_from_u64(0x2026_577);
-        let base = build_factor_base(&curve, 1, &mut rng).unwrap();
+        let base = build_factor_base(&curve, 2, &mut rng).unwrap();
         let mut line_scan = chart.collect_affine_line_relations(&curve, &base, 49, &mut rng);
         assert!(!line_scan.relations.is_empty());
+        let quadratic_row = (0..field.p())
+            .flat_map(|slope| (0..field.p()).map(move |intercept| (slope, intercept)))
+            .find_map(|line| {
+                chart
+                    .affine_line_relation_degree_two(&curve, &base, line, (0, 1), &mut rng)
+                    .filter(|row| {
+                        row.coeffs.iter().any(|&(index, coefficient)| {
+                            coefficient != 0 && base.places[index].degree == 2
+                        })
+                    })
+            })
+            .expect("no quadratic affine-line row in the bounded F_7 scan");
+        line_scan.relations.push(quadratic_row);
         line_scan.relations.push(
             chart
                 .vertical_line_relation(&curve, &base, 0, 1, &mut rng)
@@ -1380,13 +1463,45 @@ mod tests {
                     if let Some(row) = chart
                         .descend_quadratic_target_line(&curve, &base, &target, anchor, &mut rng)
                     {
-                        found = Some((target, row));
+                        found = Some((target, row, (slope, intercept)));
                         break 'lines;
                     }
                 }
             }
         }
-        let (target, row) = found.expect("no split residual cubic for a quadratic target");
+        let (target, row, target_line) =
+            found.expect("no split residual cubic for a quadratic target");
+        let degree_two = build_factor_base(&curve, 2, &mut rng).unwrap();
+        assert!(chart
+            .affine_line_relation(&curve, &base, target_line, anchor, &mut rng)
+            .is_none());
+        let line_row = chart
+            .affine_line_relation_degree_two(&curve, &degree_two, target_line, anchor, &mut rng)
+            .expect("quadratic line did not transfer to the degree-two base");
+        assert!(line_row
+            .coeffs
+            .iter()
+            .any(|&(index, coefficient)| coefficient != 0 && degree_two.places[index].degree == 2));
+        let line_replay =
+            line_row
+                .coeffs
+                .iter()
+                .fold(curve.identity(), |sum, &(index, coefficient)| {
+                    let mut sum = sum;
+                    let term = &degree_two.places[index].elem;
+                    for _ in 0..coefficient.unsigned_abs() {
+                        sum = curve.add(
+                            &sum,
+                            &if coefficient < 0 {
+                                curve.neg(term)
+                            } else {
+                                term.clone()
+                            },
+                        );
+                    }
+                    sum
+                });
+        assert!(curve.is_identity(&line_replay));
         assert_eq!(row.beta, BigUint::from(1u32));
         assert!(chart
             .descend_quadratic_target_line_bounded(&curve, &base, &target, 0, &mut rng)
