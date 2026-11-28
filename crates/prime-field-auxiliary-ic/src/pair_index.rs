@@ -31,10 +31,30 @@ impl Hasher for KeyHasher {
     }
 }
 type Lookup = HashMap<u64, usize, BuildHasherDefault<KeyHasher>>;
+const X_BITMAP_BITS: usize = 20;
+fn x_bitmap_bit(x: u64) -> usize {
+    (x.wrapping_mul(0x9e3779b97f4a7c15) >> (64 - X_BITMAP_BITS)) as usize
+}
 type Pair = [SignedTerm; 2];
 struct Entry {
     point: Option<Point>,
-    witnesses: Vec<Pair>,
+    first: Pair,
+    collisions: Vec<Pair>,
+}
+impl Entry {
+    fn witness_count(&self) -> usize {
+        1 + self.collisions.len()
+    }
+    fn witness(&self, index: usize) -> &Pair {
+        if index == 0 {
+            &self.first
+        } else {
+            &self.collisions[index - 1]
+        }
+    }
+    fn witnesses(&self) -> impl Iterator<Item = &Pair> {
+        std::iter::once(&self.first).chain(self.collisions.iter())
+    }
 }
 
 /// Exact counters for indexed decomposition, without performance qualification.
@@ -69,6 +89,7 @@ pub struct PairIndex<const B: u32> {
     base: Vec<Point>,
     entries: Vec<Entry>,
     lookup: Lookup,
+    x_bitmap: Vec<u64>,
     identity: Option<usize>,
     chunk: usize,
     stats: PairIndexStats,
@@ -119,15 +140,28 @@ impl<const B: u32> PairIndex<B> {
         if !(1..=16384).contains(&chunk) {
             return Err(Error::Invalid("pair chunk must be 1..=16384"));
         }
-        let id = NEXT_ID
-            .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |id| id.checked_add(1))
-            .map_err(|_| Error::ResourceLimit("pair index identity"))?;
+        let mut current = NEXT_ID.load(Ordering::Relaxed);
+        let id = loop {
+            let next = current
+                .checked_add(1)
+                .ok_or(Error::ResourceLimit("pair index identity"))?;
+            match NEXT_ID.compare_exchange_weak(current, next, Ordering::Relaxed, Ordering::Relaxed)
+            {
+                Ok(_) => break current,
+                Err(observed) => current = observed,
+            }
+        };
         let mut result = Self {
             id,
             curve: base.curve(),
             base: base.representatives().to_vec(),
             entries: Vec::with_capacity(size),
             lookup: Lookup::with_capacity_and_hasher(size, BuildHasherDefault::default()),
+            x_bitmap: if B == 31 && columns <= 384 {
+                vec![0; 1 << (X_BITMAP_BITS - 6)]
+            } else {
+                Vec::new()
+            },
             identity: None,
             chunk,
             stats: PairIndexStats::default(),
@@ -188,18 +222,23 @@ impl<const B: u32> PairIndex<B> {
             let witness = flip(*pair, negative);
             let old = canonical.map_or(self.identity, |p| self.lookup.get(&p.x()).copied());
             if let Some(index) = old {
-                self.entries[index].witnesses.push(witness);
+                self.entries[index].collisions.push(witness);
                 self.stats.collision_witnesses += 1;
             } else {
                 let index = self.entries.len();
                 if let Some(p) = canonical {
                     self.lookup.insert(p.x(), index);
+                    if !self.x_bitmap.is_empty() {
+                        let bit = x_bitmap_bit(p.x());
+                        self.x_bitmap[bit >> 6] |= 1u64 << (bit & 63);
+                    }
                 } else {
                     self.identity = Some(index);
                 }
                 self.entries.push(Entry {
                     point: canonical,
-                    witnesses: vec![witness],
+                    first: witness,
+                    collisions: Vec::new(),
                 });
             }
         }
@@ -227,7 +266,15 @@ impl<const B: u32> PairIndex<B> {
     fn find(&self, p: Option<Point>) -> Option<(usize, bool)> {
         let index = match p {
             None => self.identity?,
-            Some(p) => *self.lookup.get(&p.x())?,
+            Some(p) => {
+                if !self.x_bitmap.is_empty() {
+                    let bit = x_bitmap_bit(p.x());
+                    if self.x_bitmap[bit >> 6] & (1u64 << (bit & 63)) == 0 {
+                        return None;
+                    }
+                }
+                *self.lookup.get(&p.x())?
+            }
         };
         Some((
             index,
@@ -280,10 +327,10 @@ impl<const B: u32> PairIndex<B> {
             let outer_count = if m == 3 {
                 1
             } else {
-                self.entries[outer].witnesses.len()
+                self.entries[outer].witness_count()
             };
             for oi in 0..outer_count {
-                for inner_pair in &self.entries[inner].witnesses {
+                for inner_pair in self.entries[inner].witnesses() {
                     let mut terms = [SignedTerm::default(); 4];
                     if m == 3 {
                         terms[0] = SignedTerm {
@@ -293,7 +340,7 @@ impl<const B: u32> PairIndex<B> {
                         terms[1..3].copy_from_slice(&flip(*inner_pair, negative));
                     } else {
                         terms[..2].copy_from_slice(&flip(
-                            self.entries[outer].witnesses[oi],
+                            *self.entries[outer].witness(oi),
                             outer_negative,
                         ));
                         terms[2..].copy_from_slice(&flip(*inner_pair, negative));
@@ -336,7 +383,7 @@ impl<const B: u32> PairIndex<B> {
         }
         if m == 2 {
             if let Some((index, negative)) = self.find(Some(target)) {
-                for pair in &self.entries[index].witnesses {
+                for pair in self.entries[index].witnesses() {
                     if let Some(row) = self.accepted(target, &flip(*pair, negative), workspace)? {
                         return Ok(Some(row));
                     }
