@@ -144,6 +144,22 @@ impl TrigonalPlaneChart {
             && curve.factors.iter().any(|(f, e)| *e == 2 && *f == self.f2)
     }
 
+    /// The affine `u` coordinate of an ordinary quadratic normalized place.
+    fn quadratic_plane_u(&self, pi: &Poly, y: &Poly) -> Option<Poly> {
+        if pi.degree() != Some(2) {
+            return None;
+        }
+        let k = &self.field;
+        let f2 = self.f2.rem(pi, k);
+        let u = Poly::mulmod(y, &f2.inv_mod(pi, k)?, pi, k);
+        let cube = Poly::mulmod(&Poly::mulmod(&u, &u, pi, k), &u, pi, k);
+        Poly::mulmod(&f2, &cube, pi, k)
+            .sub(&self.f1, k)
+            .rem(pi, k)
+            .is_zero()
+            .then_some(u)
+    }
+
     /// Zeros of the affine line function `u−slope*x−intercept` on the
     /// normalization, when all are rational. Roots of
     /// `f1−(slope*x+intercept)^3 f2` carry their intersection multiplicity.
@@ -380,15 +396,7 @@ impl TrigonalPlaneChart {
                         return None;
                     }
                 } else {
-                    let u = Poly::mulmod(&key.r, &f2.inv_mod(&key.pi, k)?, &key.pi, k);
-                    let cube = Poly::mulmod(&Poly::mulmod(&u, &u, &key.pi, k), &u, &key.pi, k);
-                    if !Poly::mulmod(&f2, &cube, &key.pi, k)
-                        .sub(&self.f1, k)
-                        .rem(&key.pi, k)
-                        .is_zero()
-                    {
-                        return None;
-                    }
+                    self.quadratic_plane_u(&key.pi, &key.r)?;
                 }
                 let place = curve
                     .places_above(&key.pi, rng)
@@ -410,6 +418,91 @@ impl TrigonalPlaneChart {
         }
         Some(Relation {
             coeffs: coefficients.into_iter().collect(),
+            alpha: BigUint::zero(),
+            beta: BigUint::from(1u32),
+        })
+    }
+
+    /// Descend one ordinary quadratic target place through its unique
+    /// rational affine line `u=mx+b`. If the remaining line section splits
+    /// into rational places, compare it with a split anchor line in the same
+    /// pole family and return a degree-one factor-base row for the target.
+    pub fn descend_quadratic_target_line(
+        &self,
+        curve: &SuperellipticCurve,
+        factor_base: &FactorBase<Ideal>,
+        target: &Ideal,
+        anchor: (u64, u64),
+        rng: &mut impl RngCore,
+    ) -> Option<Relation> {
+        if !self.matches_curve(curve) || !curve.is_canonical(target) || factor_base.bound != 1 {
+            return None;
+        }
+        let support = curve.decompose(target, 2, rng)?;
+        if support.len() != 1 || support[0].1 != 1 {
+            return None;
+        }
+        let key = &support[0].0;
+        let u = self.quadratic_plane_u(&key.pi, &key.r)?;
+        let line = (*u.c.get(1).unwrap_or(&0), *u.c.first().unwrap_or(&0));
+        let p = self.field.p();
+        if self.genus == 4 && (line.0 == 0) != (anchor.0 % p == 0) {
+            return None;
+        }
+        let anchor_divisor = self.affine_line_divisor(curve, anchor.0, anchor.1, rng)?;
+        let k = &self.field;
+        let cube = u.mul(&u, k).mul(&u, k);
+        let h = self.f1.sub(&self.f2.mul(&cube, k), k);
+        let mut residual = Vec::new();
+        let mut target_count = 0;
+        for (factor, multiplicity) in h.factor(k, rng) {
+            if factor == key.pi {
+                target_count += multiplicity;
+                continue;
+            }
+            if factor.degree() != Some(1) {
+                return None;
+            }
+            let x = k.neg(*factor.c.first()?);
+            let height = k.add(k.mul(line.0, x), line.1);
+            residual.push((self.source_place(curve, x, height, rng)?, multiplicity));
+        }
+        if target_count != 1 {
+            return None;
+        }
+        let mut coefficients = BTreeMap::<usize, i64>::new();
+        let mut replay = curve.identity();
+        for (divisor, sign) in [(&anchor_divisor, 1i64), (&residual, -1i64)] {
+            for (place, multiplicity) in divisor {
+                let decomposed = curve.decompose(place, 1, rng)?;
+                if decomposed.len() != 1 || decomposed[0].1 != 1 {
+                    return None;
+                }
+                let column = *factor_base.index.get(&decomposed[0].0)?;
+                if factor_base.places.get(column)?.elem != *place {
+                    return None;
+                }
+                *coefficients.entry(column).or_default() += sign * (*multiplicity as i64);
+                for _ in 0..*multiplicity {
+                    replay = curve.add(
+                        &replay,
+                        &if sign < 0 {
+                            curve.neg(place)
+                        } else {
+                            place.clone()
+                        },
+                    );
+                }
+            }
+        }
+        if replay != *target {
+            return None;
+        }
+        Some(Relation {
+            coeffs: coefficients
+                .into_iter()
+                .filter(|(_, coefficient)| *coefficient != 0)
+                .collect(),
             alpha: BigUint::zero(),
             beta: BigUint::from(1u32),
         })
@@ -1165,5 +1258,105 @@ mod tests {
         }
         let (target, row) = ordinary.expect("no ordinary degree-two target place");
         replay(&target, &row);
+    }
+
+    fn check_quadratic_target_descends(
+        roots1: &[u64],
+        roots2: &[u64],
+        anchor: (u64, u64),
+        seed: u64,
+    ) {
+        let field = Fp::new(17).unwrap();
+        let mut rng = StdRng::seed_from_u64(seed);
+        let curve = SuperellipticCurve::new(
+            field,
+            3,
+            vec![
+                (split_poly(&field, roots1), 1),
+                (split_poly(&field, roots2), 2),
+            ],
+        )
+        .unwrap();
+        let chart = TrigonalPlaneChart::new(&curve).unwrap();
+        let base = build_factor_base(&curve, 1, &mut rng).unwrap();
+        assert!(chart
+            .affine_line_divisor(&curve, anchor.0, anchor.1, &mut rng)
+            .is_some());
+        let mut found = None;
+        'lines: for slope in 1..field.p() {
+            for intercept in 0..field.p() {
+                let line = Poly::from_coeffs(vec![intercept, slope], &field);
+                let h = chart.f1.sub(
+                    &chart
+                        .f2
+                        .mul(&line.mul(&line, &field).mul(&line, &field), &field),
+                    &field,
+                );
+                let factors = h.factor(&field, &mut rng);
+                if factors
+                    .iter()
+                    .filter(|(pi, _)| pi.degree() == Some(2))
+                    .count()
+                    != 1
+                    || factors
+                        .iter()
+                        .any(|(pi, m)| pi.degree().unwrap_or(0) > 2 || *m != 1)
+                {
+                    continue;
+                }
+                let pi = &factors
+                    .iter()
+                    .find(|(pi, _)| pi.degree() == Some(2))
+                    .unwrap()
+                    .0;
+                for (place, residue) in curve.places_above(pi, &mut rng) {
+                    if chart.quadratic_plane_u(pi, &residue) != Some(line.clone()) {
+                        continue;
+                    }
+                    let target = curve.canonical(&place);
+                    if let Some(row) = chart
+                        .descend_quadratic_target_line(&curve, &base, &target, anchor, &mut rng)
+                    {
+                        found = Some((target, row));
+                        break 'lines;
+                    }
+                }
+            }
+        }
+        let (target, row) = found.expect("no split residual cubic for a quadratic target");
+        assert_eq!(row.beta, BigUint::from(1u32));
+        assert!(chart
+            .direct_target_relation(&curve, &base, &target, &mut rng)
+            .is_none());
+        if chart.genus == 4 {
+            assert!(chart
+                .descend_quadratic_target_line(&curve, &base, &target, (0, 0), &mut rng)
+                .is_none());
+        }
+        let replay = row
+            .coeffs
+            .iter()
+            .fold(curve.identity(), |sum, &(i, coefficient)| {
+                let mut sum = sum;
+                let term = &base.places[i].elem;
+                for _ in 0..coefficient.unsigned_abs() {
+                    sum = curve.add(
+                        &sum,
+                        &if coefficient < 0 {
+                            curve.neg(term)
+                        } else {
+                            term.clone()
+                        },
+                    );
+                }
+                sum
+            });
+        assert_eq!(replay, target);
+    }
+
+    #[test]
+    fn quadratic_target_descends_to_degree_one_line_places() {
+        check_quadratic_target_descends(&[0, 1, 2], &[3, 7], (2, 0), 0x2026_11d3);
+        check_quadratic_target_descends(&[0, 1, 2, 3, 5], &[6], (7, 12), 0x2026_11d4);
     }
 }
