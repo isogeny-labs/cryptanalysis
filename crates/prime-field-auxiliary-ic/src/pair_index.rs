@@ -31,14 +31,19 @@ impl Hasher for KeyHasher {
     }
 }
 type Lookup = HashMap<u64, usize, BuildHasherDefault<KeyHasher>>;
-const X_BITMAP_BITS: usize =
-    if option_env!("M31_HIGH_BITMAP").is_some() || option_env!("M31_DUAL_BITMAP").is_some() {
-        22
-    } else {
-        20
-    };
+const X_BITMAP_BITS: usize = if option_env!("M31_HIGH_BITMAP").is_some()
+    || option_env!("M31_DUAL_BITMAP").is_some()
+    || option_env!("M31_B512_BITMAP").is_some()
+{
+    22
+} else {
+    20
+};
 fn x_bitmap_bit(x: u64) -> usize {
-    if option_env!("M31_HIGH_BITMAP").is_some() || option_env!("M31_DUAL_BITMAP").is_some() {
+    if option_env!("M31_HIGH_BITMAP").is_some()
+        || option_env!("M31_DUAL_BITMAP").is_some()
+        || option_env!("M31_B512_BITMAP").is_some()
+    {
         (x as usize) >> (31 - X_BITMAP_BITS)
     } else {
         (x.wrapping_mul(0x9e3779b97f4a7c15) >> (64 - X_BITMAP_BITS)) as usize
@@ -167,7 +172,9 @@ impl<const B: u32> PairIndex<B> {
             base: base.representatives().to_vec(),
             entries: Vec::with_capacity(size),
             lookup: Lookup::with_capacity_and_hasher(size, BuildHasherDefault::default()),
-            x_bitmap: if B == 31 && columns <= 384 {
+            x_bitmap: if B == 31
+                && (columns <= 384 || (columns <= 512 && option_env!("M31_B512_BITMAP").is_some()))
+            {
                 vec![0; 1 << (X_BITMAP_BITS - 6)]
             } else {
                 Vec::new()
@@ -479,6 +486,49 @@ mod bitmap_tests {
                 assert_eq!(direct.0, opposite.0);
             }
         }
+    }
+
+    #[test]
+    fn b512_bitmap_preserves_every_retained_pair_payload() {
+        if option_env!("M31_B512_BITMAP").is_none() {
+            return;
+        }
+        let curve = Curve::<31>::new(2, 14).unwrap();
+        let roots: Vec<u64> = (0..curve.modulus())
+            .filter(|&x| curve.lift_x(x).unwrap().is_some())
+            .take(512)
+            .collect();
+        let base = FactorBase::without_maps(curve, &roots).unwrap();
+        let index = PairIndex::new(&base, 512 * 512, 64).unwrap();
+        assert_eq!(index.x_bitmap.len(), 1 << (22 - 6));
+        let mut witnessed = 0;
+        for (entry_id, entry) in index.entries.iter().enumerate() {
+            if let Some(point) = entry.point {
+                let bit = x_bitmap_bit(point.x());
+                assert_ne!(index.x_bitmap[bit >> 6] & (1u64 << (bit & 63)), 0);
+                assert_eq!(index.find(Some(point)), Some((entry_id, false)));
+                assert_eq!(
+                    index.find(Some(curve.neg_inner(point))),
+                    Some((entry_id, true))
+                );
+            }
+            for pair in entry.witnesses() {
+                let signed = |term: SignedTerm| {
+                    let point = index.base[term.index];
+                    Some(if term.negative {
+                        curve.neg_inner(point)
+                    } else {
+                        point
+                    })
+                };
+                assert_eq!(
+                    curve.add_inner(signed(pair[0]), signed(pair[1])),
+                    entry.point
+                );
+                witnessed += 1;
+            }
+        }
+        assert_eq!(witnessed, 512 * 512);
     }
 }
 impl PairWorkspace {
