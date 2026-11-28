@@ -1,0 +1,13 @@
+# Frozen independent-seed M31 Metal confirmation 2
+
+Frozen before outcomes on 2026-11-27. The first 15-block panel is preserved in `CONFIRM_RAW.jsonl`. Its relation digest omitted certificate weights and metadata, so it is exploratory for complete-certificate identity. This panel repeats with a corrected digest and independent walk seeds; no first-panel seeds are reused.
+
+Use the same public M31 curve, subgroup, five target coordinates, interval B195, four summands, 64 lanes, chunk 16384, max 100000 queries, 5 s online cap, fresh-process CPU and Metal arms, and full wall/child CPU accounting stated in `CONFIRM_PROTOCOL.md`. The Metal shader and persistent buffers are initialized within each timed process. There is no cache flushing. Retain every failure and timeout.
+
+New seed derivation: SHA-256 of ASCII `m31-metal-confirm2/v1`, NUL, 16 raw master bytes, NUL, ASCII label; first 8 bytes big endian masked to 63 bits. Master `11c1f74d64d2715ef0c14823e91df509`; walk labels `walk/0`, `walk/1`, `walk/2` produce `2963118146192557216`, `7548553730800238568`, `2788219740164666896`. `schedule` produces `511919298052211780`; Python 3 `random.Random(seed).shuffle` orders target/seed blocks, then arm order alternates CPU-first and Metal-first.
+
+`full.rs` schema v2 hashes in order: summand count, order, generator x/y, target x/y, scalar, relation count, weight count; then for each relation a/b, term count, each column/sign; then every certificate weight. Hash recurrence is FNV-style `h = (h XOR word) * 1099511628211 mod 2^64`, initialized to `14695981039346656037`. This is a complete-field digest of the certificate's declared public data, not a cryptographic collision-proof commitment; the production verifier independently checks each complete certificate. `independent_check.py` separately verifies all answers by affine group multiplication and checks paired digest, scalar and work equality.
+
+Acceptance: all 30 arms return valid certificates and matching complete-field digests per pair; 15 independent paired blocks; median paired CPU/Metal wall and child CPU ratios each at least 1.15; Metal wins at least 12/15 on each metric. Report all 30 raw records, per-target variation, medians, failure/censor counts, and the matched rho distance separately. A local performance finding remains producer-run until independent review/PCC standing. No wall-clock inequality will be presented as a Lean proof of algorithm semantics.
+
+`confirm2.py` compiles the frozen PR commit before timing, records full source hashes, writes the manifest before outcomes, then appends every arm's record. Do not alter source or protocol during this panel. A defect requires retaining the raw panel and freezing a new one.

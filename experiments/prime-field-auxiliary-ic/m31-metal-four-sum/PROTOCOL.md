@@ -1,0 +1,13 @@
+# M31 Metal candidate admission (frozen before measurements)
+
+Question: Can Apple Metal accelerate the exact `target - signed pair` candidate stage of the native four-summand M31 collector enough to reduce a cold, same-target solve after GPU setup is charged?
+
+The public curve is `y²=x³+2x+14` over `p=2³¹−1`, with `G=(1,814455902)` and subgroup order `2147505293`. The first admission target is `Q=(1767503692,244402461)`. Its scalar is withheld from the collector and used only by the independent answer check. The CPU control is the current `PairIndex<31>` with interval basis B=195, four summands, seed `2911332506172719186`, 64 lanes, chunk 16384, max 100000 queries and 5000 ms online. Source must be pinned by commit and hash before the timed comparison.
+
+Stage A correctness: export each canonical pair-entry point from the unmodified CPU index and evaluate `target ± point` on Metal with 64-bit intermediates and Mersenne reduction. For every output, compare finite/identity status and both affine coordinates against Rust `Curve<31>::add_inner`, including vertical, tangent and identity cases. Check the bitmap-positive index stream against CPU for all entries, preserving order and sign. Any mismatch stops admission. The exact CPU witness replay remains mandatory.
+
+Stage B cost: first time the standalone Metal construction, shader compilation, buffer allocation and dispatch for all signed pair entries, including transfer and wait; record wall and process CPU. Compare with the CPU batch-add/filter for identical input. A candidate must improve this charged component by at least 1.15× wall and CPU before Rust collector integration. This gate is a screen, not an end-to-end claim.
+
+Stage C, only after Stage B passes: integrate the Metal path as an opt-in collector backend and run fresh processes for the same five public targets and three independently derived seeds per target, with balanced arm order. Charge basis generation, pair-index setup, GPU setup, all relation collection, elimination, certificate replay and process start. Compare matched rho separately. Require all answers and complete certificates to verify. Require paired median wall and CPU improvement ≥1.15× and wins on at least 12/15 blocks for a performance claim. Retain failures and censors. No Lean claim will be made from timing arithmetic; a Lean proof must state the field/point/filter semantics actually used by the backend.
+
+No randomized timed comparison is authorized by this Stage A/B admission until a complete seed manifest and five public coordinates are frozen in a further protocol amendment before outcomes.
