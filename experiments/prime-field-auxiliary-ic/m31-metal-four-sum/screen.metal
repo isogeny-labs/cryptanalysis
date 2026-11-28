@@ -22,12 +22,13 @@ P candidate(P a, P b) {
 }
 kernel void compact_screen(device const P *targets [[buffer(0)]], device const P *entries [[buffer(1)]],
                            device const ulong *bitmap [[buffer(2)]], device uchar *flags [[buffer(3)]],
-                           constant uint &entryCount [[buffer(4)]], uint id [[thread_position_in_grid]]) {
+                           constant uint &entryCount [[buffer(4)]],
+                           constant uint &bitmapBits [[buffer(5)]], uint id [[thread_position_in_grid]]) {
   uint width=2*entryCount;
   P q=targets[id/width], b=entries[(id/2)%entryCount];
   if(!(id&1u) && b.finite && b.y!=0) b.y=MOD-b.y;
   P result=candidate(q,b);
   if(!result.finite) { flags[id]=2; return; }
-  ulong bit=(result.x*0x9e3779b97f4a7c15ul)>>44;
+  ulong bit=(result.x*0x9e3779b97f4a7c15ul)>>(64-bitmapBits);
   flags[id]=((bitmap[bit>>6]>>(bit&63))&1ul) ? 1 : 0;
 }

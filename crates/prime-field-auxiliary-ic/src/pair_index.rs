@@ -31,9 +31,9 @@ impl Hasher for KeyHasher {
     }
 }
 type Lookup = HashMap<u64, usize, BuildHasherDefault<KeyHasher>>;
-const X_BITMAP_BITS: usize = 20;
-fn x_bitmap_bit(x: u64) -> usize {
-    (x.wrapping_mul(0x9e3779b97f4a7c15) >> (64 - X_BITMAP_BITS)) as usize
+const DEFAULT_X_BITMAP_BITS: usize = 20;
+fn x_bitmap_bit(x: u64, bits: usize) -> usize {
+    (x.wrapping_mul(0x9e3779b97f4a7c15) >> (64 - bits)) as usize
 }
 type Pair = [SignedTerm; 2];
 struct Entry {
@@ -90,6 +90,7 @@ pub struct PairIndex<const B: u32> {
     entries: Vec<Entry>,
     lookup: Lookup,
     x_bitmap: Vec<u64>,
+    x_bitmap_bits: usize,
     identity: Option<usize>,
     chunk: usize,
     stats: PairIndexStats,
@@ -130,6 +131,19 @@ impl<const B: u32> PairIndex<B> {
     /// Build at most `max_pairs` signed pair witnesses with batched arithmetic.
     /// Negation-folded construction evaluates exactly `columns^2` raw pairs.
     pub fn new(base: &FactorBase<B>, max_pairs: usize, chunk: usize) -> Result<Self> {
+        Self::new_with_bitmap_bits(base, max_pairs, chunk, DEFAULT_X_BITMAP_BITS)
+    }
+    /// Build with an opt-in 22-bit x bitmap for GPU candidate screening.
+    /// The default remains 20 bits; all exact witnesses remain in the index.
+    pub fn new_with_bitmap_bits(
+        base: &FactorBase<B>,
+        max_pairs: usize,
+        chunk: usize,
+        bitmap_bits: usize,
+    ) -> Result<Self> {
+        if bitmap_bits != 20 && bitmap_bits != 22 {
+            return Err(Error::Invalid("pair bitmap bits must be 20 or 22"));
+        }
         let columns = base.representatives().len();
         let size = columns
             .checked_mul(columns)
@@ -158,10 +172,11 @@ impl<const B: u32> PairIndex<B> {
             entries: Vec::with_capacity(size),
             lookup: Lookup::with_capacity_and_hasher(size, BuildHasherDefault::default()),
             x_bitmap: if B == 31 && columns <= 384 {
-                vec![0; 1 << (X_BITMAP_BITS - 6)]
+                vec![0; 1 << (bitmap_bits - 6)]
             } else {
                 Vec::new()
             },
+            x_bitmap_bits: bitmap_bits,
             identity: None,
             chunk,
             stats: PairIndexStats::default(),
@@ -229,7 +244,7 @@ impl<const B: u32> PairIndex<B> {
                 if let Some(p) = canonical {
                     self.lookup.insert(p.x(), index);
                     if !self.x_bitmap.is_empty() {
-                        let bit = x_bitmap_bit(p.x());
+                        let bit = x_bitmap_bit(p.x(), self.x_bitmap_bits);
                         self.x_bitmap[bit >> 6] |= 1u64 << (bit & 63);
                     }
                 } else {
@@ -256,6 +271,10 @@ impl<const B: u32> PairIndex<B> {
     pub fn screen_bitmap(&self) -> &[u64] {
         &self.x_bitmap
     }
+    /// Number of multiplicative-hash bits addressed by the x bitmap.
+    pub fn screen_bitmap_bits(&self) -> usize {
+        self.x_bitmap_bits
+    }
     /// Allocate bounded scratch for repeated target queries.
     pub fn workspace(&self) -> PairWorkspace {
         PairWorkspace {
@@ -277,7 +296,7 @@ impl<const B: u32> PairIndex<B> {
             None => self.identity?,
             Some(p) => {
                 if !self.x_bitmap.is_empty() {
-                    let bit = x_bitmap_bit(p.x());
+                    let bit = x_bitmap_bit(p.x(), self.x_bitmap_bits);
                     if self.x_bitmap[bit >> 6] & (1u64 << (bit & 63)) == 0 {
                         return None;
                     }

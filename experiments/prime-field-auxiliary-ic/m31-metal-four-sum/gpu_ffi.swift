@@ -8,8 +8,9 @@ private final class ScreenContext {
     let entries: MTLBuffer
     let bitmap: MTLBuffer
     let entryCount: Int
+    let bitmapBits: Int
 
-    init(_ points: UnsafeRawPointer, _ count: Int, _ bits: UnsafeRawPointer, _ words: Int, _ path: String) throws {
+    init(_ points: UnsafeRawPointer, _ count: Int, _ bits: UnsafeRawPointer, _ words: Int, _ bitmapBits: Int, _ path: String) throws {
         guard let device=MTLCreateSystemDefaultDevice(), let queue=device.makeCommandQueue() else {
             throw NSError(domain:"m31-metal",code:1)
         }
@@ -22,7 +23,7 @@ private final class ScreenContext {
         }
         self.device=device; self.queue=queue
         self.pipeline=try device.makeComputePipelineState(function:function)
-        self.entries=entries; self.bitmap=bitmap; self.entryCount=count
+        self.entries=entries; self.bitmap=bitmap; self.entryCount=count; self.bitmapBits=bitmapBits
     }
     func run(_ targets: UnsafeRawPointer, _ count: Int, _ output: UnsafeMutableRawPointer) -> Int32 {
         let total=count*entryCount*2
@@ -37,6 +38,8 @@ private final class ScreenContext {
         encoder.setBuffer(flags,offset:0,index:3)
         var n=UInt32(entryCount)
         encoder.setBytes(&n,length:4,index:4)
+        var width=UInt32(bitmapBits)
+        encoder.setBytes(&width,length:4,index:5)
         encoder.dispatchThreads(MTLSize(width:total,height:1,depth:1),
                                 threadsPerThreadgroup:MTLSize(width:min(256,pipeline.maxTotalThreadsPerThreadgroup),height:1,depth:1))
         encoder.endEncoding()
@@ -52,11 +55,13 @@ private var screenContext: ScreenContext?
 @_cdecl("m31_metal_init")
 public func m31MetalInit(_ points: UnsafeRawPointer?, _ count: Int32,
                          _ bits: UnsafeRawPointer?, _ words: Int32,
+                         _ bitmapBits: Int32,
                          _ shaderPath: UnsafePointer<CChar>?) -> Int32 {
     guard let points, let bits, let shaderPath,
-          count>0, words==16_384, count<=262_144 else { return 1 }
+          count>0, (bitmapBits==20 || bitmapBits==22),
+          words==(1 << (bitmapBits-6)), count<=262_144 else { return 1 }
     do {
-        screenContext=try ScreenContext(points,Int(count),bits,Int(words),String(cString:shaderPath))
+        screenContext=try ScreenContext(points,Int(count),bits,Int(words),Int(bitmapBits),String(cString:shaderPath))
         return 0
     } catch { return 2 }
 }

@@ -6,7 +6,7 @@ use std::{ffi::CString,time::{Instant,Duration}};
 struct WirePoint { x:u64, y:u64, finite:u64 }
 #[link(name="m31metal")]
 unsafe extern "C" {
-    fn m31_metal_init(points:*const WirePoint,count:i32,bits:*const u64,words:i32,path:*const i8)->i32;
+    fn m31_metal_init(points:*const WirePoint,count:i32,bits:*const u64,words:i32,bitmap_bits:i32,path:*const i8)->i32;
     fn m31_metal_screen(targets:*const WirePoint,count:i32,output:*mut u8)->i32;
 }
 fn wire(point:Option<prime_field_auxiliary_ic::Point>)->WirePoint {
@@ -22,11 +22,13 @@ fn main() {
     let qx=args.get(2).map_or(1_767_503_692,|x|x.parse().unwrap());
     let qy=args.get(3).map_or(244_402_461,|x|x.parse().unwrap());
     let seed=args.get(4).map_or(2_911_332_506_172_719_186,|x|x.parse().unwrap());
+    let bitmap_bits:usize=args.get(5).map_or(20,|x|x.parse().unwrap());
+    assert!(bitmap_bits==20 || bitmap_bits==22);
     let q=c.point(qx,qy).unwrap();
     let roots:Vec<_>=(0..c.modulus()).filter(|&x| c.lift_x(x).unwrap().is_some()).take(195).collect();
     let base=FactorBase::without_maps(c,&roots).unwrap();
     let prepared=PreparedSolver::new(&base,2_147_505_293,g).unwrap();
-    let index=PairIndex::new(&base,4_194_304,16_384).unwrap();
+    let index=PairIndex::new_with_bitmap_bits(&base,4_194_304,16_384,bitmap_bits).unwrap();
     let setup_ns=started.elapsed().as_nanos();
     let config=Config { seed,max_queries:100_000,walk_lanes:64,
         max_duration:Some(Duration::from_secs(5)),..Config::default() };
@@ -39,11 +41,11 @@ fn main() {
     } else {
         let entries:Vec<_>=index.screen_points().into_iter().map(wire).collect();
         let bitmap=index.screen_bitmap();
-        assert_eq!(bitmap.len(),16_384);
+        assert_eq!(bitmap.len(),1 << (bitmap_bits-6));
         let path=std::env::current_dir().unwrap().join("experiments/prime-field-auxiliary-ic/m31-metal-four-sum/screen.metal");
         let path=CString::new(path.to_str().unwrap()).unwrap();
         let init=Instant::now();
-        let code=unsafe { m31_metal_init(entries.as_ptr(),entries.len() as i32,bitmap.as_ptr(),bitmap.len() as i32,path.as_ptr()) };
+        let code=unsafe { m31_metal_init(entries.as_ptr(),entries.len() as i32,bitmap.as_ptr(),bitmap.len() as i32,bitmap_bits as i32,path.as_ptr()) };
         assert_eq!(code,0,"Metal initialization failed");
         metal_init_ns=init.elapsed().as_nanos();
         prepared.solve_multi_indexed_screened(q,&config,&index,|points| {
@@ -79,5 +81,5 @@ fn main() {
         digest=(digest^weight).wrapping_mul(1_099_511_628_211);
     }
     let total_ns=started.elapsed().as_nanos();
-    println!("{{\"schema\":\"m31-metal-full-rust/v2\",\"mode\":\"{mode}\",\"Q\":[{qx},{qy}],\"seed\":{seed},\"status\":\"solved\",\"scalar\":{},\"certificate_digest\":{digest},\"queries\":{},\"relations\":{},\"rank\":{},\"generated_candidates\":{},\"lookups\":{},\"gpu_screens\":{screens},\"positive_flags\":{positive_flags},\"setup_ns\":{setup_ns},\"metal_init_ns\":{metal_init_ns},\"online_ns\":{online_ns},\"total_ns\":{total_ns}}}",certificate.scalar,stats.queries,stats.relations,stats.matrix_rank,probe.generated_candidates,probe.lookups);
+    println!("{{\"schema\":\"m31-metal-full-rust/v2\",\"mode\":\"{mode}\",\"bitmap_bits\":{bitmap_bits},\"Q\":[{qx},{qy}],\"seed\":{seed},\"status\":\"solved\",\"scalar\":{},\"certificate_digest\":{digest},\"queries\":{},\"relations\":{},\"rank\":{},\"generated_candidates\":{},\"lookups\":{},\"gpu_screens\":{screens},\"positive_flags\":{positive_flags},\"setup_ns\":{setup_ns},\"metal_init_ns\":{metal_init_ns},\"online_ns\":{online_ns},\"total_ns\":{total_ns}}}",certificate.scalar,stats.queries,stats.relations,stats.matrix_rank,probe.generated_candidates,probe.lookups);
 }
