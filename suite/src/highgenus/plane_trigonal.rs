@@ -378,7 +378,10 @@ impl TrigonalPlaneChart {
 mod tests {
     use rand::{rngs::StdRng, SeedableRng};
 
-    use super::super::ic::{build_factor_base, index_calculus_dlp_with_seed_relations, IcParams};
+    use super::super::ic::{
+        build_factor_base, index_calculus_dlp_with_seed_relations, index_calculus_group_order,
+        largest_prime_factor, IcParams,
+    };
     use super::super::JacobianGroup;
     use super::*;
 
@@ -882,5 +885,67 @@ mod tests {
         assert!(chart
             .mixed_line_relation(&curve, &base, (0, 0), 0, &mut rng)
             .is_none());
+    }
+
+    #[test]
+    fn genus_four_plane_line_rows_feed_a_verified_dlp() {
+        let field = Fp::new(17).unwrap();
+        let curve = SuperellipticCurve::new(
+            field,
+            3,
+            vec![
+                (split_poly(&field, &[0, 1, 2]), 1),
+                (split_poly(&field, &[3, 7]), 2),
+            ],
+        )
+        .unwrap();
+        let chart = TrigonalPlaneChart::new(&curve).unwrap();
+        let mut rng = StdRng::seed_from_u64(0x2026_04d1);
+        let base = build_factor_base(&curve, 1, &mut rng).unwrap();
+        let params = IcParams {
+            extra_relations: 16,
+            max_trials: 200_000,
+            seed: 0x2026_04d1,
+            ..Default::default()
+        };
+        let candidate = index_calculus_group_order(&curve, &base, &params).unwrap();
+        assert!(candidate.within_hasse_weil);
+        let (n, cofactor) = largest_prime_factor(&candidate.order, 1_000_000).unwrap();
+        assert!(
+            n > BigUint::from(7u64),
+            "candidate order {} has largest prime factor {n}",
+            candidate.order
+        );
+        let mut d1 = curve.identity();
+        for _ in 0..64 {
+            let trial = curve.scalar_mul(&cofactor, &curve.random_element(2, &mut rng));
+            if !curve.is_identity(&trial) && curve.is_identity(&curve.scalar_mul(&n, &trial)) {
+                d1 = trial;
+                break;
+            }
+        }
+        assert!(!curve.is_identity(&d1));
+        let target = curve.scalar_mul(&BigUint::from(7u64), &d1);
+        assert!(!curve.is_identity(&target));
+        let mut seeds = chart
+            .collect_affine_line_relations(&curve, &base, 289, &mut rng)
+            .relations;
+        seeds.push(
+            chart
+                .vertical_line_relation(&curve, &base, 0, 3, &mut rng)
+                .unwrap(),
+        );
+        seeds.push(
+            chart
+                .mixed_line_relation(&curve, &base, (2, 0), 0, &mut rng)
+                .unwrap(),
+        );
+        let report = index_calculus_dlp_with_seed_relations(
+            &curve, &base, &d1, &target, &n, &seeds, &params,
+        )
+        .unwrap();
+        assert_eq!(report.k, BigUint::from(7u64));
+        assert_eq!(curve.scalar_mul(&report.k, &d1), target);
+        assert!(report.relations >= seeds.len());
     }
 }
