@@ -144,6 +144,14 @@ impl TrigonalPlaneChart {
             && curve.factors.iter().any(|(f, e)| *e == 2 && *f == self.f2)
     }
 
+    /// At the unique normalized infinity place, `ord∞(x)=-3` and
+    /// `ord∞(u)=-(deg(f1)-deg(f2))`. The two orders differ in both
+    /// supported genera, so the pole order of `u-mx-b` is their maximum.
+    fn affine_infinity_pole_order(&self, slope: u64) -> usize {
+        let u_order = self.f1.degree().unwrap() - self.f2.degree().unwrap();
+        u_order.max(if slope % self.field.p() == 0 { 0 } else { 3 })
+    }
+
     /// The affine `u` coordinate of an ordinary quadratic normalized place.
     fn quadratic_plane_u(&self, pi: &Poly, y: &Poly) -> Option<Poly> {
         if pi.degree() != Some(2) {
@@ -269,8 +277,8 @@ impl TrigonalPlaneChart {
     /// The affine function has a simple pole at every place above `f2=0`,
     /// while the vertical function has none there. Their remaining pole
     /// difference is supported at the rational point at infinity, whose
-    /// degree-zero class is the identity. Every `f2` place must be rational
-    /// for a degree-one factor-base row.
+    /// degree-zero class is the identity. An irreducible quadratic factor
+    /// of `f2` is accepted when the factor base includes degree-two places.
     pub fn mixed_line_relation(
         &self,
         curve: &SuperellipticCurve,
@@ -282,15 +290,15 @@ impl TrigonalPlaneChart {
         let a = self.affine_line_divisor(curve, affine.0, affine.1, rng)?;
         let mut b = self.vertical_divisor(curve, vertical_x, rng)?;
         for (factor, multiplicity) in self.f2.factor(&self.field, rng) {
-            if factor.degree() != Some(1) || multiplicity != 1 {
+            let degree = factor.degree()?;
+            if degree == 0 || degree > factor_base.bound || multiplicity != 1 {
                 return None;
             }
-            let x = self.field.neg(factor.c.first().copied().unwrap_or(0));
-            let fiber = self.vertical_divisor(curve, x, rng)?;
-            if fiber.len() != 1 || fiber[0].1 != 3 {
+            let fiber = curve.places_above(&factor, rng);
+            if fiber.len() != 1 || !fiber[0].1.is_zero() {
                 return None;
             }
-            b.push((fiber[0].0.clone(), 1));
+            b.push((curve.canonical(&fiber[0].0), 1));
         }
         self.divisor_relation(curve, factor_base, &a, &b, rng)
     }
@@ -306,8 +314,7 @@ impl TrigonalPlaneChart {
         second: (u64, u64),
         rng: &mut impl RngCore,
     ) -> Option<Relation> {
-        let p = self.field.p();
-        if self.genus == 4 && (first.0 % p == 0) != (second.0 % p == 0) {
+        if self.affine_infinity_pole_order(first.0) != self.affine_infinity_pole_order(second.0) {
             return None;
         }
         let a = self.affine_line_divisor(curve, first.0, first.1, rng)?;
@@ -326,11 +333,14 @@ impl TrigonalPlaneChart {
         let mut coefficients = BTreeMap::<usize, i64>::new();
         for (divisor, sign) in [(a, 1i64), (b, -1i64)] {
             for (place, multiplicity) in divisor {
-                let decomposed = curve.decompose(place, 1, rng)?;
+                let decomposed = curve.decompose(place, factor_base.bound, rng)?;
                 if decomposed.len() != 1 || decomposed[0].1 != 1 {
                     return None;
                 }
                 let column = *factor_base.index.get(&decomposed[0].0)?;
+                if factor_base.places.get(column)?.elem != *place {
+                    return None;
+                }
                 *coefficients.entry(column).or_default() += sign * (*multiplicity as i64);
             }
         }
@@ -445,8 +455,7 @@ impl TrigonalPlaneChart {
         let key = &support[0].0;
         let u = self.quadratic_plane_u(&key.pi, &key.r)?;
         let line = (*u.c.get(1).unwrap_or(&0), *u.c.first().unwrap_or(&0));
-        let p = self.field.p();
-        if self.genus == 4 && (line.0 == 0) != (anchor.0 % p == 0) {
+        if self.affine_infinity_pole_order(line.0) != self.affine_infinity_pole_order(anchor.0) {
             return None;
         }
         let anchor_divisor = self.affine_line_divisor(curve, anchor.0, anchor.1, rng)?;
@@ -1036,6 +1045,14 @@ mod tests {
             .unwrap();
             let chart = TrigonalPlaneChart::new(&curve).unwrap();
             let base = build_factor_base(&curve, 1, &mut rng).unwrap();
+            assert_eq!(
+                chart.affine_infinity_pole_order(0),
+                if genus == 4 { 1 } else { 4 }
+            );
+            assert_eq!(
+                chart.affine_infinity_pole_order(1),
+                if genus == 4 { 3 } else { 4 }
+            );
             for line in affine_lines {
                 let row = chart
                     .mixed_line_relation(&curve, &base, line, 0, &mut rng)
@@ -1065,6 +1082,16 @@ mod tests {
         assert!(chart
             .mixed_line_relation(&curve, &base, (0, 0), 0, &mut rng)
             .is_none());
+        let extended = build_factor_base(&curve, 2, &mut rng).unwrap();
+        let row = chart
+            .mixed_line_relation(&curve, &extended, (0, 0), 0, &mut rng)
+            .unwrap();
+        assert!(!row.coeffs.is_empty());
+        let value = row.coeffs.iter().fold(curve.identity(), |acc, &(i, c)| {
+            let term = curve.scalar_mul(&BigUint::from(c.unsigned_abs()), &extended.places[i].elem);
+            curve.add(&acc, &if c < 0 { curve.neg(&term) } else { term })
+        });
+        assert!(curve.is_identity(&value));
     }
 
     #[test]
