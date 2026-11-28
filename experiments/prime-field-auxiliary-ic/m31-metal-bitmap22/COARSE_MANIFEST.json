@@ -1,0 +1,170 @@
+{
+  "schema": "m31-metal-coarse22-manifest/v1",
+  "commit": "2d0f5f2688288de19e7c303d9f12abd5350c0bb2",
+  "host": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "python": "3.13.1",
+  "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11) (Homebrew)",
+  "swiftc": "Apple Swift version 6.4.2 (swiftlang-6.4.2.1.9 clang-2100.4.1.1)\nTarget: arm64-apple-macosx27.2.0",
+  "source_sha256": {
+    "experiments/prime-field-auxiliary-ic/m31-metal-four-sum/full.rs": "f0d3c8e0efd9c33f47d4c648f145c2af6057ecfea1961bbdd59bc4dce9bdc5d4",
+    "experiments/prime-field-auxiliary-ic/m31-metal-four-sum/gpu_ffi.swift": "d2acc5b96f9f1ff7e8a084ff16db9cb92b01d632aee7f07dd9e0acc6991b35dc",
+    "experiments/prime-field-auxiliary-ic/m31-metal-four-sum/screen.metal": "a5c50f7c806d3e70da5f37b646c1dbc9c9d5ed3b822317126893dec704bd1fbf",
+    "experiments/prime-field-auxiliary-ic/m31-metal-bitmap22/coarse.py": "34931e8966b24bd3e6ac19157fc6fd37311383890fa0cade857285be47177643",
+    "experiments/prime-field-auxiliary-ic/m31-metal-bitmap22/verify_coarse.py": "bcdc2e020ec75e5a9bf2f6aa322ca0f87a0c0b2000c487e856c87ebf7626609d",
+    "experiments/prime-field-auxiliary-ic/m31-metal-bitmap22/COARSE_PROTOCOL.md": "a24d794f47ba9568933e7e76ad4d2dbdd639a1d92212beadd312a8dc5215e984",
+    "crates/prime-field-auxiliary-ic/src/solve.rs": "608c8edbaddbf30b1fb0560de0788c7929a68e9b0cda2253287942ea32b74bde",
+    "crates/prime-field-auxiliary-ic/src/pair_index.rs": "cd229e27e488da7ad2c53fa6add7a66439b0f2d26e11cb4cef04927ba20403cd"
+  },
+  "targets": [
+    [
+      1767503692,
+      244402461
+    ],
+    [
+      686106551,
+      2137700595
+    ],
+    [
+      949616523,
+      2050168716
+    ],
+    [
+      1568678311,
+      615355077
+    ],
+    [
+      2146214436,
+      1536824028
+    ]
+  ],
+  "seeds": [
+    369595435129540235,
+    6279303676882712854,
+    6075752925329972517
+  ],
+  "order_seed": 3196156902850536156,
+  "master_seed_hex": "99ec493a95b1181164cbfaba1c169fa3",
+  "schedule": [
+    {
+      "target": 0,
+      "seed": 2,
+      "arms": [
+        "20",
+        "coarse22"
+      ]
+    },
+    {
+      "target": 3,
+      "seed": 1,
+      "arms": [
+        "coarse22",
+        "20"
+      ]
+    },
+    {
+      "target": 4,
+      "seed": 0,
+      "arms": [
+        "20",
+        "coarse22"
+      ]
+    },
+    {
+      "target": 3,
+      "seed": 0,
+      "arms": [
+        "coarse22",
+        "20"
+      ]
+    },
+    {
+      "target": 2,
+      "seed": 2,
+      "arms": [
+        "20",
+        "coarse22"
+      ]
+    },
+    {
+      "target": 1,
+      "seed": 1,
+      "arms": [
+        "coarse22",
+        "20"
+      ]
+    },
+    {
+      "target": 3,
+      "seed": 2,
+      "arms": [
+        "20",
+        "coarse22"
+      ]
+    },
+    {
+      "target": 2,
+      "seed": 1,
+      "arms": [
+        "coarse22",
+        "20"
+      ]
+    },
+    {
+      "target": 0,
+      "seed": 1,
+      "arms": [
+        "20",
+        "coarse22"
+      ]
+    },
+    {
+      "target": 1,
+      "seed": 0,
+      "arms": [
+        "coarse22",
+        "20"
+      ]
+    },
+    {
+      "target": 1,
+      "seed": 2,
+      "arms": [
+        "20",
+        "coarse22"
+      ]
+    },
+    {
+      "target": 4,
+      "seed": 2,
+      "arms": [
+        "coarse22",
+        "20"
+      ]
+    },
+    {
+      "target": 2,
+      "seed": 0,
+      "arms": [
+        "20",
+        "coarse22"
+      ]
+    },
+    {
+      "target": 0,
+      "seed": 0,
+      "arms": [
+        "coarse22",
+        "20"
+      ]
+    },
+    {
+      "target": 4,
+      "seed": 1,
+      "arms": [
+        "20",
+        "coarse22"
+      ]
+    }
+  ],
+  "binary_sha256": "c920f888fc840158d106b333607e119759ce3b8d29a04ec6075831310a930128"
+}
