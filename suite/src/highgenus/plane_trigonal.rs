@@ -1185,6 +1185,105 @@ mod tests {
     }
 
     #[test]
+    fn cubic_target_row_feeds_a_verified_genus_five_dlp() {
+        let field = Fp::new(7).unwrap();
+        let curve = SuperellipticCurve::new(
+            field,
+            3,
+            vec![
+                (Poly::from_coeffs(vec![4, 3, 6, 0, 5, 1], &field), 1),
+                (Poly::from_coeffs(vec![4, 1], &field), 2),
+            ],
+        )
+        .unwrap();
+        assert_eq!(curve.genus, 5);
+        let chart = TrigonalPlaneChart::new(&curve).unwrap();
+        let mut rng = StdRng::seed_from_u64(0x2026_577);
+        let degree_two = build_factor_base(&curve, 2, &mut rng).unwrap();
+        let degree_three = build_factor_base(&curve, 3, &mut rng).unwrap();
+        let mut seeds = chart
+            .collect_affine_line_relations(&curve, &degree_three, 49, &mut rng)
+            .relations;
+        let quadratic_row = (0..field.p())
+            .flat_map(|slope| (0..field.p()).map(move |intercept| (slope, intercept)))
+            .find_map(|line| {
+                chart
+                    .affine_line_relation_degree_two(&curve, &degree_three, line, (0, 1), &mut rng)
+                    .filter(|row| {
+                        row.coeffs.iter().any(|&(index, coefficient)| {
+                            coefficient != 0 && degree_three.places[index].degree == 2
+                        })
+                    })
+            })
+            .expect("no quadratic line row in bounded F_7 scan");
+        seeds.push(quadratic_row);
+        seeds.push(
+            chart
+                .vertical_line_relation(&curve, &degree_three, 0, 1, &mut rng)
+                .unwrap(),
+        );
+        seeds.push(
+            chart
+                .mixed_line_relation(&curve, &degree_three, (0, 1), 0, &mut rng)
+                .unwrap(),
+        );
+        let n = BigUint::from(577u64);
+        let mut d1 = curve.identity();
+        for _ in 0..64 {
+            d1 = curve.scalar_mul(&BigUint::from(144u64), &curve.random_element(2, &mut rng));
+            if !curve.is_identity(&d1) {
+                break;
+            }
+        }
+        assert!(!curve.is_identity(&d1));
+        assert!(curve.is_identity(&curve.scalar_mul(&n, &d1)));
+        let mut candidate = d1.clone();
+        let mut selected = None;
+        for scalar in 2..577u64 {
+            candidate = curve.add(&candidate, &d1);
+            if chart
+                .direct_target_relation(&curve, &degree_two, &candidate, &mut rng)
+                .is_some()
+            {
+                continue;
+            }
+            if let Some(row) =
+                chart.direct_target_relation(&curve, &degree_three, &candidate, &mut rng)
+            {
+                if row.coeffs.iter().any(|&(index, coefficient)| {
+                    coefficient != 0 && degree_three.places[index].degree == 3
+                }) {
+                    selected = Some((scalar, candidate.clone(), row));
+                    break;
+                }
+            }
+        }
+        let (scalar, target, target_row) =
+            selected.expect("no cubic target in checked order-577 subgroup");
+        assert_eq!(target_row.beta, BigUint::from(1u32));
+        seeds.push(target_row);
+        let params = IcParams {
+            extra_relations: 8,
+            max_trials: 100_000,
+            seed: 20261128,
+            ..Default::default()
+        };
+        let report = index_calculus_dlp_with_seed_relations(
+            &curve,
+            &degree_three,
+            &d1,
+            &target,
+            &n,
+            &seeds,
+            &params,
+        )
+        .unwrap();
+        assert_eq!(report.k, BigUint::from(scalar));
+        assert_eq!(curve.scalar_mul(&report.k, &d1), target);
+        println!("direct cubic genus-five target scalar={scalar}");
+    }
+
+    #[test]
     fn vertical_ramified_fibers_give_verified_rows() {
         let field = Fp::new(17).unwrap();
         let mut rng = StdRng::seed_from_u64(0x2026_11ab);
