@@ -1,7 +1,7 @@
 # Active research tasks
 
 ## Active items
-- [ ] Implement the plane-curve and genus 2–5 index-calculus table across crypto and cryptanalysis (Codex, started 2026-11-28, branch codex/high-genus-table-coverage-20261128).
+- [ ] Implement the plane-curve and genus 2–5 index-calculus table across crypto and cryptanalysis (Codex, started 2026-11-28, branch codex/high-genus-table-coverage-20261128, draft PR #2010; companion crypto PR #5327).
 - [x] Clear the lead-testing papercuts in `ic bench` and the PKM pilot (workspace PROTOCOL.md §10) — done: configurations-only sweep files, empty matrix axes refused, a clean exit-3 `unsupported` refusal for m > tower engine capacity, a size check before a Koblitz divisor base materialises 2^dim abscissae, the listing's missing parameters, and `git_commit` read from the build checkout without the caller's `GIT_*` (Claude Code, started 2026-11-26, branch claude/kind-pascal-7ree1e, PR #1996; tracking workspace PR #180)
 - [ ] Mirror exact point hashing into the native two-slot collision graph collector (Codex, started 2026-11-27, branch codex/point-hash-collision-graph-20261127, draft PR #1997; paired Crypto draft PR #5263, native checks pending).
 - [ ] Audit p plus one smoothness leads on public fixtures (Codex, started 2026-11-25, branch codex/p1-smoothness-leads-20261125, PR #1979) [pcc:unverified]
