@@ -3,7 +3,8 @@
 //! For `y^3 = f1(x) f2(x)^2`, put `u = y/f2(x)` where `f2(x) != 0`.
 //! Then `f2(x) u^3 = f1(x)`. The Kummer maximal-order engine is the
 //! normalization arithmetic behind this chart. Points above roots of `f2`,
-//! infinity, and other singular branches require separate local treatment.
+//! infinity, and other singular branches require separate local treatment;
+//! vertical fibers above rational roots of `f2` use normalized places.
 //! Completely split affine line sections give homogeneous factor-base
 //! relations when their pole divisors agree.
 
@@ -121,12 +122,7 @@ impl TrigonalPlaneChart {
         u: u64,
         rng: &mut impl RngCore,
     ) -> Option<Ideal> {
-        if curve.m != 3 || curve.genus != self.genus || curve.field.p() != self.field.p() {
-            return None;
-        }
-        let same_factors = curve.factors.iter().any(|(f, e)| *e == 1 && *f == self.f1)
-            && curve.factors.iter().any(|(f, e)| *e == 2 && *f == self.f2);
-        if !same_factors {
+        if !self.matches_curve(curve) {
             return None;
         }
         let y = self.source_y(x, u)?;
@@ -138,6 +134,14 @@ impl TrigonalPlaneChart {
             .into_iter()
             .find(|(_, root)| root.c.first().copied().unwrap_or(0) == y)?;
         Some(curve.canonical(&place.0))
+    }
+
+    fn matches_curve(&self, curve: &SuperellipticCurve) -> bool {
+        curve.m == 3
+            && curve.genus == self.genus
+            && curve.field.p() == self.field.p()
+            && curve.factors.iter().any(|(f, e)| *e == 1 && *f == self.f1)
+            && curve.factors.iter().any(|(f, e)| *e == 2 && *f == self.f2)
     }
 
     /// Zeros of the affine line function `u−slope*x−intercept` on the
@@ -189,8 +193,9 @@ impl TrigonalPlaneChart {
     }
 
     /// Zeros of the vertical line function `x−a`. The pole divisor at
-    /// infinity is the same for every `a`. The fiber above a root of `f2`
-    /// is exceptional in this chart and is deliberately excluded.
+    /// infinity is the same for every `a`. A root of `f2` is exceptional
+    /// in this chart, but the unique ramified place above it is available
+    /// directly from the normalized Kummer model with multiplicity three.
     pub fn vertical_divisor(
         &self,
         curve: &SuperellipticCurve,
@@ -201,7 +206,15 @@ impl TrigonalPlaneChart {
         let x = a % k.p();
         let f2x = self.f2.eval(x, k);
         if f2x == 0 {
-            return None;
+            if !self.matches_curve(curve) {
+                return None;
+            }
+            let pi = Poly::from_coeffs(vec![k.neg(x), 1], k);
+            let places = curve.places_above(&pi, rng);
+            if places.len() != 1 || !places[0].1.is_zero() {
+                return None;
+            }
+            return Some(vec![(curve.canonical(&places[0].0), 3)]);
         }
         let h = Poly::from_coeffs(vec![k.neg(self.f1.eval(x, k)), 0, 0, f2x], k);
         let mut divisor = Vec::new();
@@ -233,6 +246,36 @@ impl TrigonalPlaneChart {
     ) -> Option<Relation> {
         let a = self.vertical_divisor(curve, first, rng)?;
         let b = self.vertical_divisor(curve, second, rng)?;
+        self.divisor_relation(curve, factor_base, &a, &b, rng)
+    }
+
+    /// Compare an affine line `u=mx+b` with a vertical line `x=a`.
+    /// The affine function has a simple pole at every place above `f2=0`,
+    /// while the vertical function has none there. Their remaining pole
+    /// difference is supported at the rational point at infinity, whose
+    /// degree-zero class is the identity. Every `f2` place must be rational
+    /// for a degree-one factor-base row.
+    pub fn mixed_line_relation(
+        &self,
+        curve: &SuperellipticCurve,
+        factor_base: &FactorBase<Ideal>,
+        affine: (u64, u64),
+        vertical_x: u64,
+        rng: &mut impl RngCore,
+    ) -> Option<Relation> {
+        let a = self.affine_line_divisor(curve, affine.0, affine.1, rng)?;
+        let mut b = self.vertical_divisor(curve, vertical_x, rng)?;
+        for (factor, multiplicity) in self.f2.factor(&self.field, rng) {
+            if factor.degree() != Some(1) || multiplicity != 1 {
+                return None;
+            }
+            let x = self.field.neg(factor.c.first().copied().unwrap_or(0));
+            let fiber = self.vertical_divisor(curve, x, rng)?;
+            if fiber.len() != 1 || fiber[0].1 != 3 {
+                return None;
+            }
+            b.push((fiber[0].0.clone(), 1));
+        }
         self.divisor_relation(curve, factor_base, &a, &b, rng)
     }
 
@@ -335,7 +378,10 @@ impl TrigonalPlaneChart {
 mod tests {
     use rand::{rngs::StdRng, SeedableRng};
 
-    use super::super::ic::{build_factor_base, index_calculus_dlp_with_seed_relations, IcParams};
+    use super::super::ic::{
+        build_factor_base, index_calculus_dlp_with_seed_relations, index_calculus_group_order,
+        largest_prime_factor, IcParams,
+    };
     use super::super::JacobianGroup;
     use super::*;
 
@@ -665,6 +711,11 @@ mod tests {
                 .vertical_line_relation(&curve, &base, 0, 1, &mut rng)
                 .unwrap(),
         );
+        line_scan.relations.push(
+            chart
+                .mixed_line_relation(&curve, &base, (0, 1), 0, &mut rng)
+                .unwrap(),
+        );
         let n = BigUint::from(577u64);
         let mut d1 = curve.identity();
         for _ in 0..64 {
@@ -746,9 +797,15 @@ mod tests {
             .unwrap();
             let chart = TrigonalPlaneChart::new(&curve).unwrap();
             let base = build_factor_base(&curve, 1, &mut rng).unwrap();
-            assert!(chart
+            let exceptional_fiber = chart
                 .vertical_divisor(&curve, exceptional, &mut rng)
-                .is_none());
+                .unwrap();
+            assert_eq!(exceptional_fiber.len(), 1);
+            assert_eq!(exceptional_fiber[0].1, 3);
+            assert_eq!(
+                field.neg(exceptional_fiber[0].0.norm(&field).c[0]),
+                exceptional
+            );
             assert!(chart.vertical_divisor(&curve, partial, &mut rng).is_none());
             for x in [0, 1] {
                 let divisor = chart.vertical_divisor(&curve, x, &mut rng).unwrap();
@@ -756,24 +813,139 @@ mod tests {
                 assert_eq!(divisor[0].1, 3);
                 assert_eq!(field.neg(divisor[0].0.norm(&field).c[0]), x);
             }
-            let row = chart
-                .vertical_line_relation(&curve, &base, 0, 1, &mut rng)
-                .unwrap();
-            assert_eq!(row.coeffs.len(), 2);
-            assert!(row
-                .coeffs
-                .iter()
-                .all(|&(_, coefficient)| coefficient.abs() == 3));
-            assert!(row.alpha.is_zero() && row.beta.is_zero());
-            let value = row.coeffs.iter().fold(curve.identity(), |acc, &(i, c)| {
-                let term = curve.scalar_mul(&BigUint::from(c.unsigned_abs()), &base.places[i].elem);
-                curve.add(&acc, &if c < 0 { curve.neg(&term) } else { term })
-            });
-            assert!(curve.is_identity(&value), "genus {genus}");
+            for b in [1, exceptional] {
+                let row = chart
+                    .vertical_line_relation(&curve, &base, 0, b, &mut rng)
+                    .unwrap();
+                assert_eq!(row.coeffs.len(), 2);
+                assert!(row
+                    .coeffs
+                    .iter()
+                    .all(|&(_, coefficient)| coefficient.abs() == 3));
+                assert!(row.alpha.is_zero() && row.beta.is_zero());
+                let value = row.coeffs.iter().fold(curve.identity(), |acc, &(i, c)| {
+                    let term =
+                        curve.scalar_mul(&BigUint::from(c.unsigned_abs()), &base.places[i].elem);
+                    curve.add(&acc, &if c < 0 { curve.neg(&term) } else { term })
+                });
+                assert!(curve.is_identity(&value), "genus {genus}");
+            }
             assert_eq!(
                 chart.vertical_divisor(&curve, 17, &mut rng).unwrap()[0].1,
                 3
             );
         }
+    }
+
+    #[test]
+    fn mixed_line_rows_include_exceptional_pole_places() {
+        let field = Fp::new(17).unwrap();
+        let mut rng = StdRng::seed_from_u64(0x2026_11ac);
+        for (genus, roots1, roots2, affine_lines) in [
+            (4, vec![0, 1, 2], vec![3, 7], [(0, 0), (2, 0)]),
+            (5, vec![0, 1, 2, 3, 5], vec![6], [(0, 0), (7, 12)]),
+        ] {
+            let curve = SuperellipticCurve::new(
+                field,
+                3,
+                vec![
+                    (split_poly(&field, &roots1), 1),
+                    (split_poly(&field, &roots2), 2),
+                ],
+            )
+            .unwrap();
+            let chart = TrigonalPlaneChart::new(&curve).unwrap();
+            let base = build_factor_base(&curve, 1, &mut rng).unwrap();
+            for line in affine_lines {
+                let row = chart
+                    .mixed_line_relation(&curve, &base, line, 0, &mut rng)
+                    .unwrap();
+                assert!(!row.coeffs.is_empty());
+                assert!(row.alpha.is_zero() && row.beta.is_zero());
+                let value = row.coeffs.iter().fold(curve.identity(), |acc, &(i, c)| {
+                    let term =
+                        curve.scalar_mul(&BigUint::from(c.unsigned_abs()), &base.places[i].elem);
+                    curve.add(&acc, &if c < 0 { curve.neg(&term) } else { term })
+                });
+                assert!(curve.is_identity(&value), "genus {genus}, line {line:?}");
+            }
+        }
+        let field = Fp::new(11).unwrap();
+        let curve = SuperellipticCurve::new(
+            field,
+            3,
+            vec![
+                (split_poly(&field, &[0, 1, 2]), 1),
+                (Poly::from_coeffs(vec![1, 0, 1], &field), 2),
+            ],
+        )
+        .unwrap();
+        let chart = TrigonalPlaneChart::new(&curve).unwrap();
+        let base = build_factor_base(&curve, 1, &mut rng).unwrap();
+        assert!(chart
+            .mixed_line_relation(&curve, &base, (0, 0), 0, &mut rng)
+            .is_none());
+    }
+
+    #[test]
+    fn genus_four_plane_line_rows_feed_a_verified_dlp() {
+        let field = Fp::new(17).unwrap();
+        let curve = SuperellipticCurve::new(
+            field,
+            3,
+            vec![
+                (split_poly(&field, &[0, 1, 2]), 1),
+                (split_poly(&field, &[3, 7]), 2),
+            ],
+        )
+        .unwrap();
+        let chart = TrigonalPlaneChart::new(&curve).unwrap();
+        let mut rng = StdRng::seed_from_u64(0x2026_04d1);
+        let base = build_factor_base(&curve, 1, &mut rng).unwrap();
+        let params = IcParams {
+            extra_relations: 16,
+            max_trials: 200_000,
+            seed: 0x2026_04d1,
+            ..Default::default()
+        };
+        let candidate = index_calculus_group_order(&curve, &base, &params).unwrap();
+        assert!(candidate.within_hasse_weil);
+        let (n, cofactor) = largest_prime_factor(&candidate.order, 1_000_000).unwrap();
+        assert!(
+            n > BigUint::from(7u64),
+            "candidate order {} has largest prime factor {n}",
+            candidate.order
+        );
+        let mut d1 = curve.identity();
+        for _ in 0..64 {
+            let trial = curve.scalar_mul(&cofactor, &curve.random_element(2, &mut rng));
+            if !curve.is_identity(&trial) && curve.is_identity(&curve.scalar_mul(&n, &trial)) {
+                d1 = trial;
+                break;
+            }
+        }
+        assert!(!curve.is_identity(&d1));
+        let target = curve.scalar_mul(&BigUint::from(7u64), &d1);
+        assert!(!curve.is_identity(&target));
+        let mut seeds = chart
+            .collect_affine_line_relations(&curve, &base, 289, &mut rng)
+            .relations;
+        seeds.push(
+            chart
+                .vertical_line_relation(&curve, &base, 0, 3, &mut rng)
+                .unwrap(),
+        );
+        seeds.push(
+            chart
+                .mixed_line_relation(&curve, &base, (2, 0), 0, &mut rng)
+                .unwrap(),
+        );
+        let report = index_calculus_dlp_with_seed_relations(
+            &curve, &base, &d1, &target, &n, &seeds, &params,
+        )
+        .unwrap();
+        assert_eq!(report.k, BigUint::from(7u64));
+        assert_eq!(curve.scalar_mul(&report.k, &d1), target);
+        assert!(report.relations >= seeds.len());
     }
 }
