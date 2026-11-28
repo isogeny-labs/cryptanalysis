@@ -1,0 +1,5 @@
+# Dual x bitmap independent confirmation panel
+
+The initial frozen screen met its advance gate on both public bases. Keep the same candidate and 512 KiB high-bit control. Rebuild both binaries from the committed Rust source, repeat the complete sorted index-map and answer audit, then run 24 new matched blocks per basis (three seeds, eight balanced arm-order repeats) using order seed 112629. Invoke `M31_DUAL_REPEATS=8 M31_DUAL_ORDER_SEED=112629 python3 experiments/prime-field-auxiliary-ic/m31-dual-x-bitmap/replay.py > experiments/prime-field-auxiliary-ic/m31-dual-x-bitmap/confirm.csv`.
+
+The charged window and workload identity checks are those in `PROTOCOL.md`. Preserve every arm. Report separate paired wall and CPU medians, wins, and table medians; do not pool with the screen. A confirmed local implementation gain requires both bases to exceed 1.05 in paired wall and CPU ratios with at least 16/24 wins in each measure. Report any failure or censoring. This tests the same public target on two bases, so it cannot establish broad-curve or asymptotic performance.

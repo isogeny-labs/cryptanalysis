@@ -77,8 +77,9 @@ def main():
             print(f"{basis} exact index map SHA-256 {hashlib.sha256(images['high']).hexdigest()}", file=sys.stderr)
         if os.environ.get("M31_AUDIT_ONLY") == "1":
             return
-        blocks = [(basis, seed, repeat) for basis in fixtures for seed in range(3) for repeat in range(4)]
-        random.Random(112628).shuffle(blocks)
+        repeats = int(os.environ.get("M31_DUAL_REPEATS", "4"))
+        blocks = [(basis, seed, repeat) for basis in fixtures for seed in range(3) for repeat in range(repeats)]
+        random.Random(int(os.environ.get("M31_DUAL_ORDER_SEED", "112628"))).shuffle(blocks)
         writer = csv.writer(sys.stdout, lineterminator="\n")
         writer.writerow(["basis", "seed", "repeat", "position", "configuration", "basis_sha256", "scalar", "trials", "relations", "entries", "table_ns", "rust_total_ns", "charged_wall_ns", "charged_cpu_ns"])
         for basis, seed, repeat in blocks:
