@@ -60,7 +60,7 @@
 use crate::utils::mod_inverse;
 use num_bigint::{BigUint, RandBigInt};
 use num_integer::Integer;
-use num_traits::{One, Zero};
+use num_traits::{One, ToPrimitive, Zero};
 use rand::rngs::StdRng;
 use rand::SeedableRng;
 use std::collections::HashMap;
@@ -316,15 +316,10 @@ pub fn expected_online_cost(n: &BigUint, table_size: u64, _dp_bits: u8) -> f64 {
     n_f / t_f
 }
 
+/// `n` as the nearest `f64` (`inf` beyond `f64::MAX`). The old version
+/// returned `2^bits` for `n >= 2^53`, ignoring the mantissa (up to 2×).
 fn n_to_f64_safe(n: &BigUint) -> f64 {
-    // For very large n, this is lossy but order-of-magnitude correct.
-    let bits = n.bits();
-    if bits < 53 {
-        n.iter_u64_digits().next().unwrap_or(0) as f64
-    } else {
-        // 2^bits scaled by leading f64 mantissa.
-        2f64.powi(bits as i32)
-    }
+    n.to_f64().unwrap_or(f64::INFINITY)
 }
 
 // `Integer` and `mod_inverse` imports kept in case future variants
@@ -339,6 +334,16 @@ fn _link() {
 mod tests {
     use super::*;
     use num_bigint::BigUint;
+
+    /// Correctly rounded at and above 2^53 (the old helper gave 2^bits).
+    #[test]
+    fn n_to_f64_uses_the_mantissa_above_2p53() {
+        let three = BigUint::from(3u32) << 60u32; // old result 2^62
+        assert_eq!(n_to_f64_safe(&three), 3.0 * 2f64.powi(60));
+        let big = BigUint::from(5u32) << 250u32;
+        assert_eq!(n_to_f64_safe(&big), 5.0 * 2f64.powi(250));
+        assert_eq!(n_to_f64_safe(&BigUint::from(12_345u32)), 12_345.0);
+    }
 
     #[test]
     fn low_byte_checks_cover_large_values_and_zero() {

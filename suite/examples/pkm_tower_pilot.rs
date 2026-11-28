@@ -1660,11 +1660,46 @@ fn tower_ring(tower: &Tower, m: usize, p: u64) -> TowerRing {
     for i in 0..m {
         rules.extend(tower.square_rules(i * tower.t, p));
     }
-    TowerRing {
+    let ring = TowerRing {
         p,
         rules,
         n_free: m - 2,
+    };
+    // `main` refuses an m the engine cannot hold before any work; this keeps
+    // every other path to a ring failing with the engine's own reason rather
+    // than an index out of bounds inside `TowerRing::from_raw`.
+    ring.check();
+    ring
+}
+
+/// The exit code for a configuration the pilot does not take: distinct from
+/// a panic (101) and from success, and paired with one line
+/// `pkm_tower_pilot: unsupported: <why>` on stderr.  The workspace's lead
+/// sweep records such a cell as `unsupported` (not applicable), not `crashed`.
+const EXIT_UNSUPPORTED: i32 = 3;
+
+/// Why the tower engine cannot run some requested m, if it cannot: the ring
+/// of an m-summand system carries m − 2 free unknowns and `f4_fp_tower`
+/// holds at most `MAX_FREE` of them.
+fn tower_capacity_refusal(engine: Engine, ms: &[usize]) -> Option<String> {
+    if engine != Engine::Tower {
+        return None;
     }
+    let cap = f4_fp_tower::MAX_FREE;
+    let over: Vec<usize> = ms
+        .iter()
+        .copied()
+        .filter(|&m| m.saturating_sub(2) > cap)
+        .collect();
+    if over.is_empty() {
+        return None;
+    }
+    Some(format!(
+        "--engine tower holds at most {cap} free unknowns (f4_fp_tower::MAX_FREE), and an m-summand \
+         system needs m - 2 of them, so it takes m <= {}; m = {over:?} needs more. Use --engine f4 \
+         for those m",
+        cap + 2
+    ))
 }
 
 fn raw_terms(e: &Pol) -> Vec<(Vec<u32>, u64)> {
@@ -2344,6 +2379,11 @@ fn dump_basis(basis: &[Poly], cell: &Cell, k: u32) {
 
 fn main() {
     let a = parse_args();
+    if let Some(why) = tower_capacity_refusal(a.engine, &a.ms) {
+        // Before the --out file is created or any system built.
+        eprintln!("pkm_tower_pilot: unsupported: {why}");
+        std::process::exit(EXIT_UNSUPPORTED);
+    }
     let started = Instant::now();
     let mut sink = Sink {
         rows: Vec::new(),
@@ -2445,6 +2485,25 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// **An m the tower engine cannot hold is refused up front**, naming the
+    /// limit (it used to panic with an index out of bounds at m >= 7); the
+    /// raw engine takes every m.
+    #[test]
+    fn tower_engine_refuses_m_past_its_free_unknowns() {
+        assert_eq!(
+            tower_capacity_refusal(Engine::Tower, &[2, 3, 4, 5, 6]),
+            None
+        );
+        let why = tower_capacity_refusal(Engine::Tower, &[2, 6, 7, 9]).expect("m = 7, 9 refused");
+        assert!(why.contains("m <= 6") && why.contains("[7, 9]"), "{why}");
+        assert_eq!(tower_capacity_refusal(Engine::F4, &[2, 7, 9]), None);
+        assert_eq!(
+            f4_fp_tower::MAX_FREE + 2,
+            6,
+            "the refusal text and the lead specs assume m_max = 6"
+        );
+    }
 
     /// Independent backward quadratic solve: unlike the forward coset
     /// generator, this reconstructs all rational preimages of the terminal

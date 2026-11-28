@@ -20,6 +20,7 @@ mod collector_metrics;
 pub mod contraction;
 pub mod curve;
 pub mod encoding;
+mod factor_base_lsh;
 pub mod factoring;
 pub mod finite;
 pub mod joint;

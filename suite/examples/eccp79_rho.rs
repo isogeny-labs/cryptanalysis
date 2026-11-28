@@ -24,6 +24,12 @@
 //!
 //!     cargo run --release --example eccp79_rho -- --bits 40
 //!
+//! `--bits` accepts 8..=96 (the demo generator's Hasse-window BSGS stores
+//! about `p^{1/4}` points). Above ~50 bits rho itself takes hours; pass
+//! `--gen-only` to generate and check the curve without running rho:
+//!
+//!     cargo run --release --example eccp79_rho -- --bits 64 --gen-only
+//!
 //! To target the actual Certicom ECCp-79 instance, fill in the constants
 //! in `ECC P79_PARAMS` below (p, a, b, Gx, Gy, Qx, Qy, n) from the
 //! published challenge document and pass `--challenge`.  Those are
@@ -39,9 +45,9 @@ use std::time::{Duration, Instant};
 use cryptanalysis_suite::ecc::curve::CurveParams;
 use cryptanalysis_suite::ecc::field::FieldElement;
 use cryptanalysis_suite::ecc::point::Point;
-use num_bigint::{BigUint, RandBigInt};
+use num_bigint::{BigInt, BigUint, RandBigInt, Sign};
 use num_integer::Integer;
-use num_traits::{One, Zero};
+use num_traits::{One, ToPrimitive, Zero};
 use rand::{rngs::StdRng, SeedableRng};
 
 // ── ECCp-79 challenge parameters ───────────────────────────────────────────
@@ -135,15 +141,20 @@ fn sqrt_mod(n: &BigUint, p: &BigUint) -> Option<BigUint> {
 /// path we want a curve whose order is itself prime (cofactor 1) so the
 /// rho walk is on the full group.
 ///
-/// We don't run a full SEA point count here; instead we generate a small
-/// curve and brute-force the order with baby-step/giant-step.  That's
-/// fine for ≤50-bit demos.  For an actual 79-bit demo curve, use one with
-/// known order from the literature, or supply --challenge.
+/// We don't run a full SEA point count here; instead the order of a
+/// random point is found by baby-step giant-step over the Hasse window
+/// (`point_order_bsgs`), which is exact at any size but stores about
+/// `p^{1/4}` points: `2^14` at 56 bits, `2^20` at 80 bits, `2^24` at
+/// [`MAX_DEMO_BITS`] = 96 bits (about 1.5 GB). Time grows the same way,
+/// about 4x per 8 bits: one core needs about a minute at 56 bits, hours
+/// at 80 and a day or more at 96 (many candidate curves are counted before
+/// one has prime order). For the real ECCp-79 instance supply --challenge.
 fn random_demo_curve(bits: usize, rng: &mut StdRng) -> (CurveParams, Point) {
     assert!(
-        bits <= 50,
-        "demo curve generator only handles up to 50-bit orders; \
-         for ECCp-79 supply --challenge with real parameters"
+        (8..=MAX_DEMO_BITS).contains(&bits),
+        "demo curve generator handles 8..={MAX_DEMO_BITS}-bit orders (its Hasse-window \
+         BSGS keeps ~p^(1/4) points: 2^24, about 1.5 GB, at 96 bits); got {bits}. \
+         For ECCp-79 supply --challenge with real parameters"
     );
     loop {
         // Random prime p of the requested bit length.
@@ -195,6 +206,9 @@ fn random_demo_curve(bits: usize, rng: &mut StdRng) -> (CurveParams, Point) {
     }
 }
 
+/// Largest `--bits` the demo generator accepts (was 50).
+const MAX_DEMO_BITS: usize = 96;
+
 fn is_probable_prime(n: &BigUint, rounds: usize) -> bool {
     let one = BigUint::one();
     let two = BigUint::from(2u32);
@@ -240,18 +254,19 @@ fn is_probable_prime(n: &BigUint, rounds: usize) -> bool {
 /// (Typically equals the curve order on tiny curves; if not the caller
 /// rejects and retries with a fresh curve.)
 fn point_order_bsgs(g: &Point, a: &FieldElement, p: &BigUint, _bits: usize) -> Option<BigUint> {
-    use num_bigint::BigInt;
-    use num_bigint::Sign;
-
     // Hasse window: search m ∈ [-2√p, 2√p] such that (p+1+m)·g = ∞.
     // BSGS:  let T = (p+1)·g.  Find m with m·g = -T.
     //        baby_i = i·g for i in [0, w);  giant_j = -T - j·w·g.
+    //
+    // Indices are i128 from exact BigUint conversions (the old low-limb
+    // `as i64` reads were only exact for p < 2^124 and silently wrong
+    // past 2^128).
     let sqrt_p = p.sqrt();
     let w_big = sqrt_p.sqrt() + BigUint::from(2u32); // step ~ p^{1/4}
-    let w = w_big.to_u64_digits()[0] as i64;
-    let bound = 2i64 * (sqrt_p.to_u64_digits().first().copied().unwrap_or(0) as i64 + 1);
+    let w = i128::from(w_big.to_u64()?);
+    let bound = 2 * (i128::from(sqrt_p.to_u64()?) + 1);
 
-    let mut table: HashMap<Vec<u8>, i64> = HashMap::with_capacity(w as usize);
+    let mut table: HashMap<Vec<u8>, i128> = HashMap::with_capacity(usize::try_from(w).ok()?);
     let mut cur = Point::Infinity;
     for i in 0..w {
         table.entry(serialize_point(&cur)).or_insert(i);
@@ -261,7 +276,7 @@ fn point_order_bsgs(g: &Point, a: &FieldElement, p: &BigUint, _bits: usize) -> O
     let t = g.scalar_mul(&(p + BigUint::one()), a);
     let neg_t = t.neg();
     // Step = w·g.
-    let w_g = g.scalar_mul(&BigUint::from(w as u64), a);
+    let w_g = g.scalar_mul(&w_big, a);
     let neg_w_g = w_g.neg();
 
     // Iterate j in [-J, +J] where J·w covers ±2√p.
@@ -406,8 +421,6 @@ fn solve_collision(
 
 fn modinv(a: &BigUint, n: &BigUint) -> Option<BigUint> {
     // Extended Euclidean.
-    use num_bigint::BigInt;
-    use num_bigint::Sign;
     let (mut old_r, mut r) = (
         BigInt::from_biguint(Sign::Plus, n.clone()),
         BigInt::from_biguint(Sign::Plus, a.clone()),
@@ -608,6 +621,7 @@ fn main() {
     let args: Vec<String> = env::args().collect();
     let mut bits = 40usize;
     let mut use_challenge = false;
+    let mut gen_only = false;
     let mut threads = thread::available_parallelism()
         .map(|n| n.get())
         .unwrap_or(1);
@@ -620,6 +634,12 @@ fn main() {
             }
             "--challenge" => {
                 use_challenge = true;
+                i += 1;
+            }
+            // Generate (and check) the demo curve and target, skip rho:
+            // shows the generator at sizes where rho itself takes hours.
+            "--gen-only" => {
+                gen_only = true;
                 i += 1;
             }
             "--threads" => {
@@ -677,6 +697,24 @@ fn main() {
     println!("branches:     {}", R);
     println!("threads:      {}", threads);
     println!();
+
+    if gen_only {
+        let a_fe = fe(curve.a.clone(), &curve.p);
+        assert_eq!(
+            g.scalar_mul(&curve.n, &a_fe),
+            Point::Infinity,
+            "n·G != ∞ on the generated curve"
+        );
+        assert!(is_probable_prime(&curve.n, 30), "n is not prime");
+        let hasse = {
+            let t = BigInt::from_biguint(Sign::Plus, &curve.p + 1u32)
+                - BigInt::from_biguint(Sign::Plus, curve.n.clone());
+            &t * &t <= BigInt::from_biguint(Sign::Plus, &curve.p * 4u32)
+        };
+        assert!(hasse, "n outside the Hasse interval");
+        println!("✓ generated: n prime, n·G = ∞, |p + 1 − n| ≤ 2√p (--gen-only: rho skipped)");
+        return;
+    }
 
     let recovered =
         rho_attack_parallel(&curve, &g, &q, 0xDEADBEEF, threads).expect("rho returned None");

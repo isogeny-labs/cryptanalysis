@@ -144,6 +144,15 @@ static uint32_t opt_u32(const char *name, uint32_t def)
     return (uint32_t)value;
 }
 
+/* Optional nonnegative int32 option: absent => -1 (choose automatically). */
+static int32_t opt_i32_auto(const char *name)
+{
+    if (!opt(name)) return -1;
+    uint64_t value = opt_u64(name, 0);
+    if (value > INT32_MAX) die("option value exceeds int32 range");
+    return (int32_t)value;
+}
+
 /* strtod, not atof: atof cannot report a malformed value (cert-err34-c). */
 static double opt_f(const char *name, double def)
 {
@@ -414,17 +423,17 @@ static int cmd_solve(const char *selected_alg)
     uint64_t lo = opt_u64("--lo", 0), hi = opt_u64("--hi", 0);
     ca_dlog_params dp;
     ca_dlog_params_default(&dp);
-    dp.rho.threads = (uint32_t)opt_u64("--threads", 1);
+    dp.rho.threads = opt_u32("--threads", 1);
     dp.rho.seed = dp.kangaroo.seed = opt_u64("--seed", 0);
-    dp.rho.dp_bits = (int32_t)opt_u64("--dp-bits", (uint64_t)-1);
-    dp.rho.r = (uint32_t)opt_u64("--r", 0);
-    dp.rho.walks_per_thread = (uint32_t)opt_u64("--walks", 0);
+    dp.rho.dp_bits = opt_i32_auto("--dp-bits");
+    dp.rho.r = opt_u32("--r", 0);
+    dp.rho.walks_per_thread = opt_u32("--walks", 0);
     dp.rho.negation_map = !flag("--no-negation");
     dp.rho.max_ops = dp.bsgs.max_ops = dp.kangaroo.max_ops = dp.grumpy.max_ops =
         opt_u64("--max-ops", 0);
     dp.bsgs.table_size = opt_u64("--table", 0);
-    dp.kangaroo.dp_bits = (int32_t)opt_u64("--dp-bits", (uint64_t)-1);
-    dp.kangaroo.herd_size = (uint32_t)opt_u64("--herd", 0);
+    dp.kangaroo.dp_bits = opt_i32_auto("--dp-bits");
+    dp.kangaroo.herd_size = opt_u32("--herd", 0);
     dp.kangaroo.jumps = opt_u32("--jumps", 0);
     dp.grumpy.m = opt_u64("--m", 0);
     dp.grumpy.alpha = opt_f("--alpha", 0.7);
@@ -469,12 +478,12 @@ static int cmd_solve(const char *selected_alg)
             else
                 die("--backend must be auto, cuda or emulate");
         }
-        gp.device = (int32_t)opt_u64("--device", 0);
-        gp.threads_per_block = (uint32_t)opt_u64("--tpb", 0);
-        gp.blocks = (uint32_t)opt_u64("--blocks", 0);
-        gp.steps_per_launch = (uint32_t)opt_u64("--steps", 0);
-        gp.r = (uint32_t)opt_u64("--r", 0);
-        gp.dp_bits = (int32_t)opt_u64("--dp-bits", (uint64_t)-1);
+        gp.device = opt("--device") ? opt_i32_auto("--device") : 0;
+        gp.threads_per_block = opt_u32("--tpb", 0);
+        gp.blocks = opt_u32("--blocks", 0);
+        gp.steps_per_launch = opt_u32("--steps", 0);
+        gp.r = opt_u32("--r", 0);
+        gp.dp_bits = opt_i32_auto("--dp-bits");
         gp.negation_map = !flag("--no-negation");
         gp.seed = opt_u64("--seed", 0);
         gp.max_ops = opt_u64("--max-ops", 0);
@@ -525,12 +534,12 @@ static int cmd_solve(const char *selected_alg)
         ca_precomp_params pp;
         ca_precomp_params_default(&pp);
         pp.seed = opt_u64("--seed", 0);
-        pp.dp_bits = (int32_t)opt_u64("--dp-bits", (uint64_t)-1);
-        pp.r = (uint32_t)opt_u64("--r", 0);
+        pp.dp_bits = opt_i32_auto("--dp-bits");
+        pp.r = opt_u32("--r", 0);
         pp.table_size = opt_u64("--table", 0);
         pp.coverage = opt_f("--coverage", 0);
-        pp.threads = (uint32_t)opt_u64("--threads", 1);
-        pp.walks = (uint32_t)opt_u64("--walks", 0);
+        pp.threads = opt_u32("--threads", 1);
+        pp.walks = opt_u32("--walks", 0);
         pp.early_abort = flag("--early-abort") ? 1 : (flag("--no-early-abort") ? 0 : -1);
         pp.max_precomp_ops = opt_u64("--max-precomp-ops", 0);
         pp.max_online_ops = opt_u64("--max-online-ops", 0);
@@ -1742,7 +1751,7 @@ static int cmd_num(void)
         return 0;
     }
     if (!strcmp(op, "iroot")) {
-        unsigned k = (unsigned)opt_u64("--k", 2);
+        unsigned k = opt_u32("--k", 2);
         if (k == 0) die("--k must be positive");
         printf("{\"result\":\"%" PRIu64 "\"}\n", ca_iroot(opt_u64("--n", 0), k));
         return 0;
@@ -2039,11 +2048,9 @@ static int cmd_coord_job(void)
     parse_elem(&g, opt("--h"), &target);
 
     ca_coord_job job;
-    ca_status rc = ca_coord_job_init(
-        &job, &g, &base, &target,
-        (int32_t)opt_u64("--dp-bits", (uint64_t)-1) == -1 ? -1 : (int32_t)opt_u64("--dp-bits", 0),
-        (uint32_t)opt_u64("--r", 0), flag("--negation"), opt_u64("--unit-size", 0),
-        opt_u64("--seed", 0));
+    ca_status rc =
+        ca_coord_job_init(&job, &g, &base, &target, opt_i32_auto("--dp-bits"), opt_u32("--r", 0),
+                          flag("--negation"), opt_u64("--unit-size", 0), opt_u64("--seed", 0));
     if (rc != CA_OK) die_status(rc);
     /* How many hubs the point space is split across.  It goes into the
      * document, so it goes into the id: a fleet cannot half-agree about

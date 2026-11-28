@@ -1,5 +1,5 @@
 //! Exact counted prime-field `F_p` and quadratic-extension `F_{p^2}` arithmetic
-//! for odd primes `3 < p < 2^62`, plus standalone SHA-256 and deterministic PRNG.
+//! for odd primes `3 < p < 2^64`, plus standalone SHA-256 and deterministic PRNG.
 
 use std::ops::AddAssign;
 
@@ -31,7 +31,7 @@ impl AddAssign for FpOps {
     }
 }
 
-/// Canonical modular addition `x + y mod p` (`x, y < p < 2^63`).
+/// Canonical modular addition `x + y mod p` (`x, y < p < 2^64`; the sum is never formed above `p`).
 #[inline]
 pub fn add_mod(x: u64, y: u64, p: u64, ops: &mut FpOps) -> u64 {
     debug_assert!(x < p && y < p);
@@ -128,7 +128,7 @@ pub fn inv_mod(x: u64, p: u64, ops: &mut FpOps) -> u64 {
     res
 }
 
-/// Fast 64-bit Montgomery domain for odd primes `3 < p < 2^62`.
+/// Fast 64-bit Montgomery domain for odd primes `3 < p < 2^64`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct MontDomain {
     /// Odd prime modulus `p`.
@@ -142,9 +142,9 @@ pub struct MontDomain {
 }
 
 impl MontDomain {
-    /// Construct the Montgomery domain for odd prime `3 < p < 2^62`.
+    /// Construct the Montgomery domain for odd modulus `3 < p < 2^64` (every odd `u64` above 3).
     pub fn new(p: u64) -> Self {
-        assert!(p > 3 && (p & 1) == 1 && (p >> 62) == 0, "unsupported prime for MontDomain");
+        assert!(p > 3 && (p & 1) == 1, "unsupported modulus for MontDomain");
         // Newton iteration for p * inv == 1 (mod 2^64).
         let mut inv = 1u64;
         for _ in 0..6 {
@@ -163,13 +163,14 @@ impl MontDomain {
 
     #[inline]
     fn redc(self, t: u128) -> u64 {
+        // `t + m*p` can exceed 2^128 when p >= 2^63, so add the high halves separately:
+        // the low 64 bits of `t + m*p` are zero, contributing a carry iff `t mod 2^64 != 0`.
         let m = (t as u64).wrapping_mul(self.n_prime);
-        let u = ((t + (m as u128) * (self.p as u128)) >> 64) as u64;
-        if u >= self.p {
-            u - self.p
-        } else {
-            u
-        }
+        let mp = (m as u128) * (self.p as u128);
+        let carry = ((t as u64) != 0) as u128;
+        let u = (t >> 64) + (mp >> 64) + carry; // < 2p + 1, fits u128
+        let p = self.p as u128;
+        (if u >= p { u - p } else { u }) as u64
     }
 
     /// Convert canonical residue `x < p` into Montgomery representation.

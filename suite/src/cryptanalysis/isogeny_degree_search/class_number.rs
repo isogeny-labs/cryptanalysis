@@ -111,6 +111,13 @@ pub fn is_prime_u64(n: u64) -> bool {
     true
 }
 
+/// `x² + c mod n` without overflow: the sum is taken in `u128` (the old
+/// `mulmod(x, x, n) + c` wrapped once `x² mod n > u64::MAX − c`, which
+/// is possible for `n` within `c` of `2^64`).
+fn rho_step(x: u64, c: u64, n: u64) -> u64 {
+    ((mulmod(x, x, n) as u128 + c as u128) % n as u128) as u64
+}
+
 /// Brent's variant of Pollard's rho.  Deterministic: the polynomial's
 /// shift walks `1, 2, 3, …` rather than being drawn at random, so a
 /// reported factorisation is reproducible.
@@ -119,7 +126,7 @@ fn pollard_rho(n: u64) -> u64 {
         return 2;
     }
     for c in 1u64.. {
-        let f = |x: u64| (mulmod(x, x, n) + c) % n;
+        let f = |x: u64| rho_step(x, c, n);
         let (mut x, mut y, mut d) = (2u64, 2u64, 1u64);
         while d == 1 {
             x = f(x);
@@ -217,7 +224,9 @@ pub fn kronecker_symbol(d: i64, p: u64) -> i32 {
             -1
         };
     }
-    let a = d.rem_euclid(p as i64) as u64;
+    // i128: `p as i64` is negative for p >= 2^63, which made the old
+    // `d.rem_euclid(p as i64)` reduce modulo 2^64 − p instead of p.
+    let a = (d as i128).rem_euclid(p as i128) as u64;
     if a == 0 {
         return 0;
     }
@@ -370,6 +379,41 @@ mod tests {
         koblitz_trace_recurrence, IsogenyCensus,
     };
     use crate::cryptanalysis::koblitz_index_calculus::find_irreducible;
+
+    /// `kronecker_symbol` for p = 2^64 − 59 (prime, p ≡ 5 mod 8). The old
+    /// `p as i64` cast reduced d modulo 59 and got -1, -3, -7, -11 wrong.
+    #[test]
+    fn kronecker_symbol_for_p_above_2p63() {
+        let p = u64::MAX - 58;
+        assert!(is_prime_u64(p));
+        for (d, want) in [
+            (-1i64, 1),
+            (-3, -1),
+            (-7, -1),
+            (-11, 1),
+            (-163, 1),
+            (5, -1),
+            (-23, 1),
+        ] {
+            assert_eq!(kronecker_symbol(d, p), want, "d = {d}");
+        }
+        // Euler-criterion cross-check on |d| for a residue/non-residue.
+        assert_eq!(kronecker_symbol(4, p), 1);
+    }
+
+    /// The rho step must not wrap for n near 2^64: with x² ≡ −1 (mod n),
+    /// x² + 100 ≡ 99, while the old u64 sum wrapped to 40.
+    #[test]
+    fn rho_step_no_overflow_near_2p64() {
+        let n = u64::MAX - 58;
+        let x = 2_296_021_864_060_584_341u64; // 2^((n−1)/4): x² ≡ −1
+        assert_eq!(mulmod(x, x, n), n - 1);
+        assert_eq!(rho_step(x, 100, n), 99);
+        assert_eq!(rho_step(3, 1, n), 10);
+        // Factor a semiprime of two 32-bit primes near 2^64.
+        let (a, b) = (4_294_967_291u64, 4_294_967_279u64); // 2^32 − 5, 2^32 − 17
+        assert_eq!(factor_u64(a * b), vec![(b, 1), (a, 1)]);
+    }
 
     /// The class-number formula must reproduce the **exhaustive**
     /// census, curve for curve, at every `n` the census reaches.  This

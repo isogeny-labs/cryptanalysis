@@ -177,8 +177,19 @@ fn log2_big(n: &BigUint) -> f64 {
     (n >> shift).to_f64().unwrap_or(1.0).log2() + shift as f64
 }
 
+/// Largest baby-step table [`bsgs`] builds (`2^26` entries, enough for a
+/// 52-bit bound).
+pub const BSGS_MAX_TABLE_ENTRIES: u64 = 1 << 26;
+
+/// The table is grown on demand past this many pre-reserved slots, so a
+/// large bound does not reserve its whole table up front.
+const BSGS_PREALLOC_ENTRIES: u64 = 1 << 20;
+
 /// Baby-step giant-step for `h = g^d`, `d ∈ [0, bound)`.  Returns
-/// `(d, group operations)`.
+/// `(d, group operations)`, or `None` when no `d` is found or the table
+/// (`⌊√bound⌋ + 1` entries) would exceed [`BSGS_MAX_TABLE_ENTRIES`]
+/// ([`solve_prime_order`] reports that case as
+/// [`WeakCurveError::BsgsBoundTooLarge`]).
 pub fn bsgs<G: DlpGroup>(
     grp: &G,
     g: &G::Elem,
@@ -186,8 +197,9 @@ pub fn bsgs<G: DlpGroup>(
     bound: &BigUint,
 ) -> Option<(BigUint, u64)> {
     let m = bound.sqrt() + 1u32;
-    let m_u = m.to_u64()?;
-    let mut table: HashMap<G::Elem, u64> = HashMap::with_capacity(m_u as usize);
+    let m_u = m.to_u64().filter(|&m| m <= BSGS_MAX_TABLE_ENTRIES)?;
+    let mut table: HashMap<G::Elem, u64> =
+        HashMap::with_capacity(m_u.min(BSGS_PREALLOC_ENTRIES) as usize);
     let mut cur = grp.identity();
     let mut ops = 0u64;
     for j in 0..m_u {
@@ -393,6 +405,15 @@ pub fn solve_prime_order<G: DlpGroup>(
         return Err(WeakCurveError::NotInSubgroup);
     }
     if ell.bits() as u32 <= opts.bsgs_max_bits {
+        let entries = ell.sqrt() + 1u32;
+        if entries.to_u64().is_none_or(|m| m > BSGS_MAX_TABLE_ENTRIES) {
+            // A distinct error: the old code reported `NotInSubgroup` here.
+            return Err(WeakCurveError::BsgsBoundTooLarge {
+                order_bits: ell.bits(),
+                table_entries: entries.to_string(),
+                max_entries: BSGS_MAX_TABLE_ENTRIES,
+            });
+        }
         return match bsgs(grp, g, h, ell) {
             Some((d, ops)) => Ok((d, PrimeSolver::Bsgs, ops)),
             None => Err(WeakCurveError::NotInSubgroup),
@@ -601,6 +622,36 @@ mod tests {
         let mut rng = seeded_rng(7);
         let (d2, _) = pollard_rho(&ec, &g2, &h2, &q2, &SolverOptions::default(), &mut rng).unwrap();
         assert_eq!(d2, d);
+    }
+
+    /// A large `bsgs_max_bits` with a big prime order is a configuration
+    /// error, reported as `BsgsBoundTooLarge` (the old code returned
+    /// `NotInSubgroup` for a 128-bit order and reserved a 2^30-entry
+    /// table up front for a 61-bit one).
+    #[test]
+    fn bsgs_refuses_oversized_bound_distinctly() {
+        let (ec, g, n) = curve128();
+        let h = ec.mul(&g, &BigUint::from(5u32));
+        let opts = SolverOptions {
+            bsgs_max_bits: 200,
+            ..SolverOptions::default()
+        };
+        let mut rng = seeded_rng(3);
+        // 128-bit and 61-bit orders: tables of 2^64 and 2^30.5 entries.
+        for ell in [n.clone(), (BigUint::one() << 60u32) + 33u32] {
+            match solve_prime_order(&ec, &g, &h, &ell, &opts, &mut rng) {
+                Err(WeakCurveError::BsgsBoundTooLarge {
+                    order_bits,
+                    max_entries,
+                    ..
+                }) => {
+                    assert_eq!(order_bits, ell.bits());
+                    assert_eq!(max_entries, BSGS_MAX_TABLE_ENTRIES);
+                }
+                other => panic!("{ell}: unexpected {other:?}"),
+            }
+        }
+        assert!(bsgs(&ec, &g, &h, &((BigUint::one() << 60u32) + 33u32)).is_none());
     }
 
     #[test]

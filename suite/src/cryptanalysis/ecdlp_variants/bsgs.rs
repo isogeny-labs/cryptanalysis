@@ -109,10 +109,10 @@ fn bsgs_core(group: &EcGroup, q: &Point, average_case: bool) -> Result<DlpSoluti
     } else {
         isqrt_ceil(n)
     };
-    let m_u64 = to_u64(&m);
-    if m_u64 > MAX_TABLE {
-        return Err("BSGS table would exceed MAX_TABLE");
-    }
+    let m_u64 = match to_u64(&m) {
+        Some(v) if v <= MAX_TABLE => v,
+        _ => return Err("BSGS table would exceed MAX_TABLE"),
+    };
 
     let table = build_baby_exact(group, m_u64);
     let table_size = table.len();
@@ -121,7 +121,7 @@ fn bsgs_core(group: &EcGroup, q: &Point, average_case: bool) -> Result<DlpSoluti
     let s = group.mul_setup(&m);
     let neg_s = group.neg(&s);
     let mut cur = q.clone();
-    let max_i = to_u64(&(n / &m)) + 2;
+    let max_i = to_u64(&(n / &m)).ok_or("BSGS: giant-step bound exceeds u64")? + 2;
     for i in 0..=max_i {
         if let Some(&j) = table.get(&key(&cur)) {
             let x = (BigUint::from(i) * &m + BigUint::from(j)) % n;
@@ -160,10 +160,10 @@ pub fn bsgs_interleaving(group: &EcGroup, q: &Point) -> Result<DlpSolution, &'st
     group.reset();
     let n = group.order();
     let m = isqrt_ceil(n);
-    let m_u64 = to_u64(&m);
-    if m_u64 > MAX_TABLE {
-        return Err("interleaving BSGS table would exceed MAX_TABLE");
-    }
+    let m_u64 = match to_u64(&m) {
+        Some(v) if v <= MAX_TABLE => v,
+        _ => return Err("interleaving BSGS table would exceed MAX_TABLE"),
+    };
     let s = group.mul_setup(&m);
     let neg_s = group.neg(&s);
 
@@ -218,10 +218,10 @@ pub fn grumpy_giants(group: &EcGroup, q: &Point) -> Result<DlpSolution, &'static
     group.reset();
     let n = group.order();
     let m = isqrt_ceil(n);
-    let m_u64 = to_u64(&m);
-    if m_u64 > MAX_TABLE {
-        return Err("grumpy giants table would exceed MAX_TABLE");
-    }
+    let m_u64 = match to_u64(&m) {
+        Some(v) if v <= MAX_TABLE => v,
+        _ => return Err("grumpy giants table would exceed MAX_TABLE"),
+    };
     let s = group.mul_setup(&m);
     let neg_s = group.neg(&s);
 
@@ -288,10 +288,10 @@ pub fn bsgs_negation(group: &EcGroup, q: &Point) -> Result<DlpSolution, &'static
     group.reset();
     let n = group.order();
     let m = isqrt_ceil(&((n + 1u32) / 2u32)).max(BigUint::from(1u32));
-    let m_u64 = to_u64(&m);
-    if m_u64 > MAX_TABLE {
-        return Err("negation BSGS table would exceed MAX_TABLE");
-    }
+    let m_u64 = match to_u64(&m) {
+        Some(v) if v <= MAX_TABLE => v,
+        _ => return Err("negation BSGS table would exceed MAX_TABLE"),
+    };
     let baby = build_baby_xfold(group, m_u64);
     let table_size = baby.len();
 
@@ -300,7 +300,7 @@ pub fn bsgs_negation(group: &EcGroup, q: &Point) -> Result<DlpSolution, &'static
     let s = group.mul_setup(&big_m);
     let neg_s = group.neg(&s);
     let mut cur = q.clone();
-    let max_i = to_u64(&(n / &big_m)) + 2;
+    let max_i = to_u64(&(n / &big_m)).ok_or("negation BSGS: giant-step bound exceeds u64")? + 2;
     for i in 0..=max_i {
         if let Some(&k) = baby.get(&xkey(&cur)) {
             // cur = Q − i·M·G = ±kG ⟹ x = i·M ± k
@@ -330,10 +330,10 @@ pub fn bsgs_interleaving_negation(group: &EcGroup, q: &Point) -> Result<DlpSolut
     group.reset();
     let n = group.order();
     let m = isqrt_ceil(n);
-    let m_u64 = to_u64(&m);
-    if m_u64 > MAX_TABLE {
-        return Err("interleaving-negation table would exceed MAX_TABLE");
-    }
+    let m_u64 = match to_u64(&m) {
+        Some(v) if v <= MAX_TABLE => v,
+        _ => return Err("interleaving-negation table would exceed MAX_TABLE"),
+    };
     let s = group.mul_setup(&m);
     let neg_s = group.neg(&s);
 
@@ -394,10 +394,10 @@ pub fn grumpy_giants_negation(group: &EcGroup, q: &Point) -> Result<DlpSolution,
     group.reset();
     let n = group.order();
     let m = isqrt_ceil(n);
-    let m_u64 = to_u64(&m);
-    if m_u64 > MAX_TABLE {
-        return Err("grumpy-negation table would exceed MAX_TABLE");
-    }
+    let m_u64 = match to_u64(&m) {
+        Some(v) if v <= MAX_TABLE => v,
+        _ => return Err("grumpy-negation table would exceed MAX_TABLE"),
+    };
     let s = group.mul_setup(&m);
     let neg_s = group.neg(&s);
 
@@ -493,10 +493,10 @@ pub fn bsgs_interleaving_block(
     let n = group.order();
     let b = block.max(1) as u64;
     let m = isqrt_ceil(n);
-    let m_u64 = to_u64(&m);
-    if m_u64 > MAX_TABLE {
-        return Err("interleaving-block table would exceed MAX_TABLE");
-    }
+    let m_u64 = match to_u64(&m) {
+        Some(v) if v <= MAX_TABLE => v,
+        _ => return Err("interleaving-block table would exceed MAX_TABLE"),
+    };
     let s = group.mul_setup(&m);
     let neg_s = group.neg(&s);
 
@@ -511,7 +511,9 @@ pub fn bsgs_interleaving_block(
     let mut baby: HashMap<(Vec<u8>, Vec<u8>), u64> = HashMap::new();
     let mut giant: HashMap<(Vec<u8>, Vec<u8>), u64> = HashMap::new();
 
-    let max_index = m_u64 + to_u64(&(n / &m)) + 2;
+    let max_index = m_u64
+        + to_u64(&(n / &m)).ok_or("interleaving-block BSGS: giant-step bound exceeds u64")?
+        + 2;
     let super_steps = max_index / b + 2;
     for c in 0..=super_steps {
         for r in 0..b as usize {
@@ -558,10 +560,10 @@ pub fn grumpy_giants_block(
     let n = group.order();
     let b = block.max(1) as u64;
     let m = isqrt_ceil(n);
-    let m_u64 = to_u64(&m);
-    if m_u64 > MAX_TABLE {
-        return Err("grumpy-block table would exceed MAX_TABLE");
-    }
+    let m_u64 = match to_u64(&m) {
+        Some(v) if v <= MAX_TABLE => v,
+        _ => return Err("grumpy-block table would exceed MAX_TABLE"),
+    };
     let s = group.mul_setup(&m);
     let neg_s = group.neg(&s);
 
@@ -632,6 +634,54 @@ fn pairs_with(walkers: &[Point], step: &Point) -> Vec<(Point, Point)> {
 mod tests {
     use super::super::{demo_group_mid, demo_group_small};
     use super::*;
+
+    /// An order whose `ceil(sqrt n)` exceeds 2^64 must be refused as too
+    /// large. n = (2^64 + 1)^2 has m = 2^64 + 1, whose low limb is 1: the old
+    /// low-limb narrowing built a one-entry table and searched 3 giant steps.
+    #[test]
+    fn refuses_table_size_above_u64() {
+        use num_traits::One;
+        assert_eq!(
+            super::super::to_u64(&((BigUint::one() << 64u32) + 5u32)),
+            None
+        );
+        assert_eq!(
+            super::super::to_u64(&BigUint::from(u64::MAX)),
+            Some(u64::MAX)
+        );
+        let small = demo_group_small();
+        let root = (BigUint::one() << 64u32) + 1u32;
+        let fake_n = &root * &root;
+        let group = EcGroup::new(
+            small.a().clone(),
+            BigUint::from(10_007u32),
+            fake_n,
+            small.generator().clone(),
+        );
+        let q = group.mul_setup(&BigUint::from(1234u32));
+        type Solver = fn(&EcGroup, &Point) -> Result<DlpSolution, &'static str>;
+        let solvers: [(&str, Solver); 6] = [
+            ("textbook", bsgs_textbook),
+            ("average", bsgs_average_case),
+            ("interleaving", bsgs_interleaving),
+            ("grumpy", grumpy_giants),
+            ("negation", bsgs_negation),
+            ("grumpy-negation", grumpy_giants_negation),
+        ];
+        for (name, f) in solvers {
+            let err = f(&group, &q).expect_err(name);
+            assert!(err.contains("MAX_TABLE"), "{name}: {err}");
+        }
+        assert!(bsgs_interleaving_negation(&group, &q)
+            .expect_err("in-neg")
+            .contains("MAX_TABLE"));
+        assert!(bsgs_interleaving_block(&group, &q, 4)
+            .expect_err("block")
+            .contains("MAX_TABLE"));
+        assert!(grumpy_giants_block(&group, &q, 4)
+            .expect_err("gblock")
+            .contains("MAX_TABLE"));
+    }
 
     fn plant(group: &EcGroup, x: u64) -> Point {
         group.mul_setup(&BigUint::from(x))
