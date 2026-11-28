@@ -31,9 +31,17 @@ impl Hasher for KeyHasher {
     }
 }
 type Lookup = HashMap<u64, usize, BuildHasherDefault<KeyHasher>>;
-const X_BITMAP_BITS: usize = 20;
+const X_BITMAP_BITS: usize = if option_env!("M31_WIDE_BITMAP").is_some() {
+    22
+} else {
+    20
+};
 fn x_bitmap_bit(x: u64) -> usize {
-    (x.wrapping_mul(0x9e3779b97f4a7c15) >> (64 - X_BITMAP_BITS)) as usize
+    if option_env!("M31_WIDE_BITMAP").is_some() {
+        (x as usize) >> (31 - X_BITMAP_BITS)
+    } else {
+        (x.wrapping_mul(0x9e3779b97f4a7c15) >> (64 - X_BITMAP_BITS)) as usize
+    }
 }
 type Pair = [SignedTerm; 2];
 struct Entry {
@@ -130,6 +138,14 @@ impl<const B: u32> PairIndex<B> {
     /// Build at most `max_pairs` signed pair witnesses with batched arithmetic.
     /// Negation-folded construction evaluates exactly `columns^2` raw pairs.
     pub fn new(base: &FactorBase<B>, max_pairs: usize, chunk: usize) -> Result<Self> {
+        Self::new_impl(
+            base,
+            max_pairs,
+            chunk,
+            B == 31 && option_env!("M31_FUSED_PAIR_BUILD").is_some(),
+        )
+    }
+    fn new_impl(base: &FactorBase<B>, max_pairs: usize, chunk: usize, fused: bool) -> Result<Self> {
         let columns = base.representatives().len();
         let size = columns
             .checked_mul(columns)
@@ -157,7 +173,9 @@ impl<const B: u32> PairIndex<B> {
             base: base.representatives().to_vec(),
             entries: Vec::with_capacity(size),
             lookup: Lookup::with_capacity_and_hasher(size, BuildHasherDefault::default()),
-            x_bitmap: if B == 31 && columns <= 384 {
+            x_bitmap: if B == 31
+                && (columns <= 384 || (columns <= 768 && option_env!("M31_WIDE_BITMAP").is_some()))
+            {
                 vec![0; 1 << (X_BITMAP_BITS - 6)]
             } else {
                 Vec::new()
@@ -166,6 +184,11 @@ impl<const B: u32> PairIndex<B> {
             chunk,
             stats: PairIndexStats::default(),
         };
+        if fused {
+            result.build_fused(columns, chunk)?;
+            result.stats.entries = result.entries.len();
+            return Ok(result);
+        }
         let mut left = Vec::with_capacity(chunk);
         let mut right = Vec::with_capacity(chunk);
         let mut pairs = Vec::with_capacity(chunk);
@@ -202,6 +225,79 @@ impl<const B: u32> PairIndex<B> {
         result.stats.entries = result.entries.len();
         Ok(result)
     }
+    fn build_fused(&mut self, columns: usize, chunk: usize) -> Result<()> {
+        let pair_chunk = (chunk / 2).max(1);
+        let mut steps = Vec::with_capacity(2 * pair_chunk);
+        let mut output = Vec::with_capacity(2 * pair_chunk);
+        let mut pairs = Vec::with_capacity(2 * pair_chunk);
+        let mut scratch = BatchScratch::default();
+        for i in 0..columns {
+            let left = Some(self.base[i]);
+            let diagonal = self.curve.add_inner(left, left);
+            self.insert_completed(
+                &[diagonal],
+                &[[
+                    SignedTerm {
+                        index: i,
+                        negative: false,
+                    },
+                    SignedTerm {
+                        index: i,
+                        negative: false,
+                    },
+                ]],
+            );
+            for j in (i + 1)..columns {
+                steps.push(Some(self.base[j]));
+                steps.push(Some(self.curve.neg_inner(self.base[j])));
+                pairs.push([
+                    SignedTerm {
+                        index: i,
+                        negative: false,
+                    },
+                    SignedTerm {
+                        index: j,
+                        negative: false,
+                    },
+                ]);
+                pairs.push([
+                    SignedTerm {
+                        index: i,
+                        negative: false,
+                    },
+                    SignedTerm {
+                        index: j,
+                        negative: true,
+                    },
+                ]);
+                if steps.len() == 2 * pair_chunk {
+                    self.flush_fused(left, &steps, &mut output, &pairs, &mut scratch)?;
+                    steps.clear();
+                    pairs.clear();
+                }
+            }
+            if !steps.is_empty() {
+                self.flush_fused(left, &steps, &mut output, &pairs, &mut scratch)?;
+                steps.clear();
+                pairs.clear();
+            }
+        }
+        Ok(())
+    }
+    fn flush_fused(
+        &mut self,
+        left: Option<Point>,
+        steps: &[Option<Point>],
+        output: &mut Vec<Option<Point>>,
+        pairs: &[Pair],
+        scratch: &mut BatchScratch,
+    ) -> Result<()> {
+        output.resize(steps.len(), None);
+        self.curve
+            .batch_add_paired_x_assume_valid(left, steps, output, scratch)?;
+        self.insert_completed(output, pairs);
+        Ok(())
+    }
     fn flush_build(
         &mut self,
         left: &mut [Option<Point>],
@@ -210,7 +306,10 @@ impl<const B: u32> PairIndex<B> {
         scratch: &mut BatchScratch,
     ) {
         self.curve.batch_add_inner(left, right, scratch);
-        for (point, pair) in left.iter().copied().zip(pairs) {
+        self.insert_completed(left, pairs);
+    }
+    fn insert_completed(&mut self, points: &[Option<Point>], pairs: &[Pair]) {
+        for (point, pair) in points.iter().copied().zip(pairs) {
             self.stats.constructed_pairs += 1;
             let (canonical, negative) = point.map_or((None, false), |p| {
                 if p.y() > self.curve.modulus() / 2 {
@@ -434,5 +533,48 @@ impl PairWorkspace {
     /// Accumulated online counts for this workspace.
     pub fn stats(&self) -> &PairIndexStats {
         &self.stats
+    }
+}
+
+#[cfg(test)]
+mod fused_build_tests {
+    use super::*;
+
+    fn compare_all_payloads(columns: usize, chunk: usize) {
+        let curve = Curve::<31>::new(2, 14).unwrap();
+        let roots: Vec<u64> = (0..curve.modulus())
+            .filter(|&x| curve.lift_x(x).unwrap().is_some())
+            .take(columns)
+            .collect();
+        let base = FactorBase::without_maps(curve, &roots).unwrap();
+        let control = PairIndex::new_impl(&base, columns * columns, chunk, false).unwrap();
+        let fused = PairIndex::new_impl(&base, columns * columns, chunk, true).unwrap();
+        assert_eq!(control.stats.constructed_pairs, (columns * columns) as u64);
+        assert_eq!(
+            control.stats.constructed_pairs,
+            fused.stats.constructed_pairs
+        );
+        assert_eq!(control.stats.entries, fused.stats.entries);
+        assert_eq!(
+            control.stats.collision_witnesses,
+            fused.stats.collision_witnesses
+        );
+        assert_eq!(control.lookup, fused.lookup);
+        assert_eq!(control.x_bitmap, fused.x_bitmap);
+        assert_eq!(control.identity, fused.identity);
+        assert_eq!(control.entries.len(), fused.entries.len());
+        for (before, after) in control.entries.iter().zip(&fused.entries) {
+            assert_eq!(before.point, after.point);
+            assert_eq!(before.first, after.first);
+            assert_eq!(before.collisions, after.collisions);
+        }
+    }
+
+    #[test]
+    fn fused_pairs_keep_ordered_payloads_for_small_and_wide_bases() {
+        for chunk in [1, 3, 64] {
+            compare_all_payloads(16, chunk);
+        }
+        compare_all_payloads(768, 64);
     }
 }
