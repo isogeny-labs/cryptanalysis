@@ -1,7 +1,7 @@
 # Active research tasks
 
 ## Active items
-- [ ] Add ordinary cubic affine-line relation rows to the genus-4/5 trigonal chart (Codex, started 2026-11-28, branch codex/trigonal-cubic-line-rows-20261128).
+- [ ] Add ordinary cubic affine-line relation rows to the genus-4/5 trigonal chart (Codex, started 2026-11-28, branch codex/trigonal-cubic-line-rows-20261128, draft PR #2043).
 - [x] Validate ordinary cubic target-place support in the genus-4/5 trigonal chart (Codex, started 2026-11-28, branch codex/trigonal-cubic-target-support-20261128, draft PR #2041; degree-two refusal, cubic factor-base column, and exact source-Jacobian replay in both genera; 13 trigonal tests passed).
 - [x] Replay a genus-5 DLP with a direct degree-two geometric target row (Codex, started 2026-11-28, branch codex/trigonal-degree-two-target-dlp-20261128, draft PR #2040; bounded order-577 scan selected scalar 9, solver recovered and source-checked 9; depends on #2039).
 - [x] Transfer quadratic affine-line factors to genus-4/5 normalized relation rows (Codex, started 2026-11-28, branch codex/trigonal-quadratic-line-rows-v3-20261128, draft PR #2039; genus-4/5 Jacobian row replay and genus-5 order-577 DLP scalar 36 passed).
