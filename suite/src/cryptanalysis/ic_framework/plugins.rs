@@ -45,16 +45,10 @@ use crate::cryptanalysis::ic_boundary::{
 use crate::cryptanalysis::koblitz_fast::FastPoint;
 use crate::cryptanalysis::koblitz_index_calculus::{
     build_frobenius_factor_base_from_divisor, build_subgroup_orbit_factor_base_with_cost,
-    subspace_basis_for_factors,
 };
-
-/// The bytes `span_f2` allocates for a subspace of this dimension: one
-/// field element per abscissa (saturating; the dimension is at most n).
-fn divisor_span_bytes(dim: usize) -> u128 {
-    let elems = if dim >= 127 { u128::MAX } else { 1u128 << dim };
-    elems.saturating_mul(std::mem::size_of::<crate::binary_ecc::F2mElement>() as u128)
-}
-use crate::cryptanalysis::pq_descent_symbolic::{descend, max_n_prime, SymbolicDescent};
+use crate::cryptanalysis::pq_descent_symbolic::{
+    descend, descend_chain_edge, max_n_prime, ChainEdgeDescent, ChainEdgeLift, SymbolicDescent,
+};
 
 // ── Factor bases ───────────────────────────────────────────────────
 
@@ -188,13 +182,6 @@ impl<'a> FactorBaseBuilder<BinaryGroup<'a>> for KoblitzOrbitBase<'_> {
             ),
             ("seed", "with `points`: the sampling seed, default 1"),
             (
-                "max_subspace_gib",
-                "with `divisor`: the most memory, in GiB, the invariant subspace may take before it \
-                 is built (default 4). Building it materialises 2^dimension abscissae, so a \
-                 divisor of dimension 29 asks for 44 GiB; past the limit the base is refused with \
-                 the size it needs",
-            ),
-            (
                 "no_fold",
                 "1 to give every abscissa its own column: the control that shows what the fold buys",
             ),
@@ -261,27 +248,6 @@ impl<'a> FactorBaseBuilder<BinaryGroup<'a>> for KoblitzOrbitBase<'_> {
         let idx = idx?;
         if idx.is_empty() {
             return Err("parameter `divisor` selected no factors".into());
-        }
-        // Building the base spans every abscissa of the invariant subspace
-        // (`span_f2`), 2^dimension of them, before one point is lifted: at
-        // n = 43 the divisor `0;1;2` has dimension 1 + 14 + 14 = 29 and asks
-        // the allocator for 44 GiB, which aborts the process.  Refuse it with
-        // the size it needs, as the Frobenius pair table refuses its plan.
-        let max_gib = params.u64_or("max_subspace_gib", DEFAULT_MAX_TABLE_BYTES >> 30)?;
-        if let Some((basis, _)) = subspace_basis_for_factors(kc, &idx) {
-            let need = divisor_span_bytes(basis.len());
-            if need > u128::from(max_gib) << 30 {
-                return Err(format!(
-                    "divisor {idx:?} spans an invariant subspace of dimension {}: building it \
-                     materialises 2^{} abscissae, at least {:.1} GiB before any point is lifted; \
-                     the limit is {max_gib} GiB (max_subspace_gib). Choose a smaller divisor, \
-                     sample orbits with points=N instead, or raise max_subspace_gib on a host \
-                     that holds it",
-                    basis.len(),
-                    basis.len(),
-                    need as f64 / f64::from(1u32 << 30),
-                ));
-            }
         }
         let frob = build_frobenius_factor_base_from_divisor(kc, &idx)
             .ok_or_else(|| format!("no invariant subspace for divisor {idx:?} on this curve"))?;
@@ -755,6 +721,21 @@ impl SolverHarness {
 
 // ── The algebraic oracle ───────────────────────────────────────────
 
+#[derive(Clone, Copy, Debug)]
+enum AlgebraicPresentation {
+    Direct,
+    ChainEdge(ChainEdgeLift),
+}
+
+impl AlgebraicPresentation {
+    fn name(self) -> &'static str {
+        match self {
+            Self::Direct => "direct",
+            Self::ChainEdge(edge) => edge.name(),
+        }
+    }
+}
+
 /// Descend the Semaev polynomial over the base's abscissa subspace and
 /// hand the boolean system to the chosen [`SystemSolver`].
 ///
@@ -781,7 +762,9 @@ impl SolverHarness {
 /// `n' ≤ 32` at two summands and `n' ≤ 21` at three.  What limits a
 /// row above that is the engine, which says so through `accepts`.
 pub struct DescentAlgebraicOracle<'i> {
+    oracle_name: &'static str,
     summands: u32,
+    presentation: AlgebraicPresentation,
     instance: &'i BinaryInstance,
     v_basis: Vec<u64>,
     /// `m = 4` only: basis of the subspace the two intermediates of the
@@ -815,7 +798,9 @@ impl<'i> DescentAlgebraicOracle<'i> {
             ..Default::default()
         };
         Self {
+            oracle_name: "descent-algebraic",
             summands,
+            presentation: AlgebraicPresentation::Direct,
             instance,
             v_basis: Vec::new(),
             inter_basis: Vec::new(),
@@ -827,43 +812,64 @@ impl<'i> DescentAlgebraicOracle<'i> {
         }
     }
 
+    pub fn new_edge_chain(
+        summands: u32,
+        instance: &'i BinaryInstance,
+        solver: Box<dyn SystemSolver>,
+        solver_params: Params,
+        budget: Option<Duration>,
+    ) -> Self {
+        let mut out = Self::new(summands, instance, solver, solver_params, budget);
+        out.oracle_name = "descent-edge-chain";
+        out.presentation = AlgebraicPresentation::ChainEdge(ChainEdgeLift::Ac);
+        out
+    }
+
     pub fn solver_name(&self) -> &str {
         self.harness.solver.name()
     }
 
     /// The descended system for a target abscissa; its `lift` maps a
     /// solution back to abscissae.  `prepare` must have run.
-    fn descend(&self, x_r: u64) -> Descended {
-        if self.summands == 4 {
-            return Descended::Split(
-                crate::cryptanalysis::pq_descent_symbolic::descend_split4(
-                    &self.instance.gf,
-                    self.instance.b,
-                    x_r,
-                    &self.v_basis,
-                    &self.inter_basis,
-                )
-                .expect("prepare checked the dimension"),
-            );
-        }
-        Descended::Plain(
-            descend(
+    fn descend(&self, x_r: u64) -> Result<Descended, String> {
+        if let AlgebraicPresentation::ChainEdge(edge) = self.presentation {
+            return descend_chain_edge(
                 &self.instance.gf,
                 self.instance.b,
                 x_r,
                 &self.v_basis,
                 self.summands,
+                edge,
             )
-            .expect("prepare checked the dimension"),
+            .map(Descended::ChainEdge);
+        }
+        if self.summands == 4 {
+            return crate::cryptanalysis::pq_descent_symbolic::descend_split4(
+                &self.instance.gf,
+                self.instance.b,
+                x_r,
+                &self.v_basis,
+                &self.inter_basis,
+            )
+            .map(Descended::Split);
+        }
+        descend(
+            &self.instance.gf,
+            self.instance.b,
+            x_r,
+            &self.v_basis,
+            self.summands,
         )
+        .map(Descended::Plain)
     }
 }
 
-/// Either descent the oracle builds: `S_{m+1}` directly (`m = 2, 3`) or
-/// the balanced representation split of `S_5` (`m = 4`).
+/// A direct `S_{m+1}` descent, the balanced `S_5` split, or the matched
+/// edge-lifted chain of `S_3` links.
 enum Descended {
     Plain(SymbolicDescent),
     Split(crate::cryptanalysis::pq_descent_symbolic::SplitDescent),
+    ChainEdge(ChainEdgeDescent),
 }
 
 impl Descended {
@@ -871,6 +877,7 @@ impl Descended {
         match self {
             Descended::Plain(s) => s.lift(v),
             Descended::Split(s) => s.lift(v),
+            Descended::ChainEdge(s) => s.lift(v),
         }
     }
 }
@@ -879,6 +886,7 @@ fn system_of(sys: &Descended) -> BooleanSystem {
     let (equations, n_vars) = match sys {
         Descended::Plain(s) => (&s.equations, s.n_vars),
         Descended::Split(s) => (&s.equations, s.n_vars),
+        Descended::ChainEdge(s) => (&s.equations, s.n_vars),
     };
     BooleanSystem {
         equations: equations.clone(),
@@ -888,7 +896,7 @@ fn system_of(sys: &Descended) -> BooleanSystem {
 
 impl<'a> DecompositionOracle<BinaryGroup<'a>> for DescentAlgebraicOracle<'_> {
     fn name(&self) -> &str {
-        "descent-algebraic"
+        self.oracle_name
     }
 
     fn summands(&self) -> u32 {
@@ -897,20 +905,31 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for DescentAlgebraicOracle<'_> {
 
     fn describe(&self, _params: &Params) -> String {
         format!(
-            "Weil-descend S_{} over the base's abscissa subspace and solve with {}",
+            "Weil-descend S_{} over the base's abscissa subspace with presentation {} and solve with {}",
             self.summands + 1,
+            self.presentation.name(),
             self.harness.solver.name()
         )
     }
 
     fn parameters(&self) -> &[(&str, &str)] {
-        &[
-            ("m", "summands, 2 (descends S3), 3 (descends S4) or 4 (balanced split of S5)"),
-            (
-                "inter_dim",
-                "m = 4 only: dimension l' of the subspace span(1, z, ..., z^(l'-1)) the two intermediates are restricted to; default n (unrestricted chain)",
-            ),
-        ]
+        if self.oracle_name == "descent-edge-chain" {
+            &[
+                ("m", "summands, exactly 3 (one cubic S3 link)"),
+                (
+                    "presentation",
+                    "edge-ab (full-width control), edge-ab-compressed (leaf-product space), edge-ac (default mixed edge) or edge-bc (matched alternative)",
+                ),
+            ]
+        } else {
+            &[
+                ("m", "summands, 2 (descends S3), 3 (descends S4) or 4 (balanced split of S5)"),
+                (
+                    "inter_dim",
+                    "m = 4 only: dimension l' of the subspace span(1, z, ..., z^(l'-1)) the two intermediates are restricted to; default n (unrestricted chain)",
+                ),
+            ]
+        }
     }
 
     fn setup_native(&self) -> std::collections::BTreeMap<String, u64> {
@@ -928,17 +947,34 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for DescentAlgebraicOracle<'_> {
         params: &Params,
         _ops: &mut GroupOps,
     ) -> Result<(), String> {
-        if !(2..=4).contains(&self.summands) {
+        if self.oracle_name == "descent-edge-chain" {
+            if self.summands != 3 {
+                return Err(format!(
+                    "descent-edge-chain takes m = 3, got {}",
+                    self.summands
+                ));
+            }
+        } else if !(2..=4).contains(&self.summands) {
             return Err(format!(
                 "descent-algebraic takes m = 2, 3 or 4, got {}",
                 self.summands
             ));
         }
-        let basis = fb.subspace_basis.as_ref().ok_or(
-            "descent-algebraic needs a factor base whose abscissae form an F_2-subspace; \
+        let basis = fb.subspace_basis.as_ref().ok_or_else(|| {
+            format!(
+                "{} needs a factor base whose abscissae form an F_2-subspace; \
              use binary-subspace or koblitz-orbit",
-        )?;
-        if self.summands == 4 {
+                self.oracle_name
+            )
+        })?;
+        self.presentation = if self.oracle_name == "descent-edge-chain" {
+            AlgebraicPresentation::ChainEdge(ChainEdgeLift::parse(
+                params.get("presentation").unwrap_or("edge-ac"),
+            )?)
+        } else {
+            AlgebraicPresentation::Direct
+        };
+        if self.summands == 4 && matches!(self.presentation, AlgebraicPresentation::Direct) {
             let n = self.instance.n;
             let l = params.u64_or("inter_dim", n as u64)? as u32;
             if l == 0 || l > n {
@@ -953,17 +989,19 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for DescentAlgebraicOracle<'_> {
             }
             self.inter_basis = (0..l).map(|k| 1u64 << k).collect();
         }
-        let cap = if self.summands == 4 {
-            16
-        } else {
-            max_n_prime(self.summands)
-        };
-        if basis.len() as u32 > cap {
-            return Err(format!(
-                "the descent's monomial mask holds n' ≤ {cap} at m = {}; this base has n' = {}",
-                self.summands,
-                basis.len()
-            ));
+        if matches!(self.presentation, AlgebraicPresentation::Direct) {
+            let cap = if self.summands == 4 {
+                16
+            } else {
+                max_n_prime(self.summands)
+            };
+            if basis.len() as u32 > cap {
+                return Err(format!(
+                    "the descent's monomial mask holds n' ≤ {cap} at m = {}; this base has n' = {}",
+                    self.summands,
+                    basis.len()
+                ));
+            }
         }
         self.v_basis = basis.clone();
         // Every system on one base has the same shape, so descend one
@@ -971,7 +1009,7 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for DescentAlgebraicOracle<'_> {
         // with a reason a sweep can report — rather than target by
         // target, which would run the whole relation phase for nothing.
         let started = Instant::now();
-        let shape = system_of(&self.descend(self.instance.generator.x)).shape();
+        let shape = system_of(&self.descend(self.instance.generator.x)?).shape();
         self.descent_setup_ns = self
             .descent_setup_ns
             .saturating_add(started.elapsed().as_nanos() as u64);
@@ -1001,7 +1039,9 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for DescentAlgebraicOracle<'_> {
         // Charge descent, system packing and shape construction separately
         // from the solver interval, so failed queries pay the same work too.
         let started = Instant::now();
-        let sys = self.descend(point.x);
+        let sys = self
+            .descend(point.x)
+            .expect("prepare checked the presentation dimensions");
         let system = system_of(&sys);
         let shape = system.shape();
         self.descent_relation_ns = self
@@ -1040,14 +1080,26 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for DescentAlgebraicOracle<'_> {
     /// double) keeps the oracle serial.
     fn fork(&self) -> Option<Box<dyn DecompositionOracle<BinaryGroup<'a>> + Send + '_>> {
         let solver = super::solvers::solver_by_name(self.harness.solver.name()).ok()?;
-        let mut fork = DescentAlgebraicOracle::new(
-            self.summands,
-            self.instance,
-            solver,
-            self.harness.params.clone(),
-            self.harness.budget,
-        );
+        let mut fork = if self.oracle_name == "descent-edge-chain" {
+            DescentAlgebraicOracle::new_edge_chain(
+                self.summands,
+                self.instance,
+                solver,
+                self.harness.params.clone(),
+                self.harness.budget,
+            )
+        } else {
+            DescentAlgebraicOracle::new(
+                self.summands,
+                self.instance,
+                solver,
+                self.harness.params.clone(),
+                self.harness.budget,
+            )
+        };
         fork.v_basis = self.v_basis.clone();
+        fork.inter_basis = self.inter_basis.clone();
+        fork.presentation = self.presentation;
         Some(Box::new(fork))
     }
 
@@ -1074,6 +1126,120 @@ impl<'a> DecompositionOracle<BinaryGroup<'a>> for DescentAlgebraicOracle<'_> {
             self.descent_relation_ns = self.descent_relation_ns.saturating_add(*ns);
         }
         self.unliftable += delta.unliftable;
+    }
+}
+
+#[cfg(test)]
+mod edge_presentation_tests {
+    use super::*;
+    use crate::cryptanalysis::ic_boundary::{binary_subspace_factor_base, random_binary_instance};
+
+    fn context<'a>(
+        inst: &'a BinaryInstance,
+        group: &'a BinaryGroup<'a>,
+    ) -> InstanceCtx<'a, BinaryGroup<'a>> {
+        InstanceCtx {
+            group,
+            generator: inst.generator,
+            target: inst.generator,
+            r: inst.r,
+            cofactor: inst.cofactor,
+            group_order: inst.group_order,
+            name: inst.name.clone(),
+            field_degree: Some(inst.n),
+        }
+    }
+
+    #[test]
+    fn mixed_edge_oracle_builds_the_matched_quadratic_shape() {
+        let inst = (1..100)
+            .find_map(|seed| random_binary_instance(11, seed, 8))
+            .expect("an n=11 binary instance");
+        let group = BinaryGroup(&inst.fast);
+        let ctx = context(&inst, &group);
+        let fb = binary_subspace_factor_base(&inst, &[1, 2, 4]);
+        let mut shapes = Vec::new();
+        for presentation in ["edge-ab", "edge-ac", "edge-bc"] {
+            let mut oracle = DescentAlgebraicOracle::new_edge_chain(
+                3,
+                &inst,
+                super::super::solvers::solver_by_name("matrix-f4").unwrap(),
+                Params::default(),
+                None,
+            );
+            let mut params = Params::default();
+            params.set("presentation", presentation);
+            oracle
+                .prepare(&ctx, &fb, &params, &mut GroupOps::default())
+                .unwrap();
+            let descended = oracle.descend(inst.generator.x).unwrap();
+            let Descended::ChainEdge(chain) = &descended else {
+                panic!("{presentation} did not select the chained presentation")
+            };
+            assert_eq!(chain.n_vars, 3 * 3 + 2 * 11);
+            assert_eq!(chain.equations.len(), 3 * 11);
+            let shape = system_of(&descended).shape();
+            assert!(shape.degrees.iter().all(|&degree| degree <= 2));
+            assert!(oracle.describe(&params).contains(presentation));
+            shapes.push((
+                shape.n_vars,
+                shape.n_equations,
+                shape.degrees.iter().copied().max(),
+            ));
+        }
+        assert!(shapes.windows(2).all(|pair| pair[0] == pair[1]));
+
+        let mut compressed = DescentAlgebraicOracle::new_edge_chain(
+            3,
+            &inst,
+            super::super::solvers::solver_by_name("matrix-f4").unwrap(),
+            Params::default(),
+            None,
+        );
+        let mut compressed_params = Params::default();
+        compressed_params.set("presentation", "edge-ab-compressed");
+        compressed
+            .prepare(&ctx, &fb, &compressed_params, &mut GroupOps::default())
+            .unwrap();
+        let compressed_system = compressed.descend(inst.generator.x).unwrap();
+        let Descended::ChainEdge(compressed_chain) = &compressed_system else {
+            panic!("compressed product did not select the chained presentation")
+        };
+        assert_eq!(compressed_chain.lift_bases[0].len(), 5);
+        assert_eq!(compressed_chain.n_vars, 3 * 3 + 11 + 5);
+        assert_eq!(compressed_chain.equations.len(), 2 * 11 + 5);
+        let compressed_shape = system_of(&compressed_system).shape();
+        assert!(compressed_shape.degrees.iter().all(|&degree| degree <= 2));
+        assert!(compressed_chain.n_vars < shapes[0].0);
+        assert!(compressed
+            .describe(&compressed_params)
+            .contains("edge-ab-compressed"));
+
+        let mut invalid = DescentAlgebraicOracle::new_edge_chain(
+            3,
+            &inst,
+            super::super::solvers::solver_by_name("matrix-f4").unwrap(),
+            Params::default(),
+            None,
+        );
+        let mut params = Params::default();
+        params.set("presentation", "edge-ad");
+        assert!(invalid
+            .prepare(&ctx, &fb, &params, &mut GroupOps::default())
+            .unwrap_err()
+            .contains("unknown chained S3 presentation"));
+
+        let mut no_cubic_link = DescentAlgebraicOracle::new_edge_chain(
+            2,
+            &inst,
+            super::super::solvers::solver_by_name("matrix-f4").unwrap(),
+            Params::default(),
+            None,
+        );
+        assert!(no_cubic_link
+            .prepare(&ctx, &fb, &Params::default(), &mut GroupOps::default())
+            .unwrap_err()
+            .contains("takes m = 3"));
     }
 }
 
@@ -1306,63 +1472,6 @@ mod coset_filter_tests {
         assert!(FrobeniusPairTable::build_filtered(&inst, &fb, None).is_some());
         assert!(FrobeniusPairTable::try_build_filtered(&inst, &fb, None, plan.bytes()).is_ok());
         assert!(plan.bytes() < DEFAULT_MAX_TABLE_BYTES);
-    }
-
-    /// **A divisor base too large to span is refused with its size, before
-    /// anything is allocated.** At n = 43 the divisor `0;1;2` spans dimension
-    /// 29 (2^29 abscissae, 44 GiB), which used to abort the process in
-    /// `span_f2`; the registry's `1` (dimension 14) still builds.  A limit of
-    /// 0 GiB refuses any span, and the default builds the same small base.
-    #[test]
-    fn oversized_divisor_subspace_is_refused_not_allocated() {
-        use crate::cryptanalysis::ic_boundary::koblitz_instance;
-        let big = koblitz_instance(0, 43)
-            .or_else(|| koblitz_instance(1, 43))
-            .expect("a Koblitz curve over GF(2^43)");
-        let g = BinaryGroup(&big.fast);
-        let ctx = ctx_for(&big, &g);
-        let params = |kv: &[(&str, &str)]| {
-            Params(
-                kv.iter()
-                    .map(|(k, v)| (k.to_string(), v.to_string()))
-                    .collect(),
-            )
-        };
-        let base = KoblitzOrbitBase { instance: &big };
-        let err = match base.build(
-            &ctx,
-            &params(&[("divisor", "0;1;2")]),
-            &mut GroupOps::default(),
-        ) {
-            Ok(_) => panic!("a 2^29-abscissa subspace must be refused, not built"),
-            Err(e) => e,
-        };
-        assert!(
-            err.contains("dimension 29") && err.contains("max_subspace_gib"),
-            "{err}"
-        );
-        assert!(divisor_span_bytes(29) > (4u128 << 30));
-        assert!(base
-            .build(&ctx, &params(&[("divisor", "1")]), &mut GroupOps::default())
-            .is_ok());
-
-        let small = koblitz_instance(0, 13).expect("K_0 / GF(2^13), cofactor 4");
-        let g = BinaryGroup(&small.fast);
-        let ctx = ctx_for(&small, &g);
-        let base = KoblitzOrbitBase { instance: &small };
-        let refused = base.build(
-            &ctx,
-            &params(&[("divisor", "1"), ("max_subspace_gib", "0")]),
-            &mut GroupOps::default(),
-        );
-        assert!(
-            matches!(&refused, Err(e) if e.contains("the limit is 0 GiB")),
-            "{:?}",
-            refused.err()
-        );
-        assert!(base
-            .build(&ctx, &params(&[("divisor", "1")]), &mut GroupOps::default())
-            .is_ok());
     }
 
     /// **`koblitz-orbit:points=` samples subgroup orbits**: reproducible from

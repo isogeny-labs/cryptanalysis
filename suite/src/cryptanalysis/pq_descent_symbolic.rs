@@ -179,6 +179,22 @@ impl FieldBoolPoly {
             .map(|terms| F2BoolPoly { terms, n_vars })
             .collect()
     }
+
+    /// Split a polynomial whose coefficients lie in `span(basis)` into that
+    /// basis's coordinates instead of the ambient field coordinates.  This
+    /// is an invertible row-space change on the equality `self = 0` and
+    /// therefore generates the same Boolean ideal without redundant ambient
+    /// coordinate equations.
+    fn split_in_basis(&self, basis: &[u64], n_vars: usize) -> Result<Vec<F2BoolPoly>, String> {
+        let mut rebased = Self::default();
+        for (&mask, &coefficient) in &self.terms {
+            let coordinates = coordinates_in_basis(coefficient, basis).ok_or_else(|| {
+                "a product-constraint coefficient escaped its declared field subspace".to_string()
+            })?;
+            rebased.add_term(mask, coordinates);
+        }
+        Ok(rebased.split(basis.len() as u32, n_vars))
+    }
 }
 
 // ── The summation polynomials, on words ────────────────────────────
@@ -246,6 +262,250 @@ impl SymbolicDescent {
             })
             .collect()
     }
+}
+
+/// Product edge lifted in every cubic link of a left-chained `S_3`
+/// presentation.  For a link `S_3(x_a, x_b, x_c)`, the auxiliary is
+/// constrained to the selected product and the remaining equation is
+/// quadratic after Weil descent.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ChainEdgeLift {
+    Ab,
+    AbCompressed,
+    Ac,
+    Bc,
+}
+
+impl ChainEdgeLift {
+    pub fn parse(name: &str) -> Result<Self, String> {
+        match name {
+            "edge-ab" => Ok(Self::Ab),
+            "edge-ab-compressed" => Ok(Self::AbCompressed),
+            "edge-ac" => Ok(Self::Ac),
+            "edge-bc" => Ok(Self::Bc),
+            other => Err(format!(
+                "unknown chained S3 presentation `{other}`; use edge-ab, edge-ab-compressed, edge-ac or edge-bc"
+            )),
+        }
+    }
+
+    pub fn name(self) -> &'static str {
+        match self {
+            Self::Ab => "edge-ab",
+            Self::AbCompressed => "edge-ab-compressed",
+            Self::Ac => "edge-ac",
+            Self::Bc => "edge-bc",
+        }
+    }
+}
+
+/// A left chain of `S_3` links with one product lift on every link whose
+/// three abscissae are unknown.  The final target-anchored link stays in its
+/// already-quadratic direct form.
+#[derive(Clone, Debug)]
+pub struct ChainEdgeDescent {
+    pub n_prime: u32,
+    pub summands: u32,
+    pub n_vars: usize,
+    pub equations: Vec<F2BoolPoly>,
+    pub v_basis: Vec<u64>,
+    /// Field bases used for the lifted products, in chain order.  The
+    /// compressed leaf-product arm uses the exact product space `V·V` for
+    /// the first link; the matched controls use the full field.
+    pub lift_bases: Vec<Vec<u64>>,
+    pub field_monomials: usize,
+    pub edge: ChainEdgeLift,
+}
+
+impl ChainEdgeDescent {
+    /// The factor-base abscissae named by a solution.  Intermediate and
+    /// product-lift variables follow the leaf variables and are intentionally
+    /// omitted here.
+    pub fn lift(&self, v: u64) -> Vec<u64> {
+        let np = self.n_prime as usize;
+        (0..self.summands as usize)
+            .map(|i| {
+                (0..np)
+                    .filter(|&k| (v >> (i * np + k)) & 1 == 1)
+                    .fold(0u64, |acc, k| acc ^ self.v_basis[k])
+            })
+            .collect()
+    }
+}
+
+/// Coordinates of `word` in an independent field basis, or `None` when the
+/// word is outside its span.
+fn coordinates_in_basis(mut word: u64, basis: &[u64]) -> Option<u64> {
+    let mut pivots = [(0u64, 0u64); 64];
+    for (i, &element) in basis.iter().enumerate() {
+        let mut row = element;
+        let mut coordinates = 1u64 << i;
+        while row != 0 {
+            let pivot = (63 - row.leading_zeros()) as usize;
+            if pivots[pivot].0 == 0 {
+                pivots[pivot] = (row, coordinates);
+                break;
+            }
+            row ^= pivots[pivot].0;
+            coordinates ^= pivots[pivot].1;
+        }
+    }
+    let mut coordinates = 0u64;
+    while word != 0 {
+        let pivot = (63 - word.leading_zeros()) as usize;
+        if pivots[pivot].0 == 0 {
+            return None;
+        }
+        word ^= pivots[pivot].0;
+        coordinates ^= pivots[pivot].1;
+    }
+    Some(coordinates)
+}
+
+/// A deterministic basis for the span of all pairwise products of two field
+/// subspaces. Each inserted row is reduced against earlier pivots, so the
+/// returned words are independent and span exactly the product space.
+fn product_space_basis(gf: &Gf2, left: &[u64], right: &[u64]) -> Vec<u64> {
+    let mut pivots = [0u64; 64];
+    let mut basis = Vec::new();
+    for &a in left {
+        for &b in right {
+            let mut word = gf.mul(a, b);
+            while word != 0 {
+                let pivot = (63 - word.leading_zeros()) as usize;
+                if pivots[pivot] == 0 {
+                    pivots[pivot] = word;
+                    basis.push(word);
+                    break;
+                }
+                word ^= pivots[pivot];
+            }
+        }
+    }
+    basis
+}
+
+/// Build the support-aware chained presentation used by the ECC2K-130
+/// mixed-edge lead.  Variables are ordered as all factor-base leaves, all
+/// full-field intermediates, then the coordinates of each lifted product in
+/// its declared field basis.
+pub fn descend_chain_edge(
+    gf: &Gf2,
+    curve_b: u64,
+    x_r: u64,
+    v_basis: &[u64],
+    summands: u32,
+    edge: ChainEdgeLift,
+) -> Result<ChainEdgeDescent, String> {
+    if !(2..=9).contains(&summands) {
+        return Err(format!(
+            "the chained S3 descent takes 2..=9 summands, not {summands}"
+        ));
+    }
+    let np = v_basis.len() as u32;
+    let cubic_links = summands - 2;
+    let full_basis: Vec<u64> = (0..gf.n).map(|j| 1u64 << j).collect();
+    let lift_bases: Vec<Vec<u64>> = (0..cubic_links)
+        .map(|link| {
+            if edge == ChainEdgeLift::AbCompressed {
+                let left = if link == 0 { v_basis } else { &full_basis };
+                product_space_basis(gf, left, v_basis)
+            } else {
+                full_basis.clone()
+            }
+        })
+        .collect();
+    let lift_vars: u32 = lift_bases.iter().map(|basis| basis.len() as u32).sum();
+    let n_vars = summands * np + cubic_links * gf.n + lift_vars;
+    if np == 0 || lift_bases.iter().any(Vec::is_empty) || n_vars > MAX_VARS {
+        return Err(format!(
+            "the {} chained descent needs {summands}·{np} + {cubic_links}·{} + {lift_vars} = {n_vars} boolean variables; the monomial mask holds {MAX_VARS}",
+            edge.name(),
+            gf.n
+        ));
+    }
+
+    let leaves: Vec<FieldBoolPoly> = (0..summands)
+        .map(|i| FieldBoolPoly::linear(i * np, v_basis))
+        .collect();
+    let intermediate_offset = summands * np;
+    let lift_offset = intermediate_offset + cubic_links * gf.n;
+    let mut lift_offsets = Vec::with_capacity(cubic_links as usize);
+    let mut next_lift_offset = lift_offset;
+    for basis in &lift_bases {
+        lift_offsets.push(next_lift_offset);
+        next_lift_offset += basis.len() as u32;
+    }
+    let mut parts = Vec::with_capacity((2 * cubic_links + 1) as usize);
+    let mut current = leaves[0].clone();
+
+    for k in 1..summands {
+        let link = k - 1;
+        let last = k == summands - 1;
+        let next = if last {
+            FieldBoolPoly::constant(x_r)
+        } else {
+            FieldBoolPoly::linear(intermediate_offset + link * gf.n, &full_basis)
+        };
+        let leaf = &leaves[k as usize];
+        if last {
+            parts.push((s3_poly(gf, curve_b, &current, leaf, &next), None));
+        } else {
+            let lifted =
+                FieldBoolPoly::linear(lift_offsets[link as usize], &lift_bases[link as usize]);
+            let (product, square_one, square_two, remaining) = match edge {
+                ChainEdgeLift::Ab | ChainEdgeLift::AbCompressed => (
+                    current.mul(leaf, gf),
+                    current.mul(&next, gf).sqr(gf),
+                    leaf.mul(&next, gf).sqr(gf),
+                    &next,
+                ),
+                ChainEdgeLift::Ac => (
+                    current.mul(&next, gf),
+                    current.mul(leaf, gf).sqr(gf),
+                    leaf.mul(&next, gf).sqr(gf),
+                    leaf,
+                ),
+                ChainEdgeLift::Bc => (
+                    leaf.mul(&next, gf),
+                    current.mul(leaf, gf).sqr(gf),
+                    current.mul(&next, gf).sqr(gf),
+                    &current,
+                ),
+            };
+            parts.push((lifted.add(&product), Some(link as usize)));
+            parts.push((
+                lifted
+                    .sqr(gf)
+                    .add(&square_one)
+                    .add(&square_two)
+                    .add(&lifted.mul(remaining, gf))
+                    .add(&FieldBoolPoly::constant(curve_b)),
+                None,
+            ));
+        }
+        current = next;
+    }
+
+    let field_monomials = parts.iter().map(|(part, _)| part.len()).sum();
+    let mut equations = Vec::with_capacity(parts.len() * gf.n as usize);
+    for (part, product_link) in &parts {
+        if let Some(link) = product_link {
+            equations.extend(part.split_in_basis(&lift_bases[*link], n_vars as usize)?);
+        } else {
+            equations.extend(part.split(gf.n, n_vars as usize));
+        }
+    }
+    Ok(ChainEdgeDescent {
+        n_prime: np,
+        summands,
+        n_vars: n_vars as usize,
+        equations,
+        v_basis: v_basis.to_vec(),
+        lift_bases,
+        field_monomials,
+        edge,
+    })
 }
 
 /// Descend `S_{m+1}(x_1, …, x_m, x_R) = 0` with every `x_i` in the span
@@ -549,6 +809,110 @@ mod tests {
                                 "n={n} np={np} nl={nl} part={part} bit={j}"
                             );
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn chained_edge_lifts_are_exact_quadratic_presentations() {
+        let mut rng = StdRng::seed_from_u64(0xED6E_2026_1127);
+        for (n, np, summands) in [(11u32, 3u32, 3u32), (13, 3, 4)] {
+            let irr =
+                crate::cryptanalysis::koblitz_index_calculus::find_irreducible_sparse(n).unwrap();
+            let gf = Gf2::new(&irr);
+            let basis: Vec<u64> = (0..np).map(|j| 1u64 << j).collect();
+            let leaf_mask = (1u64 << np) - 1;
+            let cubic_links = summands - 2;
+            for edge in [
+                ChainEdgeLift::Ab,
+                ChainEdgeLift::AbCompressed,
+                ChainEdgeLift::Ac,
+                ChainEdgeLift::Bc,
+            ] {
+                for _ in 0..80 {
+                    let leaves: Vec<u64> = (0..summands)
+                        .map(|_| rng.gen::<u64>() & leaf_mask)
+                        .collect();
+                    let intermediates: Vec<u64> = (0..cubic_links)
+                        .map(|_| rng.gen::<u64>() & gf.mask)
+                        .collect();
+                    let x_r = rng.gen::<u64>() & gf.mask;
+                    let curve_b = rng.gen::<u64>() & gf.mask;
+                    let sys =
+                        descend_chain_edge(&gf, curve_b, x_r, &basis, summands, edge).unwrap();
+                    assert!(sys
+                        .equations
+                        .iter()
+                        .all(|p| p.terms.iter().all(|t| t.degree() <= 2)));
+
+                    let intermediate_offset = summands * np;
+                    let lift_offset = intermediate_offset + cubic_links * n;
+                    let mut assignment = 0u64;
+                    for (i, &x) in leaves.iter().enumerate() {
+                        assignment |= x << (i as u32 * np);
+                    }
+                    let mut words = Vec::new();
+                    let mut next_lift_offset = lift_offset;
+                    for link in 0..cubic_links {
+                        let a = if link == 0 {
+                            leaves[0]
+                        } else {
+                            intermediates[link as usize - 1]
+                        };
+                        let b = leaves[link as usize + 1];
+                        let c = intermediates[link as usize];
+                        let w = match edge {
+                            ChainEdgeLift::Ab | ChainEdgeLift::AbCompressed => gf.mul(a, b),
+                            ChainEdgeLift::Ac => gf.mul(a, c),
+                            ChainEdgeLift::Bc => gf.mul(b, c),
+                        };
+                        assignment |= c << (intermediate_offset + link * n);
+                        let lift_basis = &sys.lift_bases[link as usize];
+                        assignment |=
+                            coordinates_in_basis(w, lift_basis).unwrap() << next_lift_offset;
+                        next_lift_offset += lift_basis.len() as u32;
+                        words.push(semaev_s3_word(&gf, curve_b, a, b, c));
+                    }
+                    let final_a = intermediates.last().copied().unwrap_or(leaves[0]);
+                    words.push(semaev_s3_word(
+                        &gf,
+                        curve_b,
+                        final_a,
+                        *leaves.last().unwrap(),
+                        x_r,
+                    ));
+
+                    assert_eq!(sys.lift(assignment), leaves);
+                    if cubic_links > 0 {
+                        let corrupted_lift = assignment ^ (1u64 << lift_offset);
+                        assert!(sys.equations[..sys.lift_bases[0].len()]
+                            .iter()
+                            .any(|equation| equation.eval(corrupted_lift) != 0));
+                    }
+                    let mut equation_offset = 0usize;
+                    for link in 0..cubic_links as usize {
+                        let constraint_dimension = sys.lift_bases[link].len();
+                        for j in 0..constraint_dimension {
+                            assert_eq!(sys.equations[equation_offset + j].eval(assignment), 0);
+                        }
+                        let residual = equation_offset + constraint_dimension;
+                        for j in 0..n as usize {
+                            assert_eq!(
+                                sys.equations[residual + j].eval(assignment),
+                                ((words[link] >> j) & 1) as u32,
+                                "n={n} m={summands} edge={} link={link} bit={j}",
+                                edge.name()
+                            );
+                        }
+                        equation_offset = residual + n as usize;
+                    }
+                    for j in 0..n as usize {
+                        assert_eq!(
+                            sys.equations[equation_offset + j].eval(assignment),
+                            ((words.last().unwrap() >> j) & 1) as u32
+                        );
                     }
                 }
             }

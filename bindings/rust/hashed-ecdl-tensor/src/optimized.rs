@@ -401,8 +401,11 @@ pub fn solve(
         let mut relations = Vec::with_capacity(required);
         let mut matrix = Vec::new();
         let mut saved_dependency: Option<CycleDependency> = None;
-        let table =
+        let mut table =
             PairTable::from_indexes(curve, &bases, &indexes, &mut statistics.prepared, meter)?;
+        if graph.is_some() {
+            table.prepare_graph_columns(&indexes, meter)?;
+        }
         // Preserve the mirror's boundary: reusable initial base preparation
         // precedes per-target validation; every retry remains charged online.
         if validated_target.is_none() {
@@ -457,17 +460,13 @@ pub fn solve(
                 query,
                 options,
                 statistics,
-                |points, work| {
-                    let left = *indexes[0]
-                        .get(&points[0])
-                        .ok_or_else(|| integrity("left witness index"))?;
-                    let right = *indexes[1]
-                        .get(&points[1])
-                        .ok_or_else(|| integrity("right witness index"))?;
-                    match &mut graph {
-                        Some(graph) => graph.would_close(left, right, work),
-                        None => Ok(false),
-                    }
+                |points, work| match &mut graph {
+                    Some(graph) => graph.would_close(
+                        table.graph_column(0, &points[0], work)?,
+                        table.graph_column(1, &points[1], work)?,
+                        work,
+                    ),
+                    None => Ok(false),
                 },
                 meter,
             )?;
@@ -476,12 +475,8 @@ pub fn solve(
                 let relation = Relation { u, v, points };
                 if let Some(graph) = &mut graph {
                     increment(&mut statistics.graph_rows, 1)?;
-                    let left = *indexes[0]
-                        .get(&relation.points[0])
-                        .ok_or_else(|| integrity("left relation index"))?;
-                    let right = *indexes[1]
-                        .get(&relation.points[1])
-                        .ok_or_else(|| integrity("right relation index"))?;
+                    let left = table.graph_column(0, &relation.points[0], meter)?;
+                    let right = table.graph_column(1, &relation.points[1], meter)?;
                     if saved_dependency.is_some() && graph.would_close(left, right, meter)? {
                         increment(&mut statistics.graph_cycles_after_dependency, 1)?;
                     } else {

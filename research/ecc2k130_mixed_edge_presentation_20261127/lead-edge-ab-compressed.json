@@ -1,0 +1,30 @@
+{
+  "schema": "lead-testing.lead/v1",
+  "id": "ecc2k130-edge-ab-product-space-20261127",
+  "title": "Product-space compressed leaf-edge S3 presentation over binary curves",
+  "hypothesis": "At m = 3, representing w = x_a x_b in the exact product space V·V instead of the full field reduces the Boolean variable count and Macaulay growth enough to lower measured solving degree or counted solver work and end-to-end S against the fixed binary and Koblitz lead-sweep baselines, without changing the recovered logarithm.",
+  "prior_art": [
+    "crypto:research/ecc2k130_edge_lift_forms_20261126/README.md (full-width edge lifts and support census; no product-space or solving-degree claim)",
+    "crypto:research/representation_leads_20261109/derive/src/systems.rs (standard full-width edge-ab lift)",
+    "cryptanalysis:suite/src/cryptanalysis/pq_descent_symbolic.rs (exact symbolic binary descent)",
+    "research-kb unavailable: scripts/research-kb reported no executable; lead-atlas checkout was VLT1-encoded and unreadable; direct repository fallback used, so novelty remains unverified"
+  ],
+  "kind": "bench",
+  "regimes": [
+    "char2",
+    "koblitz"
+  ],
+  "regimes_excluded_because": "prime: the quadratic chain and product-space construction here use the characteristic-two binary S3 identity and binary subspace factor bases.",
+  "bench": {
+    "char2": {
+      "factor_base": "binary-subspace",
+      "oracle": "descent-edge-chain:m={m},presentation=edge-ab-compressed",
+      "solver": "f4-f2"
+    },
+    "koblitz": {
+      "factor_base": "koblitz-orbit",
+      "oracle": "descent-edge-chain:m={m},presentation=edge-ab-compressed",
+      "solver": "f4-f2"
+    }
+  }
+}
