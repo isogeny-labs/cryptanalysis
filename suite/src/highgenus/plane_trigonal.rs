@@ -18,7 +18,7 @@ use super::fp::Fp;
 use super::ic::{FactorBase, IndexCalculusCurve, Relation};
 use super::kummer::{Ideal, SuperellipticCurve};
 use super::poly::Poly;
-use super::HgError;
+use super::{HgError, JacobianGroup};
 
 #[derive(Clone, Debug)]
 pub struct TrigonalPlaneChart {
@@ -325,6 +325,62 @@ impl TrigonalPlaneChart {
                 .collect(),
             alpha: BigUint::zero(),
             beta: BigUint::zero(),
+        })
+    }
+
+    /// Direct target descent when a normalized target ideal has only
+    /// degree-one support. Each support place is checked against the plane
+    /// chart (including ramified `f2` fibers), mapped to the supplied factor
+    /// base, and replayed in the source Jacobian. No target scalar is used.
+    /// A target with higher-degree support needs a separate descent step.
+    pub fn direct_target_relation(
+        &self,
+        curve: &SuperellipticCurve,
+        factor_base: &FactorBase<Ideal>,
+        target: &Ideal,
+        rng: &mut impl RngCore,
+    ) -> Option<Relation> {
+        if !self.matches_curve(curve) || !curve.is_canonical(target) || factor_base.bound != 1 {
+            return None;
+        }
+        let support = curve.decompose(target, 1, rng)?;
+        let mut coefficients = BTreeMap::<usize, i64>::new();
+        let mut replay = curve.identity();
+        for (key, multiplicity) in support {
+            if key.pi.degree() != Some(1) {
+                return None;
+            }
+            let x = self.field.neg(*key.pi.c.first()?);
+            let source = if self.f2.eval(x, &self.field) == 0 {
+                if !key.r.is_zero() {
+                    return None;
+                }
+                let fiber = self.vertical_divisor(curve, x, rng)?;
+                if fiber.len() != 1 || fiber[0].1 != 3 {
+                    return None;
+                }
+                fiber[0].0.clone()
+            } else {
+                let y = *key.r.c.first().unwrap_or(&0);
+                let u = self.plane_u(x, y)?;
+                self.source_place(curve, x, u, rng)?
+            };
+            let column = *factor_base.index.get(&key)?;
+            if factor_base.places.get(column)?.elem != source {
+                return None;
+            }
+            *coefficients.entry(column).or_default() += i64::from(multiplicity);
+            for _ in 0..multiplicity {
+                replay = curve.add(&replay, &source);
+            }
+        }
+        if replay != *target {
+            return None;
+        }
+        Some(Relation {
+            coeffs: coefficients.into_iter().collect(),
+            alpha: BigUint::zero(),
+            beta: BigUint::from(1u32),
         })
     }
 
@@ -947,5 +1003,69 @@ mod tests {
         assert_eq!(report.k, BigUint::from(7u64));
         assert_eq!(curve.scalar_mul(&report.k, &d1), target);
         assert!(report.relations >= seeds.len());
+
+        // A separate subgroup target has degree-one normalized support.
+        // Its target coefficient comes directly from that public ideal.
+        let smooth_target = curve.scalar_mul(&BigUint::from(2u64), &d1);
+        let target_row = chart
+            .direct_target_relation(&curve, &base, &smooth_target, &mut rng)
+            .unwrap();
+        assert_eq!(target_row.beta, BigUint::from(1u32));
+        let mut direct_seeds = seeds;
+        direct_seeds.push(target_row);
+        let direct_report = index_calculus_dlp_with_seed_relations(
+            &curve,
+            &base,
+            &d1,
+            &smooth_target,
+            &n,
+            &direct_seeds,
+            &params,
+        )
+        .unwrap();
+        assert_eq!(direct_report.k, BigUint::from(2u64));
+        assert_eq!(curve.scalar_mul(&direct_report.k, &d1), smooth_target);
+    }
+
+    #[test]
+    fn direct_target_descent_replays_ordinary_and_exceptional_places() {
+        let field = Fp::new(17).unwrap();
+        let mut rng = StdRng::seed_from_u64(0x2026_11d2);
+        for (roots1, roots2) in [(vec![0, 1, 2], vec![3, 7]), (vec![0, 1, 2, 3, 5], vec![6])] {
+            let curve = SuperellipticCurve::new(
+                field,
+                3,
+                vec![
+                    (split_poly(&field, &roots1), 1),
+                    (split_poly(&field, &roots2), 2),
+                ],
+            )
+            .unwrap();
+            let chart = TrigonalPlaneChart::new(&curve).unwrap();
+            let base = build_factor_base(&curve, 1, &mut rng).unwrap();
+            let ordinary = chart.source_place(&curve, 0, 0, &mut rng).unwrap();
+            let exceptional = chart.vertical_divisor(&curve, roots2[0], &mut rng).unwrap();
+            assert_eq!(exceptional.len(), 1);
+            assert_eq!(exceptional[0].1, 3);
+            let target = curve.add(&ordinary, &exceptional[0].0);
+            assert!(!curve.is_identity(&target));
+            let relation = chart
+                .direct_target_relation(&curve, &base, &target, &mut rng)
+                .unwrap();
+            assert_eq!(relation.alpha, BigUint::zero());
+            assert_eq!(relation.beta, BigUint::from(1u32));
+            let replay = relation
+                .coeffs
+                .iter()
+                .fold(curve.identity(), |acc, &(i, c)| {
+                    assert!(c > 0);
+                    let mut sum = acc;
+                    for _ in 0..c {
+                        sum = curve.add(&sum, &base.places[i].elem);
+                    }
+                    sum
+                });
+            assert_eq!(replay, target);
+        }
     }
 }
