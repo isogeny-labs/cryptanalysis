@@ -14,6 +14,7 @@ import tempfile
 from time import perf_counter_ns
 
 HERE = Path(__file__).resolve().parent
+EXPECTED_MANIFEST_SHA = "bd7c6f0d5348639ff68425df2e77d48e914e9cd5eb4b7c40490cf1f14647b630"
 helpers = runpy.run_path(str(HERE.parent / "m31-full-rust-comparison" / "replay.py"))
 ROOT = helpers["ROOT"]
 frozen = helpers["frozen"]
@@ -77,9 +78,31 @@ def main():
             print(f"{basis} exact index map SHA-256 {hashlib.sha256(images['high']).hexdigest()}", file=sys.stderr)
         if os.environ.get("M31_AUDIT_ONLY") == "1":
             return
-        repeats = int(os.environ.get("M31_DUAL_REPEATS", "4"))
-        blocks = [(basis, seed, repeat) for basis in fixtures for seed in range(3) for repeat in range(repeats)]
-        random.Random(int(os.environ.get("M31_DUAL_ORDER_SEED", "112628"))).shuffle(blocks)
+        manifest_path = os.environ.get("M31_DUAL_MANIFEST")
+        if manifest_path:
+            manifest_bytes = Path(manifest_path).read_bytes()
+            if hashlib.sha256(manifest_bytes).hexdigest() != EXPECTED_MANIFEST_SHA:
+                raise ValueError("seed manifest changed")
+            manifest = json.loads(manifest_bytes)
+            master = bytes.fromhex(manifest["master_seed_hex"])
+            def derived(label):
+                digest = hashlib.sha256(b"m31-dual-bitmap/v1\0" + master + b"\0" + label.encode("ascii")).digest()
+                return int.from_bytes(digest[:8], "big") & ((1 << 63) - 1)
+            if manifest["walk_seeds"] != [derived(label) for label in manifest["walk_labels"]]:
+                raise ValueError("walk seed derivation changed")
+            if manifest["order_seed"] != derived(manifest["order_label"]):
+                raise ValueError("order seed derivation changed")
+            if len(set(manifest["walk_seeds"])) != len(manifest["walk_seeds"]):
+                raise ValueError("walk seeds repeat")
+            seeds = manifest["walk_seeds"]
+            repeats = manifest["repeats_per_seed"]
+            order_seed = manifest["order_seed"]
+        else:
+            seeds = range(3)
+            repeats = int(os.environ.get("M31_DUAL_REPEATS", "4"))
+            order_seed = int(os.environ.get("M31_DUAL_ORDER_SEED", "112628"))
+        blocks = [(basis, seed, repeat) for basis in fixtures for seed in seeds for repeat in range(repeats)]
+        random.Random(order_seed).shuffle(blocks)
         writer = csv.writer(sys.stdout, lineterminator="\n")
         writer.writerow(["basis", "seed", "repeat", "position", "configuration", "basis_sha256", "scalar", "trials", "relations", "entries", "table_ns", "rust_total_ns", "charged_wall_ns", "charged_cpu_ns"])
         for basis, seed, repeat in blocks:
