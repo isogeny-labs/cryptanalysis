@@ -1,0 +1,168 @@
+{
+  "schema": "m31-metal-confirm2-manifest/v1",
+  "commit": "a66361a9024fe83202f583caaa3fd70b18b4f9b9",
+  "host": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "python": "3.13.1",
+  "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11) (Homebrew)",
+  "swiftc": "Apple Swift version 6.4.2 (swiftlang-6.4.2.1.9 clang-2100.4.1.1)\nTarget: arm64-apple-macosx27.2.0",
+  "source_sha256": {
+    "experiments/prime-field-auxiliary-ic/m31-metal-four-sum/full.rs": "980c1db9495631b9ce0da9e657c8dfa115950752a02e3bf1cd4ff9cf404efc2a",
+    "experiments/prime-field-auxiliary-ic/m31-metal-four-sum/gpu_ffi.swift": "a6ad1f5b8b9466226d4e162beeae378c340759cc4518034c269d777bb56e9c0a",
+    "experiments/prime-field-auxiliary-ic/m31-metal-four-sum/screen.metal": "9e9ca6169e0307a49d130da0adabaec68133a3ef3bbbe6eb800411507894858e",
+    "experiments/prime-field-auxiliary-ic/m31-metal-four-sum/confirm2.py": "3f0e2b4918a90f57c154a454e6e91b2e42d8bb8e8e7db6c89518e43e6100c79a",
+    "experiments/prime-field-auxiliary-ic/m31-metal-four-sum/CONFIRM2_PROTOCOL.md": "b0896cff36fa91e19d41bb25225e9dce31b6be1019c11fe34614d72e0b543922",
+    "crates/prime-field-auxiliary-ic/src/solve.rs": "3e10a048eeee570c55cd57e530fd42e97f22fb25c689ac1e7bca065954a690ec",
+    "crates/prime-field-auxiliary-ic/src/pair_index.rs": "4251208f77c96e228b422d68c92c497ece494d0581556c607e28d8a78d8573e7"
+  },
+  "targets": [
+    [
+      1767503692,
+      244402461
+    ],
+    [
+      686106551,
+      2137700595
+    ],
+    [
+      949616523,
+      2050168716
+    ],
+    [
+      1568678311,
+      615355077
+    ],
+    [
+      2146214436,
+      1536824028
+    ]
+  ],
+  "seeds": [
+    2963118146192557216,
+    7548553730800238568,
+    2788219740164666896
+  ],
+  "order_seed": 511919298052211780,
+  "master_seed_hex": "11c1f74d64d2715ef0c14823e91df509",
+  "schedule": [
+    {
+      "target": 3,
+      "seed": 1,
+      "arms": [
+        "cpu",
+        "metal"
+      ]
+    },
+    {
+      "target": 1,
+      "seed": 0,
+      "arms": [
+        "metal",
+        "cpu"
+      ]
+    },
+    {
+      "target": 1,
+      "seed": 1,
+      "arms": [
+        "cpu",
+        "metal"
+      ]
+    },
+    {
+      "target": 0,
+      "seed": 0,
+      "arms": [
+        "metal",
+        "cpu"
+      ]
+    },
+    {
+      "target": 0,
+      "seed": 2,
+      "arms": [
+        "cpu",
+        "metal"
+      ]
+    },
+    {
+      "target": 2,
+      "seed": 1,
+      "arms": [
+        "metal",
+        "cpu"
+      ]
+    },
+    {
+      "target": 4,
+      "seed": 0,
+      "arms": [
+        "cpu",
+        "metal"
+      ]
+    },
+    {
+      "target": 3,
+      "seed": 0,
+      "arms": [
+        "metal",
+        "cpu"
+      ]
+    },
+    {
+      "target": 4,
+      "seed": 2,
+      "arms": [
+        "cpu",
+        "metal"
+      ]
+    },
+    {
+      "target": 3,
+      "seed": 2,
+      "arms": [
+        "metal",
+        "cpu"
+      ]
+    },
+    {
+      "target": 0,
+      "seed": 1,
+      "arms": [
+        "cpu",
+        "metal"
+      ]
+    },
+    {
+      "target": 4,
+      "seed": 1,
+      "arms": [
+        "metal",
+        "cpu"
+      ]
+    },
+    {
+      "target": 2,
+      "seed": 2,
+      "arms": [
+        "cpu",
+        "metal"
+      ]
+    },
+    {
+      "target": 2,
+      "seed": 0,
+      "arms": [
+        "metal",
+        "cpu"
+      ]
+    },
+    {
+      "target": 1,
+      "seed": 2,
+      "arms": [
+        "cpu",
+        "metal"
+      ]
+    }
+  ]
+}
