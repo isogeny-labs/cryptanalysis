@@ -70,10 +70,12 @@ SHA-256 `b08876623e28e0cc58ac3df0599f9021f9c9f9e81a01332566bc2b952d4341c1`,
 runner `replay.py` `7cd8b0cab1300bfde3d7b9b285b7e89ae7fdf38d0e2e220711d7f1c2aedb548c`,
 native `m31.cpp` `6605965ea709bb8ed1c6b5ae1c9acf2389b0da7c45e6b5ba1cf0721a2d31d7cc`,
 and `scan.cpp` `ddd19577d4c57741a290548d00a0daaafc6ce06cfc1491869ef6754761e42928`.
-After measurement, the runner was changed only to pin its crate archive to
-the measured `85395a80b` source because `main` advanced before publication.
-The frozen fixture snapshot did not change across that rebase. This runner
-change is outside the timed arms and is not part of the above source hash.
+After measurement, the runner was changed to pin its crate archive to the
+measured `85395a80b` source because `main` advanced before publication, and
+to select the equivalent native compiler CPU flag on x86 for CI correctness
+replay. The arm64 compilation path is unchanged. The frozen fixture snapshot
+did not change across the rebase. These runner changes are outside the timed
+arms and are not part of the above source hash.
 Run `M31_REPLAY_TMPDIR=/Volumes/SSD990 python3 replay.py > raw.csv`; for the
 confirmation add `M31_SEEDS=3,4,5 M31_REPLAY_ORDER_SEED=2026112612` and
 redirect to `confirm.csv`. The raw panels preserve phase timings and scanner

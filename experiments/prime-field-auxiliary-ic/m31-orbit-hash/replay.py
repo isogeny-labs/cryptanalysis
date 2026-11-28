@@ -3,6 +3,7 @@ import csv
 import hashlib
 import json
 import os
+import platform
 from pathlib import Path
 import random
 import resource
@@ -36,10 +37,11 @@ def main():
         scan_object = directory / "scan.o"
         native_library = directory / "libm31scan.a"
         shared_library = directory / "libm31scan.dylib"
-        subprocess.run(["clang++", "-std=c++17", "-O3", "-mcpu=native", "-c", str(HERE / "m31.cpp"), "-o", str(native_object)], check=True)
-        subprocess.run(["clang++", "-std=c++17", "-O3", "-mcpu=native", "-c", str(HERE / "scan.cpp"), "-o", str(scan_object)], check=True)
+        cpu_flag = "-mcpu=native" if platform.machine() in ("arm64", "aarch64") else "-march=native"
+        subprocess.run(["clang++", "-std=c++17", "-O3", cpu_flag, "-c", str(HERE / "m31.cpp"), "-o", str(native_object)], check=True)
+        subprocess.run(["clang++", "-std=c++17", "-O3", cpu_flag, "-c", str(HERE / "scan.cpp"), "-o", str(scan_object)], check=True)
         subprocess.run(["ar", "rcs", str(native_library), str(native_object), str(scan_object)], check=True)
-        subprocess.run(["clang++", "-std=c++17", "-O3", "-mcpu=native", "-shared", "-fPIC", str(HERE / "m31.cpp"), str(HERE / "scan.cpp"), "-o", str(shared_library)], check=True)
+        subprocess.run(["clang++", "-std=c++17", "-O3", cpu_flag, "-shared", "-fPIC", str(HERE / "m31.cpp"), str(HERE / "scan.cpp"), "-o", str(shared_library)], check=True)
         subprocess.run([sys.executable, str(HERE / "check_inverse.py"), str(shared_library)], check=True, stdout=sys.stderr)
         subprocess.run([sys.executable, str(HERE / "check_scan.py"), str(shared_library)], check=True, stdout=sys.stderr)
         binaries = {}
