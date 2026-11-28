@@ -1,0 +1,39 @@
+{
+  "schema": "m31-pair-root-validation/v1",
+  "status": "producer_local_pass",
+  "processes": {
+    "warmup": 2,
+    "matched_measured": 32,
+    "aa_measured": 32,
+    "failures": 0,
+    "timeouts": 0
+  },
+  "row_parity": true,
+  "cells": [
+    {"target": 0, "summands": 3, "baseline_median_cold_ns": 698518365.0, "candidate_median_cold_ns": 36000243.5, "ratio": 19.403156675870818, "relations": 0, "digest": 0, "aa_ratio": 1.07613537601462},
+    {"target": 0, "summands": 4, "baseline_median_cold_ns": 33916857560.0, "candidate_median_cold_ns": 1777518050.5, "ratio": 19.081020049534512, "relations": 27, "digest": 2866247195168869544, "aa_ratio": 1.0317025603261918},
+    {"target": 1, "summands": 3, "baseline_median_cold_ns": 724619018.5, "candidate_median_cold_ns": 40251275.5, "ratio": 18.002386495801854, "relations": 0, "digest": 0, "aa_ratio": 1.0099957985133845},
+    {"target": 1, "summands": 4, "baseline_median_cold_ns": 34086728239.5, "candidate_median_cold_ns": 1807527621.0, "ratio": 18.858206006634518, "relations": 26, "digest": 8555810665033450451, "aa_ratio": 1.0257628666555962}
+  ],
+  "raw": {
+    "panel_sha256": "1844af5f9a6451ba06a6075d8d1be9a4b3cd5b8cc5cb543ec434fe81687dd8d8",
+    "aa_sha256": "2e26a7a5f093fcd0c2a7eb63a9dad483f4938e8dff3507002341e1f94412ed91",
+    "e2e_initial_sha256": "0b6644e574d658066f0f1671e8c762fe877630f955a89c29295dc1b20854f499",
+    "e2e_retry_sha256": "51dd12ea956e23ab40a243b5d3265ae8672faaf2afa444b97921342fc388e8bd"
+  },
+  "end_to_end": {
+    "status": "solved",
+    "scalar": 345912577,
+    "independent_python_scalar_replay": true,
+    "candidate_wall_seconds": 3.240330797,
+    "baseline_wall_seconds": 56.453416660,
+    "wall_ratio": 17.42211527053545,
+    "candidate_cpu_seconds": 3.192421,
+    "baseline_cpu_seconds": 56.193816,
+    "relations": 69,
+    "queries": 6823,
+    "matrix_rank": 68,
+    "proof_nodes": 647
+  },
+  "qualification": "producer-local stage and complete-recovery measurement; no isolation tier, matched optimized rho, independent signature or PCC promotion"
+}

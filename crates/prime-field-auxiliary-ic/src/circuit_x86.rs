@@ -208,81 +208,6 @@ fn append_indices(mut mask: u32, first: usize, active: usize, indices: &mut Vec<
     }
 }
 
-#[inline(always)]
-fn group_mask<const B: u32, O: Packed<B>>(
-    base: &FactorBase<B>,
-    xs: &[u64],
-    squares: &[u64],
-    target: u64,
-    target_squared: u64,
-) -> u32 {
-    let zero = O::splat(0);
-    let mut d = [zero; 3];
-    let mut c = [zero; 3];
-    let mut h = [zero; 3];
-    let tx = O::splat(target);
-    let tx2 = O::splat(target_squared);
-    let a = O::splat(base.curve.a);
-    let b2 = O::splat(F::<B>::add(base.curve.b, base.curve.b));
-    let b4 = O::splat(F::<B>::mul(4, base.curve.b));
-    for k in 0..3 {
-        let x = O::load(&xs[k * O::WIDTH..]);
-        let x2 = O::load(&squares[k * O::WIDTH..]);
-        let product = O::mul(x, tx);
-        let sum = O::add(x, tx);
-        let t = O::sub(product, a);
-        d[k] = O::sub(O::add(x2, tx2), O::add(product, product));
-        let mid = O::add(O::mul(sum, O::add(product, a)), b2);
-        c[k] = O::add(mid, mid);
-        h[k] = O::sub(O::mul(t, t), O::mul(b4, sum));
-    }
-    let circuit = base.circuit.as_ref().expect("compiled circuit");
-    let first_r = circuit.first_pole;
-    if first_r != 0 {
-        let r = O::splat(first_r);
-        let r2 = O::splat(F::<B>::sq(first_r));
-        let twice_r = O::splat(F::<B>::add(first_r, first_r));
-        for k in 0..3 {
-            h[k] = O::add(O::sub(h[k], O::mul(r, c[k])), O::mul(r2, d[k]));
-            c[k] = O::sub(c[k], O::mul(twice_r, d[k]));
-        }
-    }
-    circuit.evaluate::<B, O, 3>(&mut d, &mut c, &mut h);
-    let mut zero_bits = 0;
-    for (k, &hk) in h.iter().enumerate() {
-        zero_bits |= O::zero_bits(hk) << (k * O::WIDTH);
-    }
-    zero_bits
-}
-
-#[inline]
-fn append_indices_from(
-    mut mask: u32,
-    first: usize,
-    start: usize,
-    active: usize,
-    indices: &mut Vec<usize>,
-) {
-    if mask == 0 || first >= active {
-        return;
-    }
-    if start > first {
-        let skip = start - first;
-        if skip >= 32 {
-            return;
-        }
-        mask &= !((1u32 << skip) - 1);
-    }
-    let remaining = active - first;
-    if remaining < 32 {
-        mask &= (1u32 << remaining) - 1;
-    }
-    while mask != 0 {
-        indices.push(first + mask.trailing_zeros() as usize);
-        mask &= mask - 1;
-    }
-}
-
 #[target_feature(enable = "avx2")]
 pub(super) unsafe fn evaluate_avx2<const B: u32>(
     base: &FactorBase<B>,
@@ -301,27 +226,6 @@ pub(super) unsafe fn evaluate_avx2<const B: u32>(
             &mut output[i..],
         );
         append_indices(mask, i, base.points.len(), indices);
-    }
-}
-
-#[target_feature(enable = "avx2")]
-pub(super) unsafe fn evaluate_zeros_from_avx2<const B: u32>(
-    base: &FactorBase<B>,
-    start: usize,
-    target: u64,
-    target_squared: u64,
-    indices: &mut Vec<usize>,
-) {
-    let first_tile = (start / 12) * 12;
-    for i in (first_tile..base.xs.len()).step_by(12) {
-        let mask = group_mask::<B, A256>(
-            base,
-            &base.xs[i..],
-            &base.squares[i..],
-            target,
-            target_squared,
-        );
-        append_indices_from(mask, i, start, base.points.len(), indices);
     }
 }
 
@@ -344,27 +248,5 @@ pub(super) unsafe fn evaluate_avx512<const B: u32>(
             &mut output[i..],
         );
         append_indices(mask, i, base.points.len(), indices);
-    }
-}
-
-#[cfg(auxiliary_ic_avx512)]
-#[target_feature(enable = "avx512f")]
-pub(super) unsafe fn evaluate_zeros_from_avx512<const B: u32>(
-    base: &FactorBase<B>,
-    start: usize,
-    target: u64,
-    target_squared: u64,
-    indices: &mut Vec<usize>,
-) {
-    let first_tile = (start / 24) * 24;
-    for i in (first_tile..base.xs.len()).step_by(24) {
-        let mask = group_mask::<B, A512>(
-            base,
-            &base.xs[i..],
-            &base.squares[i..],
-            target,
-            target_squared,
-        );
-        append_indices_from(mask, i, start, base.points.len(), indices);
     }
 }

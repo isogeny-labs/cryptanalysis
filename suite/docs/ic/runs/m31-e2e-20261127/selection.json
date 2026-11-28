@@ -1,0 +1,19 @@
+{
+  "schema": "m31-e2e-selection/v1",
+  "source_commit": "bfa695d0c5963a2bbdb6a59766683188a40df8f4",
+  "binary_sha256": "ee67b81916a6a762af01e781a4ae72af6faee98c7e5715663444c60138f1d067",
+  "selected": {
+    "columns": 512,
+    "summands": 4,
+    "base": "interval",
+    "method": "indexed"
+  },
+  "m3_reference": {
+    "columns": 512,
+    "summands": 3,
+    "base": "interval",
+    "method": "indexed"
+  },
+  "criterion": "completed count then geometric mean cold time on two development targets; no heldout inputs seen",
+  "development_cells": 20
+}

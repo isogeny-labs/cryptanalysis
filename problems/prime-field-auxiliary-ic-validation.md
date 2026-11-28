@@ -59,6 +59,21 @@ protocol exist. No such run is launched by this import PR.
 
 ## Resolution and history
 
+2026-11-27, reusable pair-root and complete-recovery follow-up: PR #2005
+moves the target-independent signed two-point root set into a lazy per-workspace
+index for m=3/4 while preserving canonical rows. A frozen 64-process local
+stage panel has exact baseline/candidate row parity and 18.00x-19.40x paired
+median cold reductions. The prospectively frozen Q0 complete-recovery run
+recovers scalar `345912577` in both arms with independent local group replay,
+identical 69 relations/6,823 queries/rank 68, and 3.240330797 s candidate versus
+56.453416660 s baseline process wall (17.4221x). The initial wrapper/parser
+failure is retained alongside the corrected retry. See the
+[protocol and results](../suite/docs/ic/runs/fp-m31-pair-roots-20261127/RESULTS.md).
+This completes the scoped implementation and producer-local end-to-end
+measurement, but does not close this broader qualification issue: matched
+optimized rho, admitted isolation, signed independent replay, the five-target
+panel and PCC promotion remain open. [pcc:unverified]
+
 2026-11-27, actual five-lead follow-up: new native suite examples now
 implement monolithic S4/S5, serial/balanced/partially split systems, complete
 guarded addition constraints, mixed-lift salvage, local tree signs/x-cache,

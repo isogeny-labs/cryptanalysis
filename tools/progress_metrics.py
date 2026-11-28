@@ -245,12 +245,31 @@ def main():
     ic_bench(a.ref, a.since)
     ic_native_walk_evidence(a.ref, a.since)
     m31_relation_lead_evidence(a.ref, a.since)
+    m31_e2e_evidence(a.ref, a.since)
     ecc2k130_runs(a.ref, a.since)
     readme_headline(a.ref)
     ghs_quartic_evidence(a.ref, a.since)
     hecke_d39_finite(a.ref, a.since)
     hecke_sparse_study(a.ref, a.since)
     hecke_pair_reuse(a.ref, a.since)
+
+
+def m31_e2e_evidence(ref, since):
+    """Exploratory local recovery counts and clocks; no qualified speedup series."""
+    for stamp, name in (("20261127T1736Z", "integrated"), ("20261127T1801Z", "m2")):
+        path = "benchmarks/records/" + stamp + "-m31-e2e-" + name + ".json"
+        text = show(ref, path)
+        if not text:
+            continue
+        record = json.loads(text)
+        day = record.get("created_utc", "")[:10]
+        if day < since or record.get("status") not in ("invalid", "censored"):
+            continue
+        for metric in record.get("metrics", []):
+            emit("ic.m31_e2e." + name + ".exploratory." + metric["name"], metric["value"],
+                 date=day, problem=record["problem"], unit=metric["unit"],
+                 better=metric.get("better", "neutral"),
+                 label="Local M31 producer observation; unqualified: " + metric["name"], source=path)
 
 
 def m31_relation_lead_evidence(ref, since):

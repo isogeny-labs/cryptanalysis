@@ -1,6 +1,9 @@
 # Active research tasks
 
 ## Active items
+- [x] Complete the M31 deliverable: reconcile remote/local implementations, clean-build fast command, standalone certificate checking and publication checks (Codex, resumed 2026-11-27; PR #2005; local runs authorized; combined command, single-proof checker, clean-build controls and offline bundle; merge remains gated)
+- [x] Integrated native M31 recovery and separate measured pair-root acceleration; retain both study directories, frozen inputs, all raw outcomes and their producer-only standing (PR #2005; suite/docs/ic/runs/m31-e2e-20261127/REPORT.md and suite/docs/ic/runs/fp-m31-pair-roots-20261127/RESULTS.md)
+
 
 - [x] Implement and compare the original five relation leads over Fp p=2147483647 (Codex, resumed 2026-11-27, branch codex/fp-m31-local-20261127; PR #2002; 146-cell local comparison plus separate 4-cell degree diagnostic; suite/docs/ic/runs/fp-m31-leads-20261127/REPORT.md; unverified producer evidence, qualification remains open)
 
@@ -50,6 +53,8 @@
 - [x] CT313 retain bounded failed-native capture bytes and separate SHA-bound refusal receipts (ChatGPT, started 2026-11-22, branch research/ct302-full-native-log-admission-20261121, PR #1912): four nonzero/timeout/overflow/spawn mocks, independent source-only failure receipt checker and four SHA tamper refusals; [source CI #45045972591](https://github.com/isogeny-labs/cryptanalysis/actions/runs/45045972591) passed at d1a31e2b. No native model execution, complete solver, authenticated S3 or PCC.
 
 ## Blocked / questions
+
+- M31 software and source publication are complete (PR #2005; functional source6837f39). Review/merge still depends on the inherited PCC ledger entry3583/seq3535 error and historical S3 inputs. Local and offline evidence are retained; no ledger rewrite, false upload flag or check disablement.
 
 - Full native CT244/CT300 pricing and 695/701 record replay still require approved authenticated original six-object artifact custody; previous STS invalid-token and S3 403 are unresolved. This source-only correction does not authorize paid compute, artifact substitution, modified provenance or protected merge.
 

@@ -22,12 +22,12 @@
       "sha256": "c36443b17548a2f9c4f2843635fbaed6abe04788a259585f38605f7447f11349"
     }
   ],
-  "latest_record": "20261121T2238Z-mitm-coset-filter-ratchet",
+  "latest_record": "20261127T1809Z-m31-pair-root-e2e-local",
   "note": "Every value is quoted from the record it names, in that record's unit. Percentages and ratios under 'derived' are computed here from those values and are not measurements. Series in different units are never compared. 4 digest-pinned historical measured records are excluded from all series and derived comparisons; recorded status counts retain them. See integrity_exclusions in progress.json and PROGRESS.md for reasons.",
   "records": {
-    "censored": 5,
-    "invalid": 39,
-    "measured": 43,
+    "censored": 6,
+    "invalid": 40,
+    "measured": 45,
     "open": 0
   },
   "repo": "cryptanalysis",
@@ -2055,6 +2055,133 @@
         }
       ],
       "problem": "ic:bench-cell-wall-phase3",
+      "unit": "wall_s"
+    },
+    {
+      "better": "lower",
+      "first": 3.240330797,
+      "latest": 3.240330797,
+      "latest_derived": {},
+      "metric": "m31_q0_complete_recovery_wall",
+      "points": [
+        {
+          "commit": "03d3daf01ff5",
+          "date": "2026-11-27",
+          "derived": {},
+          "n": 1,
+          "record": "20261127T1809Z-m31-pair-root-e2e-local",
+          "reference": null,
+          "reference_kind": null,
+          "spread": null,
+          "summary": "Producer-local complete M31 recovery: identical independently replayed scalar and work, with candidate 3.2403 s versus baseline 56.4534 s wall (17.4221x); not independently admitted.",
+          "value": 3.240330797
+        }
+      ],
+      "problem": "ic:m31-pair-root-e2e",
+      "unit": "wall_s"
+    },
+    {
+      "better": "lower",
+      "first": 0.0360002435,
+      "latest": 0.0360002435,
+      "latest_derived": {},
+      "metric": "m31_q0_m3_cold_wall",
+      "points": [
+        {
+          "commit": "82a2f42a49a0",
+          "date": "2026-11-27",
+          "derived": {},
+          "n": 4,
+          "record": "20261127T1752Z-m31-pair-root-local",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.031911646,
+            0.037587109
+          ],
+          "summary": "Producer-local M31 pair-root stage: exact row parity and 18.00x-19.40x paired median cold reduction; not independently admitted or end-to-end.",
+          "value": 0.0360002435
+        }
+      ],
+      "problem": "ic:m31-pair-root-index",
+      "unit": "wall_s"
+    },
+    {
+      "better": "lower",
+      "first": 1.7775180505,
+      "latest": 1.7775180505,
+      "latest_derived": {},
+      "metric": "m31_q0_m4_cold_wall",
+      "points": [
+        {
+          "commit": "82a2f42a49a0",
+          "date": "2026-11-27",
+          "derived": {},
+          "n": 4,
+          "record": "20261127T1752Z-m31-pair-root-local",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.760548447,
+            1.884987421
+          ],
+          "summary": "Producer-local M31 pair-root stage: exact row parity and 18.00x-19.40x paired median cold reduction; not independently admitted or end-to-end.",
+          "value": 1.7775180505
+        }
+      ],
+      "problem": "ic:m31-pair-root-index",
+      "unit": "wall_s"
+    },
+    {
+      "better": "lower",
+      "first": 0.0402512755,
+      "latest": 0.0402512755,
+      "latest_derived": {},
+      "metric": "m31_q1_m3_cold_wall",
+      "points": [
+        {
+          "commit": "82a2f42a49a0",
+          "date": "2026-11-27",
+          "derived": {},
+          "n": 4,
+          "record": "20261127T1752Z-m31-pair-root-local",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            0.031330648,
+            0.061987788
+          ],
+          "summary": "Producer-local M31 pair-root stage: exact row parity and 18.00x-19.40x paired median cold reduction; not independently admitted or end-to-end.",
+          "value": 0.0402512755
+        }
+      ],
+      "problem": "ic:m31-pair-root-index",
+      "unit": "wall_s"
+    },
+    {
+      "better": "lower",
+      "first": 1.807527621,
+      "latest": 1.807527621,
+      "latest_derived": {},
+      "metric": "m31_q1_m4_cold_wall",
+      "points": [
+        {
+          "commit": "82a2f42a49a0",
+          "date": "2026-11-27",
+          "derived": {},
+          "n": 4,
+          "record": "20261127T1752Z-m31-pair-root-local",
+          "reference": null,
+          "reference_kind": null,
+          "spread": [
+            1.757947004,
+            1.839715413
+          ],
+          "summary": "Producer-local M31 pair-root stage: exact row parity and 18.00x-19.40x paired median cold reduction; not independently admitted or end-to-end.",
+          "value": 1.807527621
+        }
+      ],
+      "problem": "ic:m31-pair-root-index",
       "unit": "wall_s"
     },
     {

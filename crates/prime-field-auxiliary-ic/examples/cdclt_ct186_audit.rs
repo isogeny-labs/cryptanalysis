@@ -1395,18 +1395,15 @@ fn main() {
     );
     let _ = writeln!(
         json,
-        "    \"unsat_window_major_slope_e\": {:.6},",
-        slope_unsat_wm
+        "    \"unsat_window_major_slope_e\": {slope_unsat_wm:.6},"
     );
     let _ = writeln!(
         json,
-        "    \"unsat_bit_interleaved_slope_e\": {:.6},",
-        slope_unsat_bi
+        "    \"unsat_bit_interleaved_slope_e\": {slope_unsat_bi:.6},"
     );
     let _ = writeln!(
         json,
-        "    \"planted_quantile_bit_interleaved_slope_e\": {:.6},",
-        slope_planted_bi
+        "    \"planted_quantile_bit_interleaved_slope_e\": {slope_planted_bi:.6},"
     );
     let _ = writeln!(json, "    \"gate_threshold_e_max\": 0.5,");
     let _ = writeln!(json, "    \"verdict\": \"REFUTED_BARRIER_CONFIRMED\"");

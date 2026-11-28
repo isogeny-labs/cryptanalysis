@@ -270,3 +270,22 @@ tiles. Full small-field recoveries use matched walks and identical recovery
 certificates. These are additional implementation leads; their effect on
 relation yield, cold setup and end-to-end time remains unmeasured.
 `[pcc:unverified]`
+
+
+## Complete M31 command
+
+From the repository root with Rust1.88 installed:
+
+```sh
+scripts/m31-complete 2144058214 807222724 --out recovery.json --seed 1
+```
+
+The command rebuilds current source, recovers from public coordinates, creates
+an output file without overwriting another, and checks the saved complete
+signed certificate with the original verifier and a second native arithmetic
+implementation. `scripts/m31-verify recovery.json --qx X --qy Y` also checks
+an existing report. Exit0 denotes a locally checked recovery; bounded
+incomplete reports return1 and invalid worker inputs return2. The standalone
+`m31-fast` binary defaults to B256/m2 on the fixed public lab curve
+p=2147483647, a=2,b=14,N=2147505293,G=(1,814455902). These producer checks do
+not constitute a signed independent verdict. [pcc:unverified]

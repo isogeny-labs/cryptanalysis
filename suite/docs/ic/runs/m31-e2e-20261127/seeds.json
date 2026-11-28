@@ -1,0 +1,51 @@
+{
+  "schema": "m31-e2e-local-seeds/v1",
+  "derivation": "SHA256 UTF8 m31-e2e/v1|<stage>|<rep>|<stream>; first8bytes little-endian u64",
+  "sampler": "native SplitMix64 with rejection",
+  "bootstrap_seed": 1729,
+  "development": [
+    {
+      "replicate": 0,
+      "sampler": 5879439735982694829,
+      "base": 6030719715154975513
+    },
+    {
+      "replicate": 1,
+      "sampler": 10934647299787398942,
+      "base": 6679947099658549496
+    }
+  ],
+  "heldout": [
+    {
+      "replicate": 0,
+      "sampler": 6640827118952020810,
+      "base": 11272790453506909730,
+      "evaluator_only": 5735525065504025344
+    },
+    {
+      "replicate": 1,
+      "sampler": 17728363834163978910,
+      "base": 16358395625331385130,
+      "evaluator_only": 584249159733925654
+    },
+    {
+      "replicate": 2,
+      "sampler": 11057629406225134383,
+      "base": 12805332793609505802,
+      "evaluator_only": 8465751777580578194
+    },
+    {
+      "replicate": 3,
+      "sampler": 16550983766539887576,
+      "base": 13055628392625802814,
+      "evaluator_only": 14892582479308947838
+    },
+    {
+      "replicate": 4,
+      "sampler": 14282404213378386004,
+      "base": 7902933139674265290,
+      "evaluator_only": 12045321067684065920
+    }
+  ],
+  "custody": "evaluator_only target seeds/scalars never passed to the recovery worker; heldout Q generated only after selection freeze"
+}

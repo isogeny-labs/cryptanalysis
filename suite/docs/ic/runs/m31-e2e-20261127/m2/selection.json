@@ -1,0 +1,29 @@
+{
+  "schema": "m31-e2e-m2-selection/v1",
+  "source_commit": "0f5ec2dd351b8e3c2e839f56b930d6268e94319e",
+  "binary_sha256": "ee67b81916a6a762af01e781a4ae72af6faee98c7e5715663444c60138f1d067",
+  "selected": {
+    "columns": 256,
+    "summands": 2,
+    "base": "interval",
+    "method": "indexed",
+    "max_queries": 4000000
+  },
+  "references": [
+    {
+      "columns": 512,
+      "summands": 3,
+      "base": "interval",
+      "method": "indexed",
+      "max_queries": 4000000
+    },
+    {
+      "columns": 512,
+      "summands": 4,
+      "base": "interval",
+      "method": "indexed",
+      "max_queries": 4000000
+    }
+  ],
+  "criterion": "two complete old-target recoveries, then geometric mean cold time; no new heldout Q seen"
+}

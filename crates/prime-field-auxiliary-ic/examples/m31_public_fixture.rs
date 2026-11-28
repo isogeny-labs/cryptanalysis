@@ -4,7 +4,11 @@ use prime_field_auxiliary_ic::{Backend, Curve, FactorBase};
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     let mode = args.get(1).map(String::as_str).unwrap_or("target");
-    let number: u64 = args.get(2).expect("scalar or summand count").parse().unwrap();
+    let number: u64 = args
+        .get(2)
+        .expect("scalar or summand count")
+        .parse()
+        .unwrap();
     let arm = args.get(3).map(String::as_str).unwrap_or("torus");
     // Existing lab reference: cdclt_ct186_audit.rs, main().
     let curve = Curve::<31>::new(2, 14).unwrap();
@@ -35,7 +39,11 @@ fn main() {
             for term in terms {
                 let (i, sign) = term.split_once(':').unwrap();
                 let mut point = points[i.parse::<usize>().unwrap()];
-                match sign { "1" => {}, "-1" => point = curve.negate(point).unwrap(), _ => panic!("sign") }
+                match sign {
+                    "1" => {}
+                    "-1" => point = curve.negate(point).unwrap(),
+                    _ => panic!("sign"),
+                }
                 sum = curve.add(sum, Some(point)).unwrap();
             }
             assert_eq!(sum, Some(q));

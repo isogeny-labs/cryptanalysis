@@ -755,10 +755,7 @@ where
         report["software"] = json!({"version":env!("CARGO_PKG_VERSION"),"os":std::env::consts::OS,
             "arch":std::env::consts::ARCH,"binary_blake3":binary_hash(),"git_commit":git_commit()});
     }
-    let success = matches!(
-        report["status"].as_str(),
-        Some("complete" | "checks_passed" | "stopped")
-    ) || report.get("operation").is_none();
+    let success = successful_report(&report);
     let text = serde_json::to_string_pretty(&report).expect("JSON serializable");
     if let Some(path) = &cli.out {
         let result = OpenOptions::new()
@@ -796,5 +793,35 @@ where
         ExitCode::from(2)
     } else {
         ExitCode::FAILURE
+    }
+}
+
+fn successful_report(report: &Value) -> bool {
+    matches!(
+        report["status"].as_str(),
+        Some("complete" | "checks_passed" | "stopped")
+    ) || report.get("operation").is_none()
+        || (report["operation"] == "auxiliary-prime-field-ic"
+            && matches!(report["status"].as_str(), Some("solved" | "replayed"))
+            && report["producer_check_passed"] == true)
+}
+
+#[cfg(test)]
+mod exit_status_tests {
+    use super::*;
+    #[test]
+    fn checked_auxiliary_recovery_is_success_without_promoting_incomplete_reports() {
+        assert!(successful_report(
+            &json!({"operation":"auxiliary-prime-field-ic","status":"solved","producer_check_passed":true})
+        ));
+        assert!(!successful_report(
+            &json!({"operation":"auxiliary-prime-field-ic","status":"solved","producer_check_passed":false})
+        ));
+        assert!(!successful_report(
+            &json!({"operation":"auxiliary-prime-field-ic","status":"incomplete","producer_check_passed":true})
+        ));
+        assert!(!successful_report(
+            &json!({"operation":"other","status":"solved","producer_check_passed":true})
+        ));
     }
 }
