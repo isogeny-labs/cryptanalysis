@@ -38,7 +38,7 @@ fn main() {
         for point in &entries {
             for negative in [false, true] {
                 if point.is_none() && negative { continue; }
-                let b = if negative { point.map(|p| c.negate(p).unwrap()) } else { *point };
+                let b = if negative { *point } else { point.map(|p| c.negate(p).unwrap()) };
                 candidates.push(c.add(Some(target), b).unwrap());
             }
         }

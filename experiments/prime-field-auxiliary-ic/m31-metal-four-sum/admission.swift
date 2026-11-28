@@ -71,7 +71,7 @@ kernel void compact_screen(device const P *targets [[buffer(0)]], device const P
                            constant uint &entryCount [[buffer(4)]], uint id [[thread_position_in_grid]]) {
   uint width=2*entryCount;
   P q=targets[id/width], b=entries[(id/2)%entryCount];
-  if(id&1u && b.finite && b.y!=0) b.y=MOD-b.y;
+  if(!(id&1u) && b.finite && b.y!=0) b.y=MOD-b.y;
   P result=candidate(q,b);
   if(!result.finite) { flags[id]=2; return; }
   ulong bit=(result.x*0x9e3779b97f4a7c15ul)>>44;
@@ -124,7 +124,7 @@ for target in targets {
     for point in entries {
         for negative in [false,true] {
             if point == nil && negative { continue }
-            let b=negative ? point.map { XY(x:$0.x,y:$0.y==0 ? 0 : p-$0.y) } : point
+            let b=negative ? point : point.map { XY(x:$0.x,y:$0.y==0 ? 0 : p-$0.y) }
             left.append(GPUPoint(x:target.x,y:target.y,finite:1))
             right.append(GPUPoint(x:b?.x ?? 0,y:b?.y ?? 0,finite:b == nil ? 0 : 1))
         }
@@ -238,6 +238,9 @@ compactEncoder.endEncoding(); compactCmd.commit(); compactCmd.waitUntilCompleted
 let compactSeconds=CFAbsoluteTimeGetCurrent()-compactStart
 precondition(compactCmd.status == .completed)
 let compactFlags=compactFlagBuf.contents().bindMemory(to:UInt8.self,capacity:n)
+if CommandLine.arguments.count>4 {
+    try Data(bytes:compactFlags,count:n).write(to:URL(fileURLWithPath:CommandLine.arguments[4]))
+}
 var compactMismatches=0
 for i in 4..<n { if compactFlags[i] != flags[i] { compactMismatches += 1 } }
 print("{\"schema\":\"m31-metal-admission/v1\",\"device\":\"\(device.name)\",\"target_source\":\"\(CommandLine.arguments.count>3 ? "rust_first_walk_round" : "q_plus_i_g")\",\"columns\":\(columns),\"lanes\":\(lanes),\"entries\":\(entries.count),\"n\":\(n),\"mismatches\":\(mismatches),\"flag_mismatches\":\(flagMismatches),\"compact_flag_mismatches\":\(compactMismatches),\"bitmap_positives\":\(positives),\"gpu_setup_dispatch_wall_s\":\(charged),\"screen_pipeline_dispatch_wall_s\":\(screenSeconds),\"compact_setup_dispatch_wall_s\":\(compactSeconds),\"library_pipeline_wall_s\":\(tLibrary-t0),\"buffers_wall_s\":\(tBuffers-tLibrary),\"dispatch_wait_wall_s\":\(dispatch),\"cpu_affine_wall_s\":\(cpuSeconds),\"checksum\":\(checksum),\"digest\":\(digest)}")
