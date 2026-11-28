@@ -1,0 +1,7 @@
+# Fresh-seed exact-x confirmation
+
+Frozen on 2026-11-27 after the first panel and before confirmation outcomes. Repeat `PROTOCOL.md` unchanged: same five public M31 Q, B195 m4 index, 64 lanes, process-start wall and child CPU boundaries, 20-bit merged Metal control versus 22-bit bitmap plus exact GPU x hash, answer and complete certificate checks, all failures preserved, no cache flush. The source implementation is unchanged from commit `d0179b25d`. Use a new 15-block schedule and fresh processes. The fixed-input admission is repeated and excluded from timing.
+
+Master seed `965f4d402259576f911490040e630052`. Child derivation is SHA-256 of ASCII `m31-metal-xhash-confirm/v1`, NUL, 16 raw master bytes, NUL, ASCII label; first eight bytes big endian masked to 63 bits. `walk/0..2` are `4454329044419911484`, `2812151391946316817`, `5598324525605962919`; `schedule` is `7522161479198906941`. Python 3 `random.Random(schedule).shuffle` orders target/seed blocks; arms alternate control-first and candidate-first.
+
+The original selection gate is unchanged: all 30 independently checked answers, identical complete certificate digest, queries, relations and rank within each pair; median paired control/candidate wall and CPU ratios at least 1.20 and at least 12/15 wins on both. Report absolute and phase medians and matched archived rho distance separately. A failure is retained, with no threshold change or retry.
