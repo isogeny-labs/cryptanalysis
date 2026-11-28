@@ -267,9 +267,14 @@ pub struct TargetSet {
 impl TargetSet {
     /// Exhaustive when `r − 1 ≤ exhaustive_cap`, else `sample` targets.
     pub fn new(kc: &KoblitzCurve, sample: usize, exhaustive_cap: u64, seed: u64) -> Self {
-        let r = kc.subgroup_order.to_u64().unwrap_or(u64::MAX);
+        // Exhaustive only when r really fits a word and is small enough:
+        // the old `unwrap_or(u64::MAX)` made a 2^129 subgroup look
+        // exhaustive under `exhaustive_cap = u64::MAX`. A sample for a
+        // wider r draws scalars from [1, 2^64 − 1), all valid below r.
+        let r_word = kc.subgroup_order.to_u64();
+        let r = r_word.unwrap_or(u64::MAX);
         let g = kc.generator();
-        let (scalars, exhaustive) = if r - 1 <= exhaustive_cap {
+        let (scalars, exhaustive) = if r_word.is_some_and(|r| r - 1 <= exhaustive_cap) {
             ((1..r).collect::<Vec<_>>(), true)
         } else {
             let mut rng = StdRng::seed_from_u64(seed ^ 0x5441_5247_4554_5300);
@@ -1154,6 +1159,21 @@ mod tests {
     use super::*;
     use crate::cryptanalysis::koblitz_index_calculus::{enumerate_decompose, point_key};
     use num_traits::One;
+
+    /// A subgroup order above 2^64 (ECC2K-130) is never "exhaustive": the
+    /// old `to_u64().unwrap_or(u64::MAX)` made `r − 1 <= u64::MAX` true and
+    /// tried to enumerate 2^64 scalars.
+    #[test]
+    fn target_set_not_exhaustive_for_wide_subgroup() {
+        let kc = crate::cryptanalysis::ecc2k130_index_calculus::curve().unwrap();
+        let set = TargetSet::new(&kc, 4, u64::MAX, 1);
+        assert!(!set.exhaustive);
+        assert_eq!(set.len(), 4);
+        assert!(set.scalars.iter().all(|&k| k >= 1));
+        for (pt, &k) in set.points.iter().zip(&set.scalars) {
+            assert_eq!(*pt, kc.mul(kc.generator(), &BigUint::from(k)));
+        }
+    }
 
     fn brute_coverage(
         kc: &KoblitzCurve,

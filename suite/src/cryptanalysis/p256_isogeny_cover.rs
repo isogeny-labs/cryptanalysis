@@ -115,24 +115,12 @@ fn powmod(base: u64, exp: u64, p: u64) -> u64 {
     acc
 }
 
+/// Deterministic Miller–Rabin for any `u64` (the 12-base test of
+/// [`crate::cryptanalysis::residual_walk::is_prime_u64`]). The trial
+/// division this replaced cost `O(√n)` and, for `n > (2^32 − 1)^2`, its
+/// `d * d` wrapped past `n` and never stopped.
 fn is_prime_u64(n: u64) -> bool {
-    if n < 2 {
-        return false;
-    }
-    if n < 4 {
-        return true;
-    }
-    if n & 1 == 0 {
-        return false;
-    }
-    let mut d = 3u64;
-    while d * d <= n {
-        if n.is_multiple_of(d) {
-            return false;
-        }
-        d += 2;
-    }
-    true
+    crate::cryptanalysis::residual_walk::is_prime_u64(n)
 }
 
 /// Find all ordinary, prime-order elliptic curves `E: y² = x³ + ax + b`
@@ -1156,6 +1144,26 @@ pub fn run_probe_random_with_stats(
 mod tests {
     use super::*;
     use crate::prime_hyperelliptic::frob_ab_and_jac;
+
+    /// Primality is exact and fast at the top of the u64 range.
+    #[test]
+    fn is_prime_u64_near_2p64() {
+        assert!(is_prime_u64(u64::MAX - 58)); // 2^64 − 59
+        assert!(!is_prime_u64(u64::MAX));
+        assert!(!is_prime_u64(4_294_967_291 * 4_294_967_279)); // (2^32 − 5)(2^32 − 17)
+        assert!(is_prime_u64((1u64 << 61) - 1));
+        assert!(!is_prime_u64(3_215_031_751)); // strong pseudoprime to 2, 3, 5, 7
+        for (n, want) in [
+            (0u64, false),
+            (1, false),
+            (2, true),
+            (3, true),
+            (4, false),
+            (97, true),
+        ] {
+            assert_eq!(is_prime_u64(n), want, "{n}");
+        }
+    }
 
     #[test]
     fn tiny_sweep_p_5() {

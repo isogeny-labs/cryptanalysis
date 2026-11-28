@@ -464,6 +464,18 @@ impl ModPlaneCubic {
     }
 }
 
+/// An upper bound on any point order of a cubic over `F_q`:
+/// `q + 1 + 2⌈√q⌉ + 4`, with the exact integer `⌈√q⌉` (the f64 form is
+/// inexact above 2^52) and saturating at `u64::MAX` (the old sum
+/// overflowed for `q` near `2^64`).
+fn hasse_max_order(q: u64) -> u64 {
+    let r = q.isqrt();
+    let ceil_sqrt = if r * r == q { r } else { r + 1 };
+    q.saturating_add(1)
+        .saturating_add(2 * ceil_sqrt)
+        .saturating_add(4)
+}
+
 /// Exact incremental subgroup relation-kernel basis on `C(F_q)` (`r x r` upper-triangular).
 fn single_prime_relation_kernel(
     curve: &ModPlaneCubic,
@@ -471,7 +483,7 @@ fn single_prime_relation_kernel(
     ops_counter: &mut u64,
 ) -> Option<(Vec<Vec<BigInt>>, u64)> {
     let r = points_mod_q.len();
-    let max_order = curve.q + 1 + 2 * ((curve.q as f64).sqrt().ceil() as u64) + 4;
+    let max_order = hasse_max_order(curve.q);
     let mut subgroup: Vec<[u64; 3]> = vec![curve.origin];
     let mut coords_of: HashMap<[u64; 3], Vec<BigInt>> = HashMap::new();
     coords_of.insert(curve.origin, vec![BigInt::zero(); r]);
@@ -1792,6 +1804,17 @@ pub fn solve_xedni_ecdlp(config: &XedniSolveConfig) -> Result<XedniSolveReport, 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Exact above 2^52 and saturating near 2^64.
+    #[test]
+    fn hasse_max_order_exact_and_saturating() {
+        assert_eq!(hasse_max_order(101), 101 + 1 + 2 * 11 + 4);
+        assert_eq!(hasse_max_order(100), 100 + 1 + 2 * 10 + 4);
+        let k = (1u64 << 30) - 1;
+        // q = k² + 1: ⌈√q⌉ = k + 1 (f64 gave k).
+        assert_eq!(hasse_max_order(k * k + 1), k * k + 1 + 1 + 2 * (k + 1) + 4);
+        assert_eq!(hasse_max_order(u64::MAX - 58), u64::MAX);
+    }
 
     fn pt(x: &str, y: &str, z: &str) -> PlaneCubicPoint {
         PlaneCubicPoint::new([x.parse().unwrap(), y.parse().unwrap(), z.parse().unwrap()]).unwrap()

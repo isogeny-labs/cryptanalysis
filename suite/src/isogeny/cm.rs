@@ -23,8 +23,13 @@
 //! ## What's expensive
 //!
 //! Frobenius trace by brute-force point counting is `O(p)` field
-//! operations: feasible for `p < 2^32` on a laptop in seconds, and
-//! easy for our 60–80-bit experimental scope.  Schoof's algorithm
+//! operations: feasible for `p < 2^32` on a laptop in seconds.  Above
+//! `2^14` the trace comes from a Shanks–Mestre BSGS in the Hasse interval
+//! (`O(p^{1/4})`) on the single-word Montgomery field of
+//! [`crate::cryptanalysis::bsgs_fast`], which needs `p < 2^63`; that is
+//! the size limit of this module ([`SmallCurve`] documents `p < 2^62`).
+//! The discriminant `t² − 4p` and the group order are carried in `i128`
+//! because they leave `i64` for `p >= 2^61`.  Schoof's algorithm
 //! (`O((log p)^5)`) would be required to scale to cryptographic
 //! sizes; we deliberately do not implement it here — see
 //! [`crate::cryptanalysis::ai_schoof`] for the start of that work.
@@ -49,8 +54,20 @@ use std::collections::HashMap;
 /// `−1` on non-squares, `0` on zero.  We compute the right-hand
 /// side directly.  Complexity: `O(p · log² p)` (the Legendre
 /// symbol is computed via Euler's criterion).
+///
+/// # Panics
+///
+/// For `p >= 2^63`: the BSGS point count runs on a single-word Montgomery
+/// field that requires `p < 2^63`, and the `O(p)` brute-force fallback
+/// would not finish. (Previously this silently fell through to the
+/// brute-force loop.)
 pub fn frobenius_trace(curve: &SmallCurve) -> i64 {
     let p = curve.p;
+    assert!(
+        p < FROBENIUS_TRACE_MAX_P,
+        "frobenius_trace: p = {p} >= 2^63 is beyond the single-word BSGS point \
+         count (FastField needs p < 2^63); brute force would be O(p)"
+    );
     if p < 3 {
         // Edge case: characteristic 2 / 3 needs a different
         // Weierstrass model; bail.
@@ -76,6 +93,10 @@ pub fn frobenius_trace(curve: &SmallCurve) -> i64 {
     }
     p_i + 1 - count
 }
+
+/// Exclusive upper bound on `p` for [`frobenius_trace`] (the
+/// single-word Montgomery field limit of `bsgs_fast::FastField`).
+pub const FROBENIUS_TRACE_MAX_P: u64 = 1 << 63;
 
 // ── BSGS / Shanks-Mestre point count ──────────────────────────────────────────
 //
@@ -142,7 +163,8 @@ pub fn frobenius_trace_bsgs(curve: &SmallCurve) -> Option<i64> {
                 // Defensive: shouldn't happen if `combined > 4√p`.
                 continue;
             }
-            return Some(p as i64 + 1 - n_e as i64);
+            // i128: n_e can exceed i64::MAX for p just below 2^63.
+            return i64::try_from(p as i128 + 1 - n_e as i128).ok();
         }
     }
     None
@@ -350,25 +372,10 @@ fn refine_point_order(
     k
 }
 
+/// Exact floor square root (the old saturating refinement loop never
+/// terminated for `n >= (2^32 − 1)^2`).
 fn isqrt_u64(n: u64) -> u64 {
-    if n < 2 {
-        return n;
-    }
-    let mut x = (n as f64).sqrt() as u64;
-    // Newton refine.
-    for _ in 0..4 {
-        if x == 0 {
-            break;
-        }
-        x = (x + n / x) / 2;
-    }
-    while x.saturating_mul(x) > n {
-        x -= 1;
-    }
-    while (x + 1).saturating_mul(x + 1) <= n {
-        x += 1;
-    }
-    x
+    n.isqrt()
 }
 
 fn lcm_u64(a: u64, b: u64) -> u64 {
@@ -423,16 +430,18 @@ pub struct CmData {
     pub p: u64,
     /// Frobenius trace `t`.
     pub trace: i64,
-    /// `#E(F_p) = p + 1 − t`.
-    pub order: i64,
-    /// `t² − 4p`, the discriminant of `Z[π]`.
-    pub frobenius_disc: i64,
+    /// `#E(F_p) = p + 1 − t` (`i128`: exceeds `i64` for `p` near `2^63`).
+    pub order: i128,
+    /// `t² − 4p`, the discriminant of `Z[π]` (`i128`: `|t² − 4p| <= 4p`
+    /// leaves `i64` for `p >= 2^61`).
+    pub frobenius_disc: i128,
     /// Fundamental discriminant of `Q(π)`.
-    pub fundamental_disc: i64,
-    /// Conductor `f` of `End(E)` over `O_K`.
+    pub fundamental_disc: i128,
+    /// Conductor `f` of `End(E)` over `O_K` (`f² <= |t² − 4p|`, so it fits
+    /// `i64`).
     pub conductor: i64,
     /// Discriminant of `End(E)`: `f² · D_K`.
-    pub endomorphism_disc: i64,
+    pub endomorphism_disc: i128,
     /// Whether the curve is **anomalous** (`#E = p`, Smart's attack
     /// applies).
     pub anomalous: bool,
@@ -441,21 +450,27 @@ pub struct CmData {
 }
 
 /// Compute the full CM data for a small curve.
+///
+/// All of `p + 1 − t` and `t² − 4p` are evaluated in `i128`; the old `i64`
+/// form overflowed `4·p` for `p >= 2^61`.
 pub fn cm_discriminant(curve: &SmallCurve) -> CmData {
-    let p = curve.p as i64;
+    let p = curve.p as i128;
     let trace = frobenius_trace(curve);
-    let order = p + 1 - trace;
-    let frobenius_disc = trace * trace - 4 * p;
+    let t = trace as i128;
+    let order = p + 1 - t;
+    let frobenius_disc = t * t - 4 * p;
     let (fund_d, cond) = fundamental_discriminant_and_conductor(frobenius_disc);
     let anomalous = order == p;
-    let supersingular = trace.rem_euclid(p) == 0;
+    let supersingular = t.rem_euclid(p) == 0;
+    let conductor =
+        i64::try_from(cond).expect("conductor f satisfies f^2 <= |t^2 - 4p| < 2^66, so f < 2^33");
     CmData {
         p: curve.p,
         trace,
         order,
         frobenius_disc,
         fundamental_disc: fund_d,
-        conductor: cond,
+        conductor,
         endomorphism_disc: fund_d * cond * cond,
         anomalous,
         supersingular,
@@ -477,24 +492,45 @@ pub fn cm_discriminant(curve: &SmallCurve) -> CmData {
 /// leaving a square-free `m`.  Then check the residue of `-m mod 4`;
 /// if it lands on the wrong side, restore a factor of 4 into the
 /// fundamental part (and halve `f`).
-pub fn fundamental_discriminant_and_conductor(n: i64) -> (i64, i64) {
+///
+/// Trial division runs only to `|N|^{1/3}`: what is left then has at most
+/// two prime factors, so it is either square-free or a perfect square.
+/// That keeps the cost at `O(|N|^{1/3})` (about `2^21` steps at
+/// `|N| = 2^63`) instead of the `O(|N|^{1/2})` of a full square strip.
+/// Takes `i128` so `t² − 4p` for `p >= 2^61` fits.
+pub fn fundamental_discriminant_and_conductor(n: i128) -> (i128, i128) {
     if n >= 0 {
         return (n, 1);
     }
-    let mut abs_n = -n;
-    let mut f = 1i64;
-    // Strip the largest square divisor of `abs_n`.
-    let mut p = 2i64;
-    while p.saturating_mul(p) <= abs_n {
-        let p2 = p * p;
-        while abs_n % p2 == 0 {
-            abs_n /= p2;
-            f *= p;
+    let mut rest = n.unsigned_abs();
+    let mut square_free: u128 = 1;
+    let mut f: u128 = 1;
+    let mut d: u128 = 2;
+    while d * d * d <= rest {
+        if rest.is_multiple_of(d) {
+            let mut e = 0u32;
+            while rest.is_multiple_of(d) {
+                rest /= d;
+                e += 1;
+            }
+            f *= d.pow(e / 2);
+            if e % 2 == 1 {
+                square_free *= d;
+            }
         }
-        p += 1;
+        d += if d == 2 { 1 } else { 2 };
     }
+    // `rest` has at most two prime factors, all > |N|^{1/3}.
+    let r = rest.isqrt();
+    if rest > 1 && r * r == rest {
+        f *= r;
+    } else {
+        square_free *= rest;
+    }
+    let abs_n = square_free as i128;
+    let f = f as i128;
     // Now `abs_n` is square-free.  Candidate fundamental disc:
-    let d_cand: i64 = -abs_n;
+    let d_cand: i128 = -abs_n;
     if d_cand.rem_euclid(4) == 1 {
         // Already fundamental.
         (d_cand, f)
@@ -591,7 +627,8 @@ pub fn verify_cm(curve: &SmallCurve, expected_disc: i64) -> bool {
     let ratio = BigInt::from(data.frobenius_disc) / BigInt::from(expected_disc);
     let ratio = ratio.abs();
     let r_u: u128 = ratio.to_string().parse().unwrap_or(0);
-    let sq = (r_u as f64).sqrt() as u128;
+    // Exact integer square root (f64 is inexact above 2^53).
+    let sq = r_u.isqrt();
     sq * sq == r_u
 }
 
@@ -676,7 +713,7 @@ mod tests {
     fn order_matches_trace() {
         let curve = toy_curve_b();
         let data = cm_discriminant(&curve);
-        assert_eq!(data.order, (curve.p as i64) + 1 - data.trace);
+        assert_eq!(data.order, (curve.p as i128) + 1 - data.trace as i128);
     }
 
     #[test]
@@ -711,6 +748,113 @@ mod tests {
         assert_eq!(legendre_u64(6, 7), -1);
         // Zero.
         assert_eq!(legendre_u64(0, 7), 0);
+    }
+
+    /// Cube-root trial division gives the same decomposition as a full
+    /// square strip, including squares of primes above |N|^{1/3}.
+    #[test]
+    fn fundamental_disc_matches_full_square_strip() {
+        fn reference(n: i128) -> (i128, i128) {
+            let mut abs_n = -n;
+            let mut f = 1i128;
+            let mut p = 2i128;
+            while p * p <= abs_n {
+                while abs_n % (p * p) == 0 {
+                    abs_n /= p * p;
+                    f *= p;
+                }
+                p += 1;
+            }
+            if (-abs_n).rem_euclid(4) == 1 {
+                (-abs_n, f)
+            } else if f % 2 == 0 {
+                (-4 * abs_n, f / 2)
+            } else {
+                (n, 1)
+            }
+        }
+        for n in [
+            -3i128,
+            -4,
+            -7,
+            -8,
+            -12,
+            -16,
+            -27,
+            -28,
+            -48,
+            -75,
+            -99,
+            -4 * 1009 * 1009,
+            -3 * 1013 * 1013,
+            -4 * 7 * 101 * 101,
+            -(1i128 << 20),
+            -4 * 1_000_003 * 13,
+            -11 * 9973 * 9973 * 4,
+        ] {
+            assert_eq!(
+                fundamental_discriminant_and_conductor(n),
+                reference(n),
+                "N = {n}"
+            );
+        }
+    }
+
+    /// p = 2^62 − 57 (prime, inside SmallCurve's documented p < 2^62): the
+    /// old i64 `t² − 4p` overflowed (4p > 2^63). The trace comes from the
+    /// BSGS count; check the order annihilates points and the discriminant
+    /// decomposes exactly.
+    #[test]
+    fn cm_discriminant_exact_at_2p62() {
+        use crate::cryptanalysis::bsgs_fast::{FastCurve, FastPoint};
+        let p: u64 = (1u64 << 62) - 57;
+        let curve = SmallCurve {
+            name: "62b",
+            p,
+            a: 2,
+            b: 3,
+        };
+        let data = cm_discriminant(&curve);
+        let t = data.trace as i128;
+        assert!(t * t <= 4 * p as i128, "Hasse bound");
+        assert_eq!(data.order, p as i128 + 1 - t);
+        assert_eq!(data.frobenius_disc, t * t - 4 * p as i128);
+        let f = data.conductor as i128;
+        assert_eq!(data.fundamental_disc * f * f, data.frobenius_disc);
+        assert!(matches!(data.fundamental_disc.rem_euclid(4), 0 | 1));
+        // [#E]P = O for a few points.
+        let n = u64::try_from(data.order).unwrap();
+        let fc = FastCurve::from_u64(p, 2, 3, n).unwrap();
+        let mut rng = 0x1234_5678u64;
+        for _ in 0..3 {
+            let (x, y) = sample_random_xy(&curve, &mut rng).unwrap();
+            let pt = FastPoint {
+                x: fc.f.to_mont(x),
+                y: fc.f.to_mont(y),
+                infinity: false,
+            };
+            assert!(fc.scalar_mul(pt, n).infinity);
+        }
+    }
+
+    /// p >= 2^63 is refused with a message instead of an O(p) loop.
+    #[test]
+    #[should_panic(expected = "beyond the single-word BSGS point count")]
+    fn frobenius_trace_refuses_p_at_2p63() {
+        let curve = SmallCurve {
+            name: "64b",
+            p: u64::MAX - 58,
+            a: 2,
+            b: 3,
+        };
+        let _ = frobenius_trace(&curve);
+    }
+
+    /// The exact isqrt terminates at the top of the u64 range.
+    #[test]
+    fn cm_isqrt_u64_near_max() {
+        assert_eq!(isqrt_u64(u64::MAX), (1u64 << 32) - 1);
+        assert_eq!(isqrt_u64((1u64 << 62) - 57), (1u64 << 31) - 1);
     }
 
     #[test]

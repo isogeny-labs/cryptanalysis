@@ -2514,6 +2514,10 @@ impl PrimePoint {
 }
 
 /// `y² = x³ + ax + b` over `F_p` in single-word arithmetic.
+///
+/// The field arithmetic is correct for any `p < 2^64`, but the
+/// [`CountedGroup::key`] of a point, `2(x + 1) + sign`, needs `p < 2^63`
+/// to fit a `u64`; [`PrimeCurve::new`] enforces that.
 #[derive(Clone, Debug, Serialize)]
 pub struct PrimeCurve {
     pub p: u64,
@@ -2522,6 +2526,28 @@ pub struct PrimeCurve {
 }
 
 impl PrimeCurve {
+    /// Exclusive bound on `p`: the point key `2(x + 1) + sign` must fit a
+    /// `u64`.
+    pub const MAX_P_EXCLUSIVE: u64 = 1 << 63;
+
+    /// Checked constructor: refuses `p >= 2^63` (the point key would
+    /// overflow) and `p < 3`, and reduces `a`, `b` modulo `p`.
+    pub fn new(p: u64, a: u64, b: u64) -> Result<Self, String> {
+        if p >= Self::MAX_P_EXCLUSIVE {
+            return Err(format!(
+                "PrimeCurve: p = {p} >= 2^63; the single-word point key 2(x+1)+sign needs p < 2^63"
+            ));
+        }
+        if p < 3 {
+            return Err(format!("PrimeCurve: p = {p} must be an odd prime"));
+        }
+        Ok(Self {
+            p,
+            a: a % p,
+            b: b % p,
+        })
+    }
+
     pub fn is_on_curve(&self, pt: PrimePoint) -> bool {
         if pt.infinity {
             return true;
@@ -2664,6 +2690,15 @@ impl PrimeCurve {
     /// points pins it down (an order-2 heavy group on a tiny field), the
     /// exact sum is computed instead, so the answer is never a guess.
     pub fn point_count_fast(&self) -> u64 {
+        self.try_point_count_fast()
+            .unwrap_or_else(|| self.point_count())
+    }
+
+    /// [`PrimeCurve::point_count_fast`] without the `O(p)` fallback:
+    /// `None` when eight points leave more than one candidate in the Hasse
+    /// interval (never the case for a prime `#E > 4√p`, where any point
+    /// pins it down) or `p + 1 + 2√p` does not fit a `u64`.
+    pub fn try_point_count_fast(&self) -> Option<u64> {
         let p = self.p;
         let points = (0..p).filter_map(|x| {
             let v = self.rhs(x);
@@ -2673,20 +2708,14 @@ impl PrimeCurve {
             let y = self.sqrt(v)?;
             (mulmod(y, y, p) == v).then(|| PrimePoint::affine(x, y))
         });
-        order_in_hasse_interval(self, points, p).unwrap_or_else(|| self.point_count())
+        order_in_hasse_interval(self, points, p)
     }
 }
 
-/// `⌊√n⌋` for any word.
+/// `⌊√n⌋` for any word (the old saturating refinement never stopped for
+/// `n >= (2^32 − 1)^2`).
 fn isqrt_u64(n: u64) -> u64 {
-    let mut r = (n as f64).sqrt() as u64;
-    while r.saturating_mul(r) > n {
-        r -= 1;
-    }
-    while (r + 1).saturating_mul(r + 1) <= n {
-        r += 1;
-    }
-    r
+    n.isqrt()
 }
 
 /// Every `M` in `[lo, lo + width]` with `[M]P = O`, by baby-step
@@ -2743,9 +2772,14 @@ pub(crate) fn order_in_hasse_interval<G: CountedGroup>(
     points: impl Iterator<Item = G::Elt>,
     q: u64,
 ) -> Option<u64> {
-    let half = isqrt_u64(q.checked_mul(4)?);
-    let lo = (q + 1).saturating_sub(half).max(1);
-    let width = q + 1 + half - lo;
+    // ⌊2√q⌋ = ⌊√(4q)⌋ and the interval ends in u128: the old
+    // `q.checked_mul(4)?` gave up for q >= 2^62 (sending callers to the
+    // O(q) exact count), and `q + 1 + half` can exceed a word.
+    let half = (4 * q as u128).isqrt();
+    let lo = (q as u128 + 1).saturating_sub(half).max(1);
+    let hi = u64::try_from(q as u128 + 1 + half).ok()?;
+    let lo = lo as u64;
+    let width = hi - lo;
     let mut alive: Option<Vec<u64>> = None;
     for pt in points.take(8) {
         let Some(found) = hasse_annihilators(g, pt, lo, width) else {
@@ -2831,6 +2865,8 @@ impl CountedGroup for PrimeCurve {
         }
     }
     fn key(&self, p: &PrimePoint) -> u64 {
+        // Injective only for p < 2^63 (see `PrimeCurve::new`).
+        debug_assert!(self.p < PrimeCurve::MAX_P_EXCLUSIVE);
         if p.infinity {
             0
         } else {
@@ -2861,28 +2897,40 @@ impl PrimeInstance {
 pub fn roster_prime_instance(bits: u32) -> Option<PrimeInstance> {
     let (_, c) = bench_curves().into_iter().find(|(b, _)| *b == bits)?;
     let p = c.p.to_u64()?;
-    let curve = PrimeCurve {
-        p,
-        a: c.a.to_u64()?,
-        b: c.b.to_u64()?,
-    };
+    let curve = PrimeCurve::new(p, c.a.to_u64()?, c.b.to_u64()?).ok()?;
     let n = c.n.to_u64()?;
     Some(PrimeInstance {
         name: c.name.to_string(),
         curve,
-        group_order: n * c.h as u64,
+        group_order: n.checked_mul(c.h as u64)?,
         r: n,
         cofactor: c.h as u64,
         generator: (c.gx.to_u64()?, c.gy.to_u64()?),
     })
 }
 
+/// Largest field size [`find_prime_order_curve`] accepts: the
+/// single-word prime-field engines (`prime_orbit_index_calculus`,
+/// `bsgs_fast::FastField`) stop at 62 bits.
+pub const PRIME_ORDER_CURVE_MAX_BITS: u32 = 62;
+
 /// **Search a prime-order curve** of about `bits` bits: random prime
-/// `p`, random `(a, b)`, `O(p)` point count, until `#E` is prime.
-/// Deterministic in the seed; the count of curves tried is not returned
-/// because it is not a cost of the attack.
-pub fn find_prime_order_curve(bits: u32, seed: u64) -> PrimeInstance {
-    assert!((8..=32).contains(&bits));
+/// `p`, random `(a, b)`, Hasse-interval BSGS point count
+/// ([`PrimeCurve::try_point_count_fast`], `O(p^{1/4})`), until `#E` is
+/// prime. Deterministic in the seed; the count of curves tried is not
+/// returned because it is not a cost of the attack.
+///
+/// `bits` must lie in `8..=PRIME_ORDER_CURVE_MAX_BITS` (62); outside that
+/// an error names the range (this used to be an `assert!` at 8..=32).
+/// A curve whose count is not pinned down by the fast count has a
+/// non-prime `#E` (a prime `#E > 4√p` is pinned by any point), so it is
+/// skipped exactly as the exact count would have rejected it.
+pub fn find_prime_order_curve(bits: u32, seed: u64) -> Result<PrimeInstance, String> {
+    if !(8..=PRIME_ORDER_CURVE_MAX_BITS).contains(&bits) {
+        return Err(format!(
+            "find_prime_order_curve: bits must lie in 8..={PRIME_ORDER_CURVE_MAX_BITS}, got {bits}"
+        ));
+    }
     let mut rng = StdRng::seed_from_u64(seed ^ (bits as u64) << 40);
     loop {
         let p = loop {
@@ -2894,7 +2942,7 @@ pub fn find_prime_order_curve(bits: u32, seed: u64) -> PrimeInstance {
         for _ in 0..64 {
             let a = rng.gen_range(0..p);
             let b = rng.gen_range(1..p);
-            let curve = PrimeCurve { p, a, b };
+            let curve = PrimeCurve::new(p, a, b)?;
             // Non-singular?
             let disc = addmod(
                 mulmod(4, mulmod(mulmod(a, a, p), a, p), p),
@@ -2904,7 +2952,9 @@ pub fn find_prime_order_curve(bits: u32, seed: u64) -> PrimeInstance {
             if disc == 0 {
                 continue;
             }
-            let order = curve.point_count_fast();
+            let Some(order) = curve.try_point_count_fast() else {
+                continue;
+            };
             if !is_prime_u64(order) {
                 continue;
             }
@@ -2919,14 +2969,14 @@ pub fn find_prime_order_curve(bits: u32, seed: u64) -> PrimeInstance {
             };
             let mut ops = GroupOps::default();
             debug_assert!(curve.mul(&mut ops, g, order).infinity);
-            return PrimeInstance {
+            return Ok(PrimeInstance {
                 name: format!("generated-{bits}bit-{p}"),
                 curve,
                 group_order: order,
                 r: order,
                 cofactor: 1,
                 generator: (g.x, g.y),
-            };
+            });
         }
     }
 }
@@ -7908,8 +7958,11 @@ pub fn run_koblitz_instance(inst: &BinaryInstance, cfg: &BoundaryConfig) -> Opti
 
 /// A prime instance for `bits`: the roster's curve when it has one,
 /// otherwise a generated prime-order curve.
-pub fn prime_instance_for(bits: u32, seed: u64) -> PrimeInstance {
-    roster_prime_instance(bits).unwrap_or_else(|| find_prime_order_curve(bits, seed))
+pub fn prime_instance_for(bits: u32, seed: u64) -> Result<PrimeInstance, String> {
+    match roster_prime_instance(bits) {
+        Some(inst) => Ok(inst),
+        None => find_prime_order_curve(bits, seed),
+    }
 }
 
 pub fn run_prime_ladder(
@@ -7919,7 +7972,8 @@ pub fn run_prime_ladder(
     let mut out = Vec::new();
     for &bits in &cfg.prime_bits {
         progress(&format!("prime: {bits}-bit instance"));
-        let inst = prime_instance_for(bits, cfg.seed);
+        let inst = prime_instance_for(bits, cfg.seed)
+            .unwrap_or_else(|e| panic!("prime ladder at {bits} bits: {e}"));
         let res = run_prime_instance(&inst, cfg);
         progress(&format!(
             "prime: {} r=2^{:.1} rho S={:.2} best IC S={:.1}",
@@ -8180,6 +8234,56 @@ pub fn format_markdown(ledger: &BoundaryLedger) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// The Hasse-interval count works for q >= 2^62 (the old
+    /// `q.checked_mul(4)?` returned None there, sending `point_count_fast`
+    /// to the O(p) loop) and refuses intervals past u64::MAX.
+    #[test]
+    fn order_in_hasse_interval_at_and_above_2p62() {
+        assert_eq!(isqrt_u64(u64::MAX), (1u64 << 32) - 1);
+        // A 62-bit prime-order curve from the generator, checked by
+        // [#E]G = O and the Hasse bound.
+        let inst = find_prime_order_curve(62, 5).expect("62-bit curve");
+        let p = inst.curve.p;
+        assert!(p >> 61 == 1, "62-bit field");
+        let n = inst.group_order;
+        assert!(is_prime_u64(n));
+        assert!(((n as i128 - p as i128 - 1).pow(2)) <= 4 * p as i128);
+        let mut ops = GroupOps::default();
+        assert!(inst.curve.mul(&mut ops, inst.generator_point(), n).infinity);
+        assert!(inst.curve.is_on_curve(inst.generator_point()));
+        // A curve over p = 2^62 + 135 (prime, > 2^62) now counts fast.
+        let big = PrimeCurve::new((1u64 << 62) + 135, 2, 3).unwrap();
+        assert!(is_prime_u64(big.p));
+        let m = big.try_point_count_fast().expect("fast count above 2^62");
+        let g = (0..)
+            .find_map(|x| {
+                let v = big.rhs(x);
+                (big.legendre(v) == 1).then(|| PrimePoint::affine(x, big.sqrt(v).unwrap()))
+            })
+            .unwrap();
+        assert!(big.mul(&mut ops, g, m).infinity);
+        // q near 2^64: q + 1 + 2√q > u64::MAX is refused, not wrapped.
+        let empty = std::iter::empty::<PrimePoint>();
+        assert_eq!(order_in_hasse_interval(&big, empty, u64::MAX - 58), None);
+    }
+
+    /// p >= 2^63 is refused by the checked constructor (the point key
+    /// 2(x+1)+sign would overflow), bits outside 8..=62 by the generator,
+    /// both with errors instead of panics.
+    #[test]
+    fn prime_curve_limits_are_explicit() {
+        let err = PrimeCurve::new(u64::MAX - 58, 1, 1).unwrap_err();
+        assert!(err.contains("2^63"), "{err}");
+        assert!(PrimeCurve::new((1u64 << 63) - 25, 1, 1).is_ok());
+        let err = find_prime_order_curve(63, 1).unwrap_err();
+        assert!(err.contains("8..=62"), "{err}");
+        assert!(find_prime_order_curve(7, 1).is_err());
+        // Below 2^50 nothing changed: the 40-bit search still lands on a
+        // prime-order curve.
+        let inst = find_prime_order_curve(40, 3).unwrap();
+        assert!(is_prime_u64(inst.r) && inst.curve.p >> 39 == 1);
+    }
 
     #[test]
     fn compact_pair_witness_map_preserves_first_entries_and_rejects_wide_aliases() {
@@ -8812,7 +8916,7 @@ mod tests {
             (16, 0x1C_B0_0B_DA_7A),
             (18, 0x1C_B0_0B_DA_7A),
         ] {
-            let inst = find_prime_order_curve(bits, seed);
+            let inst = find_prime_order_curve(bits, seed).unwrap();
             assert_eq!(inst.curve.point_count(), inst.group_order);
             assert!(is_prime_u64(inst.group_order));
             let mut rng = StdRng::seed_from_u64(seed ^ (bits as u64) << 40);

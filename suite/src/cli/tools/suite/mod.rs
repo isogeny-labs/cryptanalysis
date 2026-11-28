@@ -1502,7 +1502,8 @@ fn cmd_isogeny(op: IsogenyOp) {
         class_group::{class_above_prime, class_number, enumerate_reduced_forms, ClassGroup},
         cm::{cm_discriminant, fundamental_discriminant_and_conductor},
         experiment::{
-            run_experiment, run_experiment_checkpointed_remote, to_json, ExperimentConfig,
+            check_experiment_bits, run_experiment, run_experiment_checkpointed_remote, to_json,
+            ExperimentConfig,
         },
         graph::build_graph,
         secp256k1_analysis::{
@@ -1595,7 +1596,7 @@ fn cmd_isogeny(op: IsogenyOp) {
                 std::process::exit(1);
             }
             let d = BigInt::from(discriminant);
-            let (fund, cond) = fundamental_discriminant_and_conductor(discriminant);
+            let (fund, cond) = fundamental_discriminant_and_conductor(discriminant.into());
             let h = class_number(&d);
             println!("# CM data for D = {}", discriminant);
             println!();
@@ -1640,6 +1641,10 @@ fn cmd_isogeny(op: IsogenyOp) {
             max_new_curves,
             s3_uri,
         } => {
+            if let Err(e) = check_experiment_bits(bits) {
+                eprintln!("error: {e}");
+                std::process::exit(1);
+            }
             let mut cfg = ExperimentConfig::default_for_bits(bits);
             cfg.num_curves = trials.max(1);
             cfg.primes = parse_ell_list(&ell_list);

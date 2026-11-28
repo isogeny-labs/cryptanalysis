@@ -78,7 +78,7 @@
 use std::collections::HashMap;
 
 use num_bigint::BigUint;
-use num_traits::{One, Zero};
+use num_traits::{One, ToPrimitive, Zero};
 use rand::rngs::StdRng;
 use rand::{RngCore, SeedableRng};
 
@@ -1224,12 +1224,45 @@ pub fn prime_order_of(
 /// subgroup, index calculus pays for a factor base sized by the whole
 /// curve, so a tiny subgroup in a large Jacobian flatters rho for a
 /// reason that has nothing to do with either algorithm.
+///
+/// The bounds are exact integers: `lo <= (sqrt(p) − 1)^{2g}` and
+/// `hi >= (sqrt(p) + 1)^{2g}` always hold (see [`hasse_interval_big`]).
+/// Returns `None` for `p = 0`, genus 0, or when `hi` does not fit in a
+/// `u128` (genus 2 needs `p < ~2^63.99`, genus 3 `p < ~2^42.6`).
 pub fn hasse_interval(curve: &HyperellipticCurveP) -> Option<(u128, u128)> {
-    let g = curve.genus as i32;
-    let p_f = curve.p.to_u64_digits().first().copied()? as f64;
-    let root = p_f.sqrt();
-    let lo = (root - 1.0).powi(2 * g).floor().max(1.0) as u128;
-    let hi = (root + 1.0).powi(2 * g).ceil() as u128;
+    let (lo, hi) = hasse_interval_big(&curve.p, curve.genus)?;
+    Some((lo.to_u128()?, hi.to_u128()?))
+}
+
+/// Exact integer enclosure of the Hasse–Weil interval
+/// `[(sqrt(p) − 1)^{2g}, (sqrt(p) + 1)^{2g}]` at any size.
+///
+/// `sqrt(p)` is bracketed by `a / 2^K <= sqrt(p) <= (a + 1) / 2^K` with
+/// `a = isqrt(p · 4^K)`; both bounds are monotone in `sqrt(p)`, so
+/// `lo = floor(((a − 2^K) / 2^K)^{2g})` and
+/// `hi = ceil(((a + 1 + 2^K) / 2^K)^{2g})` enclose the real interval.
+/// `K = g · bits(p) + 8` makes the bracketing error far below one unit, so
+/// `lo`/`hi` are the floor/ceiling of the real endpoints except when an
+/// endpoint lies within about `2^-6` of an integer, where the enclosure
+/// can be one unit wider. `lo` is clamped to at least 1.
+pub fn hasse_interval_big(p: &BigUint, genus: u32) -> Option<(BigUint, BigUint)> {
+    if p.is_zero() || genus == 0 {
+        return None;
+    }
+    let k = genus as u64 * p.bits() + 8;
+    let scale = BigUint::one() << k;
+    let a = (p << (2 * k)).sqrt();
+    let e = 2 * genus;
+    let shift = k * e as u64;
+    let lo_base = if a > scale {
+        &a - &scale
+    } else {
+        BigUint::zero()
+    };
+    let lo = (lo_base.pow(e) >> shift).max(BigUint::one());
+    let hi_base = &a + BigUint::one() + &scale;
+    let denom_minus_1 = (BigUint::one() << shift) - BigUint::one();
+    let hi = (hi_base.pow(e) + denom_minus_1) >> shift;
     Some((lo, hi))
 }
 
@@ -1267,7 +1300,7 @@ pub fn divisor_order_bsgs(
                 continue;
             }
             if !d.scalar_mul(&m, curve).is_identity() {
-                continue; // f64 interval arithmetic slipped; keep going
+                continue; // spurious key match; keep going
             }
             return Some(exact_order_from_multiple(curve, d, &m));
         }
@@ -1341,6 +1374,76 @@ pub fn subgroup_generator(
 mod tests {
     use super::*;
     use crate::prime_hyperelliptic::brute_force_jac_order_via_lpoly;
+
+    /// Check `lo <= (sqrt p − 1)^4 < lo + 1` and `hi − 1 < (sqrt p + 1)^4 <= hi`
+    /// in exact integer arithmetic, via
+    /// `(sqrt p ∓ 1)^4 = c ∓ b·sqrt(p)` with `c = p² + 6p + 1`, `b = 4p + 4`.
+    fn assert_genus2_hasse_tight(p: u64) {
+        let pb = BigUint::from(p);
+        let (lo, hi) = hasse_interval_big(&pb, 2).expect("interval");
+        let c = &pb * &pb + BigUint::from(6u32) * &pb + BigUint::one();
+        let b = BigUint::from(4u32) * &pb + BigUint::from(4u32);
+        let b2p = &b * &b * &pb; // (b·sqrt p)^2
+                                 // lo <= c − b·sqrt p  <=>  (c − lo)^2 >= b^2 p   (c > lo here)
+        let cl = &c - &lo;
+        assert!(&cl * &cl >= b2p, "lo above the real lower endpoint");
+        // c − b·sqrt p < lo + 1  <=>  (c − lo − 1)^2 < b^2 p
+        let cl1 = &cl - BigUint::one();
+        assert!(&cl1 * &cl1 < b2p, "lo not the floor of the lower endpoint");
+        // hi >= c + b·sqrt p  <=>  (hi − c)^2 >= b^2 p
+        let hc = &hi - &c;
+        assert!(&hc * &hc >= b2p, "hi below the real upper endpoint");
+        let hc1 = &hc - BigUint::one();
+        assert!(
+            &hc1 * &hc1 < b2p,
+            "hi not the ceiling of the upper endpoint"
+        );
+        // The u128 wrapper agrees where it fits.
+        let curve = HyperellipticCurveP {
+            p: pb,
+            f: FpPoly::from_coeffs(vec![BigUint::one()], BigUint::from(p)),
+            genus: 2,
+        };
+        assert_eq!(
+            hasse_interval(&curve),
+            Some((lo.to_u128().unwrap(), hi.to_u128().unwrap()))
+        );
+    }
+
+    /// Exact genus-2 Hasse–Weil bounds at p ~ 2^40 (endpoints ~ 2^80, where
+    /// the old f64 evaluation was off by ~2^27) and up to p ~ 2^62.
+    #[test]
+    fn hasse_interval_exact_genus2_above_2p50() {
+        for p in [
+            41u64,
+            1_000_003,
+            (1u64 << 40) - 87,
+            (1u64 << 53) - 111,
+            (1u64 << 62) - 57,
+        ] {
+            assert_genus2_hasse_tight(p);
+        }
+    }
+
+    /// Endpoints that do not fit in u128 are refused, not wrapped or
+    /// truncated; p above 2^64 is not read through its low limb.
+    #[test]
+    fn hasse_interval_refuses_beyond_u128() {
+        let mk = |p: BigUint, genus: u32| HyperellipticCurveP {
+            f: FpPoly::from_coeffs(vec![BigUint::one()], p.clone()),
+            p,
+            genus,
+        };
+        // genus 2, p = 2^64 − 59: (sqrt p + 1)^4 ~ 2^128 + 2^98 > u128::MAX.
+        assert!(hasse_interval(&mk(BigUint::from(u64::MAX - 58), 2)).is_none());
+        // genus 3, p ~ 2^43: hi ~ 2^129.
+        assert!(hasse_interval(&mk(BigUint::from((1u64 << 43) - 57), 3)).is_none());
+        // p = 2^64 + 13 (low limb 13): the BigUint form is still exact.
+        let big = (BigUint::one() << 64u32) + BigUint::from(13u32);
+        assert!(hasse_interval(&mk(big.clone(), 2)).is_none());
+        let (lo, hi) = hasse_interval_big(&big, 2).unwrap();
+        assert!(lo > (BigUint::one() << 127u32) && hi > lo);
+    }
 
     /// `y² = x⁵ + 3x³ + 2x² + x + 1` over `F_p`, genus 2.
     fn toy_curve(p: u64) -> HyperellipticCurveP {

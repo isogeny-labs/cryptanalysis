@@ -215,8 +215,14 @@ pub fn run(args: BoundaryArgs, json: bool) -> Result<Value, String> {
     cfg.unguarded_targets = args.unguarded_targets;
     cfg.eager_restart_pool = args.eager_restart_pool;
     for &b in &cfg.prime_bits {
+        // Design cap, not a curve-generation limit (the generator reaches
+        // 62 bits): the prime ladder builds a factor base of 2^(bits/3)
+        // points and pair tables of its square, 2^(2·bits/3) entries.
         if !(8..=32).contains(&b) {
-            return Err(format!("prime ladder bits must lie in 8..=32, got {b}"));
+            return Err(format!(
+                "prime ladder bits must lie in 8..=32, got {b} (the ladder's pair tables hold \
+                 2^(2*bits/3) entries; the curve generator itself reaches 62 bits, see `ic rho`)"
+            ));
         }
     }
     for &n in cfg.char2_degrees.iter().chain(&cfg.koblitz_degrees) {

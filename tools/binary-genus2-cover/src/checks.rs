@@ -4,7 +4,7 @@ use curve_backend::binary_ecc::{
     BinaryCoverPoint, BinaryPoint, F2mElement, IrreduciblePoly, MumfordDivisor,
 };
 use ecdlp_surfaces::binary::{
-    is_prime_u64, n83_fixture, BinaryCurve, BinaryField, BinaryPoint as FixturePoint,
+    n83_fixture, primality_u128, BinaryCurve, BinaryField, BinaryPoint as FixturePoint, Primality,
     FIXTURE_SOURCE, PRIME_RECEIPT_SOURCE,
 };
 use num_bigint::BigUint;
@@ -63,13 +63,11 @@ pub fn check_n83(a: u8, supplied_q: Option<FixturePoint>, scalar: Option<u128>) 
     let e = fixture.curve;
     let p = fixture.generator;
     let r = fixture.subgroup_order;
-    if a == 1 {
-        let r64 = u64::try_from(r).map_err(|e| e.to_string())?;
-        require(
-            is_prime_u64(r64),
-            "a=1 subgroup order failed deterministic u64 primality",
-        )?;
-    }
+    // Check every variant, including a=0 whose subgroup order (~2.4e24) exceeds u64.
+    require(
+        primality_u128(r) != Primality::Composite,
+        "subgroup order failed Miller-Rabin primality (deterministic below 3.317e24)",
+    )?;
     let witness = if supplied_q.is_some() {
         scalar
     } else {
@@ -182,6 +180,7 @@ pub fn check_n83(a: u8, supplied_q: Option<FixturePoint>, scalar: Option<u128>) 
         "source_order":e.trace_and_order().1.to_string(),
         "prime_proof":if a==0 {"cited historical Sage receipt; not re-proved by this command"} else {"fresh deterministic u64 Miller-Rabin with the established seven-base set"},
         "fresh_deterministic_u64_prime_check":if a==1 {Some(true)} else {None},
+        "fresh_miller_rabin_u128_prime_check":if primality_u128(r)==Primality::Prime {"deterministic: prime (13 prime bases, below 3.317e24)"} else {"probabilistic: fixed prime bases, above the 3.317e24 deterministic bound"},
         "P":point_json(p), "Q":point_json(q), "D_P":divisor_json(&dp), "D_Q":divisor_json(&dq),
         "source_genus":2, "cover_degree":3, "base_field_changed":false,
         "target_curve":"v^2+u^2*v=u^5+a*u^4+u^3+u",

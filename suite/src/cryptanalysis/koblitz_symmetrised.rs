@@ -74,6 +74,7 @@ use std::collections::HashMap;
 use std::time::Instant;
 
 use num_bigint::BigUint;
+use num_traits::ToPrimitive;
 use rand::rngs::StdRng;
 use rand::{Rng, SeedableRng};
 
@@ -89,8 +90,8 @@ use crate::cryptanalysis::koblitz_groebner::{
 use crate::cryptanalysis::koblitz_index_calculus::{
     all_factors_of_x_n_minus_1, build_explicit_frobenius_orbit_factor_base,
     build_frobenius_factor_base_from_divisor, enumerate_decompose, groebner_decompose, point_key,
-    points_with_x, span_f2, subspace_basis_for_divisor, FactorBaseDomain, FrobeniusFactorBase,
-    KoblitzCurve,
+    points_with_x, random_scalar_below, span_f2, subspace_basis_for_divisor, FactorBaseDomain,
+    FrobeniusFactorBase, KoblitzCurve,
 };
 use crate::cryptanalysis::pq_groebner_f2::{F2BoolMono, F2BoolPoly};
 use crate::cryptanalysis::sat::SolveResult;
@@ -1297,13 +1298,6 @@ pub fn paired_bench(a: u8, n: u32, m: usize, opts: &PairedOptions) -> Option<Pai
 
     let mut rng = StdRng::seed_from_u64(opts.seed);
     let g = kc.generator().clone();
-    let r_u64 = kc
-        .subgroup_order
-        .to_u64_digits()
-        .first()
-        .copied()
-        .unwrap_or(2)
-        .max(2);
     let all_points: Vec<BinaryPoint> = if opts.targets_in_subgroup {
         Vec::new()
     } else {
@@ -1314,7 +1308,7 @@ pub fn paired_bench(a: u8, n: u32, m: usize, opts: &PairedOptions) -> Option<Pai
     let mut targets: Vec<BinaryPoint> = Vec::new();
     while targets.len() < opts.targets {
         let p = if opts.targets_in_subgroup {
-            kc.mul(&g, &BigUint::from(rng.gen_range(1..r_u64)))
+            kc.mul(&g, &random_scalar_below(&mut rng, &kc.subgroup_order))
         } else {
             all_points[rng.gen_range(0..all_points.len())].clone()
         };
@@ -2082,13 +2076,6 @@ pub fn transport_bench(
 
     let mut rng = StdRng::seed_from_u64(seed);
     let g = kc.generator().clone();
-    let r_u64 = kc
-        .subgroup_order
-        .to_u64_digits()
-        .first()
-        .copied()
-        .unwrap_or(2)
-        .max(2);
     let engine = SolverEngine::default();
     let mut b = TransportBench {
         n,
@@ -2120,7 +2107,7 @@ pub fn transport_bench(
     let mut direct_ms = Vec::new();
     let mut transported_ms = Vec::new();
     while b.targets < targets {
-        let target = kc.mul(&g, &BigUint::from(rng.gen_range(1..r_u64)));
+        let target = kc.mul(&g, &random_scalar_below(&mut rng, &kc.subgroup_order));
         let BinaryPoint::Affine { x, .. } = &target else {
             continue;
         };
@@ -2570,16 +2557,9 @@ pub fn subspace_gate_bench(a: u8, n: u32, l: usize, opts: &GateOptions) -> Optio
     let st = FieldStructure::new(kc.n, &kc.curve.irreducible);
 
     let g = kc.generator().clone();
-    let r_u64 = kc
-        .subgroup_order
-        .to_u64_digits()
-        .first()
-        .copied()
-        .unwrap_or(2)
-        .max(2);
     let mut targets: Vec<BinaryPoint> = Vec::new();
     while targets.len() < opts.targets {
-        let p = kc.mul(&g, &BigUint::from(rng.gen_range(1..r_u64)));
+        let p = kc.mul(&g, &random_scalar_below(&mut rng, &kc.subgroup_order));
         // Both systems need u(R) finite and non-zero.
         match &p {
             BinaryPoint::Affine { x, .. } if *x != F2mElement::one(n) => targets.push(p),
@@ -3251,13 +3231,8 @@ pub fn x5_solve_gate(
     let pts: Vec<FastPoint> = fb.points.iter().map(|p| fc.lift(p)).collect();
     let index: HashMap<u64, usize> = pts.iter().enumerate().map(|(i, p)| (p.pack(), i)).collect();
     let g = kc.generator().clone();
-    let r = kc
-        .subgroup_order
-        .to_u64_digits()
-        .first()
-        .copied()
-        .unwrap_or(2)
-        .max(2);
+    // FastCurve::new succeeded, so n <= 62 and r < 2^64: exact, not a low limb.
+    let r = kc.subgroup_order.to_u64()?.max(2);
     let (mut found, mut refuted, mut budget, mut decomposable, mut gate_failures) = (0, 0, 0, 0, 0);
     let (mut splits, mut xors, mut ms) = (0.0, 0.0, 0.0);
     let mut drawn = 0;

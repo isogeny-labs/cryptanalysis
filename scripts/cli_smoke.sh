@@ -623,6 +623,27 @@ want_bad '--input FILE required' m4gb
 want_bad 'no solver_m4gb_n<N>_gf2 with N >= 100' m4gb --input "$tmp/sys2.in" --bin-dir "$tmp" --vars 100
 want_bad '--format must be default or mqchallenge' m4gb --input "$tmp/sys2.in" --bin-dir "$tmp" --format anf
 
+# ── 64-bit groups (above 2^53, where doubles stop being exact) ──────────────
+# A prime-order subgroup of (Z/pZ)^* with p = 2^64 - 3059 and q = (p - 1) / 4,
+# and the secret 2^62 - 904 planted near the top of the order (checked in Python:
+# g^q = 1 and g^x = h mod p).
+p64=18446744073709548557
+q64=4611686018427387139
+g64=12910664209932258132
+h64=7504920991599792976
+want '"h":"7504920991599792976"' gen --group zp --p $p64 --order $q64 --x 4611686018427387000 --seed 3
+for alg in kangaroo bsgs grumpy; do
+  want '"x":4611686018427387000' $alg --group zp --p $p64 --order $q64 --g $g64 --h $h64 \
+    --lo 4611686017353645000 --hi 4611686018427387138
+done
+# #E for y^2 = x^3 + 5x + 5 over a 64-bit prime: 7 * 2635249150157186267.
+want '"order":18446744051100303869' ec-order --p 18446744056529682403 --a 5 --b 5
+# Counts are 32-bit: an out-of-range value is refused, not truncated.
+want_bad 'exceeds uint32 range' rho --group zp --p $p64 --order $q64 --g $g64 --h $h64 \
+  --threads 4294967297
+want_bad 'exceeds int32 range' kangaroo --group zp --p $p64 --order $q64 --g $g64 --h $h64 \
+  --lo 1 --hi 5 --dp-bits 4294967301
+
 # ── usage and unknown commands ──────────────────────────────────────────────
 want_fail
 want_fail not-a-command

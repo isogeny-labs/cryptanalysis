@@ -42,6 +42,7 @@ use crate::cryptanalysis::ic_boundary::{
     koblitz_instance_best, prime_instance_for, random_binary_instance, rho_cap, rho_reference,
     rho_reference_walk, roster_prime_instance, signed_frobenius_rho, signed_frobenius_rho_batch,
     BinaryGroup, BinaryInstance, CountedGroup, GroupOps, PrimeInstance, RhoResult, RhoWalk,
+    PRIME_ORDER_CURVE_MAX_BITS,
 };
 
 #[derive(Args, Clone, Debug)]
@@ -345,13 +346,15 @@ fn ladder(args: &RhoArgs, json_only: bool) -> Result<Value, String> {
     let walks = walks_for(args);
     let mut instances = Vec::new();
     for &bits in &args.prime_bits {
-        if !(8..=32).contains(&bits) {
-            return Err(format!("prime bits must lie in 8..=32, got {bits}"));
+        if !(8..=PRIME_ORDER_CURVE_MAX_BITS).contains(&bits) {
+            return Err(format!(
+                "prime bits must lie in 8..={PRIME_ORDER_CURVE_MAX_BITS}, got {bits}"
+            ));
         }
         let inst = if args.generated_primes {
-            find_prime_order_curve(bits, args.seed)
+            find_prime_order_curve(bits, args.seed)?
         } else {
-            prime_instance_for(bits, args.seed)
+            prime_instance_for(bits, args.seed)?
         };
         if !json_only {
             eprintln!("  prime {bits}: {} r = {}", inst.name, inst.r);
@@ -564,7 +567,9 @@ fn same_run(recorded: &Value, rerun: &RhoResult) -> Result<(), String> {
 
 fn rebuild_prime(name: &str, bits_list: &[u32], seed: u64) -> Option<PrimeInstance> {
     for &b in bits_list {
-        let inst = prime_instance_for(b, seed);
+        let Ok(inst) = prime_instance_for(b, seed) else {
+            continue;
+        };
         if inst.name == name {
             return Some(inst);
         }

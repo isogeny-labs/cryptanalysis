@@ -84,7 +84,7 @@
 //!
 //! # Scope
 //!
-//! Toy prime-field curves with `p < 2^60` and prime group order, `u64`
+//! Toy prime-field curves with `p < 2^63` and prime group order, `u64`
 //! affine arithmetic (one field inversion per group operation, counted
 //! as one *group operation*).  Nothing here threatens any deployed
 //! curve; the point of the module is the measurement.
@@ -104,9 +104,15 @@ use serde::Serialize;
 // hasher, and SipHash's resistance to chosen keys buys nothing here.
 use super::fx_hash::FxMap;
 
-/// Largest supported field size in bits (keeps `x + y` and all
-/// intermediate `u128` products in range).
-pub const MAX_BITS: u32 = 60;
+/// Largest supported field size in bits.
+///
+/// Products are widened to `u128` and [`add_mod`] carries out of the word,
+/// so the arithmetic itself holds for any modulus below `2^64`. The cap is
+/// the instance generator's: at 63 bits the Hasse window
+/// `p + 1 ± 2√p` and the prime group order still fit a `u64`
+/// (`< 2^63 + 2^33`); at 64 bits they do not. (It was 60, although nothing
+/// here needs that.)
+pub const MAX_BITS: u32 = 63;
 
 // ── u64 modular arithmetic ─────────────────────────────────────────────
 
@@ -142,10 +148,13 @@ fn add_if_borrow(d: u64, p: u64, borrow: bool) -> u64 {
 
 #[inline]
 fn add_mod(a: u64, b: u64, p: u64) -> u64 {
-    let s = a + b;
+    // `a + b` can leave the word once p > 2^63 (e.g. a scalar mod a group
+    // order just above 2^63 on a 63-bit curve). The true sum is then
+    // `s + 2^64 > p`, and `s − p` (wrapping) is already the answer.
+    let (s, carry) = a.overflowing_add(b);
     let (d, borrow) = s.overflowing_sub(p);
-    // `s − p`, or `s` again when that borrows.
-    add_if_borrow(d, p, borrow)
+    // `s − p`, or `s` again when that borrows (and nothing carried).
+    add_if_borrow(d, p, borrow & !carry)
 }
 
 #[inline]
@@ -353,7 +362,7 @@ pub fn mix64(mut z: u64) -> u64 {
 
 // ── Curve arithmetic ───────────────────────────────────────────────────
 
-/// Affine point on a short-Weierstrass curve over `F_p`, `p < 2^60`.
+/// Affine point on a short-Weierstrass curve over `F_p`, `p < 2^63` (see [`MAX_BITS`]).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize)]
 pub struct Pt {
     pub x: u64,
@@ -515,7 +524,8 @@ impl Curve {
             p,
         );
         let y = sqrt_mod(rhs, p)?;
-        let y = if y * 2 < p { y } else { p - y };
+        // `y < p − y` is `2y < p` without overflowing for p > 2^63.
+        let y = if y < p - y { y } else { p - y };
         Some(Pt::affine(x, y))
     }
 }
@@ -960,7 +970,7 @@ fn fold(inst: &Instance, mode: Fold, pt: &Pt) -> (Pt, u64) {
         (Some(aut), 2) => aut.lambda,
         _ => 1,
     };
-    let y = if pt.y * 2 > curve.p {
+    let y = if pt.y > curve.p - pt.y {
         f = (n - f) % n;
         curve.p - pt.y
     } else {
@@ -972,7 +982,9 @@ fn fold(inst: &Instance, mode: Fold, pt: &Pt) -> (Pt, u64) {
 /// Centre a residue mod `n` into `(−n/2, n/2]` as a signed coefficient.
 fn centred(v: u64, n: u64) -> i64 {
     if v > n / 2 {
-        v as i64 - n as i64
+        // In i128: `n as i64` is negative for n > 2^63 (a 63-bit curve's
+        // order can be). The centred value itself always fits i64.
+        (v as i128 - n as i128) as i64
     } else {
         v as i64
     }
@@ -2745,6 +2757,41 @@ mod tests {
     use crate::ecc::field::FieldElement;
     use crate::ecc::point::Point;
     use num_bigint::BigUint;
+
+    /// `add_mod` and `centred` for moduli above 2^63 (the old `a + b`
+    /// overflowed; `n as i64` went negative).
+    #[test]
+    fn add_mod_and_centred_above_2p63() {
+        let p = u64::MAX - 58; // prime 2^64 − 59
+        assert_eq!(add_mod(p - 1, p - 1, p), p - 2);
+        assert_eq!(add_mod(p - 1, 1, p), 0);
+        assert_eq!(add_mod(1u64 << 63, 1u64 << 63, p), 59);
+        assert_eq!(add_mod(3, 4, p), 7);
+        for (a, b) in [(p - 5, 9), (p / 2, p / 2 + 7), (0, p - 1)] {
+            let want = ((a as u128 + b as u128) % p as u128) as u64;
+            assert_eq!(add_mod(a, b, p), want);
+        }
+        let n = (1u64 << 63) + 1_000_003;
+        assert_eq!(centred(n - 1, n), -1);
+        assert_eq!(
+            centred(n / 2 + 1, n),
+            ((n / 2 + 1) as i128 - n as i128) as i64
+        );
+        assert_eq!(centred(5, n), 5);
+    }
+
+    /// The generator runs at the new 63-bit cap: prime order, [n]G = O and
+    /// q = [d]G, with the Hasse window and order in a word.
+    #[test]
+    fn generate_instance_at_63_bits() {
+        let inst = generate_instance(63, 11);
+        let c = &inst.curve;
+        assert_eq!(c.p >> 62, 1, "63-bit field");
+        assert!(is_prime_u64(c.n));
+        assert!(((c.n as i128 - c.p as i128 - 1).pow(2)) <= 4 * c.p as i128);
+        assert!(c.mul(&c.g, c.n).inf);
+        assert_eq!(c.mul(&c.g, inst.d), inst.q);
+    }
 
     /// Toy curve `y² = x³ + 2x + 3` over `F_271` (shared with
     /// `ec_index_calculus`); `(3, 6)` generates a subgroup of order 87

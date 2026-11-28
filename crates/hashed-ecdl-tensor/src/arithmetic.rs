@@ -124,9 +124,11 @@ fn aks_identity(n: &BigUint, r: usize, a: usize, meter: &mut Meter) -> Result<bo
     Ok(answer == expected)
 }
 
-/// Deterministic exact primality (AKS, §4 of *PRIMES is in P*).
+/// Deterministic exact primality (bounded tests, bounded proof search, then AKS).
 ///
-/// A fixed finite range uses trial division. Above it, perfect-power rejection,
+/// A fixed finite range uses trial division and exact bounded-base tests. Larger
+/// values first attempt a bounded Pocklington proof. When that fails,
+/// perfect-power rejection,
 /// the multiplicative-order parameter, gcd tests and cyclic polynomial identities
 /// give a polynomial-bit-complexity algorithm. Resource exhaustion is an error;
 /// no probable prime is ever silently accepted as a certified prime.
@@ -139,6 +141,15 @@ pub fn is_prime(n: &BigUint, meter: &mut Meter) -> Result<bool> {
     if bits <= 16 {
         meter.charge(256, "small exact primality")?;
         return Ok(small_prime(n.to_u64().unwrap()));
+    }
+    if let Some(value) = n.to_u64() {
+        return crate::primality::is_prime_u64(value, meter);
+    }
+    if let Some(decision) = crate::primality::bounded_primality(n, meter)? {
+        return Ok(decision);
+    }
+    if crate::primality::prime_certificate(n, meter)?.is_some() {
+        return Ok(true);
     }
     aks(n, bits, meter)
 }
@@ -356,6 +367,37 @@ pub fn square_root(
 mod tests {
     use super::*;
     use crate::Limits;
+
+    #[test]
+    fn is_prime_decides_large_values_within_default_limits() {
+        // Before the bounded-base fast path every value above 16 bits went straight to AKS,
+        // which exhausts the default step budget (Error::Limit).
+        let one = BigUint::from(1u8);
+        let m = |k: usize| (&one << k) - &one;
+        let primes = [
+            BigUint::from(65_537u32),
+            BigUint::from((1u64 << 53) - 111),
+            BigUint::from(u64::MAX - 58),
+            m(61),
+            m(89),
+            m(127),
+        ];
+        for p in primes {
+            let mut meter = Meter::new(Limits::default());
+            assert!(is_prime(&p, &mut meter).unwrap(), "{p}");
+        }
+        let composites = [
+            BigUint::from(u64::MAX),
+            m(61) * m(31),
+            m(89) * BigUint::from(3u8),
+            m(67),
+        ];
+        for c in composites {
+            let mut meter = Meter::new(Limits::default());
+            assert!(!is_prime(&c, &mut meter).unwrap(), "{c}");
+        }
+    }
+
     #[test]
     fn exact_small_primality_and_square_roots() {
         let mut meter = Meter::new(Limits::default());

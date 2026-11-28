@@ -421,10 +421,11 @@ pub(crate) fn isqrt_ceil(n: &BigUint) -> BigUint {
     }
 }
 
-/// Narrow a `BigUint` to `u64` for loop bounds (these algorithms are
-/// only ever run on small subgroups; callers cap `n`).
-pub(crate) fn to_u64(n: &BigUint) -> u64 {
-    n.iter_u64_digits().next().unwrap_or(0)
+/// Narrow a `BigUint` to `u64` for loop bounds, or `None` when it does
+/// not fit. (The old version returned the low 64-bit limb, so a table size
+/// `m = 2^64 + 1` read as 1 and slipped past the `MAX_TABLE` check.)
+pub(crate) fn to_u64(n: &BigUint) -> Option<u64> {
+    n.to_u64()
 }
 
 // ── Demo curves (small, prime-order; shared by tests and examples) ───────────

@@ -7,14 +7,14 @@ use crate::cryptanalysis::koblitz_factor_base_search::{
 use crate::cryptanalysis::koblitz_index_calculus::{
     build_subgroup_orbit_factor_base_with_cost, factor_x_n_minus_1, individual_log,
     koblitz_index_calculus_dlp_with_factor_base_and_progress, order_of_2_mod_n,
-    solve_factor_base_logs, DecompositionStrategy, FactorBaseLogTable, FactorBaseSelectionCost,
-    FrobeniusFactorBase, KoblitzCurve, KoblitzIcEvent, KoblitzIcOptions, LinearAlgebra,
-    LogTableReport, SharedDecider, MAX_N, MAX_SUBFIELD_DEGREE,
+    random_scalar_below, solve_factor_base_logs, DecompositionStrategy, FactorBaseLogTable,
+    FactorBaseSelectionCost, FrobeniusFactorBase, KoblitzCurve, KoblitzIcEvent, KoblitzIcOptions,
+    LinearAlgebra, LogTableReport, SharedDecider, MAX_N, MAX_SUBFIELD_DEGREE,
 };
 use crate::cryptanalysis::koblitz_sparse_la::{BlockWiedemannOptions, SparseSolveOptions};
 use clap::{Args, ValueEnum};
 use num_bigint::BigUint;
-use rand::{rngs::StdRng, Rng, SeedableRng};
+use rand::{rngs::StdRng, SeedableRng};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::{
@@ -749,7 +749,7 @@ pub fn solve(args: SolveArgs, quiet: bool) -> Result<Value, String> {
     // Build the synthetic known-answer target.
     let k = if args.random_target {
         let mut rng = StdRng::seed_from_u64(args.seed ^ 0x534f_4c56_4552_5447);
-        BigUint::from(rng.gen_range(1..c.subgroup_order.to_u64_digits()[0]))
+        random_scalar_below(&mut rng, &c.subgroup_order)
     } else {
         BigUint::from(args.known_log.unwrap_or(53))
     };
@@ -818,7 +818,7 @@ pub(crate) fn curve(n: u32, a: u8, k: u32, b: u64) -> Result<KoblitzCurve, Strin
 fn known(curve: &KoblitzCurve, args: &RunArgs) -> Result<BigUint, String> {
     let n = if args.random_target {
         let mut rng = StdRng::seed_from_u64(args.seed ^ 0x534f_4c56_4552_5447);
-        BigUint::from(rng.gen_range(1..curve.subgroup_order.to_u64_digits()[0]))
+        random_scalar_below(&mut rng, &curve.subgroup_order)
     } else {
         BigUint::from(args.known_log.unwrap_or(53))
     };

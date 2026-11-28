@@ -206,6 +206,7 @@ pub fn run_experiment_checkpointed_remote(
     binary_blake3: &str,
     remote_uri: Option<&str>,
 ) -> Result<CheckpointProgress, String> {
+    check_experiment_bits(cfg.bits)?;
     if cfg.num_curves == 0 || cfg.num_curves > 1_000 {
         return Err("checkpointed experiment requires 1..=1000 starting curves".into());
     }
@@ -376,8 +377,33 @@ pub fn run_experiment_checkpointed_remote(
     })
 }
 
+/// Largest `bits` the harness accepts. Curves are [`SmallCurve`]s whose
+/// trace comes from a single-word BSGS count (`p < 2^63`); the field
+/// prime is the smallest prime `>= 2^bits`.
+pub const EXPERIMENT_MAX_BITS: u32 = 62;
+
+/// Refuse `bits > EXPERIMENT_MAX_BITS`. (Until now the generator silently
+/// clamped to 62, so a `bits = 80` report described 62-bit curves.)
+pub fn check_experiment_bits(bits: u32) -> Result<(), String> {
+    if bits > EXPERIMENT_MAX_BITS {
+        Err(format!(
+            "isogeny experiment: bits = {bits} exceeds the {EXPERIMENT_MAX_BITS}-bit limit \
+             (word-sized curves, p < 2^63 for the BSGS point count)"
+        ))
+    } else {
+        Ok(())
+    }
+}
+
 /// Run one full experimental sweep.
+///
+/// # Panics
+///
+/// When `cfg.bits > EXPERIMENT_MAX_BITS` (see [`check_experiment_bits`]).
 pub fn run_experiment(cfg: &ExperimentConfig) -> ExperimentReport {
+    if let Err(e) = check_experiment_bits(cfg.bits) {
+        panic!("{e}");
+    }
     let starting_curves = generate_random_curves(cfg.bits, cfg.num_curves, cfg.seed);
     let per_curve: Vec<PerCurveResult> = starting_curves
         .par_iter()
@@ -497,7 +523,10 @@ fn generate_random_curves(bits: u32, count: u32, seed: u64) -> Vec<SmallCurve> {
     // SmallCurve helpers don't overflow).  We still clamp the lower
     // end at 8 — anything smaller has < 256 field elements and the
     // toy curves are a better fit.
-    let p = next_prime_near_2pow(bits.clamp(8, 62));
+    // The entry points refuse bits > EXPERIMENT_MAX_BITS; below 8 the
+    // field is raised to 8 bits as before.
+    debug_assert!(bits <= EXPERIMENT_MAX_BITS);
+    let p = next_prime_near_2pow(bits.clamp(8, EXPERIMENT_MAX_BITS));
     let mut result = Vec::with_capacity(count as usize);
     let mut rng_state = seed;
     let mut attempts = 0;
@@ -604,6 +633,25 @@ fn mod_pow_u64(base: u64, mut exp: u64, m: u64) -> u64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// bits above 62 are refused instead of silently run at 62.
+    #[test]
+    fn experiment_refuses_bits_above_62() {
+        let err = check_experiment_bits(80).unwrap_err();
+        assert!(err.contains("62-bit"), "{err}");
+        assert!(check_experiment_bits(62).is_ok());
+        let cfg = ExperimentConfig::default_for_bits(63);
+        let dir = std::env::temp_dir().join("isogeny-experiment-bits-refusal-never-created");
+        let err = run_experiment_checkpointed(&cfg, &dir, false, None, "x").unwrap_err();
+        assert!(err.contains("62-bit"), "{err}");
+        assert!(!dir.exists());
+    }
+
+    #[test]
+    #[should_panic(expected = "exceeds the 62-bit limit")]
+    fn run_experiment_panics_on_bits_above_62() {
+        let _ = run_experiment(&ExperimentConfig::default_for_bits(70));
+    }
 
     #[test]
     fn next_prime_basic() {

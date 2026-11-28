@@ -51,6 +51,14 @@ never constitute proof. Graph mode changes dependency choice, not the row-count
 contract. Walk mode changes RNG consumption and target correlation; no iid
 coverage or relation-yield theorem is asserted. [pcc:unverified]
 
+The optimized collector enumerates both bases once with the original trial RNG.
+Each prepared slot has one full-point hash map whose values are the original
+global column numbers: membership probes, matrix rows and graph vertices read
+that same map. Selector-ordered point vectors preserve first-witness policy;
+the independent v1 certificate verifier still reconstructs its own indexes.
+This removes the optimized collector's separate tree index without changing
+group subtraction per candidate or claiming a measured runtime gain.
+
 Diagnostics record effective options, setup/query/lookup/replay events, batch
 products/inversions/fallbacks, unused complements, bounded witness scans, graph
 cycles and walk table/anchor/step events. These are unpriced development counters,

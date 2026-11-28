@@ -1443,12 +1443,11 @@ fn semaev_symmetric(m: usize, x_r: u64, a: u64, b: u64, p: u64) -> Vec<(Vec<u32>
         .collect()
 }
 
-/// One squaring level on the `e`'s: from `e` (the elementary symmetric
+/// One Dickson level on the `e`'s: from `e` (the elementary symmetric
 /// functions of the `y_i`) the elementary symmetric functions of
-/// `y_i² − shift` (`shift = 2`: Dickson `D_2`; `shift = 0`: Kummer). With
-/// `f(X) = Π(X − y_i)`, `Π(Z − y_i²) = (−1)^m f(√Z) f(−√Z)` (the even part
-/// of `f(X)·f(−X)`), then `Z = Y + shift`.
-fn graeffe_shifted(e: &[Pol], shift: u64, p: u64) -> Vec<Pol> {
+/// `y_i² − 2`. With `f(X) = Π(X − y_i)`, `Π(Z − y_i²) = (−1)^m f(√Z) f(−√Z)`
+/// (the even part of `f(X)·f(−X)`), then `Z = Y + 2`.
+fn graeffe_dickson(e: &[Pol], p: u64) -> Vec<Pol> {
     let m = e.len();
     let n = e[0].n;
     // f low → high: f[m] = 1, f[m−k] = (−1)^k e_k
@@ -1470,13 +1469,13 @@ fn graeffe_shifted(e: &[Pol], shift: u64, p: u64) -> Vec<Pol> {
     }
     let sign = if m % 2 == 0 { 1 } else { p - 1 };
     let h: Vec<Pol> = (0..=m).map(|j| prod[2 * j].scale(sign, p)).collect();
-    // g(Y) = h(Y + shift): g_i = Σ_{j ≥ i} C(j, i) shift^{j−i} h_j
+    // g(Y) = h(Y + 2): g_i = Σ_{j ≥ i} C(j, i) 2^{j−i} h_j
     let mut g = vec![Pol::zero(n); m + 1];
     for (j, hj) in h.iter().enumerate() {
         let mut binom = 1u64;
         for i in (0..=j).rev() {
             // C(j, i) for i descending from j
-            let coef = mulm(binom % p, powm(shift, (j - i) as u64, p), p);
+            let coef = mulm(binom % p, powm(2, (j - i) as u64, p), p);
             g[i] = g[i].add(&hj.scale(coef, p), p);
             if i > 0 {
                 binom = binom * i as u64 / (j - i + 1) as u64;
@@ -1496,36 +1495,21 @@ fn binom_u64(n: usize, k: usize) -> u64 {
     r
 }
 
-/// Whether the symmetrised presentation is defined for this tower: every
-/// step a Dickson `D_2` or every step a squaring (Kummer, any scale). Vélu
-/// steps are rational maps with no polynomial map on the `e`'s.
-fn sym_applies(tower: &Tower) -> bool {
-    (tower.scale == 1 && tower.steps.iter().all(|s| matches!(s, Step::Dickson)))
-        || tower.steps.iter().all(|s| matches!(s, Step::Square))
-}
-
 /// The symmetrised system: variables `E^{(j)}_k` at `j·m + (k − 1)`,
-/// `j < t`, the elementary symmetric functions of the level-`j` values
-/// `y_{i,j}` (`x_i = scale · y_{i,0}`); `S̃(scale^k E^{(0)}_k; x_R) = 0`,
-/// `G(E^{(j)}) = E^{(j+1)}`, `G(E^{(t−1)}) = (C(m,k) c^k)_k`, with `G` the
-/// Graeffe map of the tower's step (shifted by 2 for Dickson).
+/// `j < t`; `S̃(E^{(0)}; x_R) = 0`, `G(E^{(j)}) = E^{(j+1)}`,
+/// `G(E^{(t−1)}) = (C(m,k) c^k)_k`.
 fn sym_system(tower: &Tower, curve: &PrimeCurve, m: usize, target: &Target) -> (Vec<Pol>, usize, Option<Vec<u64>>) {
     let p = curve.p;
     let t = tower.t;
     assert!(
-        sym_applies(tower),
-        "the sym presentation needs a Dickson-step tower with scale 1 or a Kummer (squaring) tower"
+        tower.scale == 1 && tower.steps.iter().all(|s| matches!(s, Step::Dickson)),
+        "the sym presentation needs a Dickson-step tower with scale 1"
     );
-    let shift = if matches!(tower.steps[0], Step::Dickson) { 2 } else { 0 };
     let n = m * t;
     let var = |j: usize, k: usize| Pol::var(n, j * m + k);
     let mut eqs = Vec::new();
     let mut s = Pol::zero(n);
     for (al, c) in semaev_symmetric(m, target.x_r, curve.a, curve.b, p) {
-        // e_k(x) = scale^k e_k(y_0): the monomial Π e_k^{α_k} picks up
-        // scale^{Σ k α_k}.
-        let weight: u64 = al.iter().enumerate().map(|(k, &a)| (k as u64 + 1) * a as u64).sum();
-        let c = mulm(c, powm(tower.scale, weight, p), p);
         let mut e = al.clone();
         e.resize(n, 0);
         s.terms.insert(e, c);
@@ -1533,7 +1517,7 @@ fn sym_system(tower: &Tower, curve: &PrimeCurve, m: usize, target: &Target) -> (
     eqs.push(s);
     for j in 0..t {
         let lvl: Vec<Pol> = (0..m).map(|k| var(j, k)).collect();
-        let next = graeffe_shifted(&lvl, shift, p);
+        let next = graeffe_dickson(&lvl, p);
         for k in 0..m {
             let rhs = if j + 1 < t {
                 var(j + 1, k)
@@ -1676,11 +1660,46 @@ fn tower_ring(tower: &Tower, m: usize, p: u64) -> TowerRing {
     for i in 0..m {
         rules.extend(tower.square_rules(i * tower.t, p));
     }
-    TowerRing {
+    let ring = TowerRing {
         p,
         rules,
         n_free: m - 2,
+    };
+    // `main` refuses an m the engine cannot hold before any work; this keeps
+    // every other path to a ring failing with the engine's own reason rather
+    // than an index out of bounds inside `TowerRing::from_raw`.
+    ring.check();
+    ring
+}
+
+/// The exit code for a configuration the pilot does not take: distinct from
+/// a panic (101) and from success, and paired with one line
+/// `pkm_tower_pilot: unsupported: <why>` on stderr.  The workspace's lead
+/// sweep records such a cell as `unsupported` (not applicable), not `crashed`.
+const EXIT_UNSUPPORTED: i32 = 3;
+
+/// Why the tower engine cannot run some requested m, if it cannot: the ring
+/// of an m-summand system carries m − 2 free unknowns and `f4_fp_tower`
+/// holds at most `MAX_FREE` of them.
+fn tower_capacity_refusal(engine: Engine, ms: &[usize]) -> Option<String> {
+    if engine != Engine::Tower {
+        return None;
     }
+    let cap = f4_fp_tower::MAX_FREE;
+    let over: Vec<usize> = ms
+        .iter()
+        .copied()
+        .filter(|&m| m.saturating_sub(2) > cap)
+        .collect();
+    if over.is_empty() {
+        return None;
+    }
+    Some(format!(
+        "--engine tower holds at most {cap} free unknowns (f4_fp_tower::MAX_FREE), and an m-summand \
+         system needs m - 2 of them, so it takes m <= {}; m = {over:?} needs more. Use --engine f4 \
+         for those m",
+        cap + 2
+    ))
 }
 
 fn raw_terms(e: &Pol) -> Vec<(Vec<u32>, u64)> {
@@ -1844,11 +1863,6 @@ struct Args {
     /// The engine: `f4_fp` on the raw system (the default, and every
     /// committed pilot row), or `f4_fp_tower` on the tower quotient ring.
     engine: Engine,
-    /// `--presentation sym`: the `tower` control solves the symmetrised
-    /// system (see `sym_system`) where the tower allows it, and the raw one
-    /// elsewhere (Vélu towers); each row records which. Default `raw`, the
-    /// presentation of every committed pilot row.
-    sym_presentation: bool,
     /// `f4_fp_tower` only: stop before a matrix with more non-zeros.
     max_nnz: Option<u64>,
     /// `f4_fp_tower` only: print one line per F4 step.
@@ -1913,7 +1927,6 @@ fn parse_args() -> Args {
         cap: None,
         dump: None,
         engine: Engine::F4,
-        sym_presentation: false,
         max_nnz: None,
         trace: false,
         export: None,
@@ -1986,13 +1999,6 @@ fn parse_args() -> Args {
                     "f4" | "f4_fp" => Engine::F4,
                     "tower" | "f4_fp_tower" => Engine::Tower,
                     other => panic!("unknown engine `{other}`"),
-                }
-            }
-            "--presentation" => {
-                a.sym_presentation = match v.as_str() {
-                    "raw" => false,
-                    "sym" => true,
-                    other => panic!("unknown presentation `{other}` (raw, sym)"),
                 }
             }
             "--max-nnz" => a.max_nnz = Some(v.parse().expect("--max-nnz")),
@@ -2087,16 +2093,9 @@ fn run_cell(cell: &Cell, a: &Args, sink: &mut Sink) -> bool {
         }
     }
     let mut any_finished = false;
-    // `--presentation sym`: the tower control on the symmetrised system.
-    let (sys_control, presentation) = match cell.control {
-        Control::Sym => (Control::Sym, "sym"),
-        Control::Tower if a.sym_presentation && sym_applies(&tower) => (Control::Sym, "sym"),
-        Control::Tower if a.sym_presentation => (Control::Tower, "raw (sym undefined for this tower)"),
-        c => (c, "raw"),
-    };
     for (k, target) in targets.iter().enumerate() {
         let (eqs, n, sol, towers) = system(
-            sys_control,
+            cell.control,
             &tower,
             &curve,
             cell.m,
@@ -2104,7 +2103,7 @@ fn run_cell(cell: &Cell, a: &Args, sink: &mut Sink) -> bool {
             cell.g,
             &mut rng,
         );
-        if a.engine == Engine::Tower && matches!(sys_control, Control::Naive | Control::Sym) {
+        if a.engine == Engine::Tower && matches!(cell.control, Control::Naive | Control::Sym) {
             // The naive control has no tower to rewrite by.
             continue;
         }
@@ -2168,7 +2167,6 @@ fn run_cell(cell: &Cell, a: &Args, sink: &mut Sink) -> bool {
             "kind": cell.kind.name(),
             "m": cell.m,
             "control": cell.control.name(),
-            "presentation": presentation,
             "t": cell.t,
             "N": cell.m * cell.t,
             "V_size": tower.size,
@@ -2381,10 +2379,11 @@ fn dump_basis(basis: &[Poly], cell: &Cell, k: u32) {
 
 fn main() {
     let a = parse_args();
-    assert!(
-        !(a.sym_presentation && a.engine == Engine::Tower),
-        "--presentation sym runs on the f4_fp engine (f4_fp_tower rewrites by the raw tower)"
-    );
+    if let Some(why) = tower_capacity_refusal(a.engine, &a.ms) {
+        // Before the --out file is created or any system built.
+        eprintln!("pkm_tower_pilot: unsupported: {why}");
+        std::process::exit(EXIT_UNSUPPORTED);
+    }
     let started = Instant::now();
     let mut sink = Sink {
         rows: Vec::new(),
@@ -2486,6 +2485,25 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// **An m the tower engine cannot hold is refused up front**, naming the
+    /// limit (it used to panic with an index out of bounds at m >= 7); the
+    /// raw engine takes every m.
+    #[test]
+    fn tower_engine_refuses_m_past_its_free_unknowns() {
+        assert_eq!(
+            tower_capacity_refusal(Engine::Tower, &[2, 3, 4, 5, 6]),
+            None
+        );
+        let why = tower_capacity_refusal(Engine::Tower, &[2, 6, 7, 9]).expect("m = 7, 9 refused");
+        assert!(why.contains("m <= 6") && why.contains("[7, 9]"), "{why}");
+        assert_eq!(tower_capacity_refusal(Engine::F4, &[2, 7, 9]), None);
+        assert_eq!(
+            f4_fp_tower::MAX_FREE + 2,
+            6,
+            "the refusal text and the lead specs assume m_max = 6"
+        );
+    }
 
     /// Independent backward quadratic solve: unlike the forward coset
     /// generator, this reconstructs all rational preimages of the terminal

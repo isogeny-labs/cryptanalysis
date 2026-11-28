@@ -89,9 +89,14 @@ struct Barrett {
 
 impl Barrett {
     fn new(p: u64) -> Self {
+        // Design cap: Barrett reduction of a product of two residues in a
+        // single u64 needs p < 2^32. There is no fallible entry point (the
+        // reports carry no error), so the panic names the limit and the p.
         assert!(
             (2..1 << 32).contains(&p),
-            "f4_fp: the prime must be below 2^32"
+            "f4_fp: the prime must lie in [2, 2^32) (single-word Barrett products); \
+             got p = {p} ({} bits)",
+            64 - p.leading_zeros()
         );
         Barrett {
             p,
@@ -1154,6 +1159,13 @@ pub fn eval(f: &Poly, x: &[u64], p: u64) -> u64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// A 33..64-bit prime is refused with a message naming the limit and p.
+    #[test]
+    #[should_panic(expected = "got p = 2305843009213693951 (61 bits)")]
+    fn f4_names_the_2p32_limit() {
+        let _ = Barrett::new((1u64 << 61) - 1);
+    }
 
     fn poly(terms: &[(&[u32], u64)]) -> Poly {
         terms.iter().map(|(e, c)| (e.to_vec(), *c)).collect()
