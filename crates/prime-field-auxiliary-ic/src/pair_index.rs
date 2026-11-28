@@ -247,6 +247,15 @@ impl<const B: u32> PairIndex<B> {
     pub fn stats(&self) -> &PairIndexStats {
         &self.stats
     }
+    /// Canonical pair points in the exact outer-probe order. A batch screen
+    /// must consume this order, including any identity entry.
+    pub fn screen_points(&self) -> Vec<Option<Point>> {
+        self.entries.iter().map(|entry| entry.point).collect()
+    }
+    /// The optional no-false-negative x bitmap used by exact CPU lookups.
+    pub fn screen_bitmap(&self) -> &[u64] {
+        &self.x_bitmap
+    }
     /// Allocate bounded scratch for repeated target queries.
     pub fn workspace(&self) -> PairWorkspace {
         PairWorkspace {
@@ -362,6 +371,30 @@ impl<const B: u32> PairIndex<B> {
         target: Point,
         workspace: &mut PairWorkspace,
     ) -> Result<Option<MultiSignedRelation>> {
+        self.decompose_inner(m, target, workspace, None)
+    }
+    /// Probe only bitmap-positive candidate slots emitted by a batch screen.
+    /// A zero flag can suppress a relation, so callers must validate the
+    /// screen's no-false-negative contract before using it in a search.
+    /// Exact point lookup and full witness replay remain on the CPU.
+    pub fn decompose_masked(
+        &self,
+        target: Point,
+        workspace: &mut PairWorkspace,
+        flags: &[u8],
+    ) -> Result<Option<MultiSignedRelation>> {
+        if flags.len() != self.entries.len() * 2 || flags.iter().any(|&flag| flag > 2) {
+            return Err(Error::Invalid("indexed candidate mask"));
+        }
+        self.decompose_inner(4, target, workspace, Some(flags))
+    }
+    fn decompose_inner(
+        &self,
+        m: u8,
+        target: Point,
+        workspace: &mut PairWorkspace,
+        flags: Option<&[u8]>,
+    ) -> Result<Option<MultiSignedRelation>> {
         if workspace.owner != self.id {
             return Err(Error::Invalid("pair workspace belongs to another index"));
         }
@@ -401,6 +434,9 @@ impl<const B: u32> PairIndex<B> {
         };
         for outer in 0..count {
             for negative in [false, true] {
+                if flags.is_some_and(|flags| flags[2 * outer + usize::from(negative)] == 0) {
+                    continue;
+                }
                 let point = if m == 3 {
                     Some(self.base[outer])
                 } else {

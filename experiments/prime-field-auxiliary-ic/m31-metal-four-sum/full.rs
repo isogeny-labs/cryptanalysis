@@ -1,0 +1,83 @@
+use prime_field_auxiliary_ic::{verify_multi_certificate,Config,Curve,Error,FactorBase,MultiSolveOutcome,PairIndex,PreparedSolver};
+use std::{ffi::CString,time::{Instant,Duration}};
+
+#[repr(C)]
+#[derive(Clone,Copy)]
+struct WirePoint { x:u64, y:u64, finite:u64 }
+#[link(name="m31metal")]
+unsafe extern "C" {
+    fn m31_metal_init(points:*const WirePoint,count:i32,bits:*const u64,words:i32,path:*const i8)->i32;
+    fn m31_metal_screen(targets:*const WirePoint,count:i32,output:*mut u8)->i32;
+}
+fn wire(point:Option<prime_field_auxiliary_ic::Point>)->WirePoint {
+    point.map_or(WirePoint{x:0,y:0,finite:0},|p| WirePoint{x:p.x(),y:p.y(),finite:1})
+}
+fn main() {
+    let args:Vec<_>=std::env::args().collect();
+    let mode=args.get(1).expect("cpu or metal").as_str();
+    assert!(mode=="cpu" || mode=="metal");
+    let started=Instant::now();
+    let c=Curve::<31>::new(2,14).unwrap();
+    let g=c.point(1,814455902).unwrap();
+    let qx=args.get(2).map_or(1_767_503_692,|x|x.parse().unwrap());
+    let qy=args.get(3).map_or(244_402_461,|x|x.parse().unwrap());
+    let seed=args.get(4).map_or(2_911_332_506_172_719_186,|x|x.parse().unwrap());
+    let q=c.point(qx,qy).unwrap();
+    let roots:Vec<_>=(0..c.modulus()).filter(|&x| c.lift_x(x).unwrap().is_some()).take(195).collect();
+    let base=FactorBase::without_maps(c,&roots).unwrap();
+    let prepared=PreparedSolver::new(&base,2_147_505_293,g).unwrap();
+    let index=PairIndex::new(&base,4_194_304,16_384).unwrap();
+    let setup_ns=started.elapsed().as_nanos();
+    let config=Config { seed,max_queries:100_000,walk_lanes:64,
+        max_duration:Some(Duration::from_secs(5)),..Config::default() };
+    let mut metal_init_ns=0;
+    let mut screens=0u64;
+    let mut positive_flags=0u64;
+    let online=Instant::now();
+    let (outcome,probe)=if mode=="cpu" {
+        prepared.solve_multi_indexed(4,q,&config,&index).unwrap()
+    } else {
+        let entries:Vec<_>=index.screen_points().into_iter().map(wire).collect();
+        let bitmap=index.screen_bitmap();
+        assert_eq!(bitmap.len(),16_384);
+        let path=std::env::current_dir().unwrap().join("experiments/prime-field-auxiliary-ic/m31-metal-four-sum/screen.metal");
+        let path=CString::new(path.to_str().unwrap()).unwrap();
+        let init=Instant::now();
+        let code=unsafe { m31_metal_init(entries.as_ptr(),entries.len() as i32,bitmap.as_ptr(),bitmap.len() as i32,path.as_ptr()) };
+        assert_eq!(code,0,"Metal initialization failed");
+        metal_init_ns=init.elapsed().as_nanos();
+        prepared.solve_multi_indexed_screened(q,&config,&index,|points| {
+            let targets:Vec<_>=points.iter().copied().map(wire).collect();
+            let mut flags=vec![0u8;targets.len()*entries.len()*2];
+            let code=unsafe { m31_metal_screen(targets.as_ptr(),targets.len() as i32,flags.as_mut_ptr()) };
+            if code!=0 { return Err(Error::Invalid("Metal candidate dispatch")); }
+            screens+=1;
+            positive_flags+=flags.iter().filter(|&&x|x!=0).count() as u64;
+            Ok(flags)
+        }).unwrap()
+    };
+    let online_ns=online.elapsed().as_nanos();
+    let MultiSolveOutcome::Solved { certificate,stats }=outcome else { panic!("bounded solve incomplete: {outcome:?}") };
+    verify_multi_certificate(&base,&certificate).unwrap();
+    assert_eq!(c.mul(Some(g),certificate.scalar).unwrap(),Some(q));
+    let mut digest=14_695_981_039_346_656_037u64;
+    for word in [certificate.summands as u64,certificate.order,
+                 certificate.generator.x(),certificate.generator.y(),
+                 certificate.target.x(),certificate.target.y(),certificate.scalar,
+                 certificate.relations.len() as u64,certificate.weights.len() as u64] {
+        digest=(digest^word).wrapping_mul(1_099_511_628_211);
+    }
+    for row in &certificate.relations {
+        for word in [row.a,row.b] { digest=(digest^word).wrapping_mul(1_099_511_628_211); }
+        digest=(digest^(row.decomposition.summands().len() as u64)).wrapping_mul(1_099_511_628_211);
+        for term in row.decomposition.summands() {
+            digest=(digest^(term.index as u64)).wrapping_mul(1_099_511_628_211);
+            digest=(digest^u64::from(term.negative)).wrapping_mul(1_099_511_628_211);
+        }
+    }
+    for &weight in &certificate.weights {
+        digest=(digest^weight).wrapping_mul(1_099_511_628_211);
+    }
+    let total_ns=started.elapsed().as_nanos();
+    println!("{{\"schema\":\"m31-metal-full-rust/v2\",\"mode\":\"{mode}\",\"Q\":[{qx},{qy}],\"seed\":{seed},\"status\":\"solved\",\"scalar\":{},\"certificate_digest\":{digest},\"queries\":{},\"relations\":{},\"rank\":{},\"generated_candidates\":{},\"lookups\":{},\"gpu_screens\":{screens},\"positive_flags\":{positive_flags},\"setup_ns\":{setup_ns},\"metal_init_ns\":{metal_init_ns},\"online_ns\":{online_ns},\"total_ns\":{total_ns}}}",certificate.scalar,stats.queries,stats.relations,stats.matrix_rank,probe.generated_candidates,probe.lookups);
+}
