@@ -4,10 +4,11 @@
 //! Then `f2(x) u^3 = f1(x)`. The Kummer maximal-order engine is the
 //! normalization arithmetic behind this chart. Points above roots of `f2`,
 //! infinity, and other singular branches require separate local treatment.
-//! This module does not turn plane line sections into Jacobian relations.
+//! Completely split affine line sections give homogeneous factor-base
+//! relations when their pole divisors agree.
 
 use rand::RngCore;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashSet};
 
 use num_bigint::BigUint;
 use num_traits::Zero;
@@ -26,6 +27,14 @@ pub struct TrigonalPlaneChart {
     pub degree: usize,
     pub f1: Poly,
     pub f2: Poly,
+}
+
+/// A bounded scan of affine lines in lexicographic `(slope, intercept)` order.
+#[derive(Clone, Debug, Default)]
+pub struct AffineLineScan {
+    pub scanned: usize,
+    pub split: usize,
+    pub relations: Vec<Relation>,
 }
 
 impl TrigonalPlaneChart {
@@ -215,6 +224,51 @@ impl TrigonalPlaneChart {
             alpha: BigUint::zero(),
             beta: BigUint::zero(),
         })
+    }
+
+    /// Scan at most `max_lines` affine lines and retain one homogeneous row
+    /// per distinct split line after the first in its pole-divisor family.
+    /// Genus four has separate horizontal and nonhorizontal families; genus
+    /// five has one family. Zero and duplicate rows are omitted.
+    pub fn collect_affine_line_relations(
+        &self,
+        curve: &SuperellipticCurve,
+        factor_base: &FactorBase<Ideal>,
+        max_lines: usize,
+        rng: &mut impl RngCore,
+    ) -> AffineLineScan {
+        let mut result = AffineLineScan::default();
+        let mut anchors: [Option<(u64, u64)>; 2] = [None, None];
+        let mut seen = HashSet::new();
+        let p = self.field.p();
+        for slope in 0..p {
+            for intercept in 0..p {
+                if result.scanned == max_lines {
+                    return result;
+                }
+                result.scanned += 1;
+                if self
+                    .affine_line_divisor(curve, slope, intercept, rng)
+                    .is_none()
+                {
+                    continue;
+                }
+                result.split += 1;
+                let family = usize::from(self.genus == 4 && slope != 0);
+                let Some(anchor) = anchors[family] else {
+                    anchors[family] = Some((slope, intercept));
+                    continue;
+                };
+                if let Some(row) =
+                    self.affine_line_relation(curve, factor_base, anchor, (slope, intercept), rng)
+                {
+                    if !row.coeffs.is_empty() && seen.insert(row.coeffs.clone()) {
+                        result.relations.push(row);
+                    }
+                }
+            }
+        }
+        result
     }
 }
 
@@ -426,6 +480,51 @@ mod tests {
                 assert!(chart
                     .affine_line_relation(&curve, &factor_base, (0, 0), (a.0, a.1), &mut rng)
                     .is_none());
+            }
+        }
+    }
+
+    #[test]
+    fn bounded_line_scan_collects_distinct_verified_rows() {
+        let field = Fp::new(17).unwrap();
+        let mut rng = StdRng::seed_from_u64(0x5ca1_2026);
+        for (genus, roots1, roots2) in [
+            (4, vec![0, 1, 2], vec![3, 7]),
+            (5, vec![0, 1, 2, 3, 5], vec![6]),
+        ] {
+            let curve = SuperellipticCurve::new(
+                field,
+                3,
+                vec![
+                    (split_poly(&field, &roots1), 1),
+                    (split_poly(&field, &roots2), 2),
+                ],
+            )
+            .unwrap();
+            let chart = TrigonalPlaneChart::new(&curve).unwrap();
+            let base = build_factor_base(&curve, 1, &mut rng).unwrap();
+            let empty = chart.collect_affine_line_relations(&curve, &base, 0, &mut rng);
+            assert_eq!(empty.scanned, 0);
+            assert!(empty.relations.is_empty());
+            let scan = chart.collect_affine_line_relations(
+                &curve,
+                &base,
+                (field.p() * field.p()) as usize,
+                &mut rng,
+            );
+            assert_eq!(scan.scanned, (field.p() * field.p()) as usize);
+            assert!(scan.split >= 2, "genus {genus}");
+            assert!(!scan.relations.is_empty(), "genus {genus}");
+            let mut seen = HashSet::new();
+            for row in &scan.relations {
+                assert!(seen.insert(row.coeffs.clone()));
+                assert!(row.alpha.is_zero() && row.beta.is_zero());
+                let value = row.coeffs.iter().fold(curve.identity(), |acc, &(i, c)| {
+                    let term =
+                        curve.scalar_mul(&BigUint::from(c.unsigned_abs()), &base.places[i].elem);
+                    curve.add(&acc, &if c < 0 { curve.neg(&term) } else { term })
+                });
+                assert!(curve.is_identity(&value), "genus {genus}");
             }
         }
     }
