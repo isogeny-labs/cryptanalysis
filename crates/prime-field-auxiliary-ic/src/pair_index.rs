@@ -32,7 +32,6 @@ impl Hasher for KeyHasher {
 }
 type Lookup = HashMap<u64, usize, BuildHasherDefault<KeyHasher>>;
 const X_BITMAP_BITS: usize = 20;
-const FLAT_MULTIPLIER: u64 = 0x9e3779b97f4a7c15;
 fn x_bitmap_bit(x: u64) -> usize {
     (x.wrapping_mul(0x9e3779b97f4a7c15) >> (64 - X_BITMAP_BITS)) as usize
 }
@@ -90,7 +89,6 @@ pub struct PairIndex<const B: u32> {
     base: Vec<Point>,
     entries: Vec<Entry>,
     lookup: Lookup,
-    flat_lookup: Vec<(u32, u32)>,
     x_bitmap: Vec<u64>,
     identity: Option<usize>,
     chunk: usize,
@@ -142,14 +140,6 @@ impl<const B: u32> PairIndex<B> {
         if !(1..=16384).contains(&chunk) {
             return Err(Error::Invalid("pair chunk must be 1..=16384"));
         }
-        let flat_slots = if B == 31 && option_env!("M31_FLAT_LOOKUP").is_some() {
-            size.max(1)
-                .checked_mul(2)
-                .and_then(usize::checked_next_power_of_two)
-                .ok_or(Error::ResourceLimit("flat pair lookup capacity"))?
-        } else {
-            0
-        };
         let mut current = NEXT_ID.load(Ordering::Relaxed);
         let id = loop {
             let next = current
@@ -166,12 +156,7 @@ impl<const B: u32> PairIndex<B> {
             curve: base.curve(),
             base: base.representatives().to_vec(),
             entries: Vec::with_capacity(size),
-            lookup: if flat_slots == 0 {
-                Lookup::with_capacity_and_hasher(size, BuildHasherDefault::default())
-            } else {
-                Lookup::default()
-            },
-            flat_lookup: vec![(u32::MAX, 0); flat_slots],
+            lookup: Lookup::with_capacity_and_hasher(size, BuildHasherDefault::default()),
             x_bitmap: if B == 31 && columns <= 384 {
                 vec![0; 1 << (X_BITMAP_BITS - 6)]
             } else {
@@ -217,47 +202,6 @@ impl<const B: u32> PairIndex<B> {
         result.stats.entries = result.entries.len();
         Ok(result)
     }
-    fn flat_slot(&self, x: u32) -> usize {
-        let bits = self.flat_lookup.len().trailing_zeros();
-        (u64::from(x).wrapping_mul(FLAT_MULTIPLIER) >> (64 - bits)) as usize
-    }
-    fn entry_for_x(&self, x: u64) -> Option<usize> {
-        if B == 31 && option_env!("M31_FLAT_LOOKUP").is_some() {
-            let x = u32::try_from(x).ok()?;
-            let mask = self.flat_lookup.len() - 1;
-            let mut slot = self.flat_slot(x);
-            for _ in 0..self.flat_lookup.len() {
-                let (stored, entry) = self.flat_lookup[slot];
-                if stored == x {
-                    return Some(entry as usize);
-                }
-                if stored == u32::MAX {
-                    return None;
-                }
-                slot = (slot + 1) & mask;
-            }
-            None
-        } else {
-            self.lookup.get(&x).copied()
-        }
-    }
-    fn insert_x(&mut self, x: u64, entry: usize) {
-        if B == 31 && option_env!("M31_FLAT_LOOKUP").is_some() {
-            let x = u32::try_from(x).expect("M31 x fits u32");
-            let entry = u32::try_from(entry).expect("bounded pair index fits u32");
-            let mask = self.flat_lookup.len() - 1;
-            let mut slot = self.flat_slot(x);
-            loop {
-                if self.flat_lookup[slot].0 == u32::MAX {
-                    self.flat_lookup[slot] = (x, entry);
-                    return;
-                }
-                slot = (slot + 1) & mask;
-            }
-        } else {
-            self.lookup.insert(x, entry);
-        }
-    }
     fn flush_build(
         &mut self,
         left: &mut [Option<Point>],
@@ -276,14 +220,14 @@ impl<const B: u32> PairIndex<B> {
                 }
             });
             let witness = flip(*pair, negative);
-            let old = canonical.map_or(self.identity, |p| self.entry_for_x(p.x()));
+            let old = canonical.map_or(self.identity, |p| self.lookup.get(&p.x()).copied());
             if let Some(index) = old {
                 self.entries[index].collisions.push(witness);
                 self.stats.collision_witnesses += 1;
             } else {
                 let index = self.entries.len();
                 if let Some(p) = canonical {
-                    self.insert_x(p.x(), index);
+                    self.lookup.insert(p.x(), index);
                     if !self.x_bitmap.is_empty() {
                         let bit = x_bitmap_bit(p.x());
                         self.x_bitmap[bit >> 6] |= 1u64 << (bit & 63);
@@ -329,7 +273,7 @@ impl<const B: u32> PairIndex<B> {
                         return None;
                     }
                 }
-                self.entry_for_x(p.x())?
+                *self.lookup.get(&p.x())?
             }
         };
         Some((
@@ -490,41 +434,5 @@ impl PairWorkspace {
     /// Accumulated online counts for this workspace.
     pub fn stats(&self) -> &PairIndexStats {
         &self.stats
-    }
-}
-
-#[cfg(test)]
-mod flat_lookup_tests {
-    use super::*;
-
-    #[test]
-    fn every_m31_pair_class_retains_exact_first_and_collision_payloads() {
-        let curve = Curve::<31>::new(2, 14).unwrap();
-        let roots: Vec<u64> = (0..80)
-            .filter(|&x| curve.lift_x(x).unwrap().is_some())
-            .take(16)
-            .collect();
-        let base = FactorBase::without_maps(curve, &roots).unwrap();
-        let index = PairIndex::new(&base, 256, 8).unwrap();
-        for (expected, entry) in index.entries.iter().enumerate() {
-            if let Some(point) = entry.point {
-                assert_eq!(index.entry_for_x(point.x()), Some(expected));
-            } else {
-                assert_eq!(index.identity, Some(expected));
-            }
-            for pair in entry.witnesses() {
-                let mut sum = None;
-                for term in pair {
-                    let point = base.representatives()[term.index];
-                    let point = if term.negative {
-                        curve.negate(point).unwrap()
-                    } else {
-                        point
-                    };
-                    sum = curve.add(sum, Some(point)).unwrap();
-                }
-                assert_eq!(sum, entry.point);
-            }
-        }
     }
 }
