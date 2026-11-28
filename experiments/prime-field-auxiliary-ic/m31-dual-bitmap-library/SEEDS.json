@@ -1,0 +1,33 @@
+{
+  "arms": [
+    "current20",
+    "high22",
+    "dual22",
+    "rho"
+  ],
+  "derivation": "SHA-256 of ASCII m31-library-dual/v1, NUL, 16 raw master bytes, NUL, ASCII label; first 8 bytes big endian masked to 63 bits",
+  "master_seed_hex": "6c12a94f5e7b3d8021cfa6d489e250bb",
+  "order_label": "schedule",
+  "order_seed": 7036993120572696735,
+  "scheduler": "Python 3.13.1 random.Random MT19937 shuffle",
+  "schema": "m31-library-dual-seeds/v1",
+  "seed_reuse": "Each walk seed paired across three IC arms and five public targets; target identity separates blocks",
+  "target_ids": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "target_source": "experiments/prime-field-auxiliary-ic/m31-integrated-local-screen/fresh-public.json sha256 dc724fc613d9c2b824b90d59c876f1f7f84b3273d8d607c648e1ba3fbc089252",
+  "walk_labels": [
+    "walk/0",
+    "walk/1",
+    "walk/2"
+  ],
+  "walk_seeds": [
+    6113112553872564782,
+    7275624551892328276,
+    3272899370428708190
+  ]
+}
