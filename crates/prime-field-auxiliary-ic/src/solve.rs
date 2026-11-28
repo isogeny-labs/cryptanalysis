@@ -411,12 +411,15 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
             return Err(Error::Invalid("pair index does not match solver base"));
         }
         let mut workspace = index.workspace();
-        let mut batch = |m: u8, points: &[Option<Point>]| -> Result<Vec<Option<MultiSignedRelation>>> {
-            points
-                .iter()
-                .map(|point| point.map_or(Ok(None), |point| index.decompose(m, point, &mut workspace)))
-                .collect()
-        };
+        let mut batch =
+            |m: u8, points: &[Option<Point>]| -> Result<Vec<Option<MultiSignedRelation>>> {
+                points
+                    .iter()
+                    .map(|point| {
+                        point.map_or(Ok(None), |point| index.decompose(m, point, &mut workspace))
+                    })
+                    .collect()
+            };
         let outcome = self.search_multi_with(
             summands,
             target,
@@ -449,22 +452,43 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
             return Err(Error::Invalid("screened pair index or bitmap"));
         }
         let mut workspace = index.workspace();
-        let width = index.stats().entries.checked_mul(2).ok_or(Error::ResourceLimit("screen width"))?;
-        let mut batch = |_: u8, points: &[Option<Point>]| -> Result<Vec<Option<MultiSignedRelation>>> {
-            let flags=screen(points)?;
-            if flags.len() != width * points.len() {
-                return Err(Error::Invalid("screened lane mask length"));
-            }
-            points.iter().enumerate().map(|(i,point)| {
-                point.map_or(Ok(None), |point| index.decompose_masked(point,&mut workspace,&flags[i*width..(i+1)*width]))
-            }).collect()
-        };
-        let outcome=self.search_multi_with(
-            4,target,config,false,&mut (),Backend::Scalar,false,
-            |_,_| unreachable!("screened batch handles every lane"),
+        let width = index
+            .stats()
+            .entries
+            .checked_mul(2)
+            .ok_or(Error::ResourceLimit("screen width"))?;
+        let mut batch =
+            |_: u8, points: &[Option<Point>]| -> Result<Vec<Option<MultiSignedRelation>>> {
+                let flags = screen(points)?;
+                if flags.len() != width * points.len() {
+                    return Err(Error::Invalid("screened lane mask length"));
+                }
+                points
+                    .iter()
+                    .enumerate()
+                    .map(|(i, point)| {
+                        point.map_or(Ok(None), |point| {
+                            index.decompose_masked(
+                                point,
+                                &mut workspace,
+                                &flags[i * width..(i + 1) * width],
+                            )
+                        })
+                    })
+                    .collect()
+            };
+        let outcome = self.search_multi_with(
+            4,
+            target,
+            config,
+            false,
+            &mut (),
+            Backend::Scalar,
+            false,
+            |_, _| unreachable!("screened batch handles every lane"),
             Some(&mut batch),
         )?;
-        Ok((outcome,workspace.stats().clone()))
+        Ok((outcome, workspace.stats().clone()))
     }
     /// Indexed recovery with exclusive native search phases. These phases
     /// include instrumentation overhead and are for diagnosis, not speed claims.
