@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.1.19](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.18...cryptanalysis-v0.1.19) (2026-11-28)
+
+
+### Features
+
+* add mixed-edge S3 descent presentation ([306d7b2](https://github.com/isogeny-labs/cryptanalysis/commit/306d7b23503a801ba16d9a8b10d0cab639dc9943))
+* compress leaf-product S3 lift ([3a5f084](https://github.com/isogeny-labs/cryptanalysis/commit/3a5f084622b4cd2a973ffcb6b912d1b90a78a53a))
+
+
+### Bug Fixes
+
+* restore shared PCC parity ([c7ea77b](https://github.com/isogeny-labs/cryptanalysis/commit/c7ea77b4017cc39701001174bf6503797beb79d1))
+
 ## [0.1.18](https://github.com/isogeny-labs/cryptanalysis/compare/cryptanalysis-v0.1.17...cryptanalysis-v0.1.18) (2026-11-23)
 
 
