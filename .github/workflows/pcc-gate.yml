@@ -39,7 +39,7 @@ jobs:
             "$RUNNER_TEMP/artifacts-awscli/bin/python" -m pip install --disable-pip-version-check awscli==1.46.2
             export ARTIFACTS_AWS="$RUNNER_TEMP/artifacts-awscli/bin/aws"
           fi
-          python3 tools/artifacts/artifacts.py pull --jobs 16 "${claim_inputs[@]}"
+          python3 tools/artifacts/artifacts.py pull --source remote --jobs 16 "${claim_inputs[@]}"
       - uses: actions/setup-python@v7
         with:
           python-version: '3.11'
@@ -126,7 +126,7 @@ jobs:
             "$RUNNER_TEMP/artifacts-awscli/bin/python" -m pip install --disable-pip-version-check awscli==1.46.2
             export ARTIFACTS_AWS="$RUNNER_TEMP/artifacts-awscli/bin/aws"
           fi
-          python3 tools/artifacts/artifacts.py pull --jobs 16 "${claim_inputs[@]}"
+          python3 tools/artifacts/artifacts.py pull --source remote --jobs 16 "${claim_inputs[@]}"
       - uses: actions/setup-python@v7
         with:
           python-version: '3.11'

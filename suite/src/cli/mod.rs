@@ -20,6 +20,7 @@ pub mod challenge;
 pub mod curve;
 pub mod digest;
 pub mod dlog;
+pub mod ecc_safety_cmd;
 pub mod ecdlp;
 pub mod ecdsa;
 pub mod factor;
@@ -37,7 +38,7 @@ use output::{CmdResult, Out};
 const OVERVIEW: &str = "\
 Attacks by family:
   discrete logs (generic)   bsgs, rho, kangaroo, grumpy, precomp, glv, pohlig-hellman, cheon, gpu-rho
-  weak curves (any size)    ecdlp (singular, Smart anomalous, Pohlig-Hellman, MOV/Frey-Rueck)
+  weak curves (any size)    ecdlp (singular, Smart anomalous, Pohlig-Hellman, MOV/Frey-Rueck), ecc-safety (parameter audit)
   factoring                 factor, gnfs, snfs, qs, ecm, pm1 (--pp1), rho-factor
   RSA                       rsa fermat|wiener|from-d|hastad|common-modulus|small-e|batch-gcd
   index calculus            ic (zp, prime, run, compare, fixed, workflow, boundary, bench, rho, ...), icx
@@ -98,6 +99,10 @@ pub enum Command {
     /// ECDLP on prime-field curves of any size: analyse, then the cheapest
     /// structural attack (singular, Smart, Pohlig-Hellman, MOV).
     Ecdlp(ecdlp::EcdlpArgs),
+    /// Curve and Parameter Review: audit short-Weierstrass `(p,a,b,G,n,h)`
+    /// against documented ECDH/ECDSA weaknesses (`ecc_safety`).
+    #[command(name = "ecc-safety", visible_alias = "ecc_safety")]
+    EccSafety(ecc_safety_cmd::EccSafetyArgs),
     /// Pollard rho on the GPU kernel (CUDA, or its host emulator).
     GpuRho(dlog::GpuRhoArgs),
     /// Factor an integer completely: trial division, rho, p-1, ECM, SIQS,
@@ -454,6 +459,7 @@ pub fn run(out: Out, cmd: Command) -> CmdResult {
         Command::PohligHellman(a) => dlog::run_pohlig(out, &a),
         Command::Cheon(a) => dlog::run_cheon(out, &a),
         Command::Ecdlp(a) => ecdlp::run(out, &a),
+        Command::EccSafety(a) => ecc_safety_cmd::run(out, &a),
         Command::GpuRho(a) => dlog::run_gpu_rho(out, &a),
         Command::Factor(a) => factor::run_factor(out, &a),
         Command::Gnfs(a) => factor::run_gnfs(out, &a),
@@ -681,6 +687,50 @@ mod tests {
         Cli::command().debug_assert();
         command().debug_assert();
         IcZpCli::command().debug_assert();
+    }
+
+    #[test]
+    fn ecc_safety_is_registered_on_crax() {
+        use clap::Parser;
+        let cli = Cli::try_parse_from([
+            "crax",
+            "ecc-safety",
+            "--p",
+            "7",
+            "--a=-3",
+            "--b",
+            "2",
+            "--gx",
+            "0",
+            "--gy",
+            "0",
+            "--n",
+            "1",
+            "--h",
+            "1",
+        ])
+        .expect("ecc-safety on Cli");
+        assert!(matches!(cli.command, Command::EccSafety(_)));
+        let aliased = Cli::try_parse_from([
+            "crax",
+            "ecc_safety",
+            "--p",
+            "7",
+            "--a",
+            "0",
+            "--b",
+            "1",
+            "--gx",
+            "0",
+            "--gy",
+            "0",
+            "--n",
+            "1",
+            "--h",
+            "1",
+        ])
+        .expect("ecc_safety alias on Cli");
+        assert!(matches!(aliased.command, Command::EccSafety(_)));
     }
 
     #[test]

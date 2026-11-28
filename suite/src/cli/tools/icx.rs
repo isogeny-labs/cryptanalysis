@@ -138,10 +138,11 @@ struct RunArgs {
     /// Factor base plugin: `name` or `name:k=v,...` (default per family).
     #[arg(long)]
     factor_base: Option<String>,
-    /// Decomposition oracle (subtract | mitm | mitm-frobenius | descent-algebraic).
+    /// Decomposition oracle (subtract | mitm | mitm-frobenius |
+    /// descent-algebraic | descent-edge-chain).
     #[arg(long)]
     oracle: Option<String>,
-    /// Polynomial solver for descent-algebraic (f4-f2 | matrix-f5 | xl-f2 |
+    /// Polynomial solver for algebraic descent oracles (f4-f2 | matrix-f5 | xl-f2 |
     /// crossbred-f2 | fes-f2 | fes-f2-wide | sat-cdcl | buchberger-f2 | exhaustive).
     #[arg(long)]
     solver: Option<String>,

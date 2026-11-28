@@ -5,12 +5,11 @@
 
 use crate::arithmetic::{RandomSource, Seeded};
 use crate::curve::{Curve, Point};
-use crate::factor_base_lsh::BitSampleIndex;
 use crate::reduction::{self, Certificate, Config, FactorBase};
 use crate::subgroup::SubgroupPoint;
 use crate::{integrity, invalid, overflow, Meter, Result};
 use std::cell::RefCell;
-use std::collections::{hash_map::RandomState, BTreeMap, HashSet};
+use std::collections::{hash_map::RandomState, BTreeMap, HashMap, HashSet};
 use std::hash::BuildHasher;
 
 /// Observable events, not calibrated work units or runtime measurements.
@@ -26,10 +25,6 @@ pub struct Statistics {
     pub lookups: u64,
     /// Witnesses passing original arithmetic membership and sum replay.
     pub replays: u64,
-    /// Queries routed through the optional bit-sampling bucket index.
-    pub lsh_probes: u64,
-    /// Full point comparisons after bit-sampling bucket selection.
-    pub lsh_candidates: u64,
 }
 
 fn add(value: &mut u64, amount: usize) -> Result<()> {
@@ -47,7 +42,9 @@ pub struct PairTable<S = RandomState> {
     bases: [FactorBase; 2],
     ordered: [Vec<Point>; 2],
     members: [HashSet<Point, S>; 2],
-    lsh: Option<[BitSampleIndex; 2]>,
+    // Built only for the graph route. Values are the original global matrix
+    // columns, so equal points in different slots retain distinct vertices.
+    graph_columns: Option<[HashMap<Point, usize, S>; 2]>,
 }
 
 impl PairTable {
@@ -150,48 +147,73 @@ impl<S: BuildHasher + Clone> PairTable<S> {
             bases: [bases[0].clone(), bases[1].clone()],
             ordered: [left, right],
             members: [left_members, right_members],
-            lsh: None,
+            graph_columns: None,
         })
     }
 
-    /// Build opt-in coordinate-bit LSH buckets from both complete bases.
-    /// Equal points always share a bucket and every hit is checked by full
-    /// point equality. This is a candidate index, not a relation heuristic:
-    /// coordinate proximity does not imply an additive group relation.
-    /// The public seed selects bit positions without consuming relation RNG.
-    pub fn enable_lsh(&mut self, bits: u8, seed: u64, meter: &mut Meter) -> Result<()> {
-        if self.lsh.is_some() {
-            return Err(invalid("factor-base LSH already prepared"));
+    /// Index the already validated point sets with their original slot columns.
+    /// Hash equality is full canonical point equality. Preparation is atomic:
+    /// a rejected mapping never becomes visible to graph collection.
+    pub(crate) fn prepare_graph_columns(
+        &mut self,
+        indexes: &[BTreeMap<Point, usize>],
+        meter: &mut Meter,
+    ) -> Result<()> {
+        if indexes.len() != 2 || self.graph_columns.is_some() {
+            return Err(invalid("prepared graph index configuration"));
         }
-        let width = self.curve.modulus().bits();
-        let left = BitSampleIndex::new(&self.ordered[0], width, bits, seed, meter)?;
-        let right = BitSampleIndex::new(
-            &self.ordered[1],
-            width,
-            bits,
-            seed ^ 0x9e3779b97f4a7c15,
-            meter,
-        )?;
-        self.lsh = Some([left, right]);
+        let mut build = |slot: usize, offset: usize| -> Result<HashMap<Point, usize, S>> {
+            let len = self.members[slot].len();
+            if indexes[slot].len() != len {
+                return Err(integrity("prepared graph index size"));
+            }
+            meter.vector(len, "prepared graph columns")?;
+            let mut seen = Vec::new();
+            seen.try_reserve_exact(len)
+                .map_err(|_| crate::Error::Limit("prepared graph seen allocation".into()))?;
+            seen.resize(len, false);
+            let mut columns = HashMap::with_hasher(self.members[slot].hasher().clone());
+            columns
+                .try_reserve(len)
+                .map_err(|_| crate::Error::Limit("prepared graph hash allocation".into()))?;
+            meter.vector(columns.capacity(), "prepared graph hash capacity")?;
+            for (point, &column) in &indexes[slot] {
+                meter.charge(1, "prepared graph point key")?;
+                let local = column
+                    .checked_sub(offset)
+                    .filter(|&index| index < len)
+                    .ok_or_else(|| integrity("prepared graph column range"))?;
+                if !self.members[slot].contains(point) || seen[local] {
+                    return Err(integrity("prepared graph point or repeated column"));
+                }
+                seen[local] = true;
+                columns.insert(point.clone(), column);
+            }
+            Ok(columns)
+        };
+        let left = build(0, 0)?;
+        let right = build(1, left.len())?;
+        self.graph_columns = Some([left, right]);
         Ok(())
     }
 
-    fn contains_slot(
+    /// Return the exact slot-tagged graph vertex for a replayed point.
+    pub(crate) fn graph_column(
         &self,
         slot: usize,
         point: &Point,
-        statistics: &mut Statistics,
         meter: &mut Meter,
-    ) -> Result<bool> {
-        if let Some(indexes) = &self.lsh {
-            add(&mut statistics.lsh_probes, 1)?;
-            let (found, compared) =
-                indexes[slot].contains_exact(&self.ordered[slot], point, meter)?;
-            add(&mut statistics.lsh_candidates, compared)?;
-            Ok(found)
-        } else {
-            Ok(self.members[slot].contains(point))
-        }
+    ) -> Result<usize> {
+        meter.charge(1, "prepared graph point lookup")?;
+        let columns = self
+            .graph_columns
+            .as_ref()
+            .and_then(|columns| columns.get(slot))
+            .ok_or_else(|| integrity("prepared graph index absent"))?;
+        columns
+            .get(point)
+            .copied()
+            .ok_or_else(|| integrity("graph witness point missing from slot base"))
     }
 
     /// Return the same first witness as the final-slot selector oracle.
@@ -335,7 +357,7 @@ impl<S: BuildHasher + Clone> PairTable<S> {
                 position += 1;
                 offset += 1;
                 add(&mut statistics.prepared.lookups, 1)?;
-                if !self.contains_slot(last, &complement, &mut statistics.prepared, work)? {
+                if !self.members[last].contains(&complement) {
                     return Ok(ScanStep::Miss);
                 }
                 let mut witness = vec![point, complement];
@@ -387,7 +409,7 @@ impl<S: BuildHasher + Clone> PairTable<S> {
             meter.charge(1, "prepared pair candidate")?;
             let complement = self.curve.add(target, &self.curve.negate(point)?, meter)?;
             add(&mut statistics.lookups, 1)?;
-            if !self.contains_slot(last, &complement, statistics, meter)? {
+            if !self.members[last].contains(&complement) {
                 continue;
             }
             let mut witness = vec![point.clone(), complement];
@@ -432,7 +454,6 @@ pub fn solve(
         smallest_first,
         statistics,
         false,
-        None,
         meter,
     )
 }
@@ -457,34 +478,6 @@ pub fn solve_joint(
         smallest_first,
         statistics,
         true,
-        None,
-        meter,
-    )
-}
-
-/// Collect two-slot index-calculus relations with bit-sampling factor-base
-/// buckets. The exact first witness, label RNG, and version-one certificate
-/// are preserved; this opt-in lookup has no established runtime advantage.
-pub fn solve_joint_lsh(
-    curve: &Curve,
-    target: &Point,
-    config: &Config,
-    rng: &mut impl RandomSource,
-    smallest_first: bool,
-    bits: u8,
-    seed: u64,
-    statistics: &mut Statistics,
-    meter: &mut Meter,
-) -> Result<Certificate> {
-    solve_using(
-        curve,
-        target,
-        config,
-        rng,
-        smallest_first,
-        statistics,
-        true,
-        Some((bits, seed)),
         meter,
     )
 }
@@ -497,7 +490,6 @@ fn solve_using(
     smallest_first: bool,
     statistics: &mut Statistics,
     joint_targets: bool,
-    lsh: Option<(u8, u64)>,
     meter: &mut Meter,
 ) -> Result<Certificate> {
     if config.slots != 2 {
@@ -510,12 +502,7 @@ fn solve_using(
         config,
         rng,
         |c, bases, indexes, work| {
-            let mut table =
-                PairTable::from_indexes(c, bases, indexes, &mut statistics.borrow_mut(), work)?;
-            if let Some((bits, seed)) = lsh {
-                table.enable_lsh(bits, seed, work)?;
-            }
-            Ok(table)
+            PairTable::from_indexes(c, bases, indexes, &mut statistics.borrow_mut(), work)
         },
         |_, _, table, query, work| {
             table.decompose(query, smallest_first, &mut statistics.borrow_mut(), work)
@@ -570,6 +557,71 @@ mod tests {
             0
         }
         fn write(&mut self, _: &[u8]) {}
+    }
+    #[test]
+    fn graph_point_hash_preserves_slot_columns_and_rejects_bad_maps() {
+        let mut work = Meter::new(Limits::default());
+        let curve = curve(&mut work);
+        let base = bases(&curve, &mut work).remove(0);
+        let points = base.enumerate(&curve, &mut Seeded(1), &mut work).unwrap();
+        assert!(!points.is_empty());
+        let offset = points.len();
+        let left: BTreeMap<_, _> = points
+            .iter()
+            .cloned()
+            .enumerate()
+            .map(|(index, point)| (point, index))
+            .collect();
+        let right: BTreeMap<_, _> = points
+            .iter()
+            .cloned()
+            .enumerate()
+            .map(|(index, point)| (point, index + offset))
+            .collect();
+        let bases = [base.clone(), base];
+        let indexes = [left, right];
+        let mut table = PairTable::from_complete_points(
+            &curve,
+            &bases,
+            [points.clone(), points.clone()],
+            BuildHasherDefault::<ConstantHash>::default(),
+            &mut Statistics::default(),
+            &mut work,
+        )
+        .unwrap();
+        let mut bad = indexes.clone();
+        *bad[1].get_mut(&points[0]).unwrap() = 0;
+        assert!(matches!(
+            table.prepare_graph_columns(&bad, &mut work),
+            Err(Error::Integrity(_))
+        ));
+        assert!(table.graph_column(0, &points[0], &mut work).is_err());
+        table.prepare_graph_columns(&indexes, &mut work).unwrap();
+        for point in &points {
+            assert_eq!(
+                table.graph_column(0, point, &mut work).unwrap(),
+                indexes[0][point]
+            );
+            assert_eq!(
+                table.graph_column(1, point, &mut work).unwrap(),
+                indexes[1][point]
+            );
+            assert_ne!(
+                table.graph_column(0, point, &mut work).unwrap(),
+                table.graph_column(1, point, &mut work).unwrap()
+            );
+        }
+        let Point::Affine { x, y } = &points[0] else {
+            unreachable!()
+        };
+        let noncanonical = Point::Affine {
+            x: x + curve.modulus(),
+            y: y.clone(),
+        };
+        assert!(matches!(
+            table.graph_column(0, &noncanonical, &mut work),
+            Err(Error::Integrity(_))
+        ));
     }
     #[test]
     fn constant_hashes_keep_complete_answers_and_exact_point_equality() {
