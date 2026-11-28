@@ -19,13 +19,15 @@ helpers = runpy.run_path(str(COMMON / "replay.py"))
 ROOT = helpers["ROOT"]
 frozen = helpers["frozen"]
 generate = helpers["generate"]
+MEASURED_CRATE_COMMIT = "85395a80b871ee4440fc540e18f14708653f0779"
 
 
 def main():
     seeds = [int(x) for x in os.environ.get("M31_SEEDS", "0,1,2").split(",")]
     with tempfile.TemporaryDirectory(prefix="m31-orbit-hash-", dir=os.environ.get("M31_REPLAY_TMPDIR")) as temporary:
         directory = Path(temporary)
-        archive = subprocess.check_output(["git", "archive", "HEAD", "crates/prime-field-auxiliary-ic"], cwd=ROOT)
+        archive = subprocess.check_output(["git", "archive", MEASURED_CRATE_COMMIT,
+                                           "crates/prime-field-auxiliary-ic"], cwd=ROOT)
         subprocess.run(["tar", "-xf", "-", "-C", str(directory)], input=archive, check=True)
         (directory / "src").mkdir()
         (directory / "src/main.rs").write_bytes((HERE / "main.rs").read_bytes())
