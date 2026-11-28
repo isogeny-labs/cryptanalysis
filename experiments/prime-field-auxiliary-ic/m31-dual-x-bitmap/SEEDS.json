@@ -1,0 +1,27 @@
+{
+  "collector_rng": "Rust xorshift64, initial state 20261114 + walk seed; identical for high and dual arms",
+  "derivation": "SHA-256 of ASCII m31-dual-bitmap/v1, NUL, 16 raw master bytes, NUL, ASCII label; first 8 digest bytes big endian masked to 63 bits",
+  "instances": [
+    "frozen auxiliary 500-point M31",
+    "frozen plain 500-point M31"
+  ],
+  "master_seed_hex": "2f35bda06b1c4e5298f4d2a1c7e36b90",
+  "order_label": "schedule",
+  "order_seed": 5209552740903009770,
+  "repeats_per_seed": 8,
+  "scheduler": "Python 3.13.1 random.Random MT19937 shuffle",
+  "schema": "m31-dual-bitmap-seeds/v1",
+  "seed_reuse": "Each walk seed is intentionally reused across 8 timing repeats and both arms; repeats measure timing noise, not independent instances",
+  "study": "m31-dual-x-bitmap",
+  "targets": "identical frozen public P,Q in both bases; scalar known only to wrapper verification",
+  "walk_labels": [
+    "walk/0",
+    "walk/1",
+    "walk/2"
+  ],
+  "walk_seeds": [
+    3576555053178744226,
+    1007646413420971989,
+    6034286023384815533
+  ]
+}
