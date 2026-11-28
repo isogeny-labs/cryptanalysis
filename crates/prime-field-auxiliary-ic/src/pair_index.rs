@@ -31,9 +31,18 @@ impl Hasher for KeyHasher {
     }
 }
 type Lookup = HashMap<u64, usize, BuildHasherDefault<KeyHasher>>;
-const X_BITMAP_BITS: usize = 20;
+const X_BITMAP_BITS: usize =
+    if option_env!("M31_HIGH_BITMAP").is_some() || option_env!("M31_DUAL_BITMAP").is_some() {
+        22
+    } else {
+        20
+    };
 fn x_bitmap_bit(x: u64) -> usize {
-    (x.wrapping_mul(0x9e3779b97f4a7c15) >> (64 - X_BITMAP_BITS)) as usize
+    if option_env!("M31_HIGH_BITMAP").is_some() || option_env!("M31_DUAL_BITMAP").is_some() {
+        (x as usize) >> (31 - X_BITMAP_BITS)
+    } else {
+        (x.wrapping_mul(0x9e3779b97f4a7c15) >> (64 - X_BITMAP_BITS)) as usize
+    }
 }
 type Pair = [SignedTerm; 2];
 struct Entry {
@@ -90,6 +99,7 @@ pub struct PairIndex<const B: u32> {
     entries: Vec<Entry>,
     lookup: Lookup,
     x_bitmap: Vec<u64>,
+    x_bitmap_low: Vec<u64>,
     identity: Option<usize>,
     chunk: usize,
     stats: PairIndexStats,
@@ -158,6 +168,11 @@ impl<const B: u32> PairIndex<B> {
             entries: Vec::with_capacity(size),
             lookup: Lookup::with_capacity_and_hasher(size, BuildHasherDefault::default()),
             x_bitmap: if B == 31 && columns <= 384 {
+                vec![0; 1 << (X_BITMAP_BITS - 6)]
+            } else {
+                Vec::new()
+            },
+            x_bitmap_low: if B == 31 && columns <= 384 && option_env!("M31_DUAL_BITMAP").is_some() {
                 vec![0; 1 << (X_BITMAP_BITS - 6)]
             } else {
                 Vec::new()
@@ -231,6 +246,10 @@ impl<const B: u32> PairIndex<B> {
                     if !self.x_bitmap.is_empty() {
                         let bit = x_bitmap_bit(p.x());
                         self.x_bitmap[bit >> 6] |= 1u64 << (bit & 63);
+                        if !self.x_bitmap_low.is_empty() {
+                            let low = p.x() as usize & ((1 << X_BITMAP_BITS) - 1);
+                            self.x_bitmap_low[low >> 6] |= 1u64 << (low & 63);
+                        }
                     }
                 } else {
                     self.identity = Some(index);
@@ -271,6 +290,12 @@ impl<const B: u32> PairIndex<B> {
                     let bit = x_bitmap_bit(p.x());
                     if self.x_bitmap[bit >> 6] & (1u64 << (bit & 63)) == 0 {
                         return None;
+                    }
+                    if !self.x_bitmap_low.is_empty() {
+                        let low = p.x() as usize & ((1 << X_BITMAP_BITS) - 1);
+                        if self.x_bitmap_low[low >> 6] & (1u64 << (low & 63)) == 0 {
+                            return None;
+                        }
                     }
                 }
                 *self.lookup.get(&p.x())?
@@ -428,6 +453,32 @@ impl<const B: u32> PairIndex<B> {
             return self.probe(m, target, workspace);
         }
         Ok(None)
+    }
+}
+
+#[cfg(test)]
+mod bitmap_tests {
+    use super::*;
+
+    #[test]
+    fn every_indexed_m31_point_survives_both_bitmap_projections() {
+        let curve = Curve::<31>::new(2, 14).unwrap();
+        let roots: Vec<u64> = (0..80)
+            .filter(|&x| curve.lift_x(x).unwrap().is_some())
+            .take(16)
+            .collect();
+        let base = FactorBase::without_maps(curve, &roots).unwrap();
+        let index = PairIndex::new(&base, 256, 8).unwrap();
+        assert!(!index.x_bitmap.is_empty());
+        for entry in &index.entries {
+            if let Some(point) = entry.point {
+                let direct = index.find(Some(point)).expect("inserted point");
+                assert_eq!(index.entries[direct.0].point, Some(point));
+                let negative = curve.negate(point).unwrap();
+                let opposite = index.find(Some(negative)).expect("negative class");
+                assert_eq!(direct.0, opposite.0);
+            }
+        }
     }
 }
 impl PairWorkspace {
