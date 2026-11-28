@@ -135,9 +135,17 @@ impl<const B: u32> PairIndex<B> {
         if !(1..=16384).contains(&chunk) {
             return Err(Error::Invalid("pair chunk must be 1..=16384"));
         }
-        let id = NEXT_ID
-            .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |id| id.checked_add(1))
-            .map_err(|_| Error::ResourceLimit("pair index identity"))?;
+        let mut current = NEXT_ID.load(Ordering::Relaxed);
+        let id = loop {
+            let next = current
+                .checked_add(1)
+                .ok_or(Error::ResourceLimit("pair index identity"))?;
+            match NEXT_ID.compare_exchange_weak(current, next, Ordering::Relaxed, Ordering::Relaxed)
+            {
+                Ok(_) => break current,
+                Err(observed) => current = observed,
+            }
+        };
         let mut result = Self {
             id,
             curve: base.curve(),

@@ -56,6 +56,10 @@ Source: original binary SHA-256
 `66eeee2c8fcc961e41eeb4f8162739888c13d6473c3d872fa7de61ca3f54c692`,
 inline binary `941286d29f97320b8dbdf50294a4d242badfeca00bcfc5fc3c855cde1e63880e`,
 inline `pair_index.rs` `473e6b72341a798c5caba40bf4a20222498e60c172473d121954628b702c82cf`.
+After the panel, the existing atomic ID increment was rewritten as a
+`compare_exchange_weak` loop to satisfy newer Rust Clippy while retaining
+Rust 1.78 compatibility. The measured binary and its hash above are unchanged;
+this later compatibility edit is not presented as a measured speedup.
 Public-target file SHA-256
 `dc724fc613d9c2b824b90d59c876f1f7f84b3273d8d607c648e1ba3fbc089252`;
 `fresh_replay.py` SHA-256

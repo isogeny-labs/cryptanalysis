@@ -288,4 +288,4 @@ an existing report. Exit0 denotes a locally checked recovery; bounded
 incomplete reports return1 and invalid worker inputs return2. The standalone
 `m31-fast` binary defaults to B256/m2 on the fixed public lab curve
 p=2147483647, a=2,b=14,N=2147505293,G=(1,814455902). These producer checks do
-not constitute a signed independent verdict. [pcc:unverified]
+not constitute a signed independent verdict. `[pcc:unverified]`
