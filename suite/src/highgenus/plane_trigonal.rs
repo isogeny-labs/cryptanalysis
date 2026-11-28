@@ -126,26 +126,33 @@ impl TrigonalPlaneChart {
         Some(curve.canonical(&place.0))
     }
 
-    /// Zeros of the rational function `u-c` on the normalization, when all
-    /// are rational. They are the roots of `f1-c^3 f2` with multiplicity.
-    /// Its pole divisor is independent of `c`, including the places above
-    /// `f2=0` and infinity, so two returned divisors are linearly equivalent.
-    pub fn horizontal_divisor(
+    /// Zeros of the affine line function `u−slope*x−intercept` on the
+    /// normalization, when all are rational. Roots of
+    /// `f1−(slope*x+intercept)^3 f2` carry their intersection multiplicity.
+    /// Its exceptional/infinite poles are independent of the intercept for
+    /// fixed slope. For genus 4, compare nonzero slopes with nonzero slopes;
+    /// a horizontal line has a different pole order at infinity.
+    pub fn affine_line_divisor(
         &self,
         curve: &SuperellipticCurve,
-        c: u64,
+        slope: u64,
+        intercept: u64,
         rng: &mut impl RngCore,
     ) -> Option<Vec<(Ideal, usize)>> {
         let k = &self.field;
-        let c = c % k.p();
-        let h = self.f1.sub(&self.f2.mul_scalar(k.pow(c, 3), k), k);
+        let slope = slope % k.p();
+        let intercept = intercept % k.p();
+        let line = Poly::from_coeffs(vec![intercept, slope], k);
+        let cube = line.mul(&line, k).mul(&line, k);
+        let h = self.f1.sub(&self.f2.mul(&cube, k), k);
         let mut divisor = Vec::new();
         for (factor, multiplicity) in h.factor(k, rng) {
             if factor.degree() != Some(1) {
                 return None;
             }
             let x = k.neg(factor.c.first().copied().unwrap_or(0));
-            let place = self.source_place(curve, x, c, rng)?;
+            let u = k.add(k.mul(slope, x), intercept);
+            let place = self.source_place(curve, x, u, rng)?;
             divisor.push((place, multiplicity));
         }
         (divisor
@@ -154,6 +161,17 @@ impl TrigonalPlaneChart {
             .sum::<usize>()
             == h.degree().unwrap_or(0))
         .then_some(divisor)
+    }
+
+    /// The horizontal special case `u=c`; all heights share the same pole
+    /// divisor, including the exceptional fibers and infinity.
+    pub fn horizontal_divisor(
+        &self,
+        curve: &SuperellipticCurve,
+        c: u64,
+        rng: &mut impl RngCore,
+    ) -> Option<Vec<(Ideal, usize)>> {
+        self.affine_line_divisor(curve, 0, c, rng)
     }
 }
 
@@ -275,6 +293,75 @@ mod tests {
                 sum(&second),
                 "genus {genus} horizontal line relation"
             );
+        }
+    }
+
+    #[test]
+    fn split_nonhorizontal_lines_agree_in_genus_four_and_five_jacobians() {
+        let cases: &[(u32, &[u64], &[u64], (u64, u64, &[u64]), (u64, u64, &[u64]))] = &[
+            (
+                4,
+                &[0, 1, 2],
+                &[3, 7],
+                (2, 0, &[0, 6, 10, 13, 15]),
+                (16, 13, &[5, 8, 10, 12, 14]),
+            ),
+            (
+                5,
+                &[0, 1, 2, 3, 5],
+                &[6],
+                (7, 12, &[4, 7, 9, 12, 16]),
+                (8, 0, &[0, 8, 12, 13, 14]),
+            ),
+        ];
+        let field = Fp::new(17).unwrap();
+        let mut rng = StdRng::seed_from_u64(0x2026_1128);
+        for &(genus, roots1, roots2, a, b) in cases {
+            let f1 = split_poly(&field, roots1);
+            let f2 = split_poly(&field, roots2);
+            let curve = SuperellipticCurve::new(field, 3, vec![(f1, 1), (f2, 2)]).unwrap();
+            assert_eq!(curve.genus, genus);
+            let chart = TrigonalPlaneChart::new(&curve).unwrap();
+            let first = chart
+                .affine_line_divisor(&curve, a.0, a.1, &mut rng)
+                .unwrap();
+            let second = chart
+                .affine_line_divisor(&curve, b.0, b.1, &mut rng)
+                .unwrap();
+            let roots_of = |divisor: &[(Ideal, usize)]| {
+                let mut roots: Vec<_> = divisor
+                    .iter()
+                    .map(|(place, _)| field.neg(place.norm(&field).c[0]))
+                    .collect();
+                roots.sort_unstable();
+                roots
+            };
+            assert_eq!(roots_of(&first), a.2);
+            assert_eq!(roots_of(&second), b.2);
+            assert!(first
+                .iter()
+                .chain(&second)
+                .all(|(_, multiplicity)| *multiplicity == 1));
+            let sum = |divisor: &[(Ideal, usize)]| {
+                divisor
+                    .iter()
+                    .fold(curve.identity(), |acc, (place, multiplicity)| {
+                        let mut acc = acc;
+                        for _ in 0..*multiplicity {
+                            acc = curve.add(&acc, place);
+                        }
+                        acc
+                    })
+            };
+            assert_eq!(
+                sum(&first),
+                sum(&second),
+                "genus {genus} affine line relation"
+            );
+            if genus == 5 {
+                let horizontal = chart.horizontal_divisor(&curve, 0, &mut rng).unwrap();
+                assert_eq!(sum(&first), sum(&horizontal));
+            }
         }
     }
 }
