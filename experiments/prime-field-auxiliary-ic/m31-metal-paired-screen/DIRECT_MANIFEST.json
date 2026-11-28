@@ -1,0 +1,170 @@
+{
+  "schema": "m31-metal-paired-direct-manifest/v1",
+  "commit": "9c88612de00002d5dd659419181974872dc28fbe",
+  "host": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "python": "3.13.1",
+  "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11) (Homebrew)",
+  "swiftc": "Apple Swift version 6.4.2 (swiftlang-6.4.2.1.9 clang-2100.4.1.1)\nTarget: arm64-apple-macosx27.2.0",
+  "source_sha256": {
+    "experiments/prime-field-auxiliary-ic/m31-metal-four-sum/full.rs": "e4f195923c0f9a198d9de0368949f9e66cf12c2f3c56d13b90370f1833c7c432",
+    "experiments/prime-field-auxiliary-ic/m31-metal-four-sum/gpu_ffi.swift": "b4585777bcee21c1dd75ca0084a0c634929ef194fa463870fc5748852337643f",
+    "experiments/prime-field-auxiliary-ic/m31-metal-four-sum/screen.metal": "a90bd1695442517088dade3b1053b689aa58ce5eb2876d19daa55cdc6fe3949d",
+    "experiments/prime-field-auxiliary-ic/m31-metal-paired-screen/direct.py": "5489af2d687371c97b6917e9ddee0f08873e3ae2d4182a244d345a82d065ee65",
+    "experiments/prime-field-auxiliary-ic/m31-metal-paired-screen/verify_direct.py": "ec233f4bcb18a0d6ccfecd840c3e571821e57c353309d52c59a50ddb3e489e26",
+    "experiments/prime-field-auxiliary-ic/m31-metal-paired-screen/DIRECT_PROTOCOL.md": "2d9e04281bb5efabc31b07acb7592a9b4795b5731228eff1306ba562b49078f0",
+    "crates/prime-field-auxiliary-ic/src/solve.rs": "608c8edbaddbf30b1fb0560de0788c7929a68e9b0cda2253287942ea32b74bde",
+    "crates/prime-field-auxiliary-ic/src/pair_index.rs": "cd229e27e488da7ad2c53fa6add7a66439b0f2d26e11cb4cef04927ba20403cd"
+  },
+  "targets": [
+    [
+      1767503692,
+      244402461
+    ],
+    [
+      686106551,
+      2137700595
+    ],
+    [
+      949616523,
+      2050168716
+    ],
+    [
+      1568678311,
+      615355077
+    ],
+    [
+      2146214436,
+      1536824028
+    ]
+  ],
+  "seeds": [
+    7998275561808360171,
+    7418483814534793376,
+    4428840531793918739
+  ],
+  "order_seed": 4475395668569011433,
+  "master_seed_hex": "6ec48ecf47ce563a99158c1df7307262",
+  "schedule": [
+    {
+      "target": 0,
+      "seed": 1,
+      "arms": [
+        "20",
+        "paired"
+      ]
+    },
+    {
+      "target": 4,
+      "seed": 1,
+      "arms": [
+        "paired",
+        "20"
+      ]
+    },
+    {
+      "target": 3,
+      "seed": 1,
+      "arms": [
+        "20",
+        "paired"
+      ]
+    },
+    {
+      "target": 2,
+      "seed": 1,
+      "arms": [
+        "paired",
+        "20"
+      ]
+    },
+    {
+      "target": 2,
+      "seed": 2,
+      "arms": [
+        "20",
+        "paired"
+      ]
+    },
+    {
+      "target": 1,
+      "seed": 1,
+      "arms": [
+        "paired",
+        "20"
+      ]
+    },
+    {
+      "target": 0,
+      "seed": 2,
+      "arms": [
+        "20",
+        "paired"
+      ]
+    },
+    {
+      "target": 2,
+      "seed": 0,
+      "arms": [
+        "paired",
+        "20"
+      ]
+    },
+    {
+      "target": 4,
+      "seed": 0,
+      "arms": [
+        "20",
+        "paired"
+      ]
+    },
+    {
+      "target": 1,
+      "seed": 0,
+      "arms": [
+        "paired",
+        "20"
+      ]
+    },
+    {
+      "target": 3,
+      "seed": 0,
+      "arms": [
+        "20",
+        "paired"
+      ]
+    },
+    {
+      "target": 3,
+      "seed": 2,
+      "arms": [
+        "paired",
+        "20"
+      ]
+    },
+    {
+      "target": 4,
+      "seed": 2,
+      "arms": [
+        "20",
+        "paired"
+      ]
+    },
+    {
+      "target": 1,
+      "seed": 2,
+      "arms": [
+        "paired",
+        "20"
+      ]
+    },
+    {
+      "target": 0,
+      "seed": 0,
+      "arms": [
+        "20",
+        "paired"
+      ]
+    }
+  ],
+  "binary_sha256": "3020bd27c65c426043d7d935e116f87a50b6c7ffa7955c88bfc271ac9e9f2e26"
+}
