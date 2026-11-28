@@ -25,7 +25,8 @@ kernel void compact_screen(device const P *targets [[buffer(0)]], device const P
                            constant uint &entryCount [[buffer(4)]],
                            constant uint &bitmapBits [[buffer(5)]],
                            device const ulong *coarse [[buffer(6)]],
-                           constant uint &useCoarse [[buffer(7)]], uint id [[thread_position_in_grid]]) {
+                           constant uint &useCoarse [[buffer(7)]],
+                           device const uint *xhash [[buffer(8)]], uint id [[thread_position_in_grid]]) {
   uint width=2*entryCount;
   P q=targets[id/width], b=entries[(id/2)%entryCount];
   if(!(id&1u) && b.finite && b.y!=0) b.y=MOD-b.y;
@@ -37,5 +38,16 @@ kernel void compact_screen(device const P *targets [[buffer(0)]], device const P
     if(((coarse[coarseBit>>6]>>(coarseBit&63))&1ul)==0) { flags[id]=0; return; }
   }
   ulong bit=hash>>(64-bitmapBits);
-  flags[id]=((bitmap[bit>>6]>>(bit&63))&1ul) ? 1 : 0;
+  if(((bitmap[bit>>6]>>(bit&63))&1ul)==0) { flags[id]=0; return; }
+  if(useCoarse==2) {
+    uint slot=uint(hash>>47);
+    for(uint probes=0; probes<(1u<<17); ++probes) {
+      uint key=xhash[slot];
+      if(key==uint(result.x)) { flags[id]=1; return; }
+      if(key==0xffffffffu) { flags[id]=0; return; }
+      slot=(slot+1u)&((1u<<17)-1u);
+    }
+    flags[id]=0; return;
+  }
+  flags[id]=1;
 }

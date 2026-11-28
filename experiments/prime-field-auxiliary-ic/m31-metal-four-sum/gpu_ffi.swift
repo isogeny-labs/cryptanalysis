@@ -10,6 +10,7 @@ private final class ScreenContext {
     let entries: MTLBuffer
     let bitmap: MTLBuffer
     let coarse: MTLBuffer
+    let xhash: MTLBuffer
     let entryCount: Int
     let bitmapBits: Int
     let useCoarse: Int
@@ -40,6 +41,28 @@ private final class ScreenContext {
             }
             coarse=buffer
         } else { coarse=bitmap }
+        if useCoarse == 2 {
+            var keys=[UInt32](repeating:UInt32.max,count:1 << 17)
+            let coordinates=points.assumingMemoryBound(to:WirePoint.self)
+            for i in 0..<count where coordinates[i].finite != 0 {
+                let key=UInt32(coordinates[i].x)
+                var slot=Int((coordinates[i].x &* 0x9e3779b97f4a7c15) >> 47)
+                while keys[slot] != UInt32.max && keys[slot] != key {
+                    slot=(slot+1)&((1 << 17)-1)
+                }
+                keys[slot]=key
+            }
+            guard let buffer=device.makeBuffer(bytes:keys,length:keys.count*4) else {
+                throw NSError(domain:"m31-metal",code:4)
+            }
+            xhash=buffer
+        } else {
+            var empty=[UInt32.max]
+            guard let buffer=device.makeBuffer(bytes:&empty,length:4) else {
+                throw NSError(domain:"m31-metal",code:4)
+            }
+            xhash=buffer
+        }
         self.entries=entries; self.bitmap=bitmap; self.coarse=coarse
         self.entryCount=count; self.bitmapBits=bitmapBits; self.useCoarse=useCoarse
     }
@@ -61,6 +84,7 @@ private final class ScreenContext {
         encoder.setBuffer(coarse,offset:0,index:6)
         var coarseEnabled=UInt32(useCoarse)
         encoder.setBytes(&coarseEnabled,length:4,index:7)
+        encoder.setBuffer(xhash,offset:0,index:8)
         encoder.dispatchThreads(MTLSize(width:total,height:1,depth:1),
                                 threadsPerThreadgroup:MTLSize(width:min(256,pipeline.maxTotalThreadsPerThreadgroup),height:1,depth:1))
         encoder.endEncoding()
@@ -80,8 +104,9 @@ public func m31MetalInit(_ points: UnsafeRawPointer?, _ count: Int32,
                          _ shaderPath: UnsafePointer<CChar>?) -> Int32 {
     guard let points, let bits, let shaderPath,
           count>0, (bitmapBits==20 || bitmapBits==22),
-          (useCoarse==0 || (useCoarse==1 && bitmapBits==22)),
-          words==(1 << (bitmapBits-6)), count<=262_144 else { return 1 }
+          (useCoarse==0 || ((useCoarse==1 || useCoarse==2) && bitmapBits==22)),
+          words==(1 << (bitmapBits-6)), count<=262_144,
+          (useCoarse != 2 || count < (1 << 17)) else { return 1 }
     do {
         screenContext=try ScreenContext(points,Int(count),bits,Int(words),Int(bitmapBits),Int(useCoarse),String(cString:shaderPath))
         return 0
