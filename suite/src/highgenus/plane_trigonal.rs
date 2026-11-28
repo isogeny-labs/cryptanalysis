@@ -1339,6 +1339,62 @@ mod tests {
     }
 
     #[test]
+    fn collected_cubic_line_rows_feed_a_genus_five_dlp() {
+        let field = Fp::new(7).unwrap();
+        let curve = SuperellipticCurve::new(
+            field,
+            3,
+            vec![
+                (Poly::from_coeffs(vec![4, 3, 6, 0, 5, 1], &field), 1),
+                (Poly::from_coeffs(vec![4, 1], &field), 2),
+            ],
+        )
+        .unwrap();
+        assert_eq!(curve.genus, 5);
+        let chart = TrigonalPlaneChart::new(&curve).unwrap();
+        let mut rng = StdRng::seed_from_u64(0x2026_577);
+        let base = build_factor_base(&curve, 3, &mut rng).unwrap();
+        let scan = chart.collect_affine_line_relations_degree_three(&curve, &base, 49, &mut rng);
+        assert_eq!(scan.scanned, 49);
+        assert!(!scan.relations.is_empty());
+        assert!(scan.relations.iter().any(|row| {
+            row.coeffs
+                .iter()
+                .any(|&(index, coefficient)| coefficient != 0 && base.places[index].degree == 3)
+        }));
+        let n = BigUint::from(577u64);
+        let mut d1 = curve.identity();
+        for _ in 0..64 {
+            d1 = curve.scalar_mul(&BigUint::from(144u64), &curve.random_element(2, &mut rng));
+            if !curve.is_identity(&d1) {
+                break;
+            }
+        }
+        assert!(!curve.is_identity(&d1));
+        assert!(curve.is_identity(&curve.scalar_mul(&n, &d1)));
+        let target = curve.scalar_mul(&BigUint::from(36u64), &d1);
+        let params = IcParams {
+            extra_relations: 8,
+            max_trials: 100_000,
+            seed: 20261128,
+            ..Default::default()
+        };
+        let report = index_calculus_dlp_with_seed_relations(
+            &curve,
+            &base,
+            &d1,
+            &target,
+            &n,
+            &scan.relations,
+            &params,
+        )
+        .unwrap();
+        assert_eq!(report.k, BigUint::from(36u64));
+        assert_eq!(curve.scalar_mul(&report.k, &d1), target);
+        assert!(report.relations >= scan.relations.len());
+    }
+
+    #[test]
     fn vertical_ramified_fibers_give_verified_rows() {
         let field = Fp::new(17).unwrap();
         let mut rng = StdRng::seed_from_u64(0x2026_11ab);
