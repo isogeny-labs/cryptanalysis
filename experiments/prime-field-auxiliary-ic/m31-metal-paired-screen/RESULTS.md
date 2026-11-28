@@ -34,4 +34,8 @@ The independently seeded `DIRECT_PROTOCOL.md` compared mode 0 with mode 3 in 30 
 | Median paired control/candidate CPU ratio | — | **1.455×** |
 | Candidate wins, wall / CPU | — | **14/15 / 15/15** |
 
-The prespecified ≥1.20 median and ≥12/15 win gates passed locally. The one wall loss was target 3, seed index 2: the candidate took 319.665 ms versus 158.024 ms for the control, while its CPU metric still favored the candidate. It is retained in every statistic. This is a direct, setup-charged IC-vs-IC improvement on this public panel, subject to independent PCC standing and fresh-seed confirmation; it does not follow from multiplying earlier component ratios. Matched rho distance on these fresh seeds is pending. [pcc:unverified]
+The prespecified ≥1.20 median and ≥12/15 win gates passed locally. The one wall loss was target 3, seed index 2: the candidate took 319.665 ms versus 158.024 ms for the control, while its CPU metric still favored the candidate. It is retained in every statistic. This is a direct, setup-charged IC-vs-IC improvement on this public panel, subject to independent PCC standing and fresh-seed confirmation; it does not follow from multiplying earlier component ratios. [pcc:unverified]
+
+## Matched rho distance
+
+`RHO_PROTOCOL.md` was frozen before outcomes. All 15 archived C++ rho arms completed on the same public targets and walk seeds, with every scalar checked by independent affine multiplication. Median charged rho wall and child CPU were 12.900 and 10.028 ms. Median paired paired-IC/rho ratios were **8.598× wall** and **6.035× child CPU**. `RHO_MANIFEST.json` fixes the source and binary hashes and `RHO_RAW.jsonl` preserves all outcomes. The rho control remains substantially faster for one target; the IC-vs-IC gain does not close that distance. [pcc:unverified]
