@@ -43,6 +43,7 @@ pub mod ic;
 pub mod instances;
 pub mod jacobi;
 pub mod kummer;
+pub mod plane_trigonal;
 pub mod poly;
 pub mod rho;
 
