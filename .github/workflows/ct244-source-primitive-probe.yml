@@ -98,6 +98,7 @@ jobs:
           script="$root/norm-point-reuse-01/ct248_scoped_sample_audit.py"
           guard="$root/norm-point-reuse-01/ct300_authentic_fixture_guard.py"
           fixture="$root/evidence/fixed-chain-norm-point-native-01/literal-selected-vectors.json"
+          python3 -m py_compile "$script" "$guard"
           python3 -S - <<'PY'
           from pathlib import Path
           import sys
