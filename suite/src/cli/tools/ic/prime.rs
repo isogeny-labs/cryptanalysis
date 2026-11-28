@@ -34,7 +34,8 @@ use crate::cryptanalysis::ec_index_calculus_curves::{
 };
 use crate::cryptanalysis::prime_orbit_index_calculus::{
     base_orbits, generate_instance, run_known_answer, BaseSizing, Coefficient, GeneratedInstance,
-    OrbitIcOptions, OrbitIcReport, RelationCoordinates, ScaledShape, MIN_FIELD_BITS,
+    OrbitIcOptions, OrbitIcReport, RelationCoordinates, ScaledShape, MAX_FIELD_BITS,
+    MIN_FIELD_BITS,
 };
 use crate::ecc::{curve::CurveParams, point::Point};
 use clap::{Args, ValueEnum};
@@ -44,11 +45,16 @@ use serde_json::{json, Value};
 use std::io::Write;
 use std::time::Instant;
 
-/// Largest scaled field `ic prime` builds.  The certificate, rho and the
-/// large-prime precomputation reach further; the full-decomposition
-/// control, at `≈ r/|Aut|` operations, does not, and the operation budget
-/// ends it as incomplete well before.
-pub const MAX_PRIME_BITS: u32 = 40;
+/// Largest scaled field `ic prime` builds. A memory cap, not a numeric one:
+/// the orbit engine's arithmetic reaches [`MAX_FIELD_BITS`] (62), but the
+/// large-prime precomputation's peak memory grows about 2.2× per 4 bits.
+/// Measured (`--targets 1 --no-rho`, one 16 GB host, 2026-11-27): 40 bits
+/// 1.4 s; 44 bits 2.7 GB, 6 s; 48 bits 5.9 GB, 17 s, complete; 52 bits
+/// killed for lack of memory. (It was 40.) The full-decomposition control
+/// (`--no-large-primes`), at `≈ r/|Aut|` operations, ends as incomplete
+/// within the operation budget well before this.
+pub const MAX_PRIME_BITS: u32 = 48;
+const _: () = assert!(MAX_PRIME_BITS <= MAX_FIELD_BITS);
 
 /// A prime-field curve type, as `--type` spells it.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, ValueEnum)]

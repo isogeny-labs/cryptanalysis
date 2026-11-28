@@ -127,8 +127,9 @@
 use std::collections::{HashMap, HashSet};
 use std::sync::atomic::{AtomicU32, AtomicU64, Ordering};
 
+use num_bigint::RandBigInt;
 use num_bigint::{BigInt, BigUint, Sign};
-use num_traits::{One, Zero};
+use num_traits::{One, ToPrimitive, Zero};
 use rand::rngs::StdRng;
 use rand::{Rng, SeedableRng};
 use rayon::prelude::*;
@@ -172,6 +173,29 @@ use crate::utils::mod_inverse;
 /// is the `2^dim` factor base and, for the meet-in-the-middle oracle,
 /// its `|F|²` pair table.
 pub const MAX_N: u32 = 63;
+
+/// A scalar drawn uniformly from `[1, r)`.
+///
+/// When `r` fits a `u64` this is `rng.gen_range(1..r)` (the draw every
+/// caller made before, so seeded runs are unchanged); above `2^64` it is a
+/// `BigUint` draw over the whole range. The old callers took the low 64-bit
+/// limb of `r` as the bound, which for a wide subgroup (ECC2K-130,
+/// `r ≈ 2^129`) is an arbitrary number unrelated to `r`.
+pub fn random_scalar_below<R: Rng + ?Sized>(rng: &mut R, r: &BigUint) -> BigUint {
+    match r.to_u64() {
+        Some(r64) => BigUint::from(rng.gen_range(1..r64.max(2))),
+        None => rng.gen_biguint_range(&BigUint::one(), r),
+    }
+}
+
+/// Bound for scalar draws that must be single words: `r` itself when it
+/// fits a `u64`, else `u64::MAX` (every draw below it is a valid scalar
+/// below `r`, though the draws then cover only `[1, 2^64 − 1)`). The old
+/// code read the low limb of `r`, which can be 0 or 1 (then every draw
+/// was the scalar 1).
+pub(crate) fn word_scalar_bound(r: &BigUint) -> u64 {
+    r.to_u64().unwrap_or(u64::MAX).max(2)
+}
 
 // ── F_2[x] helpers on `u64` bitmasks ───────────────────────────────
 //
@@ -6555,7 +6579,6 @@ fn koblitz_index_calculus_dlp_observed(
     // solver is the fallback for a modulus wider than 64 bits.
     let mut echelon = IncrementalRelationSolver::new(relation_unknowns, r);
     let mut rng = StdRng::seed_from_u64(opts.seed);
-    let r_u64 = r.to_u64_digits().first().copied().unwrap_or(1).max(2);
     let relation_start = std::time::Instant::now();
 
     // Record the exact incremental rank and, when allowed and pinned,
@@ -6631,8 +6654,8 @@ fn koblitz_index_calculus_dlp_observed(
         let batch_size = opts.relation_batch_size.max(1).min(remaining_trials);
         let attempts: Vec<_> = (0..batch_size)
             .map(|_| {
-                let a = BigUint::from(rng.gen_range(1..r_u64));
-                let b = BigUint::from(rng.gen_range(1..r_u64));
+                let a = random_scalar_below(&mut rng, r);
+                let b = random_scalar_below(&mut rng, r);
                 let target = kc.add(&kc.mul(&g, &a), &kc.mul(q, &b));
                 (a, b, target)
             })
@@ -7660,9 +7683,12 @@ fn signed_rho_fast(
     assert!(options.jump_count > 0, "rho needs at least one jump");
     assert!(options.parallel_walks > 0, "rho needs at least one walk");
     let modulus_big = &curve.subgroup_order;
-    let modulus = modulus_big.to_u64_digits().first().copied().unwrap_or(0);
-    assert!(modulus > 2, "rho subgroup order must fit u64");
-    assert_eq!(modulus_big.bits(), 64 - modulus.leading_zeros() as u64);
+    let modulus = modulus_big.to_u64().filter(|&m| m > 2).unwrap_or_else(|| {
+        panic!(
+            "signed-Frobenius rho: subgroup order must lie in (2, 2^64), got a {}-bit order",
+            modulus_big.bits()
+        )
+    });
     let lambda = (&curve.lambda % modulus_big)
         .to_u64_digits()
         .first()
@@ -7872,6 +7898,13 @@ fn signed_rho_fast(
 /// [`koblitz_signed_frobenius_rho_with_progress`]: the same algorithm on
 /// [`BinaryPoint`]s, kept for fields wider than a word and as the
 /// oracle the single-word walk is tested against.
+///
+/// # Panics
+///
+/// When the subgroup order `r` is not in `(2, 2^64)`: the walk keeps its
+/// collision coefficients as `u64`, so a wider `r` (e.g. ECC2K-130,
+/// `r ≈ 2^129`) is refused. The old check read the low 64-bit limb of `r`
+/// and let such curves through with truncated coefficients.
 pub fn koblitz_signed_frobenius_rho_reference(
     curve: &KoblitzCurve,
     target: &BinaryPoint,
@@ -7881,8 +7914,13 @@ pub fn koblitz_signed_frobenius_rho_reference(
     assert!(options.jump_count > 0, "rho needs at least one jump");
     assert!(options.parallel_walks > 0, "rho needs at least one walk");
     let modulus = &curve.subgroup_order;
-    let modulus_u64 = modulus.to_u64_digits().first().copied().unwrap_or(0);
-    assert!(modulus_u64 > 2, "rho subgroup order must fit u64");
+    let modulus_u64 = modulus.to_u64().filter(|&m| m > 2).unwrap_or_else(|| {
+        panic!(
+            "signed-Frobenius rho (reference): subgroup order must lie in (2, 2^64) \
+             (coefficients are u64), got a {}-bit order",
+            modulus.bits()
+        )
+    });
     let mut rng = StdRng::seed_from_u64(options.seed);
     let mut report = KoblitzSignedRhoReport {
         recovered_log: None,
@@ -8444,13 +8482,8 @@ impl<'a> RelationCollector<'a> {
         if !fb.m_can_decompose(kc, opts.m) {
             return None;
         }
-        let r_u64 = kc
-            .subgroup_order
-            .to_u64_digits()
-            .first()
-            .copied()
-            .unwrap_or(1)
-            .max(2);
+        // Probe scalars are single words: below 2^64 the bound is r itself.
+        let r_u64 = word_scalar_bound(&kc.subgroup_order);
         let fast = FastCurve::new(&kc.curve).map(|fc| {
             let g = fc.lift(kc.generator());
             (fc, g)
@@ -8730,13 +8763,9 @@ pub fn verify_collected_relation(
     m: usize,
     rel: &CollectedRelation,
 ) -> bool {
-    let r_u64 = kc
-        .subgroup_order
-        .to_u64_digits()
-        .first()
-        .copied()
-        .unwrap_or(0);
-    if rel.points.len() != m || rel.a == 0 || rel.a >= r_u64 {
+    // Compare against the full r (the old low-limb compare was wrong for
+    // r > 2^64).
+    if rel.points.len() != m || rel.a == 0 || BigUint::from(rel.a) >= kc.subgroup_order {
         return false;
     }
     if rel.points.iter().any(|&i| i >= fb.points.len()) {
@@ -8788,7 +8817,9 @@ impl<'a> LogSystem<'a> {
             opts,
             projected,
             n_cols,
-            r_u64: r.to_u64_digits().first().copied().unwrap_or(1).max(2),
+            // Only the sparse path reads this; `modulus_supported` keeps
+            // that path to word-sized r.
+            r_u64: word_scalar_bound(r),
             h: &kc.cofactor % r,
             sparse_opts,
             dense_matrix: Vec::new(),
@@ -9224,7 +9255,8 @@ impl<'a> IndividualLogSolver<'a> {
             field: FieldStructure::new(kc.n, &kc.curve.irreducible),
             fast,
             h: &kc.cofactor % r,
-            r_u64: r.to_u64_digits().first().copied().unwrap_or(1).max(2),
+            // Descent scalars are single words; see `word_scalar_bound`.
+            r_u64: word_scalar_bound(r),
             walks: if *r >= BigUint::from(Self::WIDE_WALKS_MIN_ORDER) {
                 Self::WIDE_WALKS
             } else {
@@ -9464,6 +9496,7 @@ impl<'a> IndividualLogSolver<'a> {
             report.trials += 1;
             let a = rng.gen_range(1..self.r_u64);
             let b = rng.gen_range(1..self.r_u64);
+            let (a_word, b_word) = (a, b);
             let idxs = match self.probe(q, q_fast, a, b) {
                 Probe::Decomposed(idxs) => idxs,
                 Probe::Miss => continue,
@@ -9514,8 +9547,8 @@ impl<'a> IndividualLogSolver<'a> {
             if kc.mul(g, &d) == *q {
                 report.log = Some(d.clone());
                 report.relation = Some(DescentRelation {
-                    a: a.to_u64_digits()[0],
-                    b: b.to_u64_digits()[0],
+                    a: a_word,
+                    b: b_word,
                     points: idxs,
                 });
                 return Some((d, report));
@@ -9542,6 +9575,50 @@ enum Probe {
 mod tests {
     use super::*;
     use crate::cryptanalysis::koblitz_groebner::build_decomposition_system;
+
+    /// ECC2K-130 (r ≈ 2^129, low limb unrelated to r): scalar draws cover
+    /// the whole range and stay below r; the word bound saturates instead
+    /// of reading the low limb.
+    #[test]
+    fn wide_subgroup_scalar_draws_use_the_full_order() {
+        let kc = crate::cryptanalysis::ecc2k130_index_calculus::curve().unwrap();
+        let r = &kc.subgroup_order;
+        assert!(r.bits() > 64);
+        let mut rng = StdRng::seed_from_u64(7);
+        let draws: Vec<BigUint> = (0..16).map(|_| random_scalar_below(&mut rng, r)).collect();
+        assert!(draws.iter().all(|d| !d.is_zero() && d < r));
+        assert!(
+            draws.iter().any(|d| d.bits() > 64),
+            "draws must reach above 2^64"
+        );
+        assert_eq!(word_scalar_bound(r), u64::MAX);
+        // Word-sized r: the same stream as the old `gen_range(1..r)`.
+        let small = BigUint::from(1_000_003u64);
+        let (mut a, mut b) = (StdRng::seed_from_u64(9), StdRng::seed_from_u64(9));
+        for _ in 0..8 {
+            assert_eq!(
+                random_scalar_below(&mut a, &small),
+                BigUint::from(b.gen_range(1..1_000_003u64))
+            );
+        }
+        assert_eq!(word_scalar_bound(&small), 1_000_003);
+    }
+
+    /// The reference signed rho refuses a subgroup order above 2^64 with a
+    /// message (its coefficients are u64), instead of walking with the low
+    /// limb of r as the modulus.
+    #[test]
+    #[should_panic(expected = "subgroup order must lie in (2, 2^64)")]
+    fn reference_signed_rho_refuses_wide_subgroup() {
+        let kc = crate::cryptanalysis::ecc2k130_index_calculus::curve().unwrap();
+        let target = kc.generator().clone();
+        let opts = KoblitzSignedRhoOptions {
+            max_restarts: 1,
+            max_iterations_per_restart: 1,
+            ..KoblitzSignedRhoOptions::default()
+        };
+        let _ = koblitz_signed_frobenius_rho_reference(&kc, &target, &opts, &mut |_| {});
+    }
 
     #[test]
     fn koblitz_mul_dispatch_matches_general_arithmetic() {

@@ -444,6 +444,101 @@ pub fn is_prime_u64(n: u64) -> bool {
     true
 }
 
+/// Outcome of the `u128` Miller-Rabin test.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Primality {
+    /// Proven composite (a witness was found).
+    Composite,
+    /// Prime, exactly: `n` is below the Sorenson-Webster bound for the first 13 prime bases.
+    Prime,
+    /// Passed every fixed base, but `n` exceeds the deterministic bound: probabilistic only.
+    ProbablyPrime,
+}
+
+/// Sorenson-Webster (arXiv:1509.00864): the least strong pseudoprime to the first 13 prime bases.
+pub const MILLER_RABIN_13_BASE_BOUND: u128 = 3_317_044_064_679_887_385_961_981;
+
+fn add_mod_u128(x: u128, y: u128, n: u128) -> u128 {
+    // x, y < n; never forms x + y when it could overflow.
+    if x >= n - y {
+        x - (n - y)
+    } else {
+        x + y
+    }
+}
+
+fn mul_mod_u128(a: u128, b: u128, n: u128) -> u128 {
+    if a <= u128::from(u64::MAX) && b <= u128::from(u64::MAX) {
+        return a * b % n;
+    }
+    let (mut acc, mut addend, mut k) = (0u128, a % n, b);
+    while k != 0 {
+        if k & 1 != 0 {
+            acc = add_mod_u128(acc, addend, n);
+        }
+        addend = add_mod_u128(addend, addend, n);
+        k >>= 1;
+    }
+    acc
+}
+
+/// Miller-Rabin on `u128`. Exact (`Prime`/`Composite`) for `n` below
+/// [`MILLER_RABIN_13_BASE_BOUND`] (~3.3e24); above it the 13 deterministic bases plus 12
+/// further fixed prime bases give only `ProbablyPrime`.
+pub fn primality_u128(n: u128) -> Primality {
+    if n < 2 {
+        return Primality::Composite;
+    }
+    const BASES: [u128; 25] = [
+        2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89,
+        97,
+    ];
+    for prime in BASES {
+        if n % prime == 0 {
+            return if n == prime {
+                Primality::Prime
+            } else {
+                Primality::Composite
+            };
+        }
+    }
+    let s = (n - 1).trailing_zeros();
+    let d = (n - 1) >> s;
+    let deterministic = n < MILLER_RABIN_13_BASE_BOUND;
+    let bases = if deterministic {
+        &BASES[..13]
+    } else {
+        &BASES[..]
+    };
+    'bases: for &base in bases {
+        let (mut value, mut factor, mut exponent) = (1u128, base % n, d);
+        while exponent != 0 {
+            if exponent & 1 != 0 {
+                value = mul_mod_u128(value, factor, n);
+            }
+            exponent >>= 1;
+            if exponent != 0 {
+                factor = mul_mod_u128(factor, factor, n);
+            }
+        }
+        if value == 1 || value == n - 1 {
+            continue;
+        }
+        for _ in 1..s {
+            value = mul_mod_u128(value, value, n);
+            if value == n - 1 {
+                continue 'bases;
+            }
+        }
+        return Primality::Composite;
+    }
+    if deterministic {
+        Primality::Prime
+    } else {
+        Primality::ProbablyPrime
+    }
+}
+
 fn field_element(value: u128) -> Json {
     text(format!("0x{value:x}"))
 }
@@ -556,6 +651,11 @@ pub fn check_n83(
     if local_prime_check == Some(false) {
         return Err("Pinned subgroup order failed deterministic primality checking.".into());
     }
+    // The check also runs for r > u64::MAX (the pinned a=0 order is ~2.4e24).
+    let wide_prime_check = primality_u128(r);
+    if wide_prime_check == Primality::Composite {
+        return Err("Pinned subgroup order failed Miller-Rabin primality checking.".into());
+    }
     let image_p = curve.encode(p)?;
     let image_q = curve.encode(q)?;
     if curve.image_multiply(r, image_p)? != [0, 0, 0, 1] {
@@ -651,6 +751,11 @@ pub fn check_n83(
             ("primality_receipt_source", text(PRIME_RECEIPT_SOURCE)),
             ("primality_proof_receipt_reused", boolean(true)),
             ("primality_deterministic_u64_verified_in_run", local_prime_check.map(boolean).unwrap_or(Json::Null)),
+            ("primality_miller_rabin_u128_in_run", text(match wide_prime_check {
+                Primality::Prime => "deterministic: prime (13 prime bases, below 3.317e24)",
+                Primality::ProbablyPrime => "probabilistic: 25 fixed prime bases, above the 3.317e24 deterministic bound",
+                Primality::Composite => unreachable!("composite orders are rejected above"),
+            })),
         ])),
         ("quadric_family", object([
             ("Q1", text("W*Z+X^2")),

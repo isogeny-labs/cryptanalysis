@@ -127,6 +127,18 @@ pub enum WeakCurveError {
     VerificationFailed,
     /// [`attack`] found no applicable, affordable method.
     NoApplicableAttack(String),
+    /// The BSGS bound needs a baby-step table larger than
+    /// [`dlp::BSGS_MAX_TABLE_ENTRIES`] (a configuration problem, not
+    /// evidence that `Q` lies outside the subgroup).
+    BsgsBoundTooLarge {
+        /// Bits of the prime order BSGS was asked to search.
+        order_bits: u64,
+        /// Entries the table would need (`⌊√bound⌋ + 1`), as a string
+        /// because it can exceed `u64`.
+        table_entries: String,
+        /// The cap.
+        max_entries: u64,
+    },
 }
 
 impl fmt::Display for WeakCurveError {
@@ -140,6 +152,15 @@ impl fmt::Display for WeakCurveError {
                 write!(f, "recovered scalar failed verification")
             }
             WeakCurveError::NoApplicableAttack(s) => write!(f, "no applicable attack: {s}"),
+            WeakCurveError::BsgsBoundTooLarge {
+                order_bits,
+                table_entries,
+                max_entries,
+            } => write!(
+                f,
+                "BSGS bound too large: a {order_bits}-bit order needs {table_entries} baby steps, \
+                 above the {max_entries}-entry table cap; lower bsgs_max_bits so Pollard rho runs"
+            ),
         }
     }
 }

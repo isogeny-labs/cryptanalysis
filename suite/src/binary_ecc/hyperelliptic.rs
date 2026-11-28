@@ -85,7 +85,7 @@
 use super::f2m::{F2mElement, IrreduciblePoly};
 use super::poly_f2m::F2mPoly;
 use num_bigint::BigUint;
-use num_traits::{One, Zero};
+use num_traits::{One, ToPrimitive, Zero};
 use std::fmt;
 
 /// Largest binary extension degree accepted by the checked constructor.
@@ -1150,6 +1150,37 @@ fn hcdlp_splitmix64(state: &mut u64) -> u64 {
     z ^ (z >> 31)
 }
 
+/// A walk-start scalar below `order`, deterministic in the splitmix state.
+///
+/// An order that fits a word keeps the single draw `splitmix % order`
+/// (unchanged, so seeded runs replay). A wider order draws
+/// `⌈bits/64⌉ + 1` words and reduces, so the start covers the whole group
+/// with bias below `2^-64`; the old single 64-bit draw never exceeded
+/// `2^64`.
+fn hcdlp_start_scalar(state: &mut u64, order: &BigUint) -> BigUint {
+    if order.bits() <= 64 {
+        return BigUint::from(hcdlp_splitmix64(state)) % order;
+    }
+    let words = order.bits().div_ceil(64) + 1;
+    let digits: Vec<u64> = (0..words).map(|_| hcdlp_splitmix64(state)).collect();
+    BigUint::from_slice(
+        &digits
+            .iter()
+            .flat_map(|w| [*w as u32, (*w >> 32) as u32])
+            .collect::<Vec<u32>>(),
+    ) % order
+}
+
+/// Step budget of [`hcdlp_pollard_rho`]: `max(2^24, 16·√n)` (saturating).
+/// The old fixed `2^24` gave up on every order above about `2^45`, where
+/// the expected walk is `~√(πn/2)` steps.
+pub fn hcdlp_rho_default_max_steps(order: &BigUint) -> u64 {
+    (order.sqrt() * 16u32)
+        .to_u64()
+        .unwrap_or(u64::MAX)
+        .max(1 << 24)
+}
+
 fn divisor_hash(divisor: &MumfordDivisor) -> u64 {
     let (u, v) = divisor_key(divisor);
     let mut hash = 0xcbf2_9ce4_8422_2325u64;
@@ -1227,8 +1258,8 @@ pub fn hcdlp_pollard_rho_counted(
     let mut rng = seed;
     for restart in 0..max_restarts {
         out.restarts = restart;
-        let a0 = BigUint::from(hcdlp_splitmix64(&mut rng)) % order;
-        let b0 = BigUint::from(hcdlp_splitmix64(&mut rng)) % order;
+        let a0 = hcdlp_start_scalar(&mut rng, order);
+        let b0 = hcdlp_start_scalar(&mut rng, order);
         let ap = counted_scalar_mul(p, &a0, curve, &mut out.setup)?;
         let bq = counted_scalar_mul(q, &b0, curve, &mut out.setup)?;
         let start = ap.try_add_on_valid_curve(&bq, curve)?;
@@ -1345,12 +1376,25 @@ fn divisor_key(d: &MumfordDivisor) -> (Vec<u8>, Vec<u8>) {
 /// `n` (or a multiple of it) to extract the discrete log.
 ///
 /// Same caveat as the elliptic version: `O(√n)` time, exponential
-/// in the genus.
+/// in the genus. The walk runs at most
+/// [`hcdlp_rho_default_max_steps`]`(n)` = `max(2^24, 16·√n)` steps; see
+/// [`hcdlp_pollard_rho_with_max_steps`] to set it.
 pub fn hcdlp_pollard_rho(
     p: &MumfordDivisor,
     q: &MumfordDivisor,
     order: &BigUint,
     curve: &HyperellipticCurve,
+) -> Option<BigUint> {
+    hcdlp_pollard_rho_with_max_steps(p, q, order, curve, hcdlp_rho_default_max_steps(order))
+}
+
+/// [`hcdlp_pollard_rho`] with an explicit step budget.
+pub fn hcdlp_pollard_rho_with_max_steps(
+    p: &MumfordDivisor,
+    q: &MumfordDivisor,
+    order: &BigUint,
+    curve: &HyperellipticCurve,
+    max_steps: u64,
 ) -> Option<BigUint> {
     use crate::utils::mod_inverse;
     // Three-partition walker.
@@ -1375,7 +1419,6 @@ pub fn hcdlp_pollard_rho(
     let mut xt = x.clone();
     let mut at = a.clone();
     let mut bt = b.clone();
-    let max_steps: u64 = 1 << 24;
     for _ in 0..max_steps {
         let (nx, na, nb) = step(&x, &a, &b);
         x = nx;
@@ -1410,6 +1453,50 @@ mod tests {
     use super::*;
     use crate::binary_ecc::f2m::IrreduciblePoly;
     use std::collections::HashSet;
+
+    /// The rho budget grows with the order above 2^40 (the fixed 2^24
+    /// gave up above ~2^45) and is unchanged below.
+    #[test]
+    fn rho_budget_scales_with_order() {
+        assert_eq!(
+            hcdlp_rho_default_max_steps(&BigUint::from(1_000_003u32)),
+            1 << 24
+        );
+        assert_eq!(
+            hcdlp_rho_default_max_steps(&(BigUint::one() << 40u32)),
+            1 << 24
+        );
+        assert_eq!(
+            hcdlp_rho_default_max_steps(&(BigUint::one() << 60u32)),
+            1 << 34
+        );
+        assert_eq!(
+            hcdlp_rho_default_max_steps(&(BigUint::one() << 200u32)),
+            u64::MAX
+        );
+    }
+
+    /// Walk starts for an order above 2^64 cover the whole range; a
+    /// word-sized order keeps the old single draw.
+    #[test]
+    fn rho_start_scalars_cover_wide_orders() {
+        let order = (BigUint::one() << 130u32) + BigUint::from(27u32);
+        let mut st = 42u64;
+        let draws: Vec<BigUint> = (0..8)
+            .map(|_| hcdlp_start_scalar(&mut st, &order))
+            .collect();
+        assert!(draws.iter().all(|d| d < &order));
+        assert!(
+            draws.iter().any(|d| d.bits() > 64),
+            "starts must exceed 2^64"
+        );
+        let small = BigUint::from((1u64 << 55) + 13);
+        let (mut a, mut b) = (7u64, 7u64);
+        assert_eq!(
+            hcdlp_start_scalar(&mut a, &small),
+            BigUint::from(hcdlp_splitmix64(&mut b)) % &small
+        );
+    }
 
     fn f8(value: u32) -> F2mElement {
         F2mElement::from_biguint(&BigUint::from(value), 3)

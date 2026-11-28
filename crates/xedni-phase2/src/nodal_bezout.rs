@@ -952,6 +952,14 @@ fn build_mod_q_quintic_jacobian_points(
     Some((f_quintic, diffs))
 }
 
+/// Upper bound `(ceil(sqrt q) + 1)^4 + 16` on `#Jac(C)(F_q)` for genus 2, computed in exact
+/// integer arithmetic and saturating at `u64::MAX` (the f64 form saturated and then wrapped).
+fn hasse_weil_cap_genus2(q: u64) -> u64 {
+    let r = crate::field_ec::isqrt_ceil_u128(q as u128) + 1;
+    let cap = r.saturating_pow(4).saturating_add(16);
+    u64::try_from(cap).unwrap_or(u64::MAX)
+}
+
 fn jacobian_relation_kernel_mod_q(
     f_quintic: &[u64],
     diffs: &[MumfordDivisor],
@@ -960,7 +968,7 @@ fn jacobian_relation_kernel_mod_q(
 ) -> Option<Vec<Vec<BigInt>>> {
     let r = diffs.len();
     // Hasse-Weil bound on #Jac(C)(F_q) for g = 2: (sqrt(q) + 1)^4.
-    let hw_cap = (((q as f64).sqrt() + 1.0).powi(4).ceil() as u64) + 16;
+    let hw_cap = hasse_weil_cap_genus2(q);
     let id = MumfordDivisor::identity();
     let mut subgroup: Vec<MumfordDivisor> = vec![id.clone()];
     let mut coords_of: HashMap<MumfordDivisor, Vec<BigInt>> = HashMap::new();
@@ -1486,6 +1494,16 @@ pub fn run_escape_7b_suite(seed: u64) -> Result<Escape7bSummary, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn hasse_weil_cap_does_not_wrap_for_large_q() {
+        assert_eq!(hasse_weil_cap_genus2(1021), 33u64.pow(4) + 16);
+        for q in [1u64 << 40, (1u64 << 53) + 5, 1u64 << 62, u64::MAX] {
+            let cap = hasse_weil_cap_genus2(q);
+            assert!(cap >= 1 << 60, "q={q} cap={cap}");
+        }
+        assert_eq!(hasse_weil_cap_genus2(u64::MAX), u64::MAX);
+    }
 
     #[test]
     fn off_base_nodes_force_zero_mod_p_while_on_base_1nodal_quartic_is_irreducible_bezout() {

@@ -101,7 +101,8 @@ pub fn rho_on_curve(curve: &SmallCurve, max_iters: u64, seed: u64) -> (Option<Rh
     use crate::cryptanalysis::bsgs_fast::{FastCurve, FastPoint};
 
     let cm = cm_discriminant(curve);
-    let n = cm.order as u64;
+    // #E < 2^63 + 2^33 (frobenius_trace refuses p >= 2^63), so it fits u64.
+    let n = u64::try_from(cm.order).unwrap_or(0);
     if n < 4 {
         return (None, 0);
     }
@@ -1198,7 +1199,7 @@ fn solve_mod_n(
 /// detector and runs a single rho attempt with `rho_max_iters`.
 pub fn run_attack_suite(curve: &SmallCurve, rho_max_iters: u64, seed: u64) -> AttackReport {
     let cm = cm_discriminant(curve);
-    let n = cm.order.unsigned_abs();
+    let n = u64::try_from(cm.order.unsigned_abs()).unwrap_or(0);
     let emb = embedding_degree(curve.p, n, 32);
     let mov = emb.map(|k| k <= 6).unwrap_or(false);
     let smart = cm.anomalous;

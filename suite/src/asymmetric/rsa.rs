@@ -268,9 +268,14 @@ fn miller_rabin_witness(n: &BigUint, d: &BigUint, s: u64, a: &BigUint) -> bool {
     false
 }
 
+/// psi_13: the smallest strong pseudoprime to all of the first 13 prime bases
+/// (2..=41). Below it the 13 fixed bases give a deterministic answer.
+const MR_DETERMINISTIC_BOUND_PSI13: u128 = 3_317_044_064_679_887_385_961_981;
+
 /// Miller-Rabin primality test.
 ///
-/// Uses deterministic bases for small candidates and OS-random witnesses for
+/// Uses deterministic bases (2..=41) for candidates below psi_13 =
+/// 3317044064679887385961981 (about 2^81.46) and OS-random witnesses for
 /// larger candidates. The large-candidate path is probabilistic: 32 independent
 /// witnesses give a false-prime probability below 2^-64 for odd composites.
 pub fn is_prime(n: &BigUint) -> bool {
@@ -299,7 +304,12 @@ pub fn is_prime(n: &BigUint) -> bool {
     let n_minus_1 = n - BigUint::one();
     let (s, d) = factor_out_twos(&n_minus_1);
 
-    let fixed_witnesses: Vec<BigUint> = [2u64, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37]
+    // The first 13 prime bases 2..=41 make Miller-Rabin deterministic for
+    // every n < psi_13 = 3_317_044_064_679_887_385_961_981 (Sorenson-Webster
+    // 2015). The first 12 bases (2..=37) are only deterministic below
+    // psi_12 = 318_665_857_834_031_151_167_461, itself a composite that passes
+    // all 12, so a bit-length cut (e.g. "<= 128 bits") is not a valid bound.
+    let fixed_witnesses: Vec<BigUint> = [2u64, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41]
         .iter()
         .map(|&w| BigUint::from(w))
         .collect();
@@ -313,7 +323,7 @@ pub fn is_prime(n: &BigUint) -> bool {
         return false;
     }
 
-    if n.bits() <= 128 {
+    if n < &BigUint::from(MR_DETERMINISTIC_BOUND_PSI13) {
         return true;
     }
 
@@ -672,6 +682,33 @@ pub fn rsa_decrypt(ciphertext: &BigUint, key: &RsaPrivateKey) -> Result<Vec<u8>,
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// psi_12 passes the 12 bases 2..=37 and psi_13 passes the 13 bases
+    /// 2..=41; both are composite. The old code returned `true` for any
+    /// <= 128-bit n that passed the 12 bases.
+    #[test]
+    fn is_prime_rejects_strong_pseudoprimes_psi12_psi13() {
+        let psi12 = BigUint::from(318_665_857_834_031_151_167_461u128);
+        let psi13 = BigUint::from(3_317_044_064_679_887_385_961_981u128);
+        assert_eq!(
+            psi12,
+            BigUint::from(399_165_290_221u64) * BigUint::from(798_330_580_441u64)
+        );
+        assert_eq!(
+            psi13,
+            BigUint::from(1_287_836_182_261u64) * BigUint::from(2_575_672_364_521u64)
+        );
+        assert!(!is_prime(&psi12), "psi_12 is composite");
+        assert!(!is_prime(&psi13), "psi_13 is composite");
+        // A 100-bit prime and a 127-bit Mersenne prime stay prime.
+        let p100 = (BigUint::one() << 100u32) - BigUint::from(15u32);
+        assert!(is_prime(&p100), "2^100 - 15 is prime");
+        let m127 = (BigUint::one() << 127u32) - BigUint::one();
+        assert!(is_prime(&m127), "2^127 - 1 is prime");
+        // A composite of two ~50-bit primes above 2^100 is rejected.
+        let c = BigUint::from(1_125_899_906_842_597u64) * BigUint::from(1_125_899_906_842_679u64);
+        assert!(!is_prime(&c));
+    }
 
     #[test]
     fn primality_small() {

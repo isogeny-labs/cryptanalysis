@@ -70,7 +70,8 @@ pub use cover_transfer::{
 pub use curve::{BinaryCurve, BinaryPoint};
 pub use f2m::{F2mElement, IrreduciblePoly};
 pub use hyperelliptic::{
-    hcdlp_bsgs, hcdlp_bsgs_counted, hcdlp_pollard_rho, hcdlp_pollard_rho_counted, HcdlpGroupOps,
+    hcdlp_bsgs, hcdlp_bsgs_counted, hcdlp_pollard_rho, hcdlp_pollard_rho_counted,
+    hcdlp_pollard_rho_with_max_steps, hcdlp_rho_default_max_steps, HcdlpGroupOps,
     HcdlpSolveOutcome, HyperellipticCurve, HyperellipticError, MumfordDivisor,
     MAX_CHECKED_FIELD_DEGREE,
 };

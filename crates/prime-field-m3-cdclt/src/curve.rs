@@ -168,7 +168,12 @@ impl CurveFp {
     }
 
     /// Double-and-add scalar multiplication `[k] pt` using Jacobian coordinates for speed.
-    pub fn scalar_mul(self, pt: PointFp, mut k: u64) -> PointFp {
+    pub fn scalar_mul(self, pt: PointFp, k: u64) -> PointFp {
+        self.scalar_mul_wide(pt, k as u128)
+    }
+
+    /// `[k] pt` for a 128-bit scalar (used when `p + 1 + 2 sqrt(p)` exceeds `u64::MAX`).
+    fn scalar_mul_wide(self, pt: PointFp, mut k: u128) -> PointFp {
         if pt.infinity || k == 0 {
             return PointFp::identity();
         }
@@ -283,8 +288,9 @@ impl CurveFp {
         let pt = pt?;
 
         // Hasse interval [p + 1 - B, p + 1 + B] with B = floor(2 * sqrt(p)).
-        let bound = (2.0 * (self.p as f64).sqrt()).ceil() as u64 + 2;
-        let m = ((2 * bound) as f64).sqrt().ceil() as u64 + 1;
+        // Exact integer bound (the f64 estimate is inexact above 2^52); u128 so nothing wraps near 2^64.
+        let bound: u128 = 2 * (isqrt_u128(self.p as u128) + 1) + 2;
+        let m: u64 = (isqrt_u128(2 * bound) + 2) as u64;
         let dom = MontDomain::new(self.p);
         let a_m = dom.to_mont(self.a);
 
@@ -319,8 +325,8 @@ impl CurveFp {
                 }
             }
         };
-        let top = self.p + 1 + bound;
-        let top_pt = self.scalar_mul(pt, top);
+        let top: u128 = self.p as u128 + 1 + bound;
+        let top_pt = self.scalar_mul_wide(pt, top);
         let mut giant = if top_pt.infinity {
             JacPoint::identity()
         } else {
@@ -331,7 +337,7 @@ impl CurveFp {
                 infinity: false,
             }
         };
-        let max_i = (2 * bound) / m + 2;
+        let max_i = (2 * bound) / (m as u128) + 2;
         let mut candidates = Vec::new();
         for i in 0..=max_i {
             let aff = jac_to_affine(dom, giant, &mut ops);
@@ -339,13 +345,19 @@ impl CurveFp {
             if let Some(entries) = baby.get(&key) {
                 for &(by, j) in entries {
                     if aff.infinity || aff.y == by {
-                        let im_plus_j = i * m + j;
+                        let im_plus_j = i * (m as u128) + j as u128;
                         if top >= im_plus_j {
                             let n = top - im_plus_j;
-                            let low = (self.p + 1).saturating_sub(bound);
-                            let high = self.p + 1 + bound;
-                            if n >= low && n <= high && (n & 1) == 1 && is_prime_u64(n) {
-                                candidates.push(n);
+                            let low = (self.p as u128 + 1).saturating_sub(bound);
+                            let high = self.p as u128 + 1 + bound;
+                            // An order above u64::MAX cannot be represented in the return type.
+                            if n >= low
+                                && n <= high
+                                && n <= u64::MAX as u128
+                                && (n & 1) == 1
+                                && is_prime_u64(n as u64)
+                            {
+                                candidates.push(n as u64);
                             }
                         }
                     }
@@ -1092,6 +1104,24 @@ impl PreparedTwoWindow {
     }
 }
 
+/// Largest rung `s` for which the prime bound `27 * 2^(3s)` fits in `u64`.
+pub const MAX_RUNG_S: u32 = 19;
+
+/// Floor integer square root of a `u128` (exact; no floating point).
+fn isqrt_u128(n: u128) -> u128 {
+    if n < 2 {
+        return n;
+    }
+    let mut x = 1u128 << ((128 - n.leading_zeros()).div_ceil(2));
+    loop {
+        let y = (x + n / x) / 2;
+        if y >= x {
+            return x;
+        }
+        x = y;
+    }
+}
+
 /// Deterministically generate a curve `E/F_p` of odd prime whole-group order `r` and three
 /// disjoint rational factor-base windows of cardinality `2^s` each at rung `s`, with prime
 /// `p >= 27 * 2^{3s}` so total factor base `3 * 2^s ≈ p^{1/3}` (matching the `m = 3` IC density
@@ -1100,7 +1130,11 @@ pub fn generate_rung_curve_and_windows(
     protocol_seed_prefix: &str,
     rung_s: u32,
 ) -> (CurveFp, u64, [Vec<u64>; 3]) {
-    assert!((2..=20).contains(&rung_s));
+    // 27 * 2^(3s) must fit u64: s = 19 gives 27 * 2^57 < 2^62, s = 20 gives 27 * 2^60 > 2^64.
+    assert!(
+        (2..=MAX_RUNG_S).contains(&rung_s),
+        "rung_s must be in 2..={MAX_RUNG_S} (27 * 2^(3s) must fit u64)"
+    );
     let w_size = 1usize << rung_s;
     let min_p = 27u64
         .checked_mul(1u64 << (3 * rung_s))
@@ -1252,5 +1286,90 @@ pub fn generate_instance_for_class(
                 };
             }
         },
+    }
+}
+
+#[cfg(test)]
+mod large_prime_tests {
+    use super::*;
+    use crate::field::MontDomain;
+
+    /// Largest prime below 2^64 and below 2^63.
+    const P64: u64 = u64::MAX - 58;
+    const P63: u64 = (1u64 << 63) - 25;
+
+    #[test]
+    fn montgomery_full_u64_range() {
+        for p in [P63, P64, (1u64 << 62) + 135] {
+            assert!(is_prime_u64(p), "{p}");
+            let dom = MontDomain::new(p);
+            let mut ops = FpOps::default();
+            for (x, y) in [(p - 1, p - 1), (p - 2, 12345), (1, p - 1), (p / 2, p / 3)] {
+                let got = dom.from_mont(dom.mul(dom.to_mont(x), dom.to_mont(y), &mut ops));
+                assert_eq!(got as u128, (x as u128 * y as u128) % p as u128, "p={p}");
+                assert_eq!(dom.from_mont(dom.to_mont(x)), x);
+            }
+        }
+    }
+
+    #[test]
+    fn isqrt_exact_above_2_53() {
+        for n in [
+            u64::MAX as u128,
+            (1u128 << 106) - 1,
+            (1u128 << 106),
+            1u128 << 127,
+        ] {
+            let r = isqrt_u128(n);
+            assert!(r * r <= n && (r + 1) * (r + 1) > n);
+        }
+    }
+
+    fn order_roundtrip(p: u64) {
+        let mut found = None;
+        for a in 1..4000u64 {
+            let c = CurveFp { p, a, b: 7 };
+            if !c.is_nonsingular() {
+                continue;
+            }
+            if let Some(r) = c.prime_whole_group_order() {
+                found = Some((c, r));
+                break;
+            }
+        }
+        let (c, r) = found.expect("a curve of odd prime order in a:1..4000");
+        let mut ops = FpOps::default();
+        let x = (2..p)
+            .find(|&x| {
+                c.rhs(x, &mut ops) != 0
+                    && sqrt_mod_canonical(c.rhs(x, &mut ops), p, &mut ops).is_some()
+            })
+            .unwrap();
+        let y = sqrt_mod_canonical(c.rhs(x, &mut ops), p, &mut ops).unwrap();
+        let pt = PointFp::affine(x, y);
+        assert!(c.scalar_mul(pt, r).infinity);
+        assert!(!c.scalar_mul(pt, r - 1).infinity);
+        let inst_ok = validate_instance_prime_only(&c, r);
+        assert!(inst_ok);
+    }
+
+    fn validate_instance_prime_only(c: &CurveFp, r: u64) -> bool {
+        is_prime_u64(c.p) && c.is_nonsingular() && c.prime_whole_group_order() == Some(r)
+    }
+
+    #[test]
+    fn group_order_p_above_2_62() {
+        order_roundtrip(P63);
+    }
+
+    #[test]
+    fn group_order_p_near_2_64() {
+        order_roundtrip(P64);
+    }
+
+    #[test]
+    #[should_panic(expected = "rung_s must be in")]
+    fn rung_20_refused_explicitly() {
+        let _ = generate_rung_curve_and_windows("t", 20);
     }
 }

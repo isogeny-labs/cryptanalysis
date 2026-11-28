@@ -51,16 +51,17 @@ use crate::cryptanalysis::koblitz_factor_base_search::{
     search, Candidate, FactorBaseSpec, Family, SearchOptions,
 };
 use crate::cryptanalysis::koblitz_index_calculus::{
-    koblitz_signed_frobenius_rho_with_progress, point_key, points_with_x, CollectedRelation,
-    ColumnCoverage, DecompositionStrategy, FactorBaseLogSolver, FactorBaseLogTable,
-    FactorBaseSelectionCost, FrobeniusFactorBase, IndividualLogSolver, KoblitzCurve,
-    KoblitzSignedRhoOptions, PairSumTable, ProbeBudget, RelationCollector, RelationWorkUnit,
+    koblitz_signed_frobenius_rho_with_progress, point_key, points_with_x, random_scalar_below,
+    CollectedRelation, ColumnCoverage, DecompositionStrategy, FactorBaseLogSolver,
+    FactorBaseLogTable, FactorBaseSelectionCost, FrobeniusFactorBase, IndividualLogSolver,
+    KoblitzCurve, KoblitzSignedRhoOptions, PairSumTable, ProbeBudget, RelationCollector,
+    RelationWorkUnit,
 };
 use crate::cryptanalysis::koblitz_sparse_la::SparseSolveOptions;
 use clap::{Args, ValueEnum};
 use num_bigint::BigUint;
 use num_traits::Zero;
-use rand::{rngs::StdRng, Rng, SeedableRng};
+use rand::{rngs::StdRng, SeedableRng};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::{
@@ -698,7 +699,7 @@ fn known_scalar(c: &KoblitzCurve, t: &TargetSpec) -> Result<BigUint, String> {
             .random_seed
             .expect("validated known-scalar target has known_log or random_seed");
         let mut rng = StdRng::seed_from_u64(seed ^ 0x534f_4c56_4552_5447);
-        BigUint::from(rng.gen_range(1..c.subgroup_order.to_u64_digits()[0]))
+        random_scalar_below(&mut rng, &c.subgroup_order)
     };
     if k.is_zero_() || k >= c.subgroup_order {
         return Err(format!(

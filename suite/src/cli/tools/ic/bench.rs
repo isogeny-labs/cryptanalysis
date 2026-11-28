@@ -1336,15 +1336,11 @@ pub fn run(args: BenchArgs, json_only: bool) -> Result<Value, String> {
 
     let (regime, degree) = instance_spec;
     let instance = match regime.as_str() {
-        "prime" => Instance::Prime(
-            roster_prime_instance(degree)
-                .or_else(|| {
-                    (8..=32)
-                        .contains(&degree)
-                        .then(|| find_prime_order_curve(degree, args.seed))
-                })
-                .ok_or_else(|| format!("no prime instance at {degree} bits"))?,
-        ),
+        "prime" => Instance::Prime(match roster_prime_instance(degree) {
+            Some(inst) => inst,
+            None => find_prime_order_curve(degree, args.seed)
+                .map_err(|e| format!("no prime instance at {degree} bits: {e}"))?,
+        }),
         "char2" => Instance::Binary(Box::new(
             random_binary_instance(degree, args.seed, args.max_cofactor).ok_or_else(|| {
                 format!(

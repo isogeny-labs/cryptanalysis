@@ -446,25 +446,31 @@ pub struct Instance3 {
     pub d: u64,
 }
 
+/// Exact `⌊√n⌋` (the f64-seeded loop overflowed `(r + 1)²` near
+/// `u128::MAX`).
 fn isqrt(n: u128) -> u128 {
-    let mut r = (n as f64).sqrt() as u128;
-    while r * r > n {
-        r -= 1;
-    }
-    while (r + 1) * (r + 1) <= n {
-        r += 1;
-    }
-    r
+    n.isqrt()
 }
+
+/// Largest `p` for which `#E(F_{p³}) <= p³ + 1 + 2p^{3/2}` fits the
+/// `u64` order of [`Curve3`] (`p³ < 2^64` needs `p < 2^21.33`).
+/// [`generate_instance3`] stays at `p < 2^20`.
+pub const CUBIC_MAX_P: u64 = 2_642_245;
 
 /// Order of `pt` if it is the unique multiple in the Hasse interval
 /// `[p³ + 1 − 2p^{3/2}, p³ + 1 + 2p^{3/2}]` (BSGS, `O(p^{3/4})`).
+///
+/// `None` when the interval leaves `u64` (`p > CUBIC_MAX_P`): the old
+/// code computed `p³` in `u128` (overflow for `p > 2^42.6`) and then
+/// truncated the order to `u64` (wrong for `p > 2^21.3`).
 fn unique_hasse_multiple3(curve: &Curve3, pt: &Pt3) -> Option<u64> {
     let p = curve.field.p as u128;
-    let n0 = p * p * p + 1;
-    let two_sqrt = 2 * isqrt(p * p * p) + 2;
+    let p3 = p.checked_mul(p)?.checked_mul(p)?;
+    let n0 = p3 + 1;
+    let two_sqrt = 2 * isqrt(p3) + 2;
     let lo = n0 - two_sqrt;
     let hi = n0 + two_sqrt;
+    u64::try_from(hi).ok()?;
     let width = hi - lo + 1;
     let s = isqrt(width) + 1;
     let mut baby: HashMap<Pt3, u128> = HashMap::with_capacity(s as usize);
@@ -496,7 +502,11 @@ fn unique_hasse_multiple3(curve: &Curve3, pt: &Pt3) -> Option<u64> {
 /// Random prime-order curve over `F_{p³}` for the given prime `p ≡ 1
 /// (mod 3)`, `p < 2^20`, with a random known-answer target.
 pub fn generate_instance3(p: u64, seed: u64) -> Instance3 {
-    assert!(p % 3 == 1 && is_prime_u64(p) && p < (1 << 20));
+    assert!(
+        p % 3 == 1 && is_prime_u64(p) && p < (1 << 20),
+        "generate_instance3: need a prime p ≡ 1 (mod 3) below 2^20 (the BSGS order \
+         count is O(p^(3/4)) and the order p³ + O(p^1.5) must fit u64), got {p}"
+    );
     let mut rng = StdRng::seed_from_u64(seed ^ 0x6A0D_4B17);
     loop {
         let field = Fp3::new(p, &mut rng);
@@ -4280,6 +4290,37 @@ pub fn run_rho3(inst: &Instance3, seed: u64) -> RhoReport3 {
 
 #[cfg(test)]
 mod tests {
+    /// The cubic Hasse window is refused once the order leaves u64,
+    /// instead of overflowing `p³` or truncating the order.
+    #[test]
+    fn unique_hasse_multiple3_refuses_orders_beyond_u64() {
+        use super::*;
+        let p3 = (super::CUBIC_MAX_P as u128).pow(3);
+        assert!(p3 + 2 * p3.isqrt() + 3 <= u64::MAX as u128);
+        let next = super::CUBIC_MAX_P as u128 + 1;
+        assert!(next.pow(3) > u64::MAX as u128);
+        assert_eq!(super::isqrt(u128::MAX), u64::MAX as u128);
+        for p in [4_194_319u64, (1u64 << 43) + 75] {
+            let curve = Curve3 {
+                field: Fp3 {
+                    p,
+                    c: 2,
+                    muls: Cell::new(0),
+                },
+                a: Fp3::ZERO,
+                b: Fp3::ZERO,
+                n: 0,
+                g: Pt3::INFINITY,
+                ops: Cell::new(0),
+            };
+            assert_eq!(
+                unique_hasse_multiple3(&curve, &Pt3::INFINITY),
+                None,
+                "p = {p}"
+            );
+        }
+    }
+
     /// The plain echelon finds the pivot columns of a rank-deficient
     /// matrix and counts its multiplications.
     #[test]

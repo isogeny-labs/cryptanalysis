@@ -157,27 +157,33 @@ pub fn ec_orbit(a: i64, _b: i64, p: u64, g: (u64, u64), n: usize) -> Vec<(u64, u
     orbit
 }
 
+/// Affine addition with residues in `[0, p)`, `p < 2^64`.
+///
+/// Products are taken in `u128` (both factors are below `2^64`): the old
+/// signed form overflowed `i128` in `3·x²` for `p > 2^62.4` and in every
+/// product of two residues for `p > 2^63.5`.
 fn ec_add_signed(x1: i128, y1: i128, x2: i128, y2: i128, a: i128, p: i128) -> Option<(i128, i128)> {
-    let x1m = ((x1 % p) + p) % p;
-    let x2m = ((x2 % p) + p) % p;
-    let y1m = ((y1 % p) + p) % p;
-    let y2m = ((y2 % p) + p) % p;
+    let pu = p as u128;
+    let red = |v: i128| v.rem_euclid(p) as u128;
+    let mul = |u: u128, v: u128| (u * v) % pu;
+    let add = |u: u128, v: u128| (u + v) % pu;
+    let sub = |u: u128, v: u128| (u + pu - v) % pu;
+    let (x1m, x2m, y1m, y2m, am) = (red(x1), red(x2), red(y1), red(y2), red(a));
     let lambda = if x1m == x2m {
-        if (y1m + y2m) % p == 0 {
+        if add(y1m, y2m) == 0 {
             return None;
         }
-        let two_y_inv = mod_inv(2 * y1m % p, p)?;
-        (((3 * x1m * x1m + a) % p + p) * two_y_inv) % p
+        let two_y_inv = mod_inv(mul(2, y1m) as i128, p)? as u128;
+        mul(add(mul(3, mul(x1m, x1m)), am), two_y_inv)
     } else {
-        let dx = ((x2m - x1m) % p + p) % p;
-        let dy = ((y2m - y1m) % p + p) % p;
-        let dx_inv = mod_inv(dx, p)?;
-        (dy * dx_inv) % p
+        let dx = sub(x2m, x1m);
+        let dy = sub(y2m, y1m);
+        let dx_inv = mod_inv(dx as i128, p)? as u128;
+        mul(dy, dx_inv)
     };
-    let lambda = ((lambda % p) + p) % p;
-    let x3 = ((lambda * lambda - x1m - x2m) % p + 3 * p) % p;
-    let y3 = ((lambda * ((x1m - x3) % p + p) - y1m) % p + p) % p;
-    Some((x3, y3))
+    let x3 = sub(sub(mul(lambda, lambda), x1m), x2m);
+    let y3 = sub(mul(lambda, sub(x1m, x3)), y1m);
+    Some((x3 as i128, y3 as i128))
 }
 
 fn mod_inv(a: i128, p: i128) -> Option<i128> {
@@ -204,6 +210,41 @@ fn mod_inv(a: i128, p: i128) -> Option<i128> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// The orbit over p = 2^64 − 59 matches BigUint point arithmetic (the
+    /// old i128 form overflowed `3·x²` and every residue product there).
+    #[test]
+    fn orbit_matches_biguint_arithmetic_near_2p64() {
+        use crate::ecc::field::FieldElement;
+        use crate::ecc::point::Point;
+        use num_bigint::BigUint;
+        let p = u64::MAX - 58;
+        let (a, g) = (3i64, (u64::MAX - 1_000, u64::MAX - 77_777));
+        let orbit = ec_orbit(a, 0, p, g, 6);
+        let pb = BigUint::from(p);
+        let fe = |v: u64| FieldElement::new(BigUint::from(v), pb.clone());
+        let a_fe = fe(a as u64);
+        let gp = Point::Affine {
+            x: fe(g.0),
+            y: fe(g.1),
+        };
+        let mut cur = gp.clone();
+        for (k, &(x, y)) in orbit.iter().enumerate() {
+            match &cur {
+                Point::Affine { x: rx, y: ry } => {
+                    assert_eq!(
+                        (BigUint::from(x), BigUint::from(y)),
+                        (rx.value.clone(), ry.value.clone()),
+                        "[{}]G",
+                        k + 1
+                    );
+                }
+                Point::Infinity => panic!("unexpected infinity"),
+            }
+            cur = cur.add(&gp, &a_fe);
+        }
+        assert_eq!(orbit.len(), 6);
+    }
 
     /// Sanity: orbit of length 1 is the generator itself.
     #[test]
