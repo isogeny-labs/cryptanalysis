@@ -1084,6 +1084,47 @@ mod tests {
         assert_eq!(report.k, BigUint::from(36u64));
         assert_eq!(curve.scalar_mul(&report.k, &d1), target);
         assert!(report.relations >= line_scan.relations.len());
+
+        let degree_one = build_factor_base(&curve, 1, &mut rng).unwrap();
+        let mut candidate = curve.identity();
+        let mut geometric_target = None;
+        for scalar in 1..577u64 {
+            candidate = curve.add(&candidate, &d1);
+            if chart
+                .direct_target_relation(&curve, &degree_one, &candidate, &mut rng)
+                .is_some()
+            {
+                continue;
+            }
+            if let Some(row) = chart.direct_target_relation(&curve, &base, &candidate, &mut rng) {
+                if row
+                    .coeffs
+                    .iter()
+                    .any(|&(index, coefficient)| coefficient != 0 && base.places[index].degree == 2)
+                {
+                    geometric_target = Some((scalar, candidate.clone(), row));
+                    break;
+                }
+            }
+        }
+        let (scalar, geometric_target, target_row) =
+            geometric_target.expect("no direct degree-two target in checked order-577 subgroup");
+        assert_eq!(target_row.beta, BigUint::from(1u32));
+        let mut geometric_seeds = line_scan.relations;
+        geometric_seeds.push(target_row);
+        let geometric_report = index_calculus_dlp_with_seed_relations(
+            &curve,
+            &base,
+            &d1,
+            &geometric_target,
+            &n,
+            &geometric_seeds,
+            &params,
+        )
+        .unwrap();
+        assert_eq!(geometric_report.k, BigUint::from(scalar));
+        assert_eq!(curve.scalar_mul(&geometric_report.k, &d1), geometric_target);
+        println!("direct degree-two genus-five target scalar={scalar}");
     }
 
     #[test]
