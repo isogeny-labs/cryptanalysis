@@ -42,7 +42,10 @@ def main(path):
         assert set(pair)=={'cpu','metal'}
         for field in ['scalar','certificate_digest','queries','relations','rank']:
             assert pair['cpu'][field]==pair['metal'][field],(key,field)
+    schemas={json.loads(row['stdout'])['schema'] for row in rows}
+    assert len(schemas)==1
+    digest_scope='complete_fields' if schemas=={'m31-metal-full-rust/v2'} else 'relations_only'
     print(json.dumps({'arms':len(rows),'pairs':len(pairs),'independent_public_group_checks':len(rows),
-                      'cross_arm_relation_digest_checks':len(pairs),'status':'pass'}))
+                      'cross_arm_digest_checks':len(pairs),'digest_scope':digest_scope,'status':'pass'}))
 
 if __name__=='__main__': main(sys.argv[1])

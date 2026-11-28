@@ -46,4 +46,26 @@ Per-target median paired wall ratios for Q0–Q4 were 1.593, 1.371, 1.419, 1.524
 
 **Audit limitation:** `full.rs` labels a digest as `certificate_digest`, but its current hash covers relation coefficients and signed terms only; it omits certificate weights and metadata. The internal Rust verifier checked each complete certificate, and the independent Python checker verified each scalar, but the panel does not establish byte-identical complete certificates across arms. The frozen protocol required exact certificate-digest agreement, so this first panel cannot by itself clear that requirement. A new frozen confirmation must include a full-certificate digest before promoting the result. The earlier Stage B and pre-orientation figures above remain historical diagnostics; the corrected full panel is the relevant performance comparison. [pcc:unverified]
 
+## Independent-seed confirmation with complete-field digest
+
+`CONFIRM2_PROTOCOL.md` froze a new seed manifest and full-certificate digest before outcomes; the code and protocol were committed at `a66361a90`. This digest covers certificate metadata, each relation and every elimination weight in insertion order. Fifteen fresh paired blocks on the same five public coordinates all completed. Each pair matched scalar, complete-field digest, query count, relation count and rank. The independent affine Python replay checked all 30 scalar answers. No arm failed, exhausted or timed out. [pcc:unverified]
+
+| Metric | CPU | Metal |
+| --- | ---: | ---: |
+| Median fresh-process wall, 15 arms each | 311.143 ms | 203.365 ms |
+| Median child user+system CPU, 15 arms each | 296.538 ms | 110.571 ms |
+| Median paired CPU/Metal wall ratio | \- | **1.526×** |
+| Median paired CPU/Metal CPU ratio | \- | **2.681×** |
+| Paired wins, wall / CPU | \- | **15/15 / 15/15** |
+
+Per-target median paired wall ratios for Q0–Q4 were 1.575, 1.530, 1.424, 1.671 and 1.409; CPU ratios were 2.712, 2.681, 2.585, 2.863 and 2.535. The wall range across CPU arms was 260.380–489.545 ms and across Metal arms 174.563–273.343 ms. All metrics use the frozen process-start accounting. The specified ≥1.15 paired median and ≥12/15 wins gates passed locally. The full raw panel and source hashes are `CONFIRM2_RAW.jsonl` and `CONFIRM2_MANIFEST.json`; independent PCC standing is pending. [pcc:unverified]
+
+## Matched rho distance
+
+The separately frozen archived C++ rho control ran on the same five public Q and three confirmation-2 seeds. All 15 arms completed and an independent Python affine replay checked each answer. Median fresh-process rho wall/child CPU were 32.117/14.289 ms. Paired Metal/rho ratios were 7.195× wall and 8.846× child CPU: the Metal improvement is within this M31 index-calculus implementation, and this generic rho control remains faster for one target. The archived binary/source hashes, input protocol and all runs are in `RHO_PROTOCOL.md`, `RHO_MANIFEST.json` and `RHO_RAW.jsonl`. [pcc:unverified]
+
+## Lean scope
+
+`MetalScreen.lean` kernel-checks that the 31-bit mask/shift one-fold reduction equals multiplication modulo `p` for all canonical field operands without 64-bit overflow; it also checks modular subtraction and, using the existing bitmap invariant, preservation of the first exact payload for the collector's `target−outer` then `target+outer` scan order. `check_lean.sh` compiled it with Lean 4.36. These are algorithmic invariants, not formalized benchmark arithmetic. The proof currently assumes the GPU point output follows the specified group operation and that the bitmap was built from the exact Rust index. It does not refine the compiled MSL, Swift FFI or Rust machine code, prove Fermat inversion in the shader, or prove an empirical speedup. Those are the remaining formal and independent-review boundaries. [pcc:unverified]
+
 Reproduce locally on Apple Metal: `swiftc -O admission.swift -o /tmp/m31-metal-admission`, run it with `195 1`, `195 8` and `195 64`; compile `verify.rs` against the current `prime_field_auxiliary_ic` rlib and compare `digest`. The repository control is `m31-fast --qx 1767503692 --qy 244402461 --seed 2911332506172719186 --columns 195 --summands 4 --method indexed --base interval --lanes 64 --chunk 16384 --max-queries 100000 --max-ms 5000 --profile`.
