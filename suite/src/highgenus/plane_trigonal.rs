@@ -7,8 +7,13 @@
 //! This module does not turn plane line sections into Jacobian relations.
 
 use rand::RngCore;
+use std::collections::BTreeMap;
+
+use num_bigint::BigUint;
+use num_traits::Zero;
 
 use super::fp::Fp;
+use super::ic::{FactorBase, IndexCalculusCurve, Relation};
 use super::kummer::{Ideal, SuperellipticCurve};
 use super::poly::Poly;
 use super::HgError;
@@ -173,12 +178,51 @@ impl TrigonalPlaneChart {
     ) -> Option<Vec<(Ideal, usize)>> {
         self.affine_line_divisor(curve, 0, c, rng)
     }
+
+    /// A homogeneous factor-base relation from two completely rational
+    /// affine lines. At genus 4, horizontal and nonhorizontal lines have
+    /// different pole orders at infinity and cannot be paired here.
+    pub fn affine_line_relation(
+        &self,
+        curve: &SuperellipticCurve,
+        factor_base: &FactorBase<Ideal>,
+        first: (u64, u64),
+        second: (u64, u64),
+        rng: &mut impl RngCore,
+    ) -> Option<Relation> {
+        let p = self.field.p();
+        if self.genus == 4 && (first.0 % p == 0) != (second.0 % p == 0) {
+            return None;
+        }
+        let a = self.affine_line_divisor(curve, first.0, first.1, rng)?;
+        let b = self.affine_line_divisor(curve, second.0, second.1, rng)?;
+        let mut coefficients = BTreeMap::<usize, i64>::new();
+        for (divisor, sign) in [(&a, 1i64), (&b, -1i64)] {
+            for (place, multiplicity) in divisor {
+                let decomposed = curve.decompose(place, 1, rng)?;
+                if decomposed.len() != 1 || decomposed[0].1 != 1 {
+                    return None;
+                }
+                let column = *factor_base.index.get(&decomposed[0].0)?;
+                *coefficients.entry(column).or_default() += sign * (*multiplicity as i64);
+            }
+        }
+        Some(Relation {
+            coeffs: coefficients
+                .into_iter()
+                .filter(|(_, coefficient)| *coefficient != 0)
+                .collect(),
+            alpha: BigUint::zero(),
+            beta: BigUint::zero(),
+        })
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use rand::{rngs::StdRng, SeedableRng};
 
+    use super::super::ic::build_factor_base;
     use super::super::JacobianGroup;
     use super::*;
 
@@ -358,9 +402,30 @@ mod tests {
                 sum(&second),
                 "genus {genus} affine line relation"
             );
+            let factor_base = build_factor_base(&curve, 1, &mut rng).unwrap();
+            let relation = chart
+                .affine_line_relation(&curve, &factor_base, (a.0, a.1), (b.0, b.1), &mut rng)
+                .unwrap();
+            assert!(relation.alpha.is_zero() && relation.beta.is_zero());
+            assert!(!relation.coeffs.is_empty());
+            let row_sum = relation
+                .coeffs
+                .iter()
+                .fold(curve.identity(), |acc, &(index, coeff)| {
+                    let term = curve.scalar_mul(
+                        &BigUint::from(coeff.unsigned_abs()),
+                        &factor_base.places[index].elem,
+                    );
+                    curve.add(&acc, &if coeff < 0 { curve.neg(&term) } else { term })
+                });
+            assert!(curve.is_identity(&row_sum));
             if genus == 5 {
                 let horizontal = chart.horizontal_divisor(&curve, 0, &mut rng).unwrap();
                 assert_eq!(sum(&first), sum(&horizontal));
+            } else {
+                assert!(chart
+                    .affine_line_relation(&curve, &factor_base, (0, 0), (a.0, a.1), &mut rng)
+                    .is_none());
             }
         }
     }
