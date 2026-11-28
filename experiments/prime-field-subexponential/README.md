@@ -215,3 +215,355 @@ The [dimension ledger](elliptic_locus_dimension.md) bounds this cover locus insi
 python3 "$fixture_dir/elliptic_locus_dimension.py" |
   diff -u "$fixture_dir/elliptic_locus_dimension.json" -
 ```
+
+
+## Paired transversal span-state census
+
+The [span-state note](paired_span_state_limit.md) tests whether partial branch assignments merge when keyed by their canonical evaluation-row span. Every balanced partial transversal is injective through twelve slots, including all 1,638 balanced subsets in three extended planted panels. In the twelve-slot panel, every ten-slot subset still has 955–987 distinct spans among 1,024 assignments. Full-rank branches collapse only at saturation, after the exponential frontier has been enumerated. This is a finite diagnostic, not a lower bound on every paired-transversal algorithm. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/paired_span_state_control.py" |
+  diff -u "$fixture_dir/paired_span_state_control.json" -
+python3 -m py_compile "$fixture_dir/paired_span_state_control.py"
+```
+
+
+## Self-adjoint interpolation-projection principal minors
+
+The [interpolation-projection note](interpolation_projection_principal_minors.md) gives a sharper curve-specific form at saturation. Relative to an invertible base signing, branch flips satisfy $M_S=(I+\operatorname{diag}(1_S)K)E$, where $K=\operatorname{diag}(c)P$, $P^2=P$, and $\operatorname{rank}P=\lfloor h/2\rfloor$. Explicit Lagrange-residue weights make both $P$ and $K$ diagonally self-adjoint. All 4,092 square assignments through $h=11$ verify $\det M_S=\det(E)\det((I+K)_{S,S})$; the deficient counts by depth are $1,1,1,1,1,3,3,7,14,22$. This is a new structured search target, not yet a subexponential algorithm. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/interpolation_projection_control.py" |
+  diff -u "$fixture_dir/interpolation_projection_control.json" -
+python3 -m py_compile "$fixture_dir/interpolation_projection_control.py"
+```
+
+
+The singular-minor condition has an exact theta-divisor interpretation. A deficient square signing reconstructs a norm cofactor of degree at most $g-1$ and a residual effective divisor completing the partial sum to the Jacobian target. All 4,092 assignments were checked: at $h=11$, 22 theta hits occur versus the mixed-model prediction $2048/101=20.28\ldots$, but only one hit uses the supplied remaining slot. Random theta probing therefore costs $\widetilde O(p)$ and is not a subexponential DLP algorithm. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/principal_minor_jacobian_equivalence.py" |
+  diff -u "$fixture_dir/principal_minor_jacobian_equivalence.json" -
+python3 -m py_compile "$fixture_dir/principal_minor_jacobian_equivalence.py"
+```
+
+
+The principal-minor pullback has Boolean degree $\lfloor h/2\rfloor$ but is not sparse or low-width in the measured panels. At $h=11$, 1,013 of 1,024 degree-allowed coefficients and 792 Walsh coefficients are nonzero, while 461 of 462 balanced cuts have maximum flattening rank 32. This rules out ordinary sparse interpolation and bounded-width tensor contraction as explanations for a speedup in these controls. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/principal_minor_spectrum_control.py" |
+  diff -u "$fixture_dir/principal_minor_spectrum_control.json" -
+python3 -m py_compile "$fixture_dir/principal_minor_spectrum_control.py"
+```
+
+
+The compressed rank-one branch updates generate the full matrix algebra rather than a commutative or bounded-block algebra. In every panel, the natural first $q=\lfloor h/2\rfloor$ updates and every balanced subset generate $M_q(\mathbf F_{101})$. At $h=11$, 378 of 462 five-update subsets have a direct outer-product basis certificate, and exact closure proves all 462 full. Simultaneous diagonalization and fixed small-block recurrences therefore do not explain a speedup in these controls. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/principal_minor_update_algebra.py" |
+  diff -u "$fixture_dir/principal_minor_update_algebra.json" -
+python3 -m py_compile "$fixture_dir/principal_minor_update_algebra.py"
+```
+
+
+The theta-hit signings show no affine-code, Hamming-cluster, or exceptional-Fourier structure in the largest control. The 22 hits at $h=11$ affinely span $\mathbf F_2^{11}$, have no one-bit edges, and have maximum Walsh magnitude 16, equal to the median of 64 matched random subsets; their pair-XOR multiplicity is also inside the random range. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/theta_solution_geometry.py" |
+  diff -u "$fixture_dir/theta_solution_geometry.json" -
+python3 -m py_compile "$fixture_dir/theta_solution_geometry.py"
+```
+
+
+Projection structure alone is insufficient: modular Subset Sum embeds in singular-principal-submatrix search even when $P$ is a symmetric idempotent of exactly half ambient rank and $K=DP$ is diagonally self-adjoint. The rank-one block gives $\det((I+K)_{S,S})=1-T^{-1}\sum_{i\in S}w_i$; identity padding attains half rank without introducing zeros. Three exhaustive controls verify every determinant. A positive solver must use the actual interpolation kernel beyond these abstract properties. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/scaled_projection_subset_sum.py" |
+  diff -u "$fixture_dir/scaled_projection_subset_sum.json" -
+python3 -m py_compile "$fixture_dir/scaled_projection_subset_sum.py"
+```
+
+
+The interpolation flip matrix is Cauchy-like: every curve panel through $h=11$ satisfies $\operatorname{rank}(XK-KX)=2$, and every principal submatrix has displacement rank at most two. This accelerates evaluation of a specified determinant but not the search: the half-rank Subset Sum gadgets have the same rank-two displacement under distinct diagonal nodes. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/interpolation_projection_displacement.py" |
+  diff -u "$fixture_dir/interpolation_projection_displacement.json" -
+python3 -m py_compile "$fixture_dir/interpolation_projection_displacement.py"
+```
+
+
+A free residual theta hit does not improve the end-to-end exponent. With factor-base size $p^\beta$ and theta-hit cost $p^\sigma$, collection costs $p^{\sigma+g-1-(g-2)\beta}$ and sparse linear algebra costs $p^{2\beta}$. Random probing ($\sigma=1$) optimizes to exponent 2; even a hypothetical polylogarithmic theta-hit oracle ($\sigma=0$) optimizes only to $2-2/g$, the current baseline. A breakthrough must force the prescribed residual slots or bypass factor-base linear algebra. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/theta_relation_exponent_ledger.py" |
+  diff -u "$fixture_dir/theta_relation_exponent_ledger.json" -
+```
+
+
+With the residual fixed, norm inversion is exactly orientation selection among split prime ideals. A flip changes the Jacobian contribution by $-2P_i$, so every orientation has the same image in $J/2J$; on an odd prime-order component the equation is ordinary subset sum after scaling by $-1/2$. All 1,016 full-panel orientations verify the identity and each panel has one target orientation. Cornacchia/Riemann--Roch reconstructs after orientation but does not choose it. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/split_prime_orientation_control.py" |
+  diff -u "$fixture_dir/split_prime_orientation_control.json" -
+python3 -m py_compile "$fixture_dir/split_prime_orientation_control.py"
+```
+
+## Split-prime additive-structure control
+
+The [additive-structure note](split_prime_additive_structure_limit.md) compares the exact fixed-residual orientation instances with uniform elements of (2J) and with doubled classes of distinct random curve points. It exhausts every subset and measures collision counts, balanced-layer buckets, and minimum signed-relation support. Every constructed panel lies inside both matched ranges. The collision-free nine-slot panel is matched by 30 of 256 doubled-point controls, so it is not evidence of an exploitable invariant. This is finite negative evidence, not an average-case hardness result. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/split_prime_additive_structure.py" |
+  diff -u "$fixture_dir/split_prime_additive_structure.json" -
+python3 -m py_compile "$fixture_dir/split_prime_additive_structure.py"
+```
+
+## Split norm Hessian algebra
+
+The [Hessian-algebra note](norm_hessian_algebra_limit.md) tests whether the convolutional quadratic norm equations admit a common eigenbasis or bounded invariant blocks. In every exact split panel with section dimension (r=2,ldots,7), their Hessians generate the full algebra (M_r(mathbf F_{101})); almost every pair is noncommuting. This rules out simultaneous diagonalization and common-block spectral inversion in the measured panels, but not a nonlinear convolutional solver or an asymptotic exponent improvement. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/norm_hessian_algebra.py" |
+  diff -u "$fixture_dir/norm_hessian_algebra.json" -
+python3 -m py_compile "$fixture_dir/norm_hessian_algebra.py"
+```
+
+## Rank-four norm Hessian displacement
+
+The [Hessian-displacement note](norm_hessian_displacement_limit.md) records a surviving positive structure. In homogeneous (B,C) coefficient coordinates, every Hessian of (wB^2-2vBC-uC^2) satisfies (operatorname{rank}(ZQ-QZ^{mathsf T})le4) for the two-block nilpotent coefficient shift. This follows from the block-Hankel form and is independent of section dimension. Exact planted panels verify ranks 0, 2, or 4 through dimension 20. The open target is a subexponential-size displacement representation and solver for the degree-(Theta(r)) Macaulay operator; the input rank bound alone is not an exponent improvement. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/norm_hessian_displacement.py" |
+  diff -u "$fixture_dir/norm_hessian_displacement.json" -
+python3 -m py_compile "$fixture_dir/norm_hessian_displacement.py"
+```
+
+## Affine Macaulay displacement boundary
+
+The [Macaulay-boundary note](macaulay_displacement_boundary_limit.md) tests whether rank-four homogeneous Hessians directly yield a compressed affine Macaulay solve. They do not: truncating multipliers at degree (D) leaves a top-layer single-shift displacement rank of at least (inom{r+D-3}{r-1}) whenever one dehomogenized equation has nonzero constant. The seven panels attain ranks 1, 2, 3, 10, 15, 56, and 84 exactly. At (D=Theta(r)) this is exponential. A positive continuation must retain a homogeneous graded recurrence or quotient the boundary implicitly; the standard truncated Toeplitz/Hankel construction does not improve the exponent. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/macaulay_displacement_boundary.py" |
+  diff -u "$fixture_dir/macaulay_displacement_boundary.json" -
+python3 -m py_compile "$fixture_dir/macaulay_displacement_boundary.py"
+```
+
+## Ramified Hensel branching limit
+
+The [ramified-lifting note](ramified_hensel_limit.md) tests the constant branch-root signature from (R^2-fB^2=-uU_0). Although (Rmod f) has at most (2^{2g+1}) geometric choices, every (Bmod f^{k-1}) determines a unique compatible lift (Rmod f^k) in the generic coprime case. Reaching the bounded global degree therefore leaves (p^{deg B+1}) candidates per first signature. All seven panels verify coprimality and the executable branching ledger. A global continued-fraction or Hilbert–90 method remains open; naive local lifting does not improve the exponent. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/ramified_hensel_branching.py" |
+  diff -u "$fixture_dir/ramified_hensel_branching.json" -
+python3 -m py_compile "$fixture_dir/ramified_hensel_branching.py"
+```
+
+## No Pell-unit infrastructure in odd degree
+
+The [imaginary-unit note](imaginary_unit_rank_limit.md) records that (y^2=f(x)) with (deg f=2g+1) has one point at infinity, so its affine coordinate ring has unit rank zero and units (mathbf F_p^	imes). Norm-one affine units are only (pm1). Consequently the split norm solutions do not form an orbit under a positive-rank Pell unit group. Nonconstant Hilbert–90 parameters require poles whose divisor choices reintroduce the split-prime orientation equation. The note also compares real even-degree models: their rank-one unit orbit changes generators of one principal ideal but cannot change its split-prime orientations, so regulator distance is not an orientation selector. This does not rule out unrelated real-model ideal algorithms. [pcc:unverified]
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/imaginary_unit_rank.py" |
+  diff -u "$fixture_dir/imaginary_unit_rank.json" -
+python3 -m py_compile "$fixture_dir/imaginary_unit_rank.py"
+```
+
+## Homogeneous norm Hilbert-function boundary
+
+The [homogeneous Hilbert note](homogeneous_norm_hilbert_limit.md) follows the
+remaining graded route after the affine Macaulay boundary blow-up. Exact
+leading-ideal ranks for split norm panels in dimensions 1 through 9 agree with
+the semi-regular Hilbert function or differ by one class. Dimension 10 has a
+10-class terminal excess, continuing the observed even-dimensional terminal
+sequence 2, 4, 8, 16, 32. It enlarges the quotient and does not lower its peak.
+The corresponding semi-regular model has exponentially large quotient length.
+This is finite evidence, not an asymptotic theorem, a complexity lower bound,
+or an exponent improvement. [pcc:unverified]
+
+This import also freezes the previously omitted producer fixture and its
+shared signed-Hankel helper, so the dependent controls replay from a clean
+checkout.
+
+```sh
+fixture_dir=experiments/prime-field-subexponential
+python3 "$fixture_dir/binary_split_norm_control.py" |
+  diff -u "$fixture_dir/binary_split_norm_control.json" -
+python3 "$fixture_dir/homogeneous_norm_hilbert.py" |
+  diff -u "$fixture_dir/homogeneous_norm_hilbert.json" -
+python3 -m py_compile \
+  "$fixture_dir/homogeneous_norm_hilbert.py" \
+  "$fixture_dir/signed_hankel_minrank.py"
+```
+
+The [norm-tail universality note](norm_hilbert_universality_limit.md) replaces
+the curve and target coefficients by independent triples. Four random triples
+in every dimension 3 through 8 over each of three primes, plus one sparse
+deterministic triple, reproduce the curve-derived profile exactly. This makes
+the observed parity tail a stable finite feature of the norm convolution, but
+it still enlarges the quotient and gives no exponent improvement.
+
+```sh
+python3 "$fixture_dir/norm_hilbert_universality.py" |
+  diff -u "$fixture_dir/norm_hilbert_universality.json" -
+python3 -m py_compile "$fixture_dir/norm_hilbert_universality.py"
+```
+
+The [socle note](norm_hilbert_socle_limit.md) computes the common annihilator
+of all variables in the deterministic norm quotient through dimension 9. The
+even controls are level of types 4, 8, and 16. The odd controls from dimension
+5 onward have lower socles of dimensions 3, 14, and 46 in addition to a
+one-dimensional terminal component, so they are not Gorenstein. This is an
+exact finite structural control, not an asymptotic resolution or an exponent
+improvement.
+
+```sh
+python3 "$fixture_dir/norm_hilbert_socle.py" |
+  diff -u "$fixture_dir/norm_hilbert_socle.json" -
+python3 -m py_compile "$fixture_dir/norm_hilbert_socle.py"
+```
+
+The [Lefschetz note](norm_hilbert_lefschetz_limit.md) tests every power of 16
+seeded random linear forms in each deterministic quotient through dimension 9.
+All 112 are weak Lefschetz and 111 are strong; one dimension-three form lies on
+the strong-Lefschetz discriminant. This gives a generic maximal-rank
+one-directional chain decomposition, but its chain count is the peak Hilbert
+coefficient and remains exponential in the model. The result is finite
+structure, not a simultaneous compression or an exponent improvement.
+
+```sh
+python3 "$fixture_dir/norm_hilbert_lefschetz.py" |
+  diff -u "$fixture_dir/norm_hilbert_lefschetz.json" -
+python3 -m py_compile "$fixture_dir/norm_hilbert_lefschetz.py"
+```
+
+The [resolution-width note](norm_hilbert_resolution_limit.md) converts each
+exact Hilbert numerator into a cancellation-resistant lower bound on the
+number of free summands in any explicit graded resolution. At dimension 10,
+one shift needs at least 7,492 summands and the total needs at least 25,028.
+The semi-regular model trends toward a scale near $4^r$. The exact controls
+rule out a small explicit resolution for the measured quotients, not a
+succinct patterned complex or an implicit elimination algorithm.
+
+```sh
+python3 "$fixture_dir/norm_hilbert_resolution_ledger.py" |
+  diff -u "$fixture_dir/norm_hilbert_resolution_ledger.json" -
+python3 -m py_compile "$fixture_dir/norm_hilbert_resolution_ledger.py"
+```
+
+The [module-width note](norm_hilbert_module_width_limit.md) tests whether the
+quotient becomes narrow when represented over a subalgebra generated by
+generic linear forms. All 105 exact nested-section profiles through dimension
+nine match iterated positive Hilbert differences. In the semi-regular model
+every fixed positive fraction of remaining directions still needs
+exponentially many module generators; subexponential width appears only after
+moving $r-o(r)$ directions into the operator algebra. This leaves simultaneous
+operator compression open and claims no exponent improvement.
+
+```sh
+python3 "$fixture_dir/norm_hilbert_module_width.py" |
+  diff -u "$fixture_dir/norm_hilbert_module_width.json" -
+python3 -m py_compile "$fixture_dir/norm_hilbert_module_width.py"
+```
+
+The [joint-operator note](norm_hilbert_joint_operator_limit.md) closes the
+explicit side of that tradeoff. For any (k) commuting linear multiplication
+operators, the coefficients of ((1-t)^kH_A(t)) lower-bound the Betti width of
+every graded free presentation over their polynomial ring. The dimension-ten
+total bound is 12,834 for nine operators and 25,028 for ten. In the
+semi-regular model, moving (r-O(\sqrt r)) directions into the operator algebra
+restores an explicit scale trending toward (4^r). A circuit or oracle for all
+differentials at once remains open.
+
+```sh
+python3 "$fixture_dir/norm_hilbert_joint_operator_ledger.py" |
+  diff -u "$fixture_dir/norm_hilbert_joint_operator_ledger.json" -
+python3 -m py_compile "$fixture_dir/norm_hilbert_joint_operator_ledger.py"
+```
+
+The [normal-form tensor note](norm_hilbert_normal_form_tensor_limit.md) tests
+the most direct circuit implementation left by the joint-operator boundary.
+At each peak graded layer it computes every balanced operator-Schmidt rank of
+the row-echelon monomial normal form. The dimension-ten ranks range from 243
+to 652 with median 583, so no variable ordering gives this fixed map a small
+middle tensor bond. The complement-independent canonical quotient map still
+has ranks 64 to 126 with median 105. This rules out a constant-bond linear
+tensor train with a global quotient output on these controls, not a nonlinear
+or distributed-output circuit.
+
+```sh
+python3 "$fixture_dir/norm_hilbert_normal_form_tensor.py" |
+  diff -u "$fixture_dir/norm_hilbert_normal_form_tensor.json" -
+python3 -m py_compile "$fixture_dir/norm_hilbert_normal_form_tensor.py"
+```
+
+The [higher-genus norm note](higher_genus_norm_hilbert_limit.md) extends the
+homogeneous controls to 120 valid-curve profile computations over prime
+fields in genera three through seven. Every aggregated panel is stable across
+samples and lies coefficientwise above the matching semi-regular model;
+structured terminal layers enlarge rather than collapse. For every fixed
+genus 2--7, the model's normalized quotient-length logarithm still trends to
+one bit per section variable, so the explicit quotient remains polynomial in
+$p$ at occupancy.
+
+```sh
+python3 "$fixture_dir/higher_genus_norm_hilbert.py" |
+  diff -u "$fixture_dir/higher_genus_norm_hilbert.json" -
+python3 -m py_compile "$fixture_dir/higher_genus_norm_hilbert.py"
+```
+
+The [higher-genus tensor note](higher_genus_norm_tensor_limit.md) measures the
+basis-invariant canonical quotient map on two valid curves per genus. At
+section dimension nine the minimum balanced rank ranges from 38 in genus
+three to 33 in genus seven, while median ranks range from 50 to 45. Extra
+fixed-genus equations improve finite constants but do not create a
+constant-bond linear tensor train with a global output.
+
+```sh
+python3 "$fixture_dir/higher_genus_norm_tensor.py" |
+  diff -u "$fixture_dir/higher_genus_norm_tensor.json" -
+python3 -m py_compile "$fixture_dir/higher_genus_norm_tensor.py"
+```
+
+The [known-log fiber note](known_log_fiber_sourcing_limit.md) rules out a
+tempting deterministic shortcut: fibers from $P_i=2^iG$. For genus at least
+two, curve points whose doubles are curve points form the proper intersection
+$C\cap[2]^{-1}C$, of fixed-genus size $O_g(1)$. The exact genus-two control
+has only two such classes among 98 Abel classes and no three-class doubling
+chain. Random known-scalar sourcing instead costs $p^{g-1+o(1)}$.
+
+```sh
+python3 "$fixture_dir/known_log_fiber_sourcing.py" |
+  diff -u "$fixture_dir/known_log_fiber_sourcing.json" -
+python3 -m py_compile "$fixture_dir/known_log_fiber_sourcing.py"
+```
+
+The [divisor-atom tradeoff note](known_log_divisor_atom_tradeoff_limit.md)
+checks the remaining known-log relaxation. Degree-$q$ atoms cost
+$p^{g-q+o(1)}$ to source, while their binary norm section has
+$qg\log_2p+O_g(1)$ variables and semi-regular quotient scale
+$p^{qg+o(1)}$. Degree $g$ removes the setup cost but turns the signs of
+$[2^i]G$ into the original signed-binary DLP. Standard enumeration,
+meet-in-the-middle, and Macaulay methods retain positive exponents.
+
+```sh
+python3 "$fixture_dir/known_log_divisor_atom_tradeoff.py" |
+  diff -u "$fixture_dir/known_log_divisor_atom_tradeoff.json" -
+python3 -m py_compile "$fixture_dir/known_log_divisor_atom_tradeoff.py"
+```
