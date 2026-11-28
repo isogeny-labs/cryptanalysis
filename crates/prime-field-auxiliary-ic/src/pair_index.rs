@@ -31,6 +31,10 @@ impl Hasher for KeyHasher {
     }
 }
 type Lookup = HashMap<u64, usize, BuildHasherDefault<KeyHasher>>;
+const X_BITMAP_BITS: usize = 20;
+fn x_bitmap_bit(x: u64) -> usize {
+    (x.wrapping_mul(0x9e3779b97f4a7c15) >> (64 - X_BITMAP_BITS)) as usize
+}
 type Pair = [SignedTerm; 2];
 struct Entry {
     point: Option<Point>,
@@ -85,6 +89,7 @@ pub struct PairIndex<const B: u32> {
     base: Vec<Point>,
     entries: Vec<Entry>,
     lookup: Lookup,
+    x_bitmap: Vec<u64>,
     identity: Option<usize>,
     chunk: usize,
     stats: PairIndexStats,
@@ -152,6 +157,11 @@ impl<const B: u32> PairIndex<B> {
             base: base.representatives().to_vec(),
             entries: Vec::with_capacity(size),
             lookup: Lookup::with_capacity_and_hasher(size, BuildHasherDefault::default()),
+            x_bitmap: if B == 31 && columns <= 384 {
+                vec![0; 1 << (X_BITMAP_BITS - 6)]
+            } else {
+                Vec::new()
+            },
             identity: None,
             chunk,
             stats: PairIndexStats::default(),
@@ -218,6 +228,10 @@ impl<const B: u32> PairIndex<B> {
                 let index = self.entries.len();
                 if let Some(p) = canonical {
                     self.lookup.insert(p.x(), index);
+                    if !self.x_bitmap.is_empty() {
+                        let bit = x_bitmap_bit(p.x());
+                        self.x_bitmap[bit >> 6] |= 1u64 << (bit & 63);
+                    }
                 } else {
                     self.identity = Some(index);
                 }
@@ -252,7 +266,15 @@ impl<const B: u32> PairIndex<B> {
     fn find(&self, p: Option<Point>) -> Option<(usize, bool)> {
         let index = match p {
             None => self.identity?,
-            Some(p) => *self.lookup.get(&p.x())?,
+            Some(p) => {
+                if !self.x_bitmap.is_empty() {
+                    let bit = x_bitmap_bit(p.x());
+                    if self.x_bitmap[bit >> 6] & (1u64 << (bit & 63)) == 0 {
+                        return None;
+                    }
+                }
+                *self.lookup.get(&p.x())?
+            }
         };
         Some((
             index,
