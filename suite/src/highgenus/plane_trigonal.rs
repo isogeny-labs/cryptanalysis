@@ -188,6 +188,54 @@ impl TrigonalPlaneChart {
         self.affine_line_divisor(curve, 0, c, rng)
     }
 
+    /// Zeros of the vertical line function `x−a`. The pole divisor at
+    /// infinity is the same for every `a`. The fiber above a root of `f2`
+    /// is exceptional in this chart and is deliberately excluded.
+    pub fn vertical_divisor(
+        &self,
+        curve: &SuperellipticCurve,
+        a: u64,
+        rng: &mut impl RngCore,
+    ) -> Option<Vec<(Ideal, usize)>> {
+        let k = &self.field;
+        let x = a % k.p();
+        let f2x = self.f2.eval(x, k);
+        if f2x == 0 {
+            return None;
+        }
+        let h = Poly::from_coeffs(vec![k.neg(self.f1.eval(x, k)), 0, 0, f2x], k);
+        let mut divisor = Vec::new();
+        for (factor, multiplicity) in h.factor(k, rng) {
+            if factor.degree() != Some(1) {
+                return None;
+            }
+            let u = k.neg(factor.c.first().copied().unwrap_or(0));
+            divisor.push((self.source_place(curve, x, u, rng)?, multiplicity));
+        }
+        (divisor
+            .iter()
+            .map(|(_, multiplicity)| multiplicity)
+            .sum::<usize>()
+            == 3)
+            .then_some(divisor)
+    }
+
+    /// A homogeneous factor-base row from two completely rational vertical
+    /// fibers. Unlike affine `u=mx+b` sections, this uses the function
+    /// `(x−a)/(x−b)` and its common pole divisor at infinity.
+    pub fn vertical_line_relation(
+        &self,
+        curve: &SuperellipticCurve,
+        factor_base: &FactorBase<Ideal>,
+        first: u64,
+        second: u64,
+        rng: &mut impl RngCore,
+    ) -> Option<Relation> {
+        let a = self.vertical_divisor(curve, first, rng)?;
+        let b = self.vertical_divisor(curve, second, rng)?;
+        self.divisor_relation(curve, factor_base, &a, &b, rng)
+    }
+
     /// A homogeneous factor-base relation from two completely rational
     /// affine lines. At genus 4, horizontal and nonhorizontal lines have
     /// different pole orders at infinity and cannot be paired here.
@@ -205,8 +253,19 @@ impl TrigonalPlaneChart {
         }
         let a = self.affine_line_divisor(curve, first.0, first.1, rng)?;
         let b = self.affine_line_divisor(curve, second.0, second.1, rng)?;
+        self.divisor_relation(curve, factor_base, &a, &b, rng)
+    }
+
+    fn divisor_relation(
+        &self,
+        curve: &SuperellipticCurve,
+        factor_base: &FactorBase<Ideal>,
+        a: &[(Ideal, usize)],
+        b: &[(Ideal, usize)],
+        rng: &mut impl RngCore,
+    ) -> Option<Relation> {
         let mut coefficients = BTreeMap::<usize, i64>::new();
-        for (divisor, sign) in [(&a, 1i64), (&b, -1i64)] {
+        for (divisor, sign) in [(a, 1i64), (b, -1i64)] {
             for (place, multiplicity) in divisor {
                 let decomposed = curve.decompose(place, 1, rng)?;
                 if decomposed.len() != 1 || decomposed[0].1 != 1 {
@@ -599,8 +658,13 @@ mod tests {
         let chart = TrigonalPlaneChart::new(&curve).unwrap();
         let mut rng = StdRng::seed_from_u64(0x2026_577);
         let base = build_factor_base(&curve, 1, &mut rng).unwrap();
-        let line_scan = chart.collect_affine_line_relations(&curve, &base, 49, &mut rng);
-        assert!(line_scan.relations.len() >= 1);
+        let mut line_scan = chart.collect_affine_line_relations(&curve, &base, 49, &mut rng);
+        assert!(!line_scan.relations.is_empty());
+        line_scan.relations.push(
+            chart
+                .vertical_line_relation(&curve, &base, 0, 1, &mut rng)
+                .unwrap(),
+        );
         let n = BigUint::from(577u64);
         let mut d1 = curve.identity();
         for _ in 0..64 {
@@ -661,5 +725,55 @@ mod tests {
         assert_eq!(report.k, BigUint::from(36u64));
         assert_eq!(curve.scalar_mul(&report.k, &d1), target);
         assert!(report.relations >= line_scan.relations.len());
+    }
+
+    #[test]
+    fn vertical_ramified_fibers_give_verified_rows() {
+        let field = Fp::new(17).unwrap();
+        let mut rng = StdRng::seed_from_u64(0x2026_11ab);
+        for (genus, roots1, roots2, exceptional, partial) in [
+            (4, vec![0, 1, 2], vec![3, 7], 3, 5),
+            (5, vec![0, 1, 2, 3, 5], vec![6], 6, 9),
+        ] {
+            let curve = SuperellipticCurve::new(
+                field,
+                3,
+                vec![
+                    (split_poly(&field, &roots1), 1),
+                    (split_poly(&field, &roots2), 2),
+                ],
+            )
+            .unwrap();
+            let chart = TrigonalPlaneChart::new(&curve).unwrap();
+            let base = build_factor_base(&curve, 1, &mut rng).unwrap();
+            assert!(chart
+                .vertical_divisor(&curve, exceptional, &mut rng)
+                .is_none());
+            assert!(chart.vertical_divisor(&curve, partial, &mut rng).is_none());
+            for x in [0, 1] {
+                let divisor = chart.vertical_divisor(&curve, x, &mut rng).unwrap();
+                assert_eq!(divisor.len(), 1);
+                assert_eq!(divisor[0].1, 3);
+                assert_eq!(field.neg(divisor[0].0.norm(&field).c[0]), x);
+            }
+            let row = chart
+                .vertical_line_relation(&curve, &base, 0, 1, &mut rng)
+                .unwrap();
+            assert_eq!(row.coeffs.len(), 2);
+            assert!(row
+                .coeffs
+                .iter()
+                .all(|&(_, coefficient)| coefficient.abs() == 3));
+            assert!(row.alpha.is_zero() && row.beta.is_zero());
+            let value = row.coeffs.iter().fold(curve.identity(), |acc, &(i, c)| {
+                let term = curve.scalar_mul(&BigUint::from(c.unsigned_abs()), &base.places[i].elem);
+                curve.add(&acc, &if c < 0 { curve.neg(&term) } else { term })
+            });
+            assert!(curve.is_identity(&value), "genus {genus}");
+            assert_eq!(
+                chart.vertical_divisor(&curve, 17, &mut rng).unwrap()[0].1,
+                3
+            );
+        }
     }
 }
