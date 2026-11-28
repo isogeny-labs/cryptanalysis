@@ -1,6 +1,7 @@
 # Active research tasks
 
 ## Active items
+- [ ] Feed collected cubic affine-line rows into a genus-5 source-checked DLP solve (Codex, started 2026-11-28, branch codex/trigonal-cubic-collector-dlp-20261128; depends on PR #2045).
 - [x] Collect bounded cubic affine-line relations for genus-4/5 trigonal charts (Codex, started 2026-11-28, branch codex/trigonal-cubic-line-collector-v2-20261128, draft PR #2045; PR #2044 merged tracking-only; fixed two-genus rows and 16 trigonal tests passed). [pcc:unverified]
 - [x] Add ordinary cubic affine-line relation rows to the genus-4/5 trigonal chart (Codex, started 2026-11-28, branch codex/trigonal-cubic-line-rows-20261128, draft PR #2043; bound-two refusal, cubic column, and exact Jacobian replay in both genera; 14 trigonal tests passed). [pcc:unverified]
 - [x] Validate ordinary cubic target-place support in the genus-4/5 trigonal chart (Codex, started 2026-11-28, branch codex/trigonal-cubic-target-support-20261128, draft PR #2041; degree-two refusal, cubic factor-base column, and exact source-Jacobian replay in both genera; 13 trigonal tests passed).
