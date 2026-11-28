@@ -41,6 +41,11 @@ writer.writerow(("target", "seed", "position", "arm", "status", "exit_code", "sc
                  "report_sha256", "binary_sha256"))
 with tempfile.TemporaryDirectory(prefix="m31-b512-cold-") as td:
     tmp = Path(td)
+    source = tmp / "measured-source"
+    source.mkdir()
+    archive = subprocess.check_output(["git", "archive",
+        "e6d9a6b898de9750a5d08a5444f55864aa12d20b", "crates/prime-field-auxiliary-ic"], cwd=ROOT)
+    subprocess.run(["tar", "-xf", "-", "-C", str(source)], input=archive, check=True)
     binaries = {}
     for arm in labels:
         if arm == "rho":
@@ -54,8 +59,8 @@ with tempfile.TemporaryDirectory(prefix="m31-b512-cold-") as td:
             env["M31_DUAL_BITMAP"] = "1"
         env["CARGO_TARGET_DIR"] = str(tmp / f"target-{arm}")
         subprocess.run(["cargo", "build", "--release", "--offline", "--manifest-path",
-                        str(ROOT / "crates/prime-field-auxiliary-ic/Cargo.toml"),
-                        "--bin", "m31-fast"], cwd=ROOT, env=env, check=True)
+                        str(source / "crates/prime-field-auxiliary-ic/Cargo.toml"),
+                        "--bin", "m31-fast"], cwd=source, env=env, check=True)
         binaries[arm] = tmp / f"target-{arm}/release/m31-fast"
     (tmp / "common.hpp").write_bytes(frozen("comparison/common.hpp"))
     (tmp / "compare_rho.cpp").write_bytes(frozen("comparison/compare_rho.cpp"))
