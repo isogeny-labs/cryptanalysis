@@ -175,6 +175,7 @@ jobs:
           sparse-checkout: |
             crates/prime-field-auxiliary-ic/
             experiments/prime-field-auxiliary-ic/m31-full-rust-comparison/
+            experiments/prime-field-auxiliary-ic/m31-orbit-hash/
             experiments/prime-field-auxiliary-ic/snapshot/prepare.py
             experiments/prime-field-auxiliary-ic/snapshot/comparison/field31/auxiliary/public.json
             experiments/prime-field-auxiliary-ic/snapshot/comparison/field31/plain/public.json
@@ -238,6 +239,11 @@ jobs:
           export PATH="$HOME/.elan/bin:$PATH"
           "$HOME/.elan/bin/lean" experiments/prime-field-auxiliary-ic/m31-full-rust-comparison/SignPacked.lean
           tools/lean/proof-gate.sh experiments/prime-field-auxiliary-ic/m31-full-rust-comparison
+      - name: Audit signed-pair orbit index and coverage theorem
+        run: |
+          git fetch --no-tags --depth=1 origin 85395a80b871ee4440fc540e18f14708653f0779
+          M31_AUDIT_ONLY=1 python3 experiments/prime-field-auxiliary-ic/m31-orbit-hash/replay.py
+          (cd experiments/prime-field-auxiliary-ic/m31-orbit-hash && "$HOME/.elan/bin/lean" OrbitHash.lean)
       - name: Replay original versus combined full collector
         run: |
           python3 experiments/prime-field-auxiliary-ic/m31-full-rust-comparison/combined_replay.py > "$RUNNER_TEMP/m31-combined-replay.csv"
