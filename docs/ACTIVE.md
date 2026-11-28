@@ -1,7 +1,7 @@
 # Active research tasks
 
 ## Active items
-- [ ] Clear the lead-testing papercuts in `ic bench` and the PKM pilot (workspace PROTOCOL.md §10): configurations-only sweep files, a clean `unsupported` refusal for m > tower engine capacity, a dimension check before a Koblitz divisor base materialises 2^dim abscissae, the listing's missing koblitz-orbit parameters, and `git_commit` read from the source checkout instead of the cwd (Claude Code, started 2026-11-26, branch claude/kind-pascal-7ree1e, PR #1996; tracking workspace PR #180)
+- [x] Clear the lead-testing papercuts in `ic bench` and the PKM pilot (workspace PROTOCOL.md §10) — done: configurations-only sweep files, empty matrix axes refused, a clean exit-3 `unsupported` refusal for m > tower engine capacity, a size check before a Koblitz divisor base materialises 2^dim abscissae, the listing's missing parameters, and `git_commit` read from the build checkout without the caller's `GIT_*` (Claude Code, started 2026-11-26, branch claude/kind-pascal-7ree1e, PR #1996; tracking workspace PR #180)
 - [ ] Mirror exact point hashing into the native two-slot collision graph collector (Codex, started 2026-11-27, branch codex/point-hash-collision-graph-20261127, draft PR #1997; paired Crypto draft PR #5263, native checks pending).
 - [ ] Audit p plus one smoothness leads on public fixtures (Codex, started 2026-11-25, branch codex/p1-smoothness-leads-20261125, PR #1979) [pcc:unverified]
 - [x] Publish degree-5 horizontal joint S4 component screen (Codex, started 2026-11-23, branch research/cm-joint-s4-screen-20261123, PR #1967): same-base positive and negative query checks, source/endpoint/wire/joint solve costs, and bounded conclusion in research/cm_joint_s4_20261123/. [pcc:unverified]
@@ -49,7 +49,6 @@
 
 ## Blocked / questions
 
-- Lead-testing papercuts (PR #1996, claude/kind-pascal-7ree1e): code finished and checked locally; merge blocked by failures already on main 607d3046 (the nine `ci` C build jobs at their Build step, and `lab-parity`: `tools/pcc/pcc.py` sha256 vs the crypto-owned lock). Needs those fixed on main, or the owner's call. Evidence: PR #1996 comment of 2026-11-26.
 - Full native CT244/CT300 pricing and 695/701 record replay still require approved authenticated original six-object artifact custody; previous STS invalid-token and S3 403 are unresolved. This source-only correction does not authorize paid compute, artifact substitution, modified provenance or protected merge.
 
 ## Priority
