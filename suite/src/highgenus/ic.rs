@@ -765,33 +765,75 @@ pub fn index_calculus_dlp<C: IndexCalculusCurve>(
     n: &BigUint,
     params: &IcParams,
 ) -> Result<DlpReport, HgError> {
+    index_calculus_dlp_with_seed_relations(curve, fb, d1, d2, n, &[], params)
+}
+
+/// DLP solve with additional relations supplied by a geometric collector.
+/// Each seed row is checked in the curve group before it enters the modular
+/// system. The reported relation count includes seeds; search statistics only
+/// cover the random-walk relations collected by this function.
+pub fn index_calculus_dlp_with_seed_relations<C: IndexCalculusCurve>(
+    curve: &C,
+    fb: &FactorBase<C::Elem>,
+    d1: &C::Elem,
+    d2: &C::Elem,
+    n: &BigUint,
+    seeds: &[Relation],
+    params: &IcParams,
+) -> Result<DlpReport, HgError> {
     let n64 = n
         .to_u64()
         .filter(|&v| v < (1u64 << 63) && is_prime_u64(v))
         .ok_or(HgError::Unsupported("N must be a prime below 2^63"))?;
+    for relation in seeds {
+        let mut lhs = curve.identity();
+        for &(index, coefficient) in &relation.coeffs {
+            let place = fb.places.get(index).ok_or(HgError::BadDivisor(
+                "seed relation factor-base index out of range",
+            ))?;
+            let term = curve.scalar_mul(&BigUint::from(coefficient.unsigned_abs()), &place.elem);
+            lhs = curve.add(
+                &lhs,
+                &if coefficient < 0 {
+                    curve.neg(&term)
+                } else {
+                    term
+                },
+            );
+        }
+        let rhs = curve.add(
+            &curve.scalar_mul(&relation.alpha, d1),
+            &curve.scalar_mul(&relation.beta, d2),
+        );
+        if lhs != rhs {
+            return Err(HgError::BadDivisor("seed relation fails group replay"));
+        }
+    }
     let mut rng = StdRng::seed_from_u64(params.seed);
     let mut count = fb.len() + params.extra_relations;
-    let mut all: Vec<Relation> = Vec::new();
+    let mut all: Vec<Relation> = seeds.to_vec();
     let mut stats_total = SearchStats::default();
     for _round in 0..4 {
-        let (rels, stats) = collect_relations(
-            curve,
-            fb,
-            Some((d1, d2, n)),
-            count - all.len(),
-            params,
-            &mut rng,
-        )?;
-        let exhausted = stats.exhausted;
-        stats_total.trials += stats.trials;
-        stats_total.smooth += stats.smooth;
-        stats_total.duplicates += stats.duplicates;
-        stats_total.walk_ops += stats.walk_ops;
-        stats_total.setup_ops += stats.setup_ops;
-        stats_total.walks += stats.walks;
-        all.extend(rels);
-        if exhausted {
-            return Err(HgError::Exhausted("relation search trials (dlp mode)"));
+        if all.len() < count {
+            let (rels, stats) = collect_relations(
+                curve,
+                fb,
+                Some((d1, d2, n)),
+                count - all.len(),
+                params,
+                &mut rng,
+            )?;
+            let exhausted = stats.exhausted;
+            stats_total.trials += stats.trials;
+            stats_total.smooth += stats.smooth;
+            stats_total.duplicates += stats.duplicates;
+            stats_total.walk_ops += stats.walk_ops;
+            stats_total.setup_ops += stats.setup_ops;
+            stats_total.walks += stats.walks;
+            all.extend(rels);
+            if exhausted {
+                return Err(HgError::Exhausted("relation search trials (dlp mode)"));
+            }
         }
         let t0 = Instant::now();
         if std::env::var_os("HG_VERBOSE").is_some() {

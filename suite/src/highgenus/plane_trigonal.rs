@@ -276,7 +276,7 @@ impl TrigonalPlaneChart {
 mod tests {
     use rand::{rngs::StdRng, SeedableRng};
 
-    use super::super::ic::build_factor_base;
+    use super::super::ic::{build_factor_base, index_calculus_dlp_with_seed_relations, IcParams};
     use super::super::JacobianGroup;
     use super::*;
 
@@ -578,5 +578,88 @@ mod tests {
             });
             assert!(curve.is_identity(&value), "genus {genus}");
         }
+    }
+
+    #[test]
+    fn plane_line_rows_feed_a_verified_trigonal_dlp() {
+        // Public panel curve: #Jac(F_7)=83088=144*577 (order candidate).
+        // The test independently checks the chosen generator's prime order
+        // and verifies the returned scalar against the target group element.
+        let field = Fp::new(7).unwrap();
+        let curve = SuperellipticCurve::new(
+            field,
+            3,
+            vec![
+                (Poly::from_coeffs(vec![4, 3, 6, 0, 5, 1], &field), 1),
+                (Poly::from_coeffs(vec![4, 1], &field), 2),
+            ],
+        )
+        .unwrap();
+        assert_eq!(curve.genus, 5);
+        let chart = TrigonalPlaneChart::new(&curve).unwrap();
+        let mut rng = StdRng::seed_from_u64(0x2026_577);
+        let base = build_factor_base(&curve, 1, &mut rng).unwrap();
+        let line_scan = chart.collect_affine_line_relations(&curve, &base, 49, &mut rng);
+        assert!(line_scan.relations.len() >= 1);
+        let n = BigUint::from(577u64);
+        let mut d1 = curve.identity();
+        for _ in 0..64 {
+            d1 = curve.scalar_mul(&BigUint::from(144u64), &curve.random_element(2, &mut rng));
+            if !curve.is_identity(&d1) {
+                break;
+            }
+        }
+        assert!(!curve.is_identity(&d1));
+        assert!(curve.is_identity(&curve.scalar_mul(&n, &d1)));
+        let target = curve.scalar_mul(&BigUint::from(36u64), &d1);
+        let params = IcParams {
+            extra_relations: 8,
+            max_trials: 100_000,
+            seed: 20261128,
+            ..Default::default()
+        };
+        let mut corrupt = line_scan.relations[0].clone();
+        corrupt.coeffs[0].1 += 1;
+        assert_eq!(
+            index_calculus_dlp_with_seed_relations(
+                &curve,
+                &base,
+                &d1,
+                &target,
+                &n,
+                &[corrupt],
+                &params,
+            )
+            .unwrap_err(),
+            HgError::BadDivisor("seed relation fails group replay")
+        );
+        let mut invalid_index = line_scan.relations[0].clone();
+        invalid_index.coeffs[0].0 = base.len();
+        assert_eq!(
+            index_calculus_dlp_with_seed_relations(
+                &curve,
+                &base,
+                &d1,
+                &target,
+                &n,
+                &[invalid_index],
+                &params,
+            )
+            .unwrap_err(),
+            HgError::BadDivisor("seed relation factor-base index out of range")
+        );
+        let report = index_calculus_dlp_with_seed_relations(
+            &curve,
+            &base,
+            &d1,
+            &target,
+            &n,
+            &line_scan.relations,
+            &params,
+        )
+        .unwrap();
+        assert_eq!(report.k, BigUint::from(36u64));
+        assert_eq!(curve.scalar_mul(&report.k, &d1), target);
+        assert!(report.relations >= line_scan.relations.len());
     }
 }
