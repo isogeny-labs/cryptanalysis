@@ -240,6 +240,9 @@ fn listing() -> Value {
                     {"name": "descent-algebraic", "summands": "2, 3 or 4", "regimes": ["char2", "koblitz"],
                      "parameters": [{"name": "m", "means": "summands, 2 (descends S3), 3 (descends S4) or 4 (balanced split of S5)"},{"name": "inter_dim", "means": "m = 4 only: dimension of the subspace span(1..z^(l-1)) the two intermediates are restricted to (the representation filter); default n"}],
                      "needs": "a subspace factor base (binary-subspace or koblitz-orbit) and --solver"},
+                    {"name": "descent-edge-chain", "summands": "3", "regimes": ["char2", "koblitz"],
+                     "parameters": [{"name": "m", "means": "summands, exactly 3 (one cubic S3 link)"},{"name": "presentation", "means": "edge-ab (full-width control), edge-ab-compressed (leaf-product space), edge-ac (default mixed edge) or edge-bc (matched alternative)"}],
+                     "needs": "a subspace factor base (binary-subspace or koblitz-orbit) and --solver; m = 2 has no cubic link and m >= 4 exceeds the current 64-variable symbolic mask on registry instances"},
                 ],
             },
             {
@@ -650,20 +653,24 @@ fn run_binary(
         let mut batch_mitm = BinaryBatchMitmOracle::default();
         let mut rep_join = RepJoinOracle::new(m);
         let mut algebraic = match or_name {
-            "descent-algebraic" => {
+            "descent-algebraic" | "descent-edge-chain" => {
                 let raw = spec.solver.as_deref().ok_or(
-                    "descent-algebraic needs --solver (try buchberger-f2, sat-cdcl or exhaustive)",
+                    "an algebraic descent oracle needs --solver (try f4-f2, buchberger-f2, sat-cdcl or exhaustive)",
                 )?;
                 let (sname, sparams) = parse_plugin(raw)?;
                 let budget = (spec.solver_budget_seconds > 0)
                     .then(|| std::time::Duration::from_secs(spec.solver_budget_seconds));
-                Some(DescentAlgebraicOracle::new(
-                    m,
-                    inst,
-                    solver_by_name(&sname)?,
-                    sparams,
-                    budget,
-                ))
+                Some(if or_name == "descent-edge-chain" {
+                    DescentAlgebraicOracle::new_edge_chain(
+                        m,
+                        inst,
+                        solver_by_name(&sname)?,
+                        sparams,
+                        budget,
+                    )
+                } else {
+                    DescentAlgebraicOracle::new(m, inst, solver_by_name(&sname)?, sparams, budget)
+                })
             }
             _ => None,
         };
@@ -677,6 +684,7 @@ fn run_binary(
             "mitm-batched" => &mut batch_mitm,
             "rep-join" => &mut rep_join,
             "descent-algebraic" => algebraic.as_mut().expect("built above"),
+            "descent-edge-chain" => algebraic.as_mut().expect("built above"),
             other => return Err(format!("oracle `{other}` is not available here")),
         };
         out.push(run_pipeline(
@@ -1597,20 +1605,22 @@ mod tests {
 
     #[test]
     fn an_algebraic_oracle_without_a_solver_is_refused_before_any_work() {
-        let c = check(
-            "char2",
-            &[
-                "--factor-base",
-                "binary-subspace:dimension=6",
-                "--oracle",
-                "descent-algebraic",
-            ],
-        );
-        assert!(
-            c.errors.join("\n").contains("needs --solver"),
-            "{:?}",
-            c.errors
-        );
+        for oracle in ["descent-algebraic", "descent-edge-chain"] {
+            let c = check(
+                "char2",
+                &[
+                    "--factor-base",
+                    "binary-subspace:dimension=6",
+                    "--oracle",
+                    oracle,
+                ],
+            );
+            assert!(
+                c.errors.join("\n").contains("needs --solver"),
+                "{oracle}: {:?}",
+                c.errors
+            );
+        }
         let c = check(
             "char2",
             &[
@@ -1627,6 +1637,19 @@ mod tests {
             "{:?}",
             c.errors
         );
+        let c = check(
+            "char2",
+            &[
+                "--factor-base",
+                "binary-subspace:dimension=6",
+                "--oracle",
+                "descent-edge-chain:m=3,presentation=edge-ac",
+                "--solver",
+                "f4-f2",
+            ],
+        );
+        assert!(c.errors.is_empty(), "{:?}", c.errors);
+        assert!(c.warnings.is_empty(), "{:?}", c.warnings);
     }
 
     /// The check must not refuse anything the committed sweeps run.

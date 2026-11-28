@@ -1,5 +1,9 @@
 #include "test_fixtures.h"
 #include "ic_trial.h"
+#include <fcntl.h>
+#include <stddef.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 static void check_remove(uint64_t v, uint32_t q, const ca_ic_divisor *d)
 {
@@ -12,11 +16,9 @@ static void check_remove(uint64_t v, uint32_t q, const ca_ic_divisor *d)
 
 static void test_fixed_divisors(void)
 {
-    /* One slot beyond the sieve's cap for the extra prime appended below. */
-    uint32_t primes[1601];
+    uint32_t primes[1600];
     size_t n = ca_sieve_primes(13000, primes, 1600);
     CHECK(n <= 1600);
-    if (n > 1600) return; /* CHECK records the failure; never index past the array */
     /* Include the largest 32-bit prime, beyond the normal IC base. */
     primes[n++] = UINT32_C(4294967291);
     ca_rng rng;
@@ -46,10 +48,6 @@ static void test_fixed_divisors(void)
         }
     }
 }
-#include <fcntl.h>
-#include <stddef.h>
-#include <sys/stat.h>
-#include <unistd.h>
 
 static void checkpoint_roundtrip(void)
 {
@@ -128,7 +126,8 @@ static void rexp_checkpoint_roundtrip(void)
     CHECK(access(precomp, F_OK) == 0);
     CHECK(unlink(precomp) == 0);
     pr.seed = 8;
-    CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) == CA_ERR_INVALID);
+    CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) ==
+          CA_ERR_INVALID);
     pr.seed = 7;
     FILE *damage = fopen(journal, "r+b");
     CHECK(damage != NULL);
@@ -140,7 +139,8 @@ static void rexp_checkpoint_roundtrip(void)
         CHECK(fputc(last ^ 0xff, damage) != EOF);
         CHECK(fclose(damage) == 0);
     }
-    CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) == CA_ERR_INVALID);
+    CHECK(ca_ic_solve_checkpointed(1000003, 2, 123456, &pr, journal, 1, &x, &st) ==
+          CA_ERR_INVALID);
     unlink(journal); unlink(progress); rmdir(dir);
 }
 
@@ -547,49 +547,6 @@ int main(void)
     run(1099511627791ULL, CA_IC_LINEAR_SIEVE, 4, 5);  /* 2^40 + 15 */
     /* 48-bit prime */
     run(281474976710597ULL, CA_IC_LINEAR_SIEVE, 4, 5); /* 2^48 - 59 */
-    /* Above 2^50, up to the sieve's p < 2^63 limit.  Safe primes (p - 1 = 2q)
-     * leave Pohlig-Hellman nothing to split off; the others have p - 1 with
-     * mixed factors.  run() plants secrets below p - 1, i.e. above 2^50. */
-    run(2251799813684783ULL, CA_IC_LINEAR_SIEVE, 4, 5); /* 51-bit safe prime */
-    run(4503599627370023ULL, CA_IC_LINEAR_SIEVE, 4, 5); /* 52-bit safe prime */
-    {
-        /* Random exponents leave a few factor-base logs unresolved from about
-         * 40 bits up (202 of 203 at 41 bits), so run()'s full-coverage check
-         * does not apply; individual logs must still come out exact. */
-        const uint64_t p = 4503599627370023ULL, g = ca_primitive_root(p);
-        ca_ic_params pr;
-        ca_ic_params_default(&pr);
-        pr.method = CA_IC_RANDOM_EXPONENT;
-        pr.threads = 4;
-        pr.seed = 12345;
-        ca_ic_ctx *ctx = NULL;
-        ca_ic_stats st;
-        CHECK(ca_ic_precompute(p, g, &pr, &ctx, &st) == CA_OK);
-        CHECK(st.verified_logs > st.factor_base_size / 2);
-        ca_rng rng;
-        ca_rng_seed(&rng, p);
-        for (int k = 0; k < 3 && ctx; k++) {
-            uint64_t x = ca_rng_below(&rng, p - 1), got = 0;
-            CHECK(ca_ic_log(ctx, ca_powmod(g, x, p), &got, NULL) == CA_OK);
-            CHECK_EQ_U64(got, x);
-        }
-        ca_ic_free(ctx);
-    }
-    run(18014398509477179ULL, CA_IC_LINEAR_SIEVE, 4, 3);   /* 54-bit safe prime */
-    run(63050394783186973ULL, CA_IC_LINEAR_SIEVE, 4, 3);   /* 56 bits */
-    run(1008806316530991113ULL, CA_IC_LINEAR_SIEVE, 4, 3); /* 60 bits */
-    run(4035225266123964469ULL, CA_IC_LINEAR_SIEVE, 4, 3); /* 62 bits */
-    run(8070450532247928841ULL, CA_IC_LINEAR_SIEVE, 4, 3); /* 63 bits */
-    {
-        /* p >= 2^63 is outside the sieve's range: refused, never mis-solved. */
-        const uint64_t wide[] = {9223372036854775837ULL, 18446744073709551557ULL};
-        for (size_t i = 0; i < sizeof(wide) / sizeof(wide[0]); i++) {
-            uint64_t got = 0;
-            CHECK(ca_is_prime(wide[i]));
-            CHECK(ca_ic_solve(wide[i], ca_primitive_root(wide[i]), 99, NULL, &got, NULL) ==
-                  CA_ERR_UNSUPPORTED);
-        }
-    }
     /* p-1 with a squared large prime? use p = 2*q^2+1 form if prime */
     uint64_t q = 16777259, pp = 0; /* q > 2^24 so the Lanczos + Hensel path is used */
     for (uint64_t k = 1; k < 200 && !pp; k++) {

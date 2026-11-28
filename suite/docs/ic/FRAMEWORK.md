@@ -371,6 +371,21 @@ table and is capped only by the monomial mask: `m·n' ≤ 64`, i.e.
 quadratics, `S4` to degree at most six. Above that it is the engine
 that limits a row, and it says so through `accepts`.
 
+`descent-edge-chain` is the matched characteristic-two presentation plug-in.
+At `m = 3` it replaces the direct `S4` by two chained `S3` links, introduces
+one full-field intermediate, and lifts one product in the cubic link. Its
+`presentation` is `edge-ab` (the full-width standard product),
+`edge-ab-compressed` (the same exact product represented in its product space
+`V·V`), `edge-ac` (the support-selected mixed edge) or `edge-bc`. Every
+generator is quadratic. The three full-width arms have the same variables and
+field-equation count; the compressed arm keeps the same ideal but reduces the
+first lift from `n` variables and ambient-coordinate rows to `dim(V·V)` of
+each. This is an injective coordinate change on that product constraint, not
+an equation relaxation. The plug-in accepts exactly `m = 3`: at `m = 2` there
+is no cubic link to lift, while the current 64-variable symbolic mask makes
+`m >= 4` unsupported on the pinned lead-sweep instances. Those cells are
+recorded as unsupported rather than attempted as failed runs.
+
 ### `SystemSolver` — F4, F5, XL, SAT, anything
 
 **This is the plug point most people want.** It takes a boolean
@@ -823,7 +838,7 @@ worse than none:
 |:--|:--|:--|
 | factor base | `FactorBaseBuilder` | `prime-abscissa`, `hashed-affine`, `binary-subspace`, `koblitz-orbit` |
 | targets | `Targets` | `random`, `walk` |
-| point decomposition | `DecompositionOracle` | `subtract`, `mitm`, `hashed-tensor`, `mitm-frobenius`, `descent-algebraic` |
+| point decomposition | `DecompositionOracle` | `subtract`, `mitm`, `hashed-tensor`, `mitm-frobenius`, `descent-algebraic`, `descent-edge-chain` |
 | polynomial solver | `SystemSolver` | `f4-f2`, `buchberger-f2`, `matrix-f4`, `matrix-f5`, `inherited-f4`, `crossbred-f2`, `xl-f2`, `sat-cdcl`, `fes-f2`, `fes-f2-wide`, `exhaustive` |
 | relation matrix | `RelationSolver` | `incremental-gauss`, `structured-gauss` |
 

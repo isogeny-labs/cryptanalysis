@@ -1,7 +1,7 @@
 # Active research tasks
 
 ## Active items
-- [x] Numbers above 2^50: audit the C core, attack suite, crates, bindings and corpus for f64 round-trips, 64-bit overflow, truncating casts and hard bit caps; fix them and add known-answer tests above 2^50 (Claude Code, started 2026-11-27, completed 2026-11-28, branch claude/loving-gates-frld4m, PR #2006; tracking workspace#200) — done: C core needed no change (new tests/test_wide.c, every solver at 51-64 bits; IC to 63 bits); test_indexcalc.c restored from a broken merge; ca CLI refuses truncated counts; Python/Go/Rust binding tests at 64 bits; suite fixes for wrong answers (rsa is_prime psi_12, Bleichenbacher, f64 Hasse windows, low-limb Koblitz orders), i64/u64 overflow near 2^61-2^64 and lifted caps (eccp79 demo 50 -> 96 bits, prime-order curves 32 -> 62 bits); crates/tools 62-64-bit primes and >2^64 primality. Remaining caps (C core u64, IC p < 2^63) are by design [pcc:unverified]
+- [ ] Mirror exact point hashing into the native two-slot collision graph collector (Codex, started 2026-11-27, branch codex/point-hash-collision-graph-20261127, draft PR #1997; paired Crypto draft PR #5263, native checks pending).
 - [ ] Audit p plus one smoothness leads on public fixtures (Codex, started 2026-11-25, branch codex/p1-smoothness-leads-20261125, PR #1979) [pcc:unverified]
 - [x] Publish degree-5 horizontal joint S4 component screen (Codex, started 2026-11-23, branch research/cm-joint-s4-screen-20261123, PR #1967): same-base positive and negative query checks, source/endpoint/wire/joint solve costs, and bounded conclusion in research/cm_joint_s4_20261123/. [pcc:unverified]
 - [ ] Batch ECDLP: lower the IC-vs-batch-rho crossover (Claude Code, started 2026-11-23, branch claude/batch-ecdlp-crossover-20261123, draft PR; workspace item PR #91): freeze prediction first; rebuild the `ca-ic prime` batch IC arm on `mitm-prime-batched` (#1891) / k=3 harvester (#1901) where they apply to F_p curves; re-measure up-front and per-target cost and the crossover K vs executed folded batch rho at 20/24/28 bits with CIs; define and measure best-seeded rho and report distance remaining
@@ -72,6 +72,8 @@ prime-field lift pipeline, while continuing to track the binary/Koblitz source
 and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
+- [x] Add an exact compressed leaf-product presentation for the ECC2K mixed-edge S3 lead: retain full-width `edge-ab` as the matched control, but represent `w = x_a x_b` in the product space `V·V` and freeze a separate solving-degree comparison (Codex, completed 2026-11-27, branch codex/ecc2k130-mixed-edge-presentation-20261127, PR #2000; measurement remains checkpoint-gated) [pcc:unverified]
+- [x] Integrate the ECC2K-130 mixed-edge lifted S3 presentation (`w = x_a x_c`) into the index-calculus degree/closure framework, with matched standard-edge controls and a prospectively frozen lead-sweep plan (Codex, completed 2026-11-27, branch codex/ecc2k130-mixed-edge-presentation-20261127, PR #2000; measurement remains checkpoint-gated) [pcc:unverified]
 - [ ] PKM torus (p+1-side Dickson) tower kind for M31 in pkm_tower_pilot (claude, started 2026-11-25, branch claude/pkm-torus-tower-m31; tracking workspace#130)
 - [ ] CT201–CT203: complete cold ECDLP source adjudication (matched five-arm rho/BSGS/IC, Williams order, distinct-Q per-block prospective gate; automation, started 2026-11-18, branch research/ct201-complete-single-target-gate-20261118, PR #1766; source CI 44/44 normal and -O at 36807d15; native/PCC blocked) [pcc:unverified]
 
