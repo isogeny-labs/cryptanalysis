@@ -41,7 +41,13 @@ writer.writerow(("target", "seed", "position", "arm", "status", "exit_code", "sc
                  "report_sha256", "binary_sha256"))
 with tempfile.TemporaryDirectory(prefix="m31-flat-pair-") as td:
     tmp = Path(td)
-    source = ROOT
+    source = tmp / "measured-source"
+    source.mkdir()
+    archive = subprocess.check_output(["git", "archive",
+        "6f65acfc877e73d37d94285605b54f84029b8237", "crates/prime-field-auxiliary-ic"], cwd=ROOT)
+    subprocess.run(["tar", "-xf", "-", "-C", str(source)], input=archive, check=True)
+    pair_source = source / "crates/prime-field-auxiliary-ic/src/pair_index.rs"
+    assert hashlib.sha256(pair_source.read_bytes()).hexdigest() == "bb25e994b6dc042a605ff4d0121db3bea755adfaf7670122d865bf7158ac308a"
     binaries = {}
     for variant in ("hash", "flat"):
         env = os.environ.copy()
