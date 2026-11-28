@@ -517,6 +517,42 @@ impl TrigonalPlaneChart {
         })
     }
 
+    /// Try rational anchor lines in lexicographic `(slope, intercept)` order.
+    /// `max_lines` bounds all candidates, including lines in the wrong pole
+    /// family or with a nonsplit section. The returned row is checked by
+    /// `descend_quadratic_target_line` in the source Jacobian.
+    pub fn descend_quadratic_target_line_bounded(
+        &self,
+        curve: &SuperellipticCurve,
+        factor_base: &FactorBase<Ideal>,
+        target: &Ideal,
+        max_lines: usize,
+        rng: &mut impl RngCore,
+    ) -> Option<Relation> {
+        if !self.matches_curve(curve) || !curve.is_canonical(target) || factor_base.bound != 1 {
+            return None;
+        }
+        let mut scanned = 0;
+        for slope in 0..self.field.p() {
+            for intercept in 0..self.field.p() {
+                if scanned == max_lines {
+                    return None;
+                }
+                scanned += 1;
+                if let Some(row) = self.descend_quadratic_target_line(
+                    curve,
+                    factor_base,
+                    target,
+                    (slope, intercept),
+                    rng,
+                ) {
+                    return Some(row);
+                }
+            }
+        }
+        None
+    }
+
     /// Scan at most `max_lines` affine lines and retain one homogeneous row
     /// per distinct split line after the first in its pole-divisor family.
     /// Genus four has separate horizontal and nonhorizontal families; genus
@@ -1353,6 +1389,19 @@ mod tests {
         let (target, row) = found.expect("no split residual cubic for a quadratic target");
         assert_eq!(row.beta, BigUint::from(1u32));
         assert!(chart
+            .descend_quadratic_target_line_bounded(&curve, &base, &target, 0, &mut rng)
+            .is_none());
+        let searched = chart
+            .descend_quadratic_target_line_bounded(
+                &curve,
+                &base,
+                &target,
+                (field.p() * field.p()) as usize,
+                &mut rng,
+            )
+            .expect("bounded anchor scan did not find a split line");
+        assert_eq!(searched.beta, BigUint::from(1u32));
+        assert!(chart
             .direct_target_relation(&curve, &base, &target, &mut rng)
             .is_none());
         if chart.genus == 4 {
@@ -1379,6 +1428,26 @@ mod tests {
                 sum
             });
         assert_eq!(replay, target);
+        let searched_replay =
+            searched
+                .coeffs
+                .iter()
+                .fold(curve.identity(), |sum, &(i, coefficient)| {
+                    let mut sum = sum;
+                    let term = &base.places[i].elem;
+                    for _ in 0..coefficient.unsigned_abs() {
+                        sum = curve.add(
+                            &sum,
+                            &if coefficient < 0 {
+                                curve.neg(term)
+                            } else {
+                                term.clone()
+                            },
+                        );
+                    }
+                    sum
+                });
+        assert_eq!(searched_replay, target);
     }
 
     #[test]
