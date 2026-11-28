@@ -1,0 +1,98 @@
+diff --git a/crates/prime-field-auxiliary-ic/src/pair_index.rs b/crates/prime-field-auxiliary-ic/src/pair_index.rs
+index f2e2e0724..62b030de1 100644
+--- a/crates/prime-field-auxiliary-ic/src/pair_index.rs
++++ b/crates/prime-field-auxiliary-ic/src/pair_index.rs
+@@ -315,10 +315,37 @@ impl<const B: u32> PairIndex<B> {
+         target: Point,
+         workspace: &mut PairWorkspace,
+     ) -> Result<Option<MultiSignedRelation>> {
+-        self.curve
+-            .batch_add_inner(&mut workspace.left, &workspace.right, &mut workspace.batch);
++        let paired = m == 3 && self.chunk % 2 == 0;
++        if paired {
++            self.curve.batch_add_paired_x_filtered_assume_valid(
++                Some(target),
++                &workspace.right,
++                &mut workspace.left,
++                &mut workspace.batch,
++                |x| {
++                    if self.x_bitmap.is_empty() {
++                        true
++                    } else {
++                        let bit = x_bitmap_bit(x);
++                        self.x_bitmap[bit >> 6] & (1u64 << (bit & 63)) != 0
++                    }
++                },
++            )?;
++        } else {
++            self.curve
++                .batch_add_inner(&mut workspace.left, &workspace.right, &mut workspace.batch);
++        }
+         workspace.stats.generated_candidates += workspace.left.len() as u64;
++        let neg_target = paired.then(|| self.curve.neg_inner(target));
+         for i in 0..workspace.left.len() {
++            // A rejected x and the true identity are both represented by None.
++            // Only the exact inverse step can be an identity candidate.
++            if paired
++                && workspace.left[i].is_none()
++                && workspace.right[i] != neg_target
++            {
++                continue;
++            }
+             workspace.stats.lookups += 1;
+             let Some((inner, negative)) = self.find(workspace.left[i]) else {
+                 continue;
+@@ -436,3 +463,53 @@ impl PairWorkspace {
+         &self.stats
+     }
+ }
++
++#[cfg(test)]
++mod paired_probe_tests {
++    use super::*;
++
++    fn compare<const B: u32>(curve: Curve<B>, roots: &[u64], targets: &[Point]) {
++        let base = FactorBase::without_maps(curve, roots).unwrap();
++        let paired = PairIndex::new(&base, 4_194_304, 64).unwrap();
++        let generic = PairIndex::new(&base, 4_194_304, 63).unwrap();
++        for &target in targets {
++            let actual = paired.decompose(3, target, &mut paired.workspace()).unwrap();
++            let expected = generic
++                .decompose(3, target, &mut generic.workspace())
++                .unwrap();
++            assert_eq!(actual, expected, "target={target:?}");
++        }
++    }
++
++    #[test]
++    fn paired_filtered_three_sum_matches_odd_chunk_on_complete_small_curve() {
++        let curve = Curve::<7>::new(2, 51).unwrap();
++        let roots: Vec<_> = (0..curve.modulus())
++            .filter(|&x| curve.lift_x(x).unwrap().is_some())
++            .take(8)
++            .collect();
++        let mut targets = Vec::new();
++        for x in 0..curve.modulus() {
++            if let Some(point) = curve.lift_x(x).unwrap() {
++                targets.push(point);
++                targets.push(curve.negate(point).unwrap());
++            }
++        }
++        compare(curve, &roots, &targets);
++    }
++
++    #[test]
++    fn paired_three_sum_matches_generic_without_bitmap() {
++        let curve = Curve::<31>::new(2, 14).unwrap();
++        let roots: Vec<_> = (0..curve.modulus())
++            .filter(|&x| curve.lift_x(x).unwrap().is_some())
++            .take(385)
++            .collect();
++        let g = curve.point(1, 814455902).unwrap();
++        let targets: Vec<_> = [1, 2, 3, 17, 12345, 123456789]
++            .into_iter()
++            .map(|k| curve.mul(Some(g), k).unwrap().unwrap())
++            .collect();
++        compare(curve, &roots, &targets);
++    }
++}
