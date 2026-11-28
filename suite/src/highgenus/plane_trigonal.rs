@@ -121,12 +121,7 @@ impl TrigonalPlaneChart {
         u: u64,
         rng: &mut impl RngCore,
     ) -> Option<Ideal> {
-        if curve.m != 3 || curve.genus != self.genus || curve.field.p() != self.field.p() {
-            return None;
-        }
-        let same_factors = curve.factors.iter().any(|(f, e)| *e == 1 && *f == self.f1)
-            && curve.factors.iter().any(|(f, e)| *e == 2 && *f == self.f2);
-        if !same_factors {
+        if !self.matches_curve(curve) {
             return None;
         }
         let y = self.source_y(x, u)?;
@@ -138,6 +133,14 @@ impl TrigonalPlaneChart {
             .into_iter()
             .find(|(_, root)| root.c.first().copied().unwrap_or(0) == y)?;
         Some(curve.canonical(&place.0))
+    }
+
+    fn matches_curve(&self, curve: &SuperellipticCurve) -> bool {
+        curve.m == 3
+            && curve.genus == self.genus
+            && curve.field.p() == self.field.p()
+            && curve.factors.iter().any(|(f, e)| *e == 1 && *f == self.f1)
+            && curve.factors.iter().any(|(f, e)| *e == 2 && *f == self.f2)
     }
 
     /// Zeros of the affine line function `u−slope*x−intercept` on the
@@ -189,8 +192,9 @@ impl TrigonalPlaneChart {
     }
 
     /// Zeros of the vertical line function `x−a`. The pole divisor at
-    /// infinity is the same for every `a`. The fiber above a root of `f2`
-    /// is exceptional in this chart and is deliberately excluded.
+    /// infinity is the same for every `a`. A root of `f2` is exceptional
+    /// in this chart, but the unique ramified place above it is available
+    /// directly from the normalized Kummer model with multiplicity three.
     pub fn vertical_divisor(
         &self,
         curve: &SuperellipticCurve,
@@ -201,7 +205,15 @@ impl TrigonalPlaneChart {
         let x = a % k.p();
         let f2x = self.f2.eval(x, k);
         if f2x == 0 {
-            return None;
+            if !self.matches_curve(curve) {
+                return None;
+            }
+            let pi = Poly::from_coeffs(vec![k.neg(x), 1], k);
+            let places = curve.places_above(&pi, rng);
+            if places.len() != 1 || !places[0].1.is_zero() {
+                return None;
+            }
+            return Some(vec![(curve.canonical(&places[0].0), 3)]);
         }
         let h = Poly::from_coeffs(vec![k.neg(self.f1.eval(x, k)), 0, 0, f2x], k);
         let mut divisor = Vec::new();
@@ -746,9 +758,15 @@ mod tests {
             .unwrap();
             let chart = TrigonalPlaneChart::new(&curve).unwrap();
             let base = build_factor_base(&curve, 1, &mut rng).unwrap();
-            assert!(chart
+            let exceptional_fiber = chart
                 .vertical_divisor(&curve, exceptional, &mut rng)
-                .is_none());
+                .unwrap();
+            assert_eq!(exceptional_fiber.len(), 1);
+            assert_eq!(exceptional_fiber[0].1, 3);
+            assert_eq!(
+                field.neg(exceptional_fiber[0].0.norm(&field).c[0]),
+                exceptional
+            );
             assert!(chart.vertical_divisor(&curve, partial, &mut rng).is_none());
             for x in [0, 1] {
                 let divisor = chart.vertical_divisor(&curve, x, &mut rng).unwrap();
@@ -756,20 +774,23 @@ mod tests {
                 assert_eq!(divisor[0].1, 3);
                 assert_eq!(field.neg(divisor[0].0.norm(&field).c[0]), x);
             }
-            let row = chart
-                .vertical_line_relation(&curve, &base, 0, 1, &mut rng)
-                .unwrap();
-            assert_eq!(row.coeffs.len(), 2);
-            assert!(row
-                .coeffs
-                .iter()
-                .all(|&(_, coefficient)| coefficient.abs() == 3));
-            assert!(row.alpha.is_zero() && row.beta.is_zero());
-            let value = row.coeffs.iter().fold(curve.identity(), |acc, &(i, c)| {
-                let term = curve.scalar_mul(&BigUint::from(c.unsigned_abs()), &base.places[i].elem);
-                curve.add(&acc, &if c < 0 { curve.neg(&term) } else { term })
-            });
-            assert!(curve.is_identity(&value), "genus {genus}");
+            for b in [1, exceptional] {
+                let row = chart
+                    .vertical_line_relation(&curve, &base, 0, b, &mut rng)
+                    .unwrap();
+                assert_eq!(row.coeffs.len(), 2);
+                assert!(row
+                    .coeffs
+                    .iter()
+                    .all(|&(_, coefficient)| coefficient.abs() == 3));
+                assert!(row.alpha.is_zero() && row.beta.is_zero());
+                let value = row.coeffs.iter().fold(curve.identity(), |acc, &(i, c)| {
+                    let term =
+                        curve.scalar_mul(&BigUint::from(c.unsigned_abs()), &base.places[i].elem);
+                    curve.add(&acc, &if c < 0 { curve.neg(&term) } else { term })
+                });
+                assert!(curve.is_identity(&value), "genus {genus}");
+            }
             assert_eq!(
                 chart.vertical_divisor(&curve, 17, &mut rng).unwrap()[0].1,
                 3
