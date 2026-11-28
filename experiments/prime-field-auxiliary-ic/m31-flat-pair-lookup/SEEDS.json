@@ -1,0 +1,34 @@
+{
+  "arms": [
+    "hash384",
+    "flat384",
+    "hash512",
+    "flat512",
+    "rho"
+  ],
+  "derivation": "SHA-256 of ASCII m31-flat-pair-lookup/v1, NUL, 16 raw master bytes, NUL, ASCII label; first 8 bytes big endian masked to 63 bits",
+  "master_seed_hex": "9f62b3d4a8c1e7053b9e2d4a6f801c52",
+  "order_label": "schedule",
+  "order_seed": 7952681362317220426,
+  "scheduler": "Python 3.13.1 random.Random MT19937 shuffle",
+  "schema": "m31-flat-pair-lookup-seeds/v1",
+  "seed_reuse": "Walk seed shared by paired arms at one target, target identity separates blocks",
+  "target_ids": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "target_source": "experiments/prime-field-auxiliary-ic/m31-integrated-local-screen/fresh-public.json sha256 dc724fc613d9c2b824b90d59c876f1f7f84b3273d8d607c648e1ba3fbc089252",
+  "walk_labels": [
+    "walk/0",
+    "walk/1",
+    "walk/2"
+  ],
+  "walk_seeds": [
+    2911332506172719186,
+    3991870728458637875,
+    4216562602710832567
+  ]
+}
