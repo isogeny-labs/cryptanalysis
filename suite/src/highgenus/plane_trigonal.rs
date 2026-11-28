@@ -125,13 +125,50 @@ impl TrigonalPlaneChart {
             .find(|(_, root)| root.c.first().copied().unwrap_or(0) == y)?;
         Some(curve.canonical(&place.0))
     }
+
+    /// Zeros of the rational function `u-c` on the normalization, when all
+    /// are rational. They are the roots of `f1-c^3 f2` with multiplicity.
+    /// Its pole divisor is independent of `c`, including the places above
+    /// `f2=0` and infinity, so two returned divisors are linearly equivalent.
+    pub fn horizontal_divisor(
+        &self,
+        curve: &SuperellipticCurve,
+        c: u64,
+        rng: &mut impl RngCore,
+    ) -> Option<Vec<(Ideal, usize)>> {
+        let k = &self.field;
+        let c = c % k.p();
+        let h = self.f1.sub(&self.f2.mul_scalar(k.pow(c, 3), k), k);
+        let mut divisor = Vec::new();
+        for (factor, multiplicity) in h.factor(k, rng) {
+            if factor.degree() != Some(1) {
+                return None;
+            }
+            let x = k.neg(factor.c.first().copied().unwrap_or(0));
+            let place = self.source_place(curve, x, c, rng)?;
+            divisor.push((place, multiplicity));
+        }
+        (divisor
+            .iter()
+            .map(|(_, multiplicity)| multiplicity)
+            .sum::<usize>()
+            == h.degree().unwrap_or(0))
+        .then_some(divisor)
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use rand::{rngs::StdRng, SeedableRng};
 
+    use super::super::JacobianGroup;
     use super::*;
+
+    fn split_poly(field: &Fp, roots: &[u64]) -> Poly {
+        roots.iter().fold(Poly::one(), |product, &root| {
+            product.mul(&Poly::from_coeffs(vec![field.neg(root), 1], field), field)
+        })
+    }
 
     #[test]
     fn genus_four_and_five_plane_charts_match_normalized_places() {
@@ -185,6 +222,59 @@ mod tests {
                 assert_eq!(x_exp + u_exp + z_exp, chart.degree);
                 assert!(coeff < field.p());
             }
+        }
+    }
+
+    #[test]
+    fn split_horizontal_sections_agree_in_genus_four_and_five_jacobians() {
+        // Exhaustively selected split fixtures; no scalar or target is planted.
+        let cases: &[(u64, u32, &[u64], &[u64], u64, &[u64])] = &[
+            (11, 4, &[0, 1, 2], &[3, 4], 2, &[5, 8, 9]),
+            (17, 5, &[0, 1, 2, 3, 7], &[13], 13, &[8, 11, 14, 15, 16]),
+        ];
+        let mut rng = StdRng::seed_from_u64(20261128);
+        for &(p, genus, roots1, roots2, height, other_roots) in cases {
+            let field = Fp::new(p).unwrap();
+            let f1 = split_poly(&field, roots1);
+            let f2 = split_poly(&field, roots2);
+            let curve = SuperellipticCurve::new(field, 3, vec![(f1, 1), (f2, 2)]).unwrap();
+            assert_eq!(curve.genus, genus);
+            let chart = TrigonalPlaneChart::new(&curve).unwrap();
+            let first = chart.horizontal_divisor(&curve, 0, &mut rng).unwrap();
+            let second = chart.horizontal_divisor(&curve, height, &mut rng).unwrap();
+            assert_eq!(first.len(), roots1.len());
+            assert_eq!(second.len(), other_roots.len());
+            assert!(chart.horizontal_divisor(&curve, 1, &mut rng).is_none());
+            assert!(first
+                .iter()
+                .chain(&second)
+                .all(|(_, multiplicity)| *multiplicity == 1));
+            let roots_of = |divisor: &[(Ideal, usize)]| {
+                let mut roots: Vec<_> = divisor
+                    .iter()
+                    .map(|(place, _)| field.neg(place.norm(&field).c[0]))
+                    .collect();
+                roots.sort_unstable();
+                roots
+            };
+            assert_eq!(roots_of(&first), roots1);
+            assert_eq!(roots_of(&second), other_roots);
+            let sum = |divisor: &[(Ideal, usize)]| {
+                divisor
+                    .iter()
+                    .fold(curve.identity(), |acc, (place, multiplicity)| {
+                        let mut acc = acc;
+                        for _ in 0..*multiplicity {
+                            acc = curve.add(&acc, place);
+                        }
+                        acc
+                    })
+            };
+            assert_eq!(
+                sum(&first),
+                sum(&second),
+                "genus {genus} horizontal line relation"
+            );
         }
     }
 }
