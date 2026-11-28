@@ -18,7 +18,8 @@ PRODUCER = "3d49af7f3d0a28e76b79e4825c9d2324e85853d2"
 HISTORICAL = "41e35d8c701484a6ca5406ecbf7bb83278be6073"
 AMENDMENTS = frozenset({
     ".github/workflows/chained-transfer-induced-proof.yml", "pcc/keyring.json", "tools/lean/current-corpus-gate.py",
-    "tools/lean/test_current_corpus_gate.py", "tools/pcc/pcc.py", "tools/pcc/test_pcc.py",
+    "tools/lean/test_current_corpus_gate.py", "tools/lean/AuditAxioms.lean", "tools/lean/proof-gate.sh",
+    "tools/pcc/pcc.py", "tools/pcc/test_pcc.py",
 })
 
 
@@ -56,7 +57,7 @@ def verify_files(repo: Path, producer: Path, frozen: Path, frozen_producer: Path
         raise ValueError("original producer pin changed")
     amendments = contract["verifier_amendments"]
     if set(amendments) != AMENDMENTS:
-        raise ValueError("only the six explicitly amended workflow/verifier/keyring inputs may differ")
+        raise ValueError("only the explicitly amended workflow/verifier/keyring inputs may differ")
     original = (frozen / REFERENCE).read_bytes()
     if digest(original) != contract["historical_reference_sha256"]:
         raise ValueError("frozen reference changed")

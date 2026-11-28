@@ -1,0 +1,46 @@
+{
+  "_what": "Matched characteristic-two presentation screen. Hold the curve, factor base, target stream, solver, relation matrix and budgets fixed; compare the existing direct S4 arm, the full-width and product-space edge-ab lifted left chains, and the two mixed-edge left chains at m = 3. Read actual solving degree, solver work, matrix size, complete S and correctness from the same report.",
+  "_claim_boundary": "Prospective configuration only. A lower input support or stage count is not an end-to-end improvement. No row exists until the checkpoint gate passes and the frozen command is executed.",
+  "instance": {
+    "regime": "char2",
+    "degree": 17,
+    "max_cofactor": 8
+  },
+  "repeats": 6,
+  "rho_runs": 8,
+  "seed": 123145648762,
+  "max_trials": 2000000,
+  "solver_budget_seconds": 120,
+  "configurations": [
+    {
+      "factor_base": "binary-subspace:dimension=6",
+      "oracle": "descent-algebraic:m=3",
+      "solver": "f4-f2",
+      "targets": "walk"
+    },
+    {
+      "factor_base": "binary-subspace:dimension=6",
+      "oracle": "descent-edge-chain:m=3,presentation=edge-ab",
+      "solver": "f4-f2",
+      "targets": "walk"
+    },
+    {
+      "factor_base": "binary-subspace:dimension=6",
+      "oracle": "descent-edge-chain:m=3,presentation=edge-ab-compressed",
+      "solver": "f4-f2",
+      "targets": "walk"
+    },
+    {
+      "factor_base": "binary-subspace:dimension=6",
+      "oracle": "descent-edge-chain:m=3,presentation=edge-ac",
+      "solver": "f4-f2",
+      "targets": "walk"
+    },
+    {
+      "factor_base": "binary-subspace:dimension=6",
+      "oracle": "descent-edge-chain:m=3,presentation=edge-bc",
+      "solver": "f4-f2",
+      "targets": "walk"
+    }
+  ]
+}

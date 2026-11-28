@@ -39,7 +39,7 @@ class SourceGuards(unittest.TestCase):
         return replay.verify_files(*self.roots, contract or self.contract)
 
     def test_both_versions_are_checked(self):
-        self.assertEqual(len(self.verify()), 8)
+        self.assertEqual(len(self.verify()), 10)
         (self.roots[2] / "tools/pcc/pcc.py").write_bytes(b"changed historical verifier")
         with self.assertRaisesRegex(ValueError, "historical sealed input"):
             self.verify()
@@ -52,7 +52,7 @@ class SourceGuards(unittest.TestCase):
     def test_proof_bytes_cannot_be_amended(self):
         contract = copy.deepcopy(self.contract)
         contract["verifier_amendments"]["proof.lean"] = {"historical_sha256": "0" * 64, "current_sha256": "1" * 64}
-        with self.assertRaisesRegex(ValueError, "six explicitly amended"):
+        with self.assertRaisesRegex(ValueError, "explicitly amended"):
             self.verify(contract)
 
     def test_original_reference_cannot_be_rewritten(self):

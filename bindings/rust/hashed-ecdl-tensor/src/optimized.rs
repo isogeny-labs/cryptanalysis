@@ -366,20 +366,12 @@ pub fn solve(
                 meter,
             )?);
         }
-        // Enumerate once with the original trial RNG. The prepared table
-        // assigns the same point-sorted columns without a second tree map.
-        let points = [
-            bases[0].enumerate(curve, rng, meter)?,
-            bases[1].enumerate(curve, rng, meter)?,
-        ];
-        let columns = points[0]
-            .len()
-            .checked_add(points[1].len())
-            .ok_or_else(|| overflow("factor-base columns"))?;
+        let indexes = reduction::indexed_bases(curve, &bases, rng, meter)?;
+        let columns: usize = indexes.iter().map(std::collections::BTreeMap::len).sum();
         if columns > config.columns {
             return Err(Error::Limit("factor-base column policy".into()));
         }
-        if points.iter().any(Vec::is_empty) {
+        if indexes.iter().any(std::collections::BTreeMap::is_empty) {
             continue;
         }
         let required = columns
@@ -388,7 +380,7 @@ pub fn solve(
         meter.vector(required, "optimized relation records")?;
         let mut graph = if options.relation_graph {
             Some(RelationGraph::new(
-                [points[0].len(), points[1].len()],
+                [indexes[0].len(), indexes[1].len()],
                 curve.order(),
                 meter,
             )?)
@@ -409,14 +401,11 @@ pub fn solve(
         let mut relations = Vec::with_capacity(required);
         let mut matrix = Vec::new();
         let mut saved_dependency: Option<CycleDependency> = None;
-        let table = PairTable::from_complete_points(
-            curve,
-            &bases,
-            points,
-            std::collections::hash_map::RandomState::new(),
-            &mut statistics.prepared,
-            meter,
-        )?;
+        let mut table =
+            PairTable::from_indexes(curve, &bases, &indexes, &mut statistics.prepared, meter)?;
+        if graph.is_some() {
+            table.prepare_graph_columns(&indexes, meter)?;
+        }
         // Preserve the mirror's boundary: reusable initial base preparation
         // precedes per-target validation; every retry remains charged online.
         if validated_target.is_none() {
@@ -471,13 +460,13 @@ pub fn solve(
                 query,
                 options,
                 statistics,
-                |points, work| {
-                    let left = table.column(0, &points[0])?;
-                    let right = table.column(1, &points[1])?;
-                    match &mut graph {
-                        Some(graph) => graph.would_close(left, right, work),
-                        None => Ok(false),
-                    }
+                |points, work| match &mut graph {
+                    Some(graph) => graph.would_close(
+                        table.graph_column(0, &points[0], work)?,
+                        table.graph_column(1, &points[1], work)?,
+                        work,
+                    ),
+                    None => Ok(false),
                 },
                 meter,
             )?;
@@ -486,8 +475,8 @@ pub fn solve(
                 let relation = Relation { u, v, points };
                 if let Some(graph) = &mut graph {
                     increment(&mut statistics.graph_rows, 1)?;
-                    let left = table.column(0, &relation.points[0])?;
-                    let right = table.column(1, &relation.points[1])?;
+                    let left = table.graph_column(0, &relation.points[0], meter)?;
+                    let right = table.graph_column(1, &relation.points[1], meter)?;
                     if saved_dependency.is_some() && graph.would_close(left, right, meter)? {
                         increment(&mut statistics.graph_cycles_after_dependency, 1)?;
                     } else {
@@ -513,7 +502,7 @@ pub fn solve(
                         }
                     }
                 } else {
-                    matrix.push(table.matrix_row(&relation)?);
+                    matrix.push(reduction::matrix_row(&relation, &indexes, columns)?);
                 }
                 relations.push(relation);
                 if relations.len() == required {

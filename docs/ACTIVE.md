@@ -1,7 +1,7 @@
 # Active research tasks
 
 ## Active items
-- [ ] Mirror the shared exact point-to-column index for factor-base lookup, matrix rows, and collision-graph vertices while preserving witness replay (Codex, started 2026-11-27, branch codex/unified-point-index-20261127, PR #2003). [pcc:unverified]
+- [ ] Mirror exact point hashing into the native two-slot collision graph collector (Codex, started 2026-11-27, branch codex/point-hash-collision-graph-20261127, draft PR #1997; paired Crypto draft PR #5263, native checks pending).
 - [ ] Audit p plus one smoothness leads on public fixtures (Codex, started 2026-11-25, branch codex/p1-smoothness-leads-20261125, PR #1979) [pcc:unverified]
 - [x] Publish degree-5 horizontal joint S4 component screen (Codex, started 2026-11-23, branch research/cm-joint-s4-screen-20261123, PR #1967): same-base positive and negative query checks, source/endpoint/wire/joint solve costs, and bounded conclusion in research/cm_joint_s4_20261123/. [pcc:unverified]
 - [ ] Batch ECDLP: lower the IC-vs-batch-rho crossover (Claude Code, started 2026-11-23, branch claude/batch-ecdlp-crossover-20261123, draft PR; workspace item PR #91): freeze prediction first; rebuild the `ca-ic prime` batch IC arm on `mitm-prime-batched` (#1891) / k=3 harvester (#1901) where they apply to F_p curves; re-measure up-front and per-target cost and the crossover K vs executed folded batch rho at 20/24/28 bits with CIs; define and measure best-seeded rho and report distance remaining
@@ -48,7 +48,6 @@
 
 ## Blocked / questions
 
-- Shared native point-index PR #2003 has source-matched Rust 1.88 scratch controls, but the tracked native `--locked` build fails on its inherited Cargo.lock; the declared Rust 1.85 floor and hosted applicable checks remain unqualified. No lock, dependency or gate change is proposed in this PR. [pcc:unverified]
 - Full native CT244/CT300 pricing and 695/701 record replay still require approved authenticated original six-object artifact custody; previous STS invalid-token and S3 403 are unresolved. This source-only correction does not authorize paid compute, artifact substitution, modified provenance or protected merge.
 
 ## Priority
@@ -73,6 +72,8 @@ prime-field lift pipeline, while continuing to track the binary/Koblitz source
 and construction gates. [pcc:unverified]
 
 ## Active items (top = next)
+- [x] Add an exact compressed leaf-product presentation for the ECC2K mixed-edge S3 lead: retain full-width `edge-ab` as the matched control, but represent `w = x_a x_b` in the product space `V·V` and freeze a separate solving-degree comparison (Codex, completed 2026-11-27, branch codex/ecc2k130-mixed-edge-presentation-20261127, PR #2000; measurement remains checkpoint-gated) [pcc:unverified]
+- [x] Integrate the ECC2K-130 mixed-edge lifted S3 presentation (`w = x_a x_c`) into the index-calculus degree/closure framework, with matched standard-edge controls and a prospectively frozen lead-sweep plan (Codex, completed 2026-11-27, branch codex/ecc2k130-mixed-edge-presentation-20261127, PR #2000; measurement remains checkpoint-gated) [pcc:unverified]
 - [ ] PKM torus (p+1-side Dickson) tower kind for M31 in pkm_tower_pilot (claude, started 2026-11-25, branch claude/pkm-torus-tower-m31; tracking workspace#130)
 - [ ] CT201–CT203: complete cold ECDLP source adjudication (matched five-arm rho/BSGS/IC, Williams order, distinct-Q per-block prospective gate; automation, started 2026-11-18, branch research/ct201-complete-single-target-gate-20261118, PR #1766; source CI 44/44 normal and -O at 36807d15; native/PCC blocked) [pcc:unverified]
 
