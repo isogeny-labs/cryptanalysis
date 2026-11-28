@@ -28,6 +28,22 @@ This changes the next experiment: a 64-lane batch can amortize dispatch and migh
 
 The next discriminating check is to instrument the actual Rust 64-lane query stream, transfer only bitmap-positive indices back from Metal, and replay the first exact witnesses in pair-index order. This must preserve relations, equation checks, rank and final scalar across all rounds. Then the charged cold same-target end-to-end comparison can decide whether the 64-lane component gain survives integration.
 
-A scalar lane-batch interface is now added to the Rust solver as a correctness control. `batch_control.rs` compares the ordinary indexed path against that adapter on the same public Q, seed, B195 index and 64-lane walk. The complete `MultiSolveOutcome` objects, including certificate relations and work counts, were equal: scalar 264620306, 608 queries, 192 relations, rank 191. This interface has not yet consumed GPU flags; the GPU backend and charged full-solve comparison remain open. [pcc:unverified]
+A scalar lane-batch interface was added to the Rust solver as a correctness control. `batch_control.rs` compares the ordinary indexed path against that adapter on the same public Q, seed, B195 index and 64-lane walk. The complete `MultiSolveOutcome` objects, including certificate relations and work counts, were equal: scalar 264620306, 608 queries, 192 relations, rank 191. This preceded the GPU integration below. [pcc:unverified]
+
+## Frozen 15-block full Rust panel
+
+The full Metal backend in `gpu_ffi.swift` and `screen.metal` now receives the pair points and bitmap from the Rust index. `solve_multi_indexed_screened` applies its lane flags to Rust's exact point lookup, first-witness selection, row replay, elimination and full certificate verification. The executable `full.rs` separately verifies the answer by public generator multiplication. The frozen source is commit `e93837b8b`; the seed, target, order and accounting plan is in `CONFIRM_PROTOCOL.md`. All 30 fresh-process arms completed correctly across five public targets and three independent seeds. The independent affine implementation in `independent_check.py` checked all 30 scalar answers; paired relation digests, scalar, queries, relation count and rank matched in all 15 blocks. [pcc:unverified]
+
+| Metric | CPU | Metal |
+| --- | ---: | ---: |
+| Median process wall across 15 arms | 341.831 ms | 221.755 ms |
+| Median child user+system CPU across 15 arms | 308.889 ms | 118.475 ms |
+| Median paired CPU/Metal wall ratio | \- | 1.486× |
+| Median paired CPU/Metal CPU ratio | \- | 2.623× |
+| Paired wins, wall / CPU | \- | 15/15 / 15/15 |
+
+Per-target median paired wall ratios for Q0–Q4 were 1.593, 1.371, 1.419, 1.524 and 1.575; CPU ratios were 2.702, 2.056, 2.620, 2.623 and 2.628. The process wall charge starts before each fresh Rust launch and includes basis generation, pair index, Metal shader loading and compilation, all GPU calls, collection, elimination, certificate replay and exit. Child CPU includes the Swift/Metal host process, while GPU device time contributes to wall rather than child CPU. These are producer-run local observations on a shared Apple M4 Pro host, with no cache flushing. All raw records, manifest and paired ratios are preserved. [pcc:unverified]
+
+**Audit limitation:** `full.rs` labels a digest as `certificate_digest`, but its current hash covers relation coefficients and signed terms only; it omits certificate weights and metadata. The internal Rust verifier checked each complete certificate, and the independent Python checker verified each scalar, but the panel does not establish byte-identical complete certificates across arms. The frozen protocol required exact certificate-digest agreement, so this first panel cannot by itself clear that requirement. A new frozen confirmation must include a full-certificate digest before promoting the result. The earlier Stage B and pre-orientation figures above remain historical diagnostics; the corrected full panel is the relevant performance comparison. [pcc:unverified]
 
 Reproduce locally on Apple Metal: `swiftc -O admission.swift -o /tmp/m31-metal-admission`, run it with `195 1`, `195 8` and `195 64`; compile `verify.rs` against the current `prime_field_auxiliary_ic` rlib and compare `digest`. The repository control is `m31-fast --qx 1767503692 --qy 244402461 --seed 2911332506172719186 --columns 195 --summands 4 --method indexed --base interval --lanes 64 --chunk 16384 --max-queries 100000 --max-ms 5000 --profile`.
