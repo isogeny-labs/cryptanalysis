@@ -29,7 +29,7 @@
 //! Costs: trials and group operations (from the group's counter), the
 //! smoothness rate, and the linear-algebra wall time; no speed claim.
 
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeMap, HashMap, HashSet, VecDeque};
 use std::time::Instant;
 
 use num_bigint::{BigInt, BigUint};
@@ -767,7 +767,7 @@ pub fn index_calculus_dlp<C: IndexCalculusCurve>(
 ) -> Result<DlpReport, HgError> {
     let n64 = n
         .to_u64()
-        .filter(|&v| v < (1u64 << 63) && v > 1)
+        .filter(|&v| v < (1u64 << 63) && is_prime_u64(v))
         .ok_or(HgError::Unsupported("N must be a prime below 2^63"))?;
     let mut rng = StdRng::seed_from_u64(params.seed);
     let mut count = fb.len() + params.extra_relations;
@@ -828,39 +828,80 @@ pub fn index_calculus_dlp<C: IndexCalculusCurve>(
 }
 
 /// Solve for `x = log D₂` from relations `Σ r_P y_P − β x ≡ α (mod n)`.
-/// Returns `(x, dimension of the dense system)`.
+/// Singleton factor-base columns are removed with their unique row: their
+/// unknown log can satisfy that row for any assignment of the other unknowns.
+/// Returns `(x, dimension of the remaining dense system)`.
+/// `n` must be prime.
 pub fn solve_log_mod_n(relations: &[Relation], fb_size: usize, n: u64) -> (Option<u64>, usize) {
-    // Columns: used factor-base places (compressed), then x.
-    let mut used = vec![false; fb_size];
-    for r in relations {
-        for &(i, _) in &r.coeffs {
-            used[i] = true;
+    // Reduce and combine each row first. Repeated place indices can cancel
+    // modulo n; only nonzero coefficients count toward singleton filtering.
+    let red = |v: i64| -> u64 { (v as i128).rem_euclid(n as i128) as u64 };
+    let sparse: Vec<Vec<(usize, u64)>> = relations
+        .iter()
+        .map(|r| {
+            let mut row = BTreeMap::<usize, u64>::new();
+            for &(i, c) in &r.coeffs {
+                let entry = row.entry(i).or_default();
+                *entry = ((*entry as u128 + red(c) as u128) % n as u128) as u64;
+            }
+            row.into_iter().filter(|&(_, c)| c != 0).collect()
+        })
+        .collect();
+    let mut column_rows = vec![Vec::new(); fb_size];
+    for (r, row) in sparse.iter().enumerate() {
+        for &(i, _) in row {
+            column_rows[i].push(r);
         }
     }
+    let mut degree: Vec<usize> = column_rows.iter().map(Vec::len).collect();
+    let mut active = vec![true; relations.len()];
+    let mut queue: VecDeque<usize> = degree
+        .iter()
+        .enumerate()
+        .filter_map(|(i, &d)| (d == 1).then_some(i))
+        .collect();
+    while let Some(c) = queue.pop_front() {
+        if degree[c] != 1 {
+            continue;
+        }
+        let Some(&r) = column_rows[c].iter().find(|&&r| active[r]) else {
+            continue;
+        };
+        active[r] = false;
+        for &(i, _) in &sparse[r] {
+            degree[i] -= 1;
+            if degree[i] == 1 {
+                queue.push_back(i);
+            }
+        }
+    }
+    // Columns: used factor-base places (compressed), then x.
     let mut col_of = vec![usize::MAX; fb_size];
     let mut ncols = 0;
     for i in 0..fb_size {
-        if used[i] {
+        if degree[i] != 0 {
             col_of[i] = ncols;
             ncols += 1;
         }
     }
     let xcol = ncols;
     let width = ncols + 2; // + x + rhs
-                           // `rem_euclid` never overflows; the old `(v % n) + n` overflowed i64 for
-                           // n in (2^62, 2^63) (accepted by `index_calculus_dlp`) and positive v.
-    let red = |v: i64| -> u64 { (v as i128).rem_euclid(n as i128) as u64 };
     let mut mat: Vec<Vec<u64>> = relations
         .iter()
-        .map(|r| {
+        .zip(&sparse)
+        .zip(&active)
+        .filter_map(|((r, coeffs), &keep)| {
+            if !keep {
+                return None;
+            }
             let mut row = vec![0u64; width];
-            for &(i, c) in &r.coeffs {
-                row[col_of[i]] = red(c);
+            for &(i, c) in coeffs {
+                row[col_of[i]] = c;
             }
             let beta = (&r.beta % n).to_u64().unwrap_or(0);
             row[xcol] = if beta == 0 { 0 } else { n - beta };
             row[xcol + 1] = (&r.alpha % n).to_u64().unwrap_or(0);
-            row
+            Some(row)
         })
         .collect();
     let rows = mat.len();
@@ -1015,7 +1056,33 @@ mod tests {
         ];
         let (sol, dim) = solve_log_mod_n(&rels, 2, n);
         assert_eq!(sol, Some(x0));
-        assert_eq!(dim, 3);
+        assert_eq!(dim, 2); // y1 and its unique row are peeled.
+    }
+
+    #[test]
+    fn singleton_chain_and_cancelled_column_preserve_log() {
+        let rels = vec![
+            // a + b = 11, b - x = 5; neither can constrain x after a is peeled.
+            Relation {
+                coeffs: vec![(0, 1), (1, 1)],
+                alpha: 11u32.into(),
+                beta: BigUint::zero(),
+            },
+            Relation {
+                coeffs: vec![(1, 1)],
+                alpha: 5u32.into(),
+                beta: BigUint::one(),
+            },
+            // The repeated index cancels, leaving -x = -4.
+            Relation {
+                coeffs: vec![(2, 1), (2, -1)],
+                alpha: 97u32.into(),
+                beta: BigUint::one(),
+            },
+        ];
+        let (sol, dim) = solve_log_mod_n(&rels, 3, 101);
+        assert_eq!(sol, Some(4));
+        assert_eq!(dim, 1);
     }
 
     #[test]
