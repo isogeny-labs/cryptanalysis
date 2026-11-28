@@ -41,20 +41,41 @@ ulong fadd(ulong a,ulong b) { return red(a+b); }
 ulong fsub(ulong a,ulong b) { return a>=b ? a-b : MOD-(b-a); }
 ulong times(ulong a,ulong b) { return red(a*b); }
 ulong power(ulong a,ulong e) { ulong y=1; while(e) { if(e&1ul) y=times(y,a); a=times(a,a); e>>=1; } return y; }
-kernel void candidates(device const P *left [[buffer(0)]], device const P *right [[buffer(1)]],
-                       device P *out [[buffer(2)]], uint id [[thread_position_in_grid]]) {
-  P a=left[id], b=right[id];
-  if(!a.finite) { out[id]=b; return; }
-  if(!b.finite) { out[id]=a; return; }
+P candidate(P a, P b) {
+  if(!a.finite) return b;
+  if(!b.finite) return a;
   ulong dx=fsub(b.x,a.x), dy=fsub(b.y,a.y);
-  if(dx==0 && dy!=0) { out[id]=P{0,0,0}; return; }
+  if(dx==0 && dy!=0) return P{0,0,0};
   ulong s;
   if(dx==0) {
-    if(a.y==0) { out[id]=P{0,0,0}; return; }
+    if(a.y==0) return P{0,0,0};
     s=times(fadd(times(3ul,times(a.x,a.x)),2ul),power(fadd(a.y,a.y),MOD-2));
   } else s=times(dy,power(dx,MOD-2));
   ulong x=fsub(fsub(times(s,s),a.x),b.x);
-  out[id]=P{x,fsub(times(s,fsub(a.x,x)),a.y),1};
+  return P{x,fsub(times(s,fsub(a.x,x)),a.y),1};
+}
+kernel void candidates(device const P *left [[buffer(0)]], device const P *right [[buffer(1)]],
+                       device P *out [[buffer(2)]], uint id [[thread_position_in_grid]]) {
+  out[id]=candidate(left[id],right[id]);
+}
+kernel void screen(device const P *left [[buffer(0)]], device const P *right [[buffer(1)]],
+                   device const ulong *bitmap [[buffer(2)]], device uchar *flags [[buffer(3)]],
+                   uint id [[thread_position_in_grid]]) {
+  P result=candidate(left[id],right[id]);
+  if(!result.finite) { flags[id]=2; return; }
+  ulong bit=(result.x*0x9e3779b97f4a7c15ul)>>44;
+  flags[id]=((bitmap[bit>>6]>>(bit&63))&1ul) ? 1 : 0;
+}
+kernel void compact_screen(device const P *targets [[buffer(0)]], device const P *entries [[buffer(1)]],
+                           device const ulong *bitmap [[buffer(2)]], device uchar *flags [[buffer(3)]],
+                           constant uint &entryCount [[buffer(4)]], uint id [[thread_position_in_grid]]) {
+  uint width=2*entryCount;
+  P q=targets[id/width], b=entries[(id/2)%entryCount];
+  if(id&1u && b.finite && b.y!=0) b.y=MOD-b.y;
+  P result=candidate(q,b);
+  if(!result.finite) { flags[id]=2; return; }
+  ulong bit=(result.x*0x9e3779b97f4a7c15ul)>>44;
+  flags[id]=((bitmap[bit>>6]>>(bit&63))&1ul) ? 1 : 0;
 }
 """
 guard let device=MTLCreateSystemDefaultDevice(),
@@ -107,6 +128,14 @@ for i in 0..<specials.count {
     right[i]=GPUPoint(x:b?.x ?? 0,y:b?.y ?? 0,finite:b == nil ? 0 : 1)
 }
 let n=left.count
+var bitmap=[UInt64](repeating:0,count:1 << 14)
+func bitmapBit(_ x: UInt64) -> Int { Int((x &* 0x9e3779b97f4a7c15) >> 44) }
+for point in entries {
+    if let point {
+        let bit=bitmapBit(point.x)
+        bitmap[bit >> 6] |= UInt64(1) << UInt64(bit & 63)
+    }
+}
 func cpu(_ v: GPUPoint) -> XY? { v.finite == 0 ? nil : XY(x:v.x,y:v.y) }
 let t0=CFAbsoluteTimeGetCurrent()
 let library=try device.makeLibrary(source:shader,options:nil)
@@ -149,5 +178,60 @@ for i in 0..<n {
     let got=cpu(output[i])
     if expected?.x != got?.x || expected?.y != got?.y { mismatches += 1; if mismatches<5 { fputs("mismatch at \(i)\n",stderr) } }
 }
-print("{\"schema\":\"m31-metal-admission/v1\",\"device\":\"\(device.name)\",\"columns\":\(columns),\"lanes\":\(lanes),\"entries\":\(entries.count),\"n\":\(n),\"mismatches\":\(mismatches),\"gpu_setup_dispatch_wall_s\":\(charged),\"library_pipeline_wall_s\":\(tLibrary-t0),\"buffers_wall_s\":\(tBuffers-tLibrary),\"dispatch_wait_wall_s\":\(dispatch),\"cpu_affine_wall_s\":\(cpuSeconds),\"checksum\":\(checksum),\"digest\":\(digest)}")
-if mismatches != 0 { exit(1) }
+let screenStart=CFAbsoluteTimeGetCurrent()
+let screenPipeline=try device.makeComputePipelineState(function:library.makeFunction(name:"screen")!)
+let bitmapBuf=device.makeBuffer(bytes:bitmap,length:bitmap.count*8)!
+let flagBuf=device.makeBuffer(length:n)!
+let screenCmd=queue.makeCommandBuffer()!
+let screenEncoder=screenCmd.makeComputeCommandEncoder()!
+screenEncoder.setComputePipelineState(screenPipeline)
+screenEncoder.setBuffer(aBuf,offset:0,index:0)
+screenEncoder.setBuffer(bBuf,offset:0,index:1)
+screenEncoder.setBuffer(bitmapBuf,offset:0,index:2)
+screenEncoder.setBuffer(flagBuf,offset:0,index:3)
+screenEncoder.dispatchThreads(MTLSize(width:n,height:1,depth:1),threadsPerThreadgroup:MTLSize(width:256,height:1,depth:1))
+screenEncoder.endEncoding(); screenCmd.commit(); screenCmd.waitUntilCompleted()
+let screenSeconds=CFAbsoluteTimeGetCurrent()-screenStart
+precondition(screenCmd.status == .completed)
+let flags=flagBuf.contents().bindMemory(to:UInt8.self,capacity:n)
+var flagMismatches=0, positives=0
+for i in 0..<n {
+    let expected: UInt8
+    if let point=expectedPoints[i] {
+        let bit=bitmapBit(point.x)
+        expected=(bitmap[bit >> 6] & (UInt64(1) << UInt64(bit & 63))) == 0 ? 0 : 1
+    } else { expected=2 }
+    if flags[i] != expected { flagMismatches += 1 }
+    if flags[i] != 0 { positives += 1 }
+}
+var compactTargets=[GPUPoint](), compactEntries=[GPUPoint]()
+var nextTarget: XY?=q
+for _ in 0..<lanes {
+    let target=nextTarget!
+    compactTargets.append(GPUPoint(x:target.x,y:target.y,finite:1))
+    nextTarget=pointAdd(nextTarget,g)
+}
+for point in entries { compactEntries.append(GPUPoint(x:point?.x ?? 0,y:point?.y ?? 0,finite:point == nil ? 0 : 1)) }
+let compactStart=CFAbsoluteTimeGetCurrent()
+let compactPipeline=try device.makeComputePipelineState(function:library.makeFunction(name:"compact_screen")!)
+let targetBuf=device.makeBuffer(bytes:compactTargets,length:compactTargets.count*MemoryLayout<GPUPoint>.stride)!
+let entryBuf=device.makeBuffer(bytes:compactEntries,length:compactEntries.count*MemoryLayout<GPUPoint>.stride)!
+let compactFlagBuf=device.makeBuffer(length:n)!
+let compactCmd=queue.makeCommandBuffer()!
+let compactEncoder=compactCmd.makeComputeCommandEncoder()!
+compactEncoder.setComputePipelineState(compactPipeline)
+compactEncoder.setBuffer(targetBuf,offset:0,index:0)
+compactEncoder.setBuffer(entryBuf,offset:0,index:1)
+compactEncoder.setBuffer(bitmapBuf,offset:0,index:2)
+compactEncoder.setBuffer(compactFlagBuf,offset:0,index:3)
+var entryCount=UInt32(entries.count)
+compactEncoder.setBytes(&entryCount,length:4,index:4)
+compactEncoder.dispatchThreads(MTLSize(width:n,height:1,depth:1),threadsPerThreadgroup:MTLSize(width:256,height:1,depth:1))
+compactEncoder.endEncoding(); compactCmd.commit(); compactCmd.waitUntilCompleted()
+let compactSeconds=CFAbsoluteTimeGetCurrent()-compactStart
+precondition(compactCmd.status == .completed)
+let compactFlags=compactFlagBuf.contents().bindMemory(to:UInt8.self,capacity:n)
+var compactMismatches=0
+for i in 4..<n { if compactFlags[i] != flags[i] { compactMismatches += 1 } }
+print("{\"schema\":\"m31-metal-admission/v1\",\"device\":\"\(device.name)\",\"columns\":\(columns),\"lanes\":\(lanes),\"entries\":\(entries.count),\"n\":\(n),\"mismatches\":\(mismatches),\"flag_mismatches\":\(flagMismatches),\"compact_flag_mismatches\":\(compactMismatches),\"bitmap_positives\":\(positives),\"gpu_setup_dispatch_wall_s\":\(charged),\"screen_pipeline_dispatch_wall_s\":\(screenSeconds),\"compact_setup_dispatch_wall_s\":\(compactSeconds),\"library_pipeline_wall_s\":\(tLibrary-t0),\"buffers_wall_s\":\(tBuffers-tLibrary),\"dispatch_wait_wall_s\":\(dispatch),\"cpu_affine_wall_s\":\(cpuSeconds),\"checksum\":\(checksum),\"digest\":\(digest)}")
+if mismatches != 0 || flagMismatches != 0 || compactMismatches != 0 { exit(1) }
