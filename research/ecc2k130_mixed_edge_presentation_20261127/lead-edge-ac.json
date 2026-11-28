@@ -1,0 +1,31 @@
+{
+  "schema": "lead-testing.lead/v1",
+  "id": "ecc2k130-mixed-edge-ac-20261127",
+  "title": "Mixed-edge lifted left-chain S3 presentation over binary curves",
+  "hypothesis": "At m = 3, lifting w = x_a x_c in the cubic left-chain S3 link lowers the measured solving degree or counted solver work enough to lower end-to-end S against the fixed binary and Koblitz lead-sweep baselines, without changing the recovered logarithm.",
+  "prior_art": [
+    "crypto:research/ecc2k130_edge_lift_forms_20261126/README.md (72-cell support census; no solving-degree claim)",
+    "crypto:research/ecc2k130_edge_lift_forms_20261126/PROTOCOL.md (frozen matched closure gate)",
+    "crypto:research/representation_leads_20261109/derive/src/systems.rs (standard edge-ab lift and contextual presentations)",
+    "cryptanalysis:suite/src/cryptanalysis/pq_descent_symbolic.rs (direct S3/S4 and balanced split before this lead)",
+    "research-kb unavailable: scripts/research-kb reported no executable; lead-atlas checkout was VLT1-encoded and unreadable; direct repository fallback used, so novelty remains unverified"
+  ],
+  "kind": "bench",
+  "regimes": [
+    "char2",
+    "koblitz"
+  ],
+  "regimes_excluded_because": "prime: the proposed quadratic edge lift uses characteristic-two squaring and the binary S3 identity; it is not the same presentation over odd characteristic.",
+  "bench": {
+    "char2": {
+      "factor_base": "binary-subspace",
+      "oracle": "descent-edge-chain:m={m},presentation=edge-ac",
+      "solver": "f4-f2"
+    },
+    "koblitz": {
+      "factor_base": "koblitz-orbit",
+      "oracle": "descent-edge-chain:m={m},presentation=edge-ac",
+      "solver": "f4-f2"
+    }
+  }
+}
