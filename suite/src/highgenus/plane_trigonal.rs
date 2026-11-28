@@ -214,14 +214,37 @@ impl TrigonalPlaneChart {
     }
 
     /// Zeros of `u−slope*x−intercept` with ordinary factors of degree at
-    /// most two. A quadratic factor is mapped through `y=u*f2(x)` to its
-    /// unique matching normalized Kummer place. Exceptional branches are
-    /// still refused; the pole divisor is shared within a slope family.
+    /// most two. Exceptional branches are refused.
     pub fn affine_line_divisor_degree_two(
         &self,
         curve: &SuperellipticCurve,
         slope: u64,
         intercept: u64,
+        rng: &mut impl RngCore,
+    ) -> Option<Vec<(Ideal, usize)>> {
+        self.affine_line_divisor_bounded(curve, slope, intercept, 2, rng)
+    }
+
+    /// Zeros of an affine line with ordinary factors of degree at most three.
+    /// Each higher-degree factor is mapped by `y=(slope*x+intercept)*f2(x)`
+    /// to its matching normalized Kummer place. Exceptional branches are
+    /// refused; the pole divisor is shared within a slope family.
+    pub fn affine_line_divisor_degree_three(
+        &self,
+        curve: &SuperellipticCurve,
+        slope: u64,
+        intercept: u64,
+        rng: &mut impl RngCore,
+    ) -> Option<Vec<(Ideal, usize)>> {
+        self.affine_line_divisor_bounded(curve, slope, intercept, 3, rng)
+    }
+
+    fn affine_line_divisor_bounded(
+        &self,
+        curve: &SuperellipticCurve,
+        slope: u64,
+        intercept: u64,
+        bound: usize,
         rng: &mut impl RngCore,
     ) -> Option<Vec<(Ideal, usize)>> {
         if !self.matches_curve(curve) {
@@ -243,7 +266,7 @@ impl TrigonalPlaneChart {
                     let u = k.add(k.mul(slope, x), intercept);
                     self.source_place(curve, x, u, rng)?
                 }
-                2 => {
+                2..=3 if degree <= bound => {
                     if self.f2.rem(&factor, k).is_zero() {
                         return None;
                     }
@@ -273,13 +296,39 @@ impl TrigonalPlaneChart {
         second: (u64, u64),
         rng: &mut impl RngCore,
     ) -> Option<Relation> {
-        if factor_base.bound < 2
+        self.affine_line_relation_bounded(curve, factor_base, first, second, 2, rng)
+    }
+
+    /// A homogeneous affine-line relation with ordinary factors of degree
+    /// at most three. The factor-base indices are checked by the divisor
+    /// constructor; callers must replay the row in the source Jacobian.
+    pub fn affine_line_relation_degree_three(
+        &self,
+        curve: &SuperellipticCurve,
+        factor_base: &FactorBase<Ideal>,
+        first: (u64, u64),
+        second: (u64, u64),
+        rng: &mut impl RngCore,
+    ) -> Option<Relation> {
+        self.affine_line_relation_bounded(curve, factor_base, first, second, 3, rng)
+    }
+
+    fn affine_line_relation_bounded(
+        &self,
+        curve: &SuperellipticCurve,
+        factor_base: &FactorBase<Ideal>,
+        first: (u64, u64),
+        second: (u64, u64),
+        bound: usize,
+        rng: &mut impl RngCore,
+    ) -> Option<Relation> {
+        if factor_base.bound < bound
             || self.affine_infinity_pole_order(first.0) != self.affine_infinity_pole_order(second.0)
         {
             return None;
         }
-        let a = self.affine_line_divisor_degree_two(curve, first.0, first.1, rng)?;
-        let b = self.affine_line_divisor_degree_two(curve, second.0, second.1, rng)?;
+        let a = self.affine_line_divisor_bounded(curve, first.0, first.1, bound, rng)?;
+        let b = self.affine_line_divisor_bounded(curve, second.0, second.1, bound, rng)?;
         self.divisor_relation(curve, factor_base, &a, &b, rng)
     }
 
@@ -1552,6 +1601,84 @@ mod tests {
         }
         let (target, row) = ordinary.expect("no ordinary degree-two target place");
         replay(&target, &row);
+    }
+
+    fn check_cubic_affine_line_row(p: u64, roots1: &[u64], roots2: &[u64], seed: u64) {
+        let field = Fp::new(p).unwrap();
+        let mut rng = StdRng::seed_from_u64(seed);
+        let curve = SuperellipticCurve::new(
+            field,
+            3,
+            vec![
+                (split_poly(&field, roots1), 1),
+                (split_poly(&field, roots2), 2),
+            ],
+        )
+        .unwrap();
+        let chart = TrigonalPlaneChart::new(&curve).unwrap();
+        let degree_two = build_factor_base(&curve, 2, &mut rng).unwrap();
+        let degree_three = build_factor_base(&curve, 3, &mut rng).unwrap();
+        let mut found = None;
+        'lines: for slope in 0..p {
+            let reference = (0..p).find(|&intercept| {
+                chart
+                    .affine_line_divisor_degree_three(&curve, slope, intercept, &mut rng)
+                    .is_some()
+            });
+            let Some(reference) = reference else {
+                continue;
+            };
+            for intercept in 0..p {
+                let first = (slope, intercept);
+                let second = (slope, reference);
+                let Some(row) = chart.affine_line_relation_degree_three(
+                    &curve,
+                    &degree_three,
+                    first,
+                    second,
+                    &mut rng,
+                ) else {
+                    continue;
+                };
+                if !row.coeffs.iter().any(|&(index, coefficient)| {
+                    coefficient != 0 && degree_three.places[index].degree == 3
+                }) {
+                    continue;
+                }
+                assert!(chart
+                    .affine_line_relation_degree_two(&curve, &degree_two, first, second, &mut rng,)
+                    .is_none());
+                found = Some(row);
+                break 'lines;
+            }
+        }
+        let row =
+            found.unwrap_or_else(|| panic!("no cubic affine-line row in the bounded F_{p} scan"));
+        assert!(row.alpha.is_zero() && row.beta.is_zero());
+        let replay = row
+            .coeffs
+            .iter()
+            .fold(curve.identity(), |sum, &(index, coefficient)| {
+                let term = curve.scalar_mul(
+                    &BigUint::from(coefficient.unsigned_abs()),
+                    &degree_three.places[index].elem,
+                );
+                curve.add(
+                    &sum,
+                    &if coefficient < 0 {
+                        curve.neg(&term)
+                    } else {
+                        term
+                    },
+                )
+            });
+        assert!(curve.is_identity(&replay));
+    }
+
+    #[test]
+    fn cubic_affine_line_rows_replay_in_genus_four_and_five() {
+        check_cubic_affine_line_row(5, &[0, 1, 2], &[3, 4], 0x2026_11c3);
+        check_cubic_affine_line_row(7, &[0, 1, 2, 3, 5], &[6], 0x2026_11c5);
     }
 
     fn check_ordinary_cubic_target(p: u64, roots1: &[u64], roots2: &[u64], seed: u64) {
