@@ -1,0 +1,20 @@
+{
+  "schema": "m31-b512-bitmap-seeds/v1",
+  "master_seed_hex": "11ab782de56f40c3a4d2906bce897521",
+  "derivation": "SHA-256 of ASCII m31-b512-bitmap/v1, NUL, 16 master bytes, NUL, ASCII label; first 8 bytes big endian masked to 63 bits",
+  "walk_labels": ["walk/0", "walk/1", "walk/2"],
+  "walk_seeds": [2230848867327472125, 4844259012332193534, 5181539002976270970],
+  "order_label": "schedule",
+  "order_seed": 1961496985286719829,
+  "target_ids": [0, 1, 2, 3, 4],
+  "targets": [
+    [1767503692, 244402461],
+    [686106551, 2137700595],
+    [949616523, 2050168716],
+    [1568678311, 615355077],
+    [2146214436, 1536824028]
+  ],
+  "target_source": "m31-flat-pair-lookup t0..t4-s0-hash512 stdout in branch codex/m31-native-flat-lookup-20261127 at ed0684056; public coordinates only",
+  "scheduler": "Python 3.13 random.Random MT19937 shuffle blocks; rotate control,candidate,rho order by (target_id + seed_index) mod 3",
+  "seed_reuse": "The same walk seed is used for paired control and candidate at one public target; distinct labels give independent walk streams"
+}
