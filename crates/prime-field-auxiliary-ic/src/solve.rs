@@ -393,6 +393,40 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
             Backend::Scalar,
             false,
             |m, q| index.decompose(m, q, &mut workspace),
+            None,
+        )?;
+        Ok((outcome, workspace.stats().clone()))
+    }
+    /// Batch the lane-round decomposition interface while retaining the same
+    /// walk, row checks, elimination and certificate path. This scalar adapter
+    /// is the correctness control for an optional accelerator backend.
+    pub fn solve_multi_indexed_batched(
+        &self,
+        summands: u8,
+        target: Point,
+        config: &Config,
+        index: &PairIndex<B>,
+    ) -> Result<(MultiSolveOutcome, PairIndexStats)> {
+        if !index.matches(self.base) {
+            return Err(Error::Invalid("pair index does not match solver base"));
+        }
+        let mut workspace = index.workspace();
+        let mut batch = |m: u8, points: &[Option<Point>]| -> Result<Vec<Option<MultiSignedRelation>>> {
+            points
+                .iter()
+                .map(|point| point.map_or(Ok(None), |point| index.decompose(m, point, &mut workspace)))
+                .collect()
+        };
+        let outcome = self.search_multi_with(
+            summands,
+            target,
+            config,
+            false,
+            &mut (),
+            Backend::Scalar,
+            false,
+            |_, _| unreachable!("batch adapter handles every lane"),
+            Some(&mut batch),
         )?;
         Ok((outcome, workspace.stats().clone()))
     }
@@ -419,6 +453,7 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
             Backend::Scalar,
             false,
             |m, q| index.decompose(m, q, &mut workspace),
+            None,
         )?;
         Ok((outcome, workspace.stats().clone(), recorder.finish()))
     }
@@ -475,6 +510,7 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
             },
             summands == 2 && self.base.uses_circuit(),
             |m, q| self.base.decompose_multi_inner(m, q, &mut workspace),
+            None,
         )
     }
     #[allow(clippy::too_many_arguments)]
@@ -491,6 +527,9 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
         backend: Backend,
         circuit_oracle: bool,
         mut decompose: D,
+        mut batch_decompose: Option<
+            &mut dyn FnMut(u8, &[Option<Point>]) -> Result<Vec<Option<MultiSignedRelation>>>,
+        >,
     ) -> Result<MultiSolveOutcome> {
         if !(2..=4).contains(&summands) {
             return Err(Error::Invalid("summand count must be 2, 3, or 4"));
@@ -586,6 +625,15 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
             }
             stats.generated_targets += lanes as u64;
             stats.lane_rounds += 1;
+            let mut batch_rows = if let Some(ref mut batch) = batch_decompose {
+                let rows = batch(summands, &points)?;
+                if rows.len() != lanes {
+                    return Err(Error::Invalid("batch decomposition result length"));
+                }
+                Some(rows)
+            } else {
+                None
+            };
             profiler.enter(Phase::Bookkeeping);
             for i in 0..lanes {
                 if stats.queries == config.max_queries {
@@ -597,7 +645,11 @@ impl<'a, const B: u32> PreparedSolver<'a, B> {
                 };
                 stats.circuit_queries += u64::from(circuit_oracle);
                 profiler.enter(Phase::Decomposition);
-                let decomposition = decompose(summands, query)?;
+                let decomposition = if let Some(ref mut rows) = batch_rows {
+                    rows[i].take()
+                } else {
+                    decompose(summands, query)?
+                };
                 profiler.enter(Phase::Bookkeeping);
                 let Some(decomposition) = decomposition else {
                     continue;

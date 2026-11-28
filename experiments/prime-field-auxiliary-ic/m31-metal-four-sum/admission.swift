@@ -107,9 +107,20 @@ for i in 0..<columns {
     }
 }
 var left=[GPUPoint](), right=[GPUPoint]()
-var laneTarget: XY?=q
-for _ in 0..<lanes {
-    let target=laneTarget!
+var targets=[XY]()
+if CommandLine.arguments.count>3 {
+    let lines=try String(contentsOfFile:CommandLine.arguments[3],encoding:.utf8).split(separator:"\n")
+    precondition(lines.count==lanes)
+    for line in lines {
+        let parts=line.split(separator:",")
+        precondition(parts.count==2)
+        targets.append(XY(x:UInt64(parts[0])!,y:UInt64(parts[1])!))
+    }
+} else {
+    var next: XY?=q
+    for _ in 0..<lanes { targets.append(next!); next=pointAdd(next,g) }
+}
+for target in targets {
     for point in entries {
         for negative in [false,true] {
             if point == nil && negative { continue }
@@ -118,7 +129,6 @@ for _ in 0..<lanes {
             right.append(GPUPoint(x:b?.x ?? 0,y:b?.y ?? 0,finite:b == nil ? 0 : 1))
         }
     }
-    laneTarget=pointAdd(laneTarget,g)
 }
 // Explicit vertical, doubling and identity probes precede ordinary candidates.
 let specials: [(XY?,XY?)] = [(q,XY(x:q.x,y:p-q.y)),(g,g),(nil,q),(q,nil)]
@@ -205,11 +215,8 @@ for i in 0..<n {
     if flags[i] != 0 { positives += 1 }
 }
 var compactTargets=[GPUPoint](), compactEntries=[GPUPoint]()
-var nextTarget: XY?=q
-for _ in 0..<lanes {
-    let target=nextTarget!
+for target in targets {
     compactTargets.append(GPUPoint(x:target.x,y:target.y,finite:1))
-    nextTarget=pointAdd(nextTarget,g)
 }
 for point in entries { compactEntries.append(GPUPoint(x:point?.x ?? 0,y:point?.y ?? 0,finite:point == nil ? 0 : 1)) }
 let compactStart=CFAbsoluteTimeGetCurrent()
@@ -233,5 +240,5 @@ precondition(compactCmd.status == .completed)
 let compactFlags=compactFlagBuf.contents().bindMemory(to:UInt8.self,capacity:n)
 var compactMismatches=0
 for i in 4..<n { if compactFlags[i] != flags[i] { compactMismatches += 1 } }
-print("{\"schema\":\"m31-metal-admission/v1\",\"device\":\"\(device.name)\",\"columns\":\(columns),\"lanes\":\(lanes),\"entries\":\(entries.count),\"n\":\(n),\"mismatches\":\(mismatches),\"flag_mismatches\":\(flagMismatches),\"compact_flag_mismatches\":\(compactMismatches),\"bitmap_positives\":\(positives),\"gpu_setup_dispatch_wall_s\":\(charged),\"screen_pipeline_dispatch_wall_s\":\(screenSeconds),\"compact_setup_dispatch_wall_s\":\(compactSeconds),\"library_pipeline_wall_s\":\(tLibrary-t0),\"buffers_wall_s\":\(tBuffers-tLibrary),\"dispatch_wait_wall_s\":\(dispatch),\"cpu_affine_wall_s\":\(cpuSeconds),\"checksum\":\(checksum),\"digest\":\(digest)}")
+print("{\"schema\":\"m31-metal-admission/v1\",\"device\":\"\(device.name)\",\"target_source\":\"\(CommandLine.arguments.count>3 ? "rust_first_walk_round" : "q_plus_i_g")\",\"columns\":\(columns),\"lanes\":\(lanes),\"entries\":\(entries.count),\"n\":\(n),\"mismatches\":\(mismatches),\"flag_mismatches\":\(flagMismatches),\"compact_flag_mismatches\":\(compactMismatches),\"bitmap_positives\":\(positives),\"gpu_setup_dispatch_wall_s\":\(charged),\"screen_pipeline_dispatch_wall_s\":\(screenSeconds),\"compact_setup_dispatch_wall_s\":\(compactSeconds),\"library_pipeline_wall_s\":\(tLibrary-t0),\"buffers_wall_s\":\(tBuffers-tLibrary),\"dispatch_wait_wall_s\":\(dispatch),\"cpu_affine_wall_s\":\(cpuSeconds),\"checksum\":\(checksum),\"digest\":\(digest)}")
 if mismatches != 0 || flagMismatches != 0 || compactMismatches != 0 { exit(1) }

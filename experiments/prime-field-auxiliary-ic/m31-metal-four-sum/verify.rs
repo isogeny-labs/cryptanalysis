@@ -23,8 +23,18 @@ fn main() {
         }
     }
     let mut candidates = Vec::new();
-    let mut target = q;
-    for _ in 0..lanes {
+    let target_file = std::env::args().nth(3);
+    let target_points: Vec<_> = if let Some(file) = target_file {
+        std::fs::read_to_string(file).unwrap().lines().map(|line| {
+            let (x,y)=line.split_once(',').unwrap();
+            c.point(x.parse().unwrap(),y.parse().unwrap()).unwrap()
+        }).collect()
+    } else {
+        let mut target=q;
+        (0..lanes).map(|_| { let current=target; target=c.add(Some(target),Some(g)).unwrap().unwrap(); current }).collect()
+    };
+    assert_eq!(target_points.len(),lanes);
+    for target in target_points {
         for point in &entries {
             for negative in [false, true] {
                 if point.is_none() && negative { continue; }
@@ -32,7 +42,6 @@ fn main() {
                 candidates.push(c.add(Some(target), b).unwrap());
             }
         }
-        target = c.add(Some(target),Some(g)).unwrap().unwrap();
     }
     candidates[0] = c.add(Some(q), Some(c.negate(q).unwrap())).unwrap();
     candidates[1] = c.add(Some(g), Some(g)).unwrap();
