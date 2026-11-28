@@ -1,7 +1,7 @@
 # Active research tasks
 
 ## Active items
-- [ ] Transfer quadratic affine-line factors to genus-4/5 normalized relation rows (Codex, started 2026-11-28, branch codex/trigonal-quadratic-line-rows-20261128).
+- [ ] Transfer quadratic affine-line factors to genus-4/5 normalized relation rows (Codex, started 2026-11-28, branch codex/trigonal-quadratic-line-rows-v2-20261128; tracking-only PR #2037 merged before source upload).
 - [x] Add bounded same-family anchor search for quadratic trigonal target descent (Codex, started 2026-11-28, branch codex/trigonal-anchor-scan-20261128, draft PR #2036; fixed genus-4/5 rational quadratic targets replayed, all 12 trigonal tests passed).
 - [ ] Add bounded direct target descent to the genus-4/5 trigonal plane chart (Codex, started 2026-11-28, branch codex/trigonal-quadratic-line-descent-20261128, draft PR #2035; prior chart and plane-line rows merged in cryptanalysis #2024/#2026, tracking PR #2032 merged; direct target-support row and genus-four scalar-2 DLP replay passed, degree-two chart target support merged; quadratic-to-degree-one plane-line descent passed in genus four and five; quadratic exceptional-fiber correction and infinity pole-family checks passed; general descent and full local transfer open).
 - [ ] Confirm a paired Metal x-coordinate screen sharing one inverse across target-minus/plus pair probes on fresh public M31 seeds (Codex, 2026-11-27, branch codex/m31-metal-paired-screen-20261127; mode2/mode3 panel missed its 1.20× wall/CPU gates, while the direct setup-charged mode0/mode3 panel passed locally at 1.361× wall and 1.455× CPU with complete certificate parity; matched archived rho remained 8.598× faster by wall; independent standing and fresh-seed confirmation open). [pcc:unverified]
