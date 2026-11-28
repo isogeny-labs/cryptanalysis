@@ -21,7 +21,8 @@ private final class ScreenContext {
         }
         let source=try String(contentsOfFile:path,encoding:.utf8)
         let library=try device.makeLibrary(source:source,options:nil)
-        guard let function=library.makeFunction(name:"compact_screen"),
+        let kernelName=useCoarse == 3 ? "compact_screen_paired" : "compact_screen"
+        guard let function=library.makeFunction(name:kernelName),
               let entries=device.makeBuffer(bytes:points,length:count*24),
               let bitmap=device.makeBuffer(bytes:bits,length:words*8) else {
             throw NSError(domain:"m31-metal",code:2)
@@ -41,7 +42,7 @@ private final class ScreenContext {
             }
             coarse=buffer
         } else { coarse=bitmap }
-        if useCoarse == 2 {
+        if useCoarse == 2 || useCoarse == 3 {
             var keys=[UInt32](repeating:UInt32.max,count:1 << 17)
             let coordinates=points.assumingMemoryBound(to:WirePoint.self)
             for i in 0..<count where coordinates[i].finite != 0 {
@@ -68,6 +69,7 @@ private final class ScreenContext {
     }
     func run(_ targets: UnsafeRawPointer, _ count: Int, _ output: UnsafeMutableRawPointer) -> Int32 {
         let total=count*entryCount*2
+        let threads=useCoarse == 3 ? count*entryCount : total
         guard let targetBuffer=device.makeBuffer(bytes:targets,length:count*24),
               let flags=device.makeBuffer(length:total),
               let command=queue.makeCommandBuffer(),
@@ -85,7 +87,7 @@ private final class ScreenContext {
         var coarseEnabled=UInt32(useCoarse)
         encoder.setBytes(&coarseEnabled,length:4,index:7)
         encoder.setBuffer(xhash,offset:0,index:8)
-        encoder.dispatchThreads(MTLSize(width:total,height:1,depth:1),
+        encoder.dispatchThreads(MTLSize(width:threads,height:1,depth:1),
                                 threadsPerThreadgroup:MTLSize(width:min(256,pipeline.maxTotalThreadsPerThreadgroup),height:1,depth:1))
         encoder.endEncoding()
         command.commit(); command.waitUntilCompleted()
@@ -104,9 +106,9 @@ public func m31MetalInit(_ points: UnsafeRawPointer?, _ count: Int32,
                          _ shaderPath: UnsafePointer<CChar>?) -> Int32 {
     guard let points, let bits, let shaderPath,
           count>0, (bitmapBits==20 || bitmapBits==22),
-          (useCoarse==0 || ((useCoarse==1 || useCoarse==2) && bitmapBits==22)),
+          (useCoarse==0 || ((useCoarse==1 || useCoarse==2 || useCoarse==3) && bitmapBits==22)),
           words==(1 << (bitmapBits-6)), count<=262_144,
-          (useCoarse != 2 || count < (1 << 17)) else { return 1 }
+          ((useCoarse != 2 && useCoarse != 3) || count < (1 << 17)) else { return 1 }
     do {
         screenContext=try ScreenContext(points,Int(count),bits,Int(words),Int(bitmapBits),Int(useCoarse),String(cString:shaderPath))
         return 0
