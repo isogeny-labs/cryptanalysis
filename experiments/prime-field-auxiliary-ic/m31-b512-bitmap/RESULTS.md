@@ -1,0 +1,15 @@
+# M31 B512 native pair bitmap: frozen local panel
+
+The 15 matched blocks (five fixed public targets × three manifest-derived walk seeds) followed `PROTOCOL.md` from pinned candidate source commit `0012506b6`. All 45 fresh-process arms solved. The 30 Rust arms agreed within each block on the public answer, full work counters, pair counts and exact certificate digest. `audit.py` reopened every saved stdout by its CSV digest, independently checked each reported scalar against the public generator and target, and replayed all 7,706 certificate relation equations and weighted factor-base cancellations. No arm failed or was censored. This remains producer-side local evidence [pcc:unverified].
+
+| Arm, 15 blocks | Charged wall median ms | Charged CPU median ms | Pair-index median ms | Online median ms |
+| --- | ---: | ---: | ---: | ---: |
+| Current B512, no bitmap | 31.204 | 29.768 | 5.664 | 19.108 |
+| B512, direct high-22-bit bitmap | 27.625 | 26.698 | 5.827 | 15.584 |
+| Matched rho | 15.218 | 14.646 | — | — |
+
+Median paired control/candidate ratios were 1.1016 wall and 1.1061 CPU, with 15/15 candidate wins on each clock. The prespecified 1.15 median-ratio gate failed on both clocks, despite clearing the 12/15 win gate. Median paired candidate/rho cost ratios were 1.8479 wall and 1.8856 CPU. These are direct same-panel ratios on the exact public Q, not a cross-panel extrapolation. The candidate remains unselected; the production `PairIndex` is restored after pinning its measured source commit and all records. [pcc:unverified]
+
+The candidate reduced median online time while adding about 0.16 ms to median pair-index setup. The high-bit filter avoids some negative HashMap probes; this causal interpretation is an inference from the code and phase timings, not a separately isolated cache or instruction count. The result is a finite-size data-structure improvement below its selection threshold, not a new mathematical algorithm. No Lean theorem about wall-clock numbers is claimed. The candidate's exhaustive Rust test verified every one of the 512² retained signed pair witnesses, all occupied bitmap bits and both signs of every finite indexed point before the panel. That producer test is not independent verification. [pcc:unverified]
+
+External wall and parent-plus-child CPU clocks included fresh process startup, basis generation, pair-index setup, relation collection, graph elimination, certificate replay, JSON parsing, independent answer multiplication, and process exit. Compilation and loading the frozen public fixture preceded timing; OS caches were not flushed. Host: Apple M4 Pro, arm64, macOS 27.2, shared local desktop. Tier 1 isolation, A/A and independent signed performance standing are absent. `raw.csv` SHA-256: `23f09fac5825dd5704fa5004808da231e4fe2db8d7423f9fa3a8ffa88c079878`; `SEEDS.json` SHA-256: `d29d978f2175e9d0c271a2eb7db324b5b8d8b9e0eb4d1ab9381c552694692cdd`; measured `pair_index.rs` SHA-256: `d193e2c3130cfa95c053fbc9e86f0ae4f0f2345b0be972a09e3838d138f1e19a`. The CSV pins each binary and stdout digest. [pcc:unverified]
