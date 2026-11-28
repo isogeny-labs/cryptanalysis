@@ -25,7 +25,7 @@ fn main() {
     let bitmap_bits:usize=args.get(5).map_or(20,|x|x.parse().unwrap());
     let use_coarse:i32=args.get(6).map_or(0,|x|x.parse().unwrap());
     assert!(bitmap_bits==20 || bitmap_bits==22);
-    assert!(use_coarse==0 || (use_coarse==1 && bitmap_bits==22));
+    assert!(use_coarse==0 || ((use_coarse==1 || use_coarse==2) && bitmap_bits==22));
     let q=c.point(qx,qy).unwrap();
     let roots:Vec<_>=(0..c.modulus()).filter(|&x| c.lift_x(x).unwrap().is_some()).take(195).collect();
     let base=FactorBase::without_maps(c,&roots).unwrap();
@@ -44,7 +44,8 @@ fn main() {
     let (outcome,probe)=if mode=="cpu" {
         prepared.solve_multi_indexed(4,q,&config,&index).unwrap()
     } else {
-        let entries:Vec<_>=index.screen_points().into_iter().map(wire).collect();
+        let screen_points=index.screen_points();
+        let entries:Vec<_>=screen_points.iter().copied().map(wire).collect();
         let bitmap=index.screen_bitmap();
         assert_eq!(bitmap.len(),1 << (bitmap_bits-6));
         let path=std::env::current_dir().unwrap().join("experiments/prime-field-auxiliary-ic/m31-metal-four-sum/screen.metal");
@@ -60,6 +61,20 @@ fn main() {
             let code=unsafe { m31_metal_screen(targets.as_ptr(),targets.len() as i32,flags.as_mut_ptr()) };
             screen_ns+=screen_started.elapsed().as_nanos();
             if code!=0 { return Err(Error::Invalid("Metal candidate dispatch")); }
+            if std::env::var_os("M31_AUDIT_EXACT_X").is_some() && screens==0 && use_coarse==2 {
+                let present:std::collections::HashSet<_>=screen_points.iter().flatten().map(|p|p.x()).collect();
+                for (i,&outer) in screen_points.iter().enumerate() {
+                    for sign in 0..2 {
+                        let term=if sign==0 { outer.map(|p|c.negate(p)).transpose()? } else {outer};
+                        let candidate=c.add(points[0],term)?;
+                        let expected=match candidate {
+                            None=>2,
+                            Some(p)=>u8::from(present.contains(&p.x())),
+                        };
+                        assert_eq!(flags[2*i+sign],expected,"first-round exact x flag {i}/{sign}");
+                    }
+                }
+            }
             if audit_flags {
                 for &flag in &flags { flag_digest=(flag_digest^u64::from(flag)).wrapping_mul(1_099_511_628_211); }
             }

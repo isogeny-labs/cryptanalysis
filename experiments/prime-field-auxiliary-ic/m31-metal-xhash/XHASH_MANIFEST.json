@@ -1,0 +1,170 @@
+{
+  "schema": "m31-metal-xhash22-manifest/v1",
+  "commit": "d0179b25dab93072af264cd1c59cb1fc37dd0f8e",
+  "host": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "python": "3.13.1",
+  "rustc": "rustc 1.93.1 (01f6ddf75 2026-02-11) (Homebrew)",
+  "swiftc": "Apple Swift version 6.4.2 (swiftlang-6.4.2.1.9 clang-2100.4.1.1)\nTarget: arm64-apple-macosx27.2.0",
+  "source_sha256": {
+    "experiments/prime-field-auxiliary-ic/m31-metal-four-sum/full.rs": "ce7049d0fc4a1149fbfaa9c2ec977cfec56eabeb3917c1853003edbf8e7f9803",
+    "experiments/prime-field-auxiliary-ic/m31-metal-four-sum/gpu_ffi.swift": "fc3d798296257ae5a0bb2c4c5c1f31caeb7d43c0fecd067866fd1a4a001b7f2b",
+    "experiments/prime-field-auxiliary-ic/m31-metal-four-sum/screen.metal": "8e99c170b5afd995af5923a0947b59486740929f39542ea5f38815fb8367509b",
+    "experiments/prime-field-auxiliary-ic/m31-metal-xhash/run.py": "7a23ada195e752ccb11ba60c169c14d751904eed3c6cb422453a45a42f0a7ee8",
+    "experiments/prime-field-auxiliary-ic/m31-metal-xhash/verify.py": "d6a707fbba26654e2c67e0c8b66a66971801cef907d958c89dcd3e8e1f3159ee",
+    "experiments/prime-field-auxiliary-ic/m31-metal-xhash/PROTOCOL.md": "a16b060e6677f1c5a79ea9640f6ee14565594a9938679c9f0814d2c40c899cdf",
+    "crates/prime-field-auxiliary-ic/src/solve.rs": "608c8edbaddbf30b1fb0560de0788c7929a68e9b0cda2253287942ea32b74bde",
+    "crates/prime-field-auxiliary-ic/src/pair_index.rs": "cd229e27e488da7ad2c53fa6add7a66439b0f2d26e11cb4cef04927ba20403cd"
+  },
+  "targets": [
+    [
+      1767503692,
+      244402461
+    ],
+    [
+      686106551,
+      2137700595
+    ],
+    [
+      949616523,
+      2050168716
+    ],
+    [
+      1568678311,
+      615355077
+    ],
+    [
+      2146214436,
+      1536824028
+    ]
+  ],
+  "seeds": [
+    7657041628464740738,
+    4422449258016131369,
+    4668448350738830225
+  ],
+  "order_seed": 7968685183712939294,
+  "master_seed_hex": "2bf268c4c012cba6dd013c65a669390d",
+  "schedule": [
+    {
+      "target": 2,
+      "seed": 1,
+      "arms": [
+        "20",
+        "xhash22"
+      ]
+    },
+    {
+      "target": 0,
+      "seed": 2,
+      "arms": [
+        "xhash22",
+        "20"
+      ]
+    },
+    {
+      "target": 4,
+      "seed": 0,
+      "arms": [
+        "20",
+        "xhash22"
+      ]
+    },
+    {
+      "target": 3,
+      "seed": 0,
+      "arms": [
+        "xhash22",
+        "20"
+      ]
+    },
+    {
+      "target": 0,
+      "seed": 1,
+      "arms": [
+        "20",
+        "xhash22"
+      ]
+    },
+    {
+      "target": 3,
+      "seed": 2,
+      "arms": [
+        "xhash22",
+        "20"
+      ]
+    },
+    {
+      "target": 2,
+      "seed": 0,
+      "arms": [
+        "20",
+        "xhash22"
+      ]
+    },
+    {
+      "target": 1,
+      "seed": 1,
+      "arms": [
+        "xhash22",
+        "20"
+      ]
+    },
+    {
+      "target": 4,
+      "seed": 1,
+      "arms": [
+        "20",
+        "xhash22"
+      ]
+    },
+    {
+      "target": 3,
+      "seed": 1,
+      "arms": [
+        "xhash22",
+        "20"
+      ]
+    },
+    {
+      "target": 1,
+      "seed": 0,
+      "arms": [
+        "20",
+        "xhash22"
+      ]
+    },
+    {
+      "target": 1,
+      "seed": 2,
+      "arms": [
+        "xhash22",
+        "20"
+      ]
+    },
+    {
+      "target": 2,
+      "seed": 2,
+      "arms": [
+        "20",
+        "xhash22"
+      ]
+    },
+    {
+      "target": 4,
+      "seed": 2,
+      "arms": [
+        "xhash22",
+        "20"
+      ]
+    },
+    {
+      "target": 0,
+      "seed": 0,
+      "arms": [
+        "20",
+        "xhash22"
+      ]
+    }
+  ],
+  "binary_sha256": "d1ef0b302cb8733c029f99c2369053f872e245997f98ed2fc3afc197c6829de0"
+}

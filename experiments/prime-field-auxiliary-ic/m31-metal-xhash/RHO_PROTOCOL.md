@@ -1,0 +1,5 @@
+# Frozen matched rho distance control
+
+Freeze date 2026-11-27, before the rho outcomes. Use the five public Q and three seeds recorded in `XHASH_MANIFEST.json`, one fresh archived rho process per target/seed. Source files are `experiments/prime-field-auxiliary-ic/snapshot/comparison/common.hpp` and `compare_rho.cpp`, SHA-256 `7f54ac2b36ebb0bf569a7a5ae2a376706e336582a74e822d9e04c3f7fab3414e` and `430b7f5e022314f3a2f2fabac66bd0a6a1deee93cd91395520a48ad831a47de2`. Compile with Apple `c++ -std=c++17 -O3 -DFIELD_BITS=31`; record binary hash.
+
+Charge public input preparation, process launch, walk, output parse and exit to wall, and child user+system to CPU. Compilation is outside timing, as for both IC arms. Retain stdout/stderr, metrics, return codes, timeouts and all raw records. Independently verify each returned scalar by affine public group multiplication. Compare exact-x IC/rho ratios on matched target and seed; do not pool rho into the IC-vs-IC statistic. This archived rho is a distance control rather than a claim of the fastest generic implementation.
