@@ -528,4 +528,55 @@ mod tests {
             }
         }
     }
+
+    #[test]
+    fn tangent_line_multiplicities_are_preserved_in_relations() {
+        let field = Fp::new(17).unwrap();
+        let mut rng = StdRng::seed_from_u64(0x7a6e_2026);
+        let cases: &[(u32, &[u64], &[u64], (u64, u64), (u64, u64), &[(u64, usize)])] = &[
+            (4, &[0, 1, 2], &[3, 7], (2, 0), (1, 10), &[(9, 2), (10, 3)]),
+            (
+                5,
+                &[0, 1, 2, 3, 5],
+                &[6],
+                (7, 12),
+                (6, 16),
+                &[(3, 1), (4, 3), (8, 1)],
+            ),
+        ];
+        for &(genus, roots1, roots2, anchor, tangent, expected) in cases {
+            let curve = SuperellipticCurve::new(
+                field,
+                3,
+                vec![
+                    (split_poly(&field, roots1), 1),
+                    (split_poly(&field, roots2), 2),
+                ],
+            )
+            .unwrap();
+            let chart = TrigonalPlaneChart::new(&curve).unwrap();
+            let divisor = chart
+                .affine_line_divisor(&curve, tangent.0, tangent.1, &mut rng)
+                .unwrap();
+            let mut actual: Vec<_> = divisor
+                .iter()
+                .map(|(place, mult)| (field.neg(place.norm(&field).c[0]), *mult))
+                .collect();
+            actual.sort_unstable();
+            assert_eq!(actual, expected, "genus {genus}");
+            let base = build_factor_base(&curve, 1, &mut rng).unwrap();
+            let row = chart
+                .affine_line_relation(&curve, &base, anchor, tangent, &mut rng)
+                .unwrap();
+            assert!(row
+                .coeffs
+                .iter()
+                .any(|&(_, coefficient)| coefficient.abs() >= 2));
+            let value = row.coeffs.iter().fold(curve.identity(), |acc, &(i, c)| {
+                let term = curve.scalar_mul(&BigUint::from(c.unsigned_abs()), &base.places[i].elem);
+                curve.add(&acc, &if c < 0 { curve.neg(&term) } else { term })
+            });
+            assert!(curve.is_identity(&value), "genus {genus}");
+        }
+    }
 }
